@@ -3908,9 +3908,12 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       // Correct Manai's submitted list numbers without changing the players' game IDs.
       if (code === 'MANAI') {
         var manaiNames = { '5 1330': '1330', '6': 'Finn', '7 Vibes?': 'Vibes?', '8 Ign-ApriL': 'ApriL' };
+        var manaiById = { '210692520': 'Lunox', '218515017': 'Verkuzz', '292953851': '290-Imagine', '251421844': 'zyx', '250210919': '1330', '111270184': 'Finn', '272634105': 'Vibes?', '281200371': 'ApriL' };
         var manaiIds = Object.assign({}, row.player_ids || {});
+        var submittedManaiIds = Object.assign({}, manaiIds);
         row.roster = row.roster.map(function (nick) {
-          var clean = Object.prototype.hasOwnProperty.call(manaiNames, nick) ? manaiNames[nick] : nick;
+          var submittedId = String(submittedManaiIds[nick] || '');
+          var clean = Object.prototype.hasOwnProperty.call(manaiById, submittedId) ? manaiById[submittedId] : (Object.prototype.hasOwnProperty.call(manaiNames, nick) ? manaiNames[nick] : nick);
           if (clean !== nick && Object.prototype.hasOwnProperty.call(manaiIds, nick)) {
             manaiIds[clean] = manaiIds[nick];
             delete manaiIds[nick];
