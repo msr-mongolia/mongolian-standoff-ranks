@@ -121,7 +121,7 @@
       var claimCode=el('input',{type:'text',placeholder:'MSR Code',autocomplete:'off',maxlength:64});
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Серверийн баталгаажуулалт хараахан идэвхжээгүй тул одоогоор нэвтрэх боломжгүй.');
-      var claimLogin=el('button',{type:'button',class:'msr-btn pri',disabled:true},'Code + Password-оор нэвтрэх (удахгүй)');
+      var claimLogin=el('button',{type:'button',class:'msr-btn pri',onclick:function(){claimNote.textContent='Энэ код одоогоор серверт бүртгэгдээгүй. Админ сервер дээр эрх үүсгэж баталгаажуулсны дараа нэвтрэх боломжтой болно.';}},'Confirm / Log in');
       var discordRequest=el('a',{class:'msr-btn pri',href:'https://discord.com/users/1128188613230874727',target:'_blank',rel:'noopener noreferrer',style:'display:block;text-align:center;text-decoration:none',onclick:function(e){
         var player=claimName.value.trim();
         if(!player){e.preventDefault();claimName.focus();claimRequestStatus.textContent='Эхлээд nickname эсвэл Standoff 2 ID-гаа оруулна уу.';return;}
