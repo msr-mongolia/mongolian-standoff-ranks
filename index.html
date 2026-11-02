@@ -1515,6 +1515,9 @@ html body #app .sg.msr-clan-avatar .crown{z-index:4}
 @media(prefers-reduced-motion:reduce){html body #app .msr-clan-avatar-item::before{animation:none}}
 </style>
 <style>html body #app .sg.msr-clan-avatar:not(.msr-has-clan-logo)::before{color:var(--signature-color,#83dfb0)!important;opacity:.22!important}</style>
+<style id="msr-full-width-player-signatures">
+html body #app .sg .sigtxt,html body #app.msr-clan-profile .bigav.sg.hl .sigtxt{padding:0 .025em .08em!important;letter-spacing:-.015em!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -1909,11 +1912,16 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var avatar=e.closest('.sg');if(!avatar)return;
       var diameter=Math.min(avatar.clientWidth,avatar.clientHeight);
       if(!diameter)return;
-      // Measure the real rendered avatar, including compact lists and mobile overrides.
-      var base=diameter*.43,maxWidth=diameter*.70,maxHeight=diameter*.36;
+      // Fill the circle nearly edge to edge, allowing short names to grow too.
+      var base=diameter*.85;
       e.style.fontSize=base.toFixed(2)+'px';
       var width=Math.max(e.scrollWidth,e.offsetWidth),height=e.offsetHeight;
-      var scale=Math.min(1,maxWidth/Math.max(1,width),maxHeight/Math.max(1,height));
+      var angle=({'0':7,'1':5,'2':9}[e.getAttribute('data-hand')]||7)*Math.PI/180;
+      var rotatedWidth=width*Math.cos(angle)+height*Math.sin(angle);
+      var rotatedHeight=height*Math.cos(angle)+width*Math.sin(angle);
+      var scale=Math.min(diameter*.97/Math.max(1,rotatedWidth),
+        diameter*.72/Math.max(1,rotatedHeight),
+        diameter*.99/Math.max(1,Math.hypot(width,height)));
       e.style.fontSize=(base*scale).toFixed(2)+'px';
     });
   }
