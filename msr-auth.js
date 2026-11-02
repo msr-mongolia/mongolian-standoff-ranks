@@ -117,7 +117,7 @@
       var yes=el('button',{type:'button',class:'msr-btn'},'YES — Профайл байгаа');
       var no=el('button',{type:'button',class:'msr-btn'},'NO — Энгийн нэвтрэлт');
       var choice=el('div',{style:'display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%'},[yes,no]);
-      var claimName=el('input',{type:'text',name:'msr-player-lookup',autocomplete:'off',placeholder:'Standoff 2 ID-гаа бичнэ үү',maxlength:80,value:''});
+      var claimName=el('input',{type:'text',name:'msr-player-lookup',autocomplete:'off',placeholder:'Профайл дээрх ID-гаа бичнэ үү',maxlength:80,value:''});
       var claimCode=el('input',{type:'text',placeholder:'MSR Code',autocomplete:'off',maxlength:64});
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Нэвтэрсний дараа Settings хэсгээс password болон Gmail-ээ тохируулна уу.');
@@ -133,7 +133,13 @@
   var typed=claimName.value.trim().toLowerCase();
   var valid=!!(claim.data&&(claim.data.game_id&&String(claim.data.game_id)===typed));
   if(!valid){await sb.auth.signOut();throw new Error('Профайлын ID тохирохгүй байна.');}
-  closeModal();toast('Нэвтэрлээ');
+  var session=result.data.session;
+  if(!session)throw new Error('Нэвтрэх session олдсонгүй.');
+  var consumed=await fetch(C.SUPABASE_URL+'/functions/v1/msr-consume-player-code',{method:'POST',headers:{'Content-Type':'application/json','apikey':C.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},body:'{}'});
+  var consumeData=await consumed.json();
+  if(!consumed.ok||!consumeData.consumed){await sb.auth.signOut();throw new Error(consumeData.error||'Нэг удаагийн Code хүчингүй болгоход алдаа гарлаа.');}
+  claimPass.value='';claimCode.value='';
+  closeModal();toast('Түр Code хүчингүй боллоо. Settings хэсгээс Gmail болон шинэ Password тохируулна уу.');
  }catch(e){claimNote.textContent=err(e);}finally{claimLogin.disabled=false;}
 }},'Confirm / Log in');
       var discordRequest=el('a',{class:'msr-btn pri',href:'https://discord.com/users/1128188613230874727',target:'_blank',rel:'noopener noreferrer',style:'display:block;text-align:center;text-decoration:none',onclick:function(e){
@@ -368,8 +374,11 @@
         if(newPass.value.length<8){passStatus.textContent='8-аас дээш тэмдэгт оруулна уу.';return;}
         changePass.disabled=true;
         try{
-          var check=await sb.auth.signInWithPassword({email:S.user.email,password:oldPass.value});
-          if(check.error)throw check.error;
+          var temporary=/^msr-[a-f0-9]{16}@accounts\\.msr\\.invalid$/i.test(S.user.email||'');
+          if(!temporary){
+            var check=await sb.auth.signInWithPassword({email:S.user.email,password:oldPass.value});
+            if(check.error)throw check.error;
+          }
           var result=await sb.auth.updateUser({password:newPass.value});
           if(result.error)throw result.error;
           oldPass.value='';newPass.value='';passStatus.textContent='Password солигдлоо.';
