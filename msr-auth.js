@@ -123,7 +123,7 @@
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Нэвтэрсний дараа Settings хэсгээс password болон Gmail-ээ тохируулна уу.');
       var claimLogin=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
  var code=claimCode.value.trim().toUpperCase();
- if(!/^MSR-[A-F0-9]{16}$/.test(code)||!claimPass.value||!claimName.value.trim()){claimNote.textContent='Standoff 2 ID, Code, Password оруулна уу.';return;}
+ if(!/^MSR-[A-F0-9]{16}$/.test(code)||!claimPass.value||!claimName.value.trim()){claimNote.textContent='Профайл дээрх ID, Code, Password оруулна уу.';return;}
  claimLogin.disabled=true;
  try{
   var email='msr-'+code.slice(4).toLowerCase()+'@accounts.msr.invalid';
@@ -132,7 +132,7 @@
   var claim=await sb.from('msr_player_claims').select('team_id,nickname,game_id').eq('user_id',result.data.user.id).maybeSingle();
   var typed=claimName.value.trim().toLowerCase();
   var valid=!!(claim.data&&(claim.data.game_id&&String(claim.data.game_id)===typed));
-  if(!valid){await sb.auth.signOut();throw new Error('Standoff 2 ID тохирохгүй байна.');}
+  if(!valid){await sb.auth.signOut();throw new Error('Профайлын ID тохирохгүй байна.');}
   closeModal();toast('Нэвтэрлээ');
  }catch(e){claimNote.textContent=err(e);}finally{claimLogin.disabled=false;}
 }},'Confirm / Log in');
@@ -345,10 +345,10 @@
         el('p',{class:'msr-note'},'Email change becomes active only after required verification links are confirmed.')
       ]));
       if(S.admin){
-        var issueName=el('input',{type:'text',inputmode:'numeric',pattern:'[0-9]{5,12}',maxlength:12,placeholder:'Standoff 2 ID (5–12 цифр)'});
+        var issueName=el('input',{type:'text',inputmode:'numeric',pattern:'[0-9]{5,12}',maxlength:12,placeholder:'Профайлын ID (5–12 цифр)'});
         var issueResult=el('textarea',{rows:5,readOnly:true,placeholder:'Код энд харагдана'});
         var issueBtn=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
-          if(!/^[0-9]{5,12}$/.test(issueName.value.trim())){issueResult.value='Standoff 2 ID (5–12 цифр) оруулна уу.';return;}
+          if(!/^[0-9]{5,12}$/.test(issueName.value.trim())){issueResult.value='Профайлын ID (5–12 цифр) оруулна уу.';return;}
           issueBtn.disabled=true;issueResult.value='Үүсгэж байна...';
           try{
             var session=(await sb.auth.getSession()).data.session;
