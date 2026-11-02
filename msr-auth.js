@@ -122,7 +122,16 @@
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Серверийн баталгаажуулалт хараахан идэвхжээгүй тул одоогоор нэвтрэх боломжгүй.');
       var claimLogin=el('button',{type:'button',class:'msr-btn pri',disabled:true},'Code + Password-оор нэвтрэх (удахгүй)');
-      var claimArea=el('div',null,[claimName,claimCode,claimPass,claimLogin,claimNote]);
+      var claimArea=el('div',{style:'display:flex;flex-direction:column;gap:10px;width:100%;margin-top:12px'},[
+        el('label',{style:'font-weight:700'},'Player nickname / Standoff 2 ID'),
+        claimName,
+        el('label',{style:'font-weight:700'},'MSR Code'),
+        claimCode,
+        el('label',{style:'font-weight:700'},'MSR Password'),
+        claimPass,
+        claimLogin,
+        claimNote
+      ]);
       claimArea.hidden=true;
       var regularFields=fields.slice();
       function pickExisting(exists){
