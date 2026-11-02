@@ -1647,6 +1647,10 @@ transform:none!important;object-fit:cover!important;object-position:center!impor
 opacity:.42!important;filter:none!important;-webkit-mask-image:none!important;mask-image:none!important;
 }
 </style>
+<style id="msr-visible-team-icons">
+#app .msr-team-stat-icon svg,#app .msr-team-stats-heading svg{stroke:currentColor!important;opacity:1!important}
+#app .msr-team-stat-icon{filter:drop-shadow(0 0 3px var(--clan-glow,#ffffff25))}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3585,6 +3589,9 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         var hash=0; Array.from(clanCode).forEach(function(ch){hash=(hash*31+ch.charCodeAt(0))>>>0;});
         var namedAccent = /(?:purple|violet)/i.test(clan.n+' '+clanCode)?'#a44cff':/(?:ascend|peace|green)/i.test(clan.n+' '+clanCode)?'#50ff20':/(?:red|scarlet)/i.test(clan.n+' '+clanCode)?'#ff465d':/(?:blue|cyan)/i.test(clan.n+' '+clanCode)?'#27baff':null;
         var accent=namedAccent || (/^#[0-9a-f]{6}$/i.test(clan.c||'') && !/^#(?:3b4658|2a3445|202b3a)$/i.test(clan.c) ? clan.c : palette[hash%palette.length]);
+        // Dark clan branding needs a readable accent on the dark profile surface.
+        var accentRGB=/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(accent);
+        if(accentRGB)accent=brightSignatureColor(parseInt(accentRGB[1],16),parseInt(accentRGB[2],16),parseInt(accentRGB[3],16));
         app.style.setProperty('--clan-accent',accent);
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
