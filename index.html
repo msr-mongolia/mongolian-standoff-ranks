@@ -1714,6 +1714,18 @@ background-size:114% 114%!important;background-position:100% 50%!important;
 #app .msr-result-event-badge>span:last-child{overflow-wrap:anywhere}
 @media(max-width:480px){#app .msr-result-date-heading{gap:8px}#app .msr-result-event-badge{font-size:11px;padding-right:7px;gap:6px}#app .msr-result-event-badge img{width:28px;height:28px;flex-basis:28px}}
 </style>
+<style id="msr-ranking-event-participation">
+#app .msr-ranking-events{display:flex;flex-wrap:wrap;gap:6px;padding:0 13px 11px 68px}
+#app .msr-ranking-event{display:inline-flex;align-items:center;gap:7px;max-width:100%;min-width:0;padding:5px 8px 5px 5px;background:#10271e;border:1px solid #3b7656;border-radius:8px;color:#edf8f0;text-decoration:none;font-size:11px;line-height:1.25}
+#app .msr-ranking-event:hover{background:#183b2b;border-color:#68ce93}
+#app .msr-ranking-event img{display:block;width:26px;height:26px;flex:0 0 26px;object-fit:contain;border-radius:5px;background:#07120e}
+#app .msr-ranking-event svg{display:block;width:22px;height:22px}
+#app .msr-ranking-event-name{font-weight:700;overflow-wrap:anywhere}
+#app .msr-ranking-event-state{font-size:10px;color:#8be9ac;white-space:nowrap}
+#app .msr-ranking-event.is-eliminated{background:#20242e;border-color:#515a6b}
+#app .msr-ranking-event.is-eliminated .msr-ranking-event-state{color:#bac3d0}
+@media(max-width:480px){#app .msr-ranking-events{padding-left:14px;padding-right:10px}#app .msr-ranking-event{font-size:10px;gap:6px}#app .msr-ranking-event-state{font-size:9px}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3471,6 +3483,28 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
   /* ---- Ranking ---- */
   var APR = { open: 0 };
+  function rankingEventBadges(code) {
+    var entries=EVENTS.filter(function(event){
+      if(event.st!=='now' && event.st!=='soon')return false;
+      var listed=[event.participants,event.teamCodes,event.registeredTeams].some(function(rows){
+        return Array.isArray(rows)&&rows.some(function(row){return (typeof row==='string'?row:row.code||row.team_id)===code;});
+      });
+      if(listed)return true;
+      // Use the event's actual bracket, rather than treating every ranked team as an entrant.
+      return event.id==='msl' && typeof SWISS!=='undefined' && SWISS.rounds.some(function(round){
+        return round.groups.some(function(group){return group.ms.some(function(match){return match[0]===code||match[1]===code;});});
+      });
+    });
+    if(!entries.length)return null;
+    return h('div',{class:'msr-ranking-events','aria-label':'Tournament participation'},entries.map(function(event){
+      var out=event.id==='msl'&&[].concat(SWISS.e03||[],SWISS.e13||[]).indexOf(code)!==-1;
+      return h('a',{class:'msr-ranking-event'+(out?' is-eliminated':''),href:'#event/'+encodeURIComponent(event.id),title:event.n+' · '+(out?'Хасагдсан':'Тэмцээний бүрэлдэхүүнд')},
+        event.img?h('img',{src:event.img,alt:'',loading:'lazy',decoding:'async'}):h('span',{'aria-hidden':'true',svg:APIC.cup}),
+        h('span',{class:'msr-ranking-event-name'},event.n),
+        h('span',{class:'msr-ranking-event-state'},out?'Хасагдсан':'Оролцож буй'));
+    }));
+  }
+
   function rankApp() {
     var open = APR.open, cards = [];
     var dt = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -3497,7 +3531,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         });
         return sb;
       })()));
-      var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '') }, btn, body);
+      var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '') }, btn, rankingEventBadges(code), body);
       btn.addEventListener('click', function () { setOpen(i); });
       cards.push({ el: el, btn: btn });
       return el;
