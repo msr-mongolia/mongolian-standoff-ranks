@@ -2056,7 +2056,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         playerRankScore(b) - playerRankScore(a) ||
         (Number(b.maps) || 0) - (Number(a.maps) || 0);
     });
-    PLAYERS.forEach(function (p, i) { p.rank = i + 1; p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
+    var activeRank = 0;
+    PLAYERS.forEach(function (p, i) { p.rank = p.team && T[p.team] ? ++activeRank : 0; p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
   }
   sortPlayerRanking();
 
@@ -2386,6 +2387,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   function swCrest(code) { return T[code] ? crest(code, 'md') : h('span', { class: 'crest md', style: 'background:#3B4658;color:#C9D3E0', 'aria-hidden': 'true' }, '?'); }
   V.event = function (arg) {
     if (arg !== 'msl') return V.events();
+    if (!SWISS.rounds.length) return h('div', null, pageHead('MSL Major S2', 'Tournament bracket'), h('section', { class: 'box' }, h('h2', null, 'Bracket awaiting publication'), h('p', null, 'Confirmed pairings, schedule and results will appear here when published by tournament staff.')));
     var R = SWISS.rounds, root, info = h('div', { class: 'sw-info' }, h('span', { class: 'sw-hint' }, 'Click a team logo to see all of that team’s matches.'));
     var paths = {}, sel = null;
     R.forEach(function (r) { r.groups.forEach(function (g) { g.ms.forEach(function (m) {
@@ -2512,7 +2514,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       more.setAttribute('aria-expanded', showAll ? 'true' : 'false');
     }
     draw();
-    return h('div', null, pageHead('Players', PLAYERS.length + ' players, ranked by MSR Rating (performance, map sample and opponent strength). Under 5 maps: provisional; 10+ maps: fully qualified. The top 20 receive gold every 6 months.'), wrap, more);
+    return h('div', null, pageHead('Players', PLAYERS.filter(function (p) { return p.team && T[p.team]; }).length + ' players, ranked by MSR Rating (performance, map sample and opponent strength). Under 5 maps: provisional; 10+ maps: fully qualified.'), wrap, more);
   };
 
   V.live = function () {
@@ -2932,7 +2934,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       { id: 3, g: 'Earlier', t: '1 өдрийн өмнө', c: 12, h: N(top) + ' MSR ранкингт тэргүүлж байна', lead: 'Тасралтгүй ялалтын цуврал тэднийг эхний байранд гаргалаа.', body: [N(top) + ' сүүлийн тойргийн дүнгээр ' + RANK[0][1] + ' оноотой болж, ранкингийн 1-р байрт гарлаа.'] },
       { id: 7, g: 'Earlier', t: '3 өдрийн өмнө', c: 12, h: 'Province газрын зургийн шинэ стратеги: товч тойм', lead: 'Тэргүүлэх багууд B цэгийг хэрхэн хамгаалж байна.', body: ['Энэ улирлын Province-ийн тоглолтуудын 60 гаруй хувьд хамгаалж буй тал B цэг дээр гурван тоглогчоо төвлөрүүлсэн.'] }
     );
-    EVENTS[0].st = 'now'; EVENTS[0].dt = dlabel(addDays(TODAY, -27)) + ' – ' + dlabel(addDays(TODAY, 4)); EVENTS[0].teams = 16; EVENTS[0].prize = '3 000 000₮';
+    // Keep the configured event status, dates and prize pool; never generate them from today's date.
   })();
 
   M.forEach(function (m) {
@@ -3488,7 +3490,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     if (!p) return V.players();
     var team = p.team, F = { days: 'all', ev: 'all', map: 'all' }, host = h('div', null);
     var mates = PLAYERS.filter(function (x) { return x.team === team && x.nick !== p.nick; });
-    var ranked = PLAYERS.slice().sort(function (a, b) { return b.rating - a.rating; }), rrank = ranked.indexOf(p) + 1;
+    var ranked = PLAYERS.filter(function (p) { return p.team && T[p.team]; }).sort(function (a, b) { return b.rating - a.rating; }), rrank = ranked.indexOf(p) + 1;
     var sb = h('div', { class: 'hl-grid' });
     var statIcons = {
       'Rating':'<path d="m12 2 3.1 6.5 7.1 1-5.1 5 .9 7-6-3.4-6 3.4.9-7-5.1-5 7.1-1Z"/>',
