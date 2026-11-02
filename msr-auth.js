@@ -345,6 +345,23 @@
         emailStatus,gmailInput,gmailButton,
         el('p',{class:'msr-note'},'Email change becomes active only after required verification links are confirmed.')
       ]));
+      if(S.admin){
+        var issueName=el('input',{type:'text',placeholder:'Nickname эсвэл Standoff 2 ID'});
+        var issueResult=el('textarea',{rows:5,readOnly:true,placeholder:'Код энд харагдана'});
+        var issueBtn=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
+          if(!issueName.value.trim())return;
+          issueBtn.disabled=true;issueResult.value='Үүсгэж байна...';
+          try{
+            var session=(await sb.auth.getSession()).data.session;
+            if(!session)throw new Error('Админ нэвтрэлт шаардлагатай');
+            var res=await fetch(C.SUPABASE_URL+'/functions/v1/msr-issue-player-login',{method:'POST',headers:{'Content-Type':'application/json','apikey':C.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify({nickname:issueName.value.trim()})});
+            var data=await res.json();
+            if(!res.ok)throw new Error(data.error||'Алдаа');
+            issueResult.value='Player: '+data.nickname+'\\nID: '+data.game_id+'\\nTeam: '+data.team+'\\nCode: '+data.code+'\\nPassword: '+data.password;
+          }catch(e){issueResult.value=err(e);}finally{issueBtn.disabled=false;}
+        }},'Generate Code + Password');
+        settings.appendChild(el('div',{style:'display:flex;flex-direction:column;gap:10px;margin-top:20px'},[el('h3',null,'Admin · Player Codes'),issueName,issueBtn,issueResult]));
+      }
       settings.appendChild(save);settings.appendChild(msg);settingsPanel.appendChild(settings);
       editPanel.appendChild(el('h3',{class:'msr-profile-title'},'Edit Profile · Customize'));
       editPanel.appendChild(el('p',{class:'msr-note'},'Профайл зураг, Frame, Banner, Effect-ээ эндээс тохируулна.'));
