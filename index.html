@@ -1728,7 +1728,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   sortPlayerRanking();
 
   /* ================= small builders ================= */
-  function crest(code, size) { var t = T[code]; return h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); }
+  function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; return h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); }
   function series(m) { var a = 0, b = 0; m.maps.forEach(function (x) { if (x[3] === 'done') { if (x[1] > x[2]) a++; else b++; } }); return [a, b]; }
   function pageHead(title, desc, right) { return h('div', { class: 'ph' }, h('div', null, h('h1', null, title), desc ? h('p', null, desc) : null), right || null); }
   function flag() { return h('span', { class: 'flag', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')); }
@@ -1753,7 +1753,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     if (matches.length !== 1) return null;
     var p = matches[0], rows = (PROWS[p.nick] || []).filter(function(r){return !r.team || r.team === p.team;});
     var g = agg(rows);
-    return { nick:p.nick, team:(T[p.team] && T[p.team].n) || p.team, id:id,
+    return { nick:p.nick, team:(T[p.team] && (T[p.team] || {n:'Free agent'}).n) || p.team, id:id,
       rating:g.rating, kd:g.kd, adr:g.adr, kast:g.kast,
       kpr:g.kpr, dpr:g.dpr, maps:rows.length, kills:g.k, deaths:g.d,
       url:playerHref(p.nick) };
@@ -2148,7 +2148,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       matched.slice(0, showAll ? matched.length : 20).forEach(function (p) {
         wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
-            h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), T[p.team].n)),
+            h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), (T[p.team] || {n:'Free agent'}).n)),
             h('span', { class: 'rank msr-medal-' + (p.rank <= 3 ? p.rank : 0) }, '#' + p.rank)),
           h('div', { class: 'row3' },
             h('div', { class: 's kd' }, h('div', { class: 'k' }, 'KD'), h('div', { class: 'v' }, (Number(p.kd) || 0).toFixed(2))),
@@ -2318,7 +2318,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     idIn.addEventListener('input', function () { state.id = idIn.value; draw(); });
     draw();
 
-    var top20 = PLAYERS.slice(0, 20);
+    var top20 = PLAYERS.filter(function(p){return p.team && T[p.team];}).slice().sort(function(a,b){return a.rank-b.rank;}).slice(0,20);
     return h('div', null,
       pageHead('Gold', 'Buy Standoff 2 gold from partner sellers. Pay by bank transfer or QPay and write the code you are given in the payment reference.'),
 
@@ -2398,7 +2398,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       return h('a', { class: 'nrow', href: teamHref(k), style: 'grid-template-columns:28px minmax(0,1fr) auto' }, crest(k, 'md'), h('span', { class: 'hd' }, T[k].n), h('span', { class: 'tm' }, '#' + pos + ' · ' + fmt(r[1]) + ' pts'));
     }))));
     if (players.length) out.push(h('div', { class: 'sr-sec' }, h('div', { class: 'grp-h' }, 'Players'), h('div', { class: 'box' }, players.map(function (p) {
-      return h('a', { class: 'nrow', href: playerHref(p.nick), style: 'grid-template-columns:28px minmax(0,1fr) auto' }, crest(p.team, 'md'), h('span', { class: 'hd' }, p.nick + ' · ' + T[p.team].n), h('span', { class: 'tm' }, 'KD ' + p.kd.toFixed(2)));
+      return h('a', { class: 'nrow', href: playerHref(p.nick), style: 'grid-template-columns:28px minmax(0,1fr) auto' }, crest(p.team, 'md'), h('span', { class: 'hd' }, p.nick + ' · ' + (T[p.team] || {n:'Free agent'}).n), h('span', { class: 'tm' }, 'KD ' + p.kd.toFixed(2)));
     }))));
     if (matches.length) out.push(h('div', { class: 'sr-sec' }, h('div', { class: 'grp-h' }, 'Matches'), h('div', { class: 'box' }, matches.map(matchRow))));
     if (news.length) out.push(h('div', { class: 'sr-sec' }, h('div', { class: 'grp-h' }, 'News'), h('div', { class: 'box' }, news.map(function (n) {
@@ -2707,7 +2707,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var dd = f.days === 'all' ? 1e9 : +f.days;
     return rows.filter(function (r) { return r.ago <= dd && (f.ev === 'all' || r.ev === f.ev) && (f.map === 'all' || r.map === f.map) && (!f.team || f.team === 'all' || r.team === f.team); });
   }
-  function playerCell(nick, team) { return h('div', { class: 'tcell' }, crest(team), h('div', null, h('a', { class: 'tl', href: playerHref(nick) }, h('b', null, nick)), h('span', { class: 's' }, T[team].n))); }
+  function playerCell(nick, team) { return h('div', { class: 'tcell' }, crest(team), h('div', null, h('a', { class: 'tl', href: playerHref(nick) }, h('b', null, nick)), h('span', { class: 's' }, (T[team] || {n:'Free agent'}).n))); }
 
   /* ================= Matches ================= */
   var MF = { ev: 'all', team: 'all' };
@@ -3157,7 +3157,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('div', { class: 'hl-head' },
         h('div', { class: 'hl-card' },
           h('div', { class: 'hl-top' }, h('span', { class: 'bigav sg hl' + tc(p), 'aria-hidden': 'true' }, sig(p.nick, 120)), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
-          h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, T[team].n))), li('Country', 'Mongolia'), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
+          h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', 'Mongolia'), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
         statCard),
       flt, host);
   };
@@ -3363,7 +3363,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     app.style.removeProperty('--clan-accent');
     app.style.removeProperty('--clan-glow');
     if (name === 'player' || name === 'team') {
-      var clanCode = name === 'team' ? decodeURIComponent((H.split('/')[1]||'')).toUpperCase() : ((PBY[decodeURIComponent(H.split('/')[1]||'')]||{}).team||'');
+      var clanCode = name === 'team' ? safeRouteDecode((H.split('/')[1]||'')).toUpperCase() : ((PBY[safeRouteDecode(H.split('/')[1]||'')]||{}).team||'');
       var clan = T[clanCode];
       if (clan) {
         var palette=['#45d98b','#53b5ff','#b58cff','#ff6c8d','#f4b94e','#22d5d1','#a3e65d','#fa8855'];
@@ -3516,10 +3516,13 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   document.addEventListener('DOMContentLoaded', loadDiscordTeams);
   window.addEventListener('pageshow',function(e){if(e.persisted)loadDiscordTeams();});
 
+  function safeRouteDecode(value) {
+    try { return decodeURIComponent(value); } catch(e) { return String(value || ''); }
+  }
   function route() {
-    var raw = H || 'news', parts = raw.split('/'), name = parts[0], arg = decodeURIComponent(parts[1] || '');
-    if (!V[name] || name === 'search' || name === 'profile' || name === 'shop') { name = 'news'; if (/^#(?:profile|shop)(?:[/?]|$)/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#news'); }
-    q.value = '';
+    var raw = H || 'news', parts = raw.split('/'), name = parts[0], arg = safeRouteDecode(parts.slice(1).join('/') || '');
+    if (!V[name] || name === 'profile' || name === 'shop') { name = 'news'; if (/^#(?:profile|shop)(?:[/?]|$)/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#news'); }
+    q.value = name === 'search' ? arg : '';
     paint(name, V[name](arg));
     window.scrollTo(0, 0);
   }
