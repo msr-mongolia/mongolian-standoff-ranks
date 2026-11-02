@@ -1363,7 +1363,12 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 #msr-profile-hero .msr-equipped-effect-art{position:absolute;inset:0 0 0 auto;width:48%;height:100%;object-fit:cover;opacity:.6;mix-blend-mode:screen;z-index:-1}
 </style><style>
 .msr-equipped-frame-art,.msr-cosmetic-frame.msr-cosmetic-preview-art img{filter:url(#msr-remove-black);mix-blend-mode:normal!important;clip-path:none!important;border-radius:0!important}
-</style><style id="msr-mobile-profile-shortcut-style">@media(max-width:760px){.mobile-dock .msr-mobile-profile-shortcut{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:48px;padding:8px 5px;color:inherit;text-decoration:none;font-size:11px;font-weight:650}.mobile-dock .msr-mobile-profile-shortcut svg{height:23px;width:23px;display:block}.mobile-dock .msr-mobile-profile-shortcut:focus-visible{outline:2px solid #5bc8ff;outline-offset:-3px}#mmenu #mobile-auth-slot{display:block!important;visibility:visible!important}}</style></head>
+</style><style id="msr-mobile-profile-shortcut-style">@media(max-width:760px){.mobile-dock .msr-mobile-profile-shortcut{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:48px;padding:8px 5px;color:inherit;text-decoration:none;font-size:11px;font-weight:650}.mobile-dock .msr-mobile-profile-shortcut svg{height:23px;width:23px;display:block}.mobile-dock .msr-mobile-profile-shortcut:focus-visible{outline:2px solid #5bc8ff;outline-offset:-3px}#mmenu #mobile-auth-slot{display:block!important;visibility:visible!important}}</style>
+<style id="msr-temporary-feature-hide">
+/* Temporarily hide account entry and cosmetic shop UI; preserve stored data. */
+#msr-auth,.msr-shop,.msr-shop-grid,.msr-profile-promo,.msr-profile-tabs,.msr-cosmetic-preview-art,.msr-cosmetic-picker,.msr-avatar-frame-picker{display:none!important}
+</style>
+</head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
 <div id="sky" aria-hidden="true"><span class="st2"></span><span class="au au1"></span><span class="au au2"></span><span class="au au3"></span></div>
