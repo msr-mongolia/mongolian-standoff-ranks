@@ -112,24 +112,26 @@
     var go = el('button', { class: 'msr-btn pri', type: 'submit' }, mode === 'login' ? 'Нэвтрэх' : mode === 'register' ? 'Бүртгүүлэх' : mode === 'forgot' ? 'Холбоос илгээх' : 'Хадгалах');
     var fields = mode === 'login' ? [email, pass] : mode === 'register' ? [user, game, email, pass, pass2, warning, discordLink] : mode === 'forgot' ? [email] : [pass, pass2];
     if (mode === 'reset') fields = [pass, pass2];
-    if (mode === 'register') {
+    if (mode === 'login') {
       var existingPrompt=el('p',{class:'msr-note'},'MSR-д таны тоглогчийн профайл өмнө нь бүртгэгдсэн үү?');
       var yes=el('button',{type:'button',class:'msr-btn'},'YES — Профайл байгаа');
-      var no=el('button',{type:'button',class:'msr-btn'},'NO — Шинэ тоглогч');
+      var no=el('button',{type:'button',class:'msr-btn'},'NO — Энгийн нэвтрэлт');
       var choice=el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},[yes,no]);
-      var claimName=el('input',{type:'text',placeholder:'Тоглогчийн nickname эсвэл Standoff 2 ID',maxlength:80,required:true});
-      var claimNote=el('p',{class:'msr-note'},'Nickname / ID-гаа оруулаад админтай холбогдож өөрийн профайлыг баталгаажуулна. Code + Password нэвтрэх хэсэг серверийн баталгаажуулалт бэлэн болсны дараа идэвхжинэ.');
-      var claimArea=el('div',null,[claimName,claimNote,el('a',{class:'msr-btn pri',href:'https://discord.com/users/1128188613230874727',target:'_blank',rel:'noopener noreferrer',style:'display:inline-block;text-decoration:none;margin-top:8px'},'Админтай холбогдож Code авах')]);
+      var claimName=el('input',{type:'text',placeholder:'Тоглогчийн nickname эсвэл Standoff 2 ID',maxlength:80});
+      var claimNote=el('p',{class:'msr-note'},'Тоглогчийн нэр эсвэл ID-гаа бичнэ үү. Хуучин профайлыг Code + Password-оор эзэмших серверийн холболт хараахан идэвхжээгүй тул энэ сонголтоор нэвтрэх боломжгүй.');
+      var claimArea=el('div',null,[claimName,claimNote]);
       claimArea.hidden=true;
-      var newFields=fields.slice();
+      var regularFields=fields.slice();
       function pickExisting(exists){
         claimArea.hidden=!exists;
-        newFields.forEach(function(node){node.hidden=exists; if(node.tagName==='INPUT')node.disabled=exists;});
-        go.hidden=exists;yes.setAttribute('aria-pressed',String(exists));no.setAttribute('aria-pressed',String(!exists));
+        regularFields.forEach(function(node){node.hidden=exists;if(node.tagName==='INPUT')node.disabled=exists;});
+        go.hidden=exists;
+        yes.setAttribute('aria-pressed',String(exists));
+        no.setAttribute('aria-pressed',String(!exists));
       }
       yes.addEventListener('click',function(){pickExisting(true);});
       no.addEventListener('click',function(){pickExisting(false);});
-      fields=[existingPrompt,choice,claimArea].concat(newFields);
+      fields=[existingPrompt,choice,claimArea].concat(regularFields);
       pickExisting(false);
     }
 
