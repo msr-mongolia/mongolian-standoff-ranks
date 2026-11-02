@@ -1657,6 +1657,43 @@ html body #app.msr-clan-profile .bigav.sg.hl .sigtxt{
 -webkit-text-stroke:.012em #e3bd58!important;paint-order:stroke fill!important;
 }
 </style>
+<style id="msr-animated-all-stat-surfaces">
+#app.msr-clan-profile .hl-grid .msr-stat-tile,
+#app.msr-clan-profile .msr-team-stat{
+position:relative!important;isolation:isolate!important;overflow:hidden!important;
+background:#060c12!important;
+}
+#app.msr-clan-profile .hl-grid .msr-stat-tile::before,
+#app.msr-clan-profile .msr-team-stat::before{
+content:"";position:absolute;inset:-95% -45%;pointer-events:none;z-index:-2;
+background:linear-gradient(115deg,#02070c 12%,#060c12 35%,var(--clan-glow,#29343b) 48%,var(--clan-accent,#e4edf7) 62%,var(--clan-glow,#29343b) 75%,#04090e 94%)!important;
+opacity:.55;filter:blur(13px);
+animation:msr-stat-color-tide 9s ease-in-out infinite alternate;
+will-change:transform;
+}
+#app.msr-clan-profile .hl-grid .msr-stat-tile::after,
+#app.msr-clan-profile .msr-team-stat::after{
+content:"";position:absolute!important;inset:0!important;right:0!important;bottom:0!important;
+width:auto!important;height:auto!important;pointer-events:none;z-index:-1;
+transform:none!important;box-shadow:none!important;
+background:linear-gradient(100deg,#030a10b8,transparent 72%),radial-gradient(ellipse at 5% 0%,#ffffff0b,transparent 65%)!important;
+}
+#app.msr-clan-profile .hl-grid .msr-stat-tile:nth-child(2n)::before,
+#app.msr-clan-profile .msr-team-stat:nth-child(2n)::before{animation-delay:-3s;animation-duration:11s}
+#app.msr-clan-profile .hl-grid .msr-stat-tile:nth-child(3n)::before,
+#app.msr-clan-profile .msr-team-stat:nth-child(3n)::before{animation-delay:-6s;animation-duration:10s}
+#app.msr-clan-profile .msr-stat-copy,#app.msr-clan-profile .msr-team-stat-copy,
+#app.msr-clan-profile .msr-stat-icon,#app.msr-clan-profile .msr-team-stat-icon{position:relative;z-index:1}
+@keyframes msr-stat-color-tide{
+0%{transform:translate3d(-19%,6%,0) rotate(-7deg)}
+50%{transform:translate3d(3%,-4%,0) rotate(2deg)}
+100%{transform:translate3d(20%,5%,0) rotate(9deg)}
+}
+@media(prefers-reduced-motion:reduce){
+#app.msr-clan-profile .hl-grid .msr-stat-tile::before,
+#app.msr-clan-profile .msr-team-stat::before{animation:none!important;will-change:auto}
+}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
