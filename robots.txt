@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://thunderous-frangipane-a56292.netlify.app/sitemap.xml
+Sitemap: https://irmuunjavk-gif.github.io/mongolian-standoff-ranks/sitemap.xml
