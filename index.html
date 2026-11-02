@@ -1726,6 +1726,16 @@ background-size:114% 114%!important;background-position:100% 50%!important;
 #app .msr-ranking-event.is-eliminated .msr-ranking-event-state{color:#bac3d0}
 @media(max-width:480px){#app .msr-ranking-events{padding-left:14px;padding-right:10px}#app .msr-ranking-event{font-size:10px;gap:6px}#app .msr-ranking-event-state{font-size:9px}}
 </style>
+<style id="msr-ranking-event-background">
+#app .ap-card.msr-ranking-has-event{position:relative;isolation:isolate;overflow:hidden}
+#app .msr-ranking-event-backdrop{position:absolute;inset:0;z-index:-1;display:flex;align-items:center;justify-content:flex-end;overflow:hidden;pointer-events:none;background:linear-gradient(90deg,#121a2400,#07110b55)}
+#app .msr-ranking-event-watermark{height:100%;width:47%;min-width:0;object-fit:contain;object-position:center;opacity:.32;filter:saturate(.9);-webkit-mask-image:linear-gradient(90deg,transparent,#000 24%,#000 87%,transparent);mask-image:linear-gradient(90deg,transparent,#000 24%,#000 87%,transparent)}
+#app .ap-card.msr-ranking-has-event>.ap-rk{background:transparent!important}
+#app .ap-card.msr-ranking-has-event>.ap-body{position:relative;background:#151c26bf}
+#app .ap-card.msr-ranking-has-event .ap-rk .nm b{color:#f5f8fc;text-shadow:0 1px 3px #000}
+#app .ap-card.msr-ranking-has-event .ap-rk small{color:#bcc7d5;text-shadow:0 1px 2px #000}
+@media(max-width:480px){#app .msr-ranking-event-watermark{width:48%;opacity:.30}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3531,7 +3541,14 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         });
         return sb;
       })()));
-      var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '') }, btn, rankingEventBadges(code), body);
+      var eventBadges=rankingEventBadges(code),eventLinks=eventBadges?Array.from(eventBadges.querySelectorAll('a')):[];
+      var eventArtwork=eventLinks.map(function(link){
+        var logo=link.querySelector('img');
+        return logo?h('img',{class:'msr-ranking-event-watermark',src:logo.getAttribute('src'),alt:'','aria-hidden':'true',decoding:'async',title:link.title}):null;
+      }).filter(Boolean);
+      if(eventLinks.length)btn.setAttribute('aria-label',T[code].n+' · '+eventLinks.map(function(link){return link.title;}).join(', '));
+      var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '')+(eventArtwork.length?' msr-ranking-has-event':'' ) }, 
+        eventArtwork.length?h('div',{class:'msr-ranking-event-backdrop','aria-hidden':'true'},eventArtwork):null,btn,body);
       btn.addEventListener('click', function () { setOpen(i); });
       cards.push({ el: el, btn: btn });
       return el;
