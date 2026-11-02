@@ -107,7 +107,7 @@
     var pass2 = el('input', { type: 'password', required: true, minlength: 8, autocomplete: 'new-password', placeholder: 'Нууц үгээ давтах' });
     var user = el('input', { type: 'text', required: true, maxlength: 32, autocomplete: 'username', placeholder: 'Username (3–32, any language + symbols)' });
     var game = el('input', { type: 'text', required: true, inputmode: 'numeric', pattern: '[0-9]{4,20}', maxlength: 20, placeholder: 'Standoff 2 ID (зөвхөн тоо)' });
-    var warning = el('p', { class: 'msr-note', style: 'padding:10px;border:1px solid var(--line);border-radius:8px' }, 'Анхааруулга: Standoff 2 ID-гаа зөв оруулна уу. Бүртгүүлсний дараа Discord-оор админд SO2 профайлын screenshot явуулж баталгаажуулна. ID давхардсан эсвэл буруу бол админтай холбогдоно.');
+    var warning = el('p', { class: 'msr-note', style: 'padding:10px;border:1px solid var(--line);border-radius:8px' }, 'Анхааруулга: Standoff 2 ID-гаа зөв оруулна уу. Бүртгүүлсний дараа Discord-оор админд SO2 профайлын screenshot явуулж баталгаажуулна. ID давхардсан бол шинэ бүртгэл үүсэхгүй. Админ эзэмшигчийг шалгаж, хуучин аккаунтын сэргээх ажиллагааг эхлүүлнэ.');
     var discordLink = el('a', { class: 'msr-btn pri', href: 'https://discord.com/users/1128188613230874727', target: '_blank', rel: 'noopener noreferrer', style: 'display:inline-block;text-decoration:none;text-align:center;margin-top:8px' }, 'Админтай холбогдох');
     var go = el('button', { class: 'msr-btn pri', type: 'submit' }, mode === 'login' ? 'Нэвтрэх' : mode === 'register' ? 'Бүртгүүлэх' : mode === 'forgot' ? 'Холбоос илгээх' : 'Хадгалах');
     var fields = mode === 'login' ? [email, pass] : mode === 'register' ? [user, game, email, pass, pass2, warning, discordLink] : mode === 'forgot' ? [email] : [pass, pass2];
@@ -123,7 +123,7 @@
           if (!/^[0-9]{4,20}$/.test(game.value.trim())) return say('Standoff 2 ID 4–20 оронтой тоо байх ёстой.', true);
           var check = await sb.from('player_id_verifications').select('game_id').eq('game_id', game.value.trim()).limit(1);
           if (check.error) throw check.error;
-          if (check.data && check.data.length) return say('Энэ ID аль хэдийн бүртгэлтэй. Админтай Discord-оор холбогдоно уу.', true);
+          if (check.data && check.data.length) { say('Энэ Standoff 2 ID өмнө бүртгэгдсэн байна. Шинэ аккаунт үүсгэх боломжгүй. Админд хандаж ID-ийн эзэмшлээ баталгаажуулсны дараа хуучин аккаунтаа сэргээнэ үү.', true); return; }
           var av = await sb.rpc('username_available', { name: u }); if (av.error) throw av.error; if (!av.data) return say('Энэ username аль хэдийн авагдсан байна.', true);
           var s = await sb.auth.signUp({ email: email.value.trim(), password: pass.value, options: { data: { username: u }, emailRedirectTo: BACK } }); if (s.error) throw s.error;
           if (s.data.user && s.data.session) {
