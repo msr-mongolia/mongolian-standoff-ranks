@@ -2166,10 +2166,19 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       style:'font-size:'+(box*.42).toFixed(1)+'px' }, String(nick));
   }
   var CROWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18 2 7.5 7.5 12 12 4.5 16.5 12 22 7.5 21 18Z"/><rect x="3.2" y="19" width="17.6" height="2" rx="1"/><circle cx="2" cy="6.7" r="1.1"/><circle cx="12" cy="3.3" r="1.1"/><circle cx="22" cy="6.7" r="1.1"/></svg>';
-  function teamCaptain(code) { return code==='TLNRS'?'Visilefox':(T[code]&&/^(?:wonderart|woart)$/i.test(T[code].n)?(ROSTER[code]||[]).find(function(n){return /^kl[oó6]pse$/i.test(n)||/^kl6pse$/i.test(n);})||((ROSTER[code]||[])[0]||''):((ROSTER[code]||[])[0]||'')); }
+  var MSR_CAPTAINS_BY_TAG = {'TLNRS':'Visilefox','8MNA':'Imagine','RVURZ':'Ares','-ANOT':'C1ntex','EKNZ':'Aizen','CIOR':'Diose','WOART':'Kl6pse','DXIII':'minnie','KNGZZ':'Mitee','OMEN':'Ares','AIM4R':'reka','DL340':'Genius','6VMP6':'xane','MPCT':'Tngs无痕','6LC':'Nyx','KGTSS':'DiDi','1NFYX':'L4RZZ','RGN':'Hypexl'};
+  function teamCaptain(code) {
+    var team=T[code]||{}, tag=String(team.tag||'').trim().toUpperCase(), name=String(team.n||'').trim();
+    var assigned=MSR_CAPTAINS_BY_TAG[tag] || MSR_CAPTAINS_BY_TAG[String(code).toUpperCase()] || (/wonderart/i.test(name)?'Kl6pse':null);
+    var roster=ROSTER[code]||[];
+    if(!assigned)return roster[0]||'';
+    var norm=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+    var found=roster.find(function(n){return norm(n)===norm(assigned);});
+    return found||assigned;
+  }
   function captainFirstRoster(code) {
-    var captain=teamCaptain(code);
-    return (ROSTER[code]||[]).slice().sort(function(a,b){return Number(b===captain)-Number(a===captain);});
+    var captain=teamCaptain(code), norm=function(v){return String(v||'').normalize('NFKC').toLowerCase();};
+    return (ROSTER[code]||[]).slice().sort(function(a,b){return Number(norm(b)===norm(captain))-Number(norm(a)===norm(captain));});
   }
   function crownSigs() {
     [].forEach.call(document.querySelectorAll('.sg:not([data-cw])'), function (a) {
@@ -2178,7 +2187,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       if (!m || !sg) return;
       var r = ROSTER[m[1]];
       var captain = teamCaptain(m[1]);
-      if (captain && captain === sg.getAttribute('data-nick')) {
+      if (captain && String(captain).normalize('NFKC').toLowerCase() === String(sg.getAttribute('data-nick')||'').normalize('NFKC').toLowerCase()) {
         a.classList.add('cap'); a.setAttribute('title', 'Captain');
         a.appendChild(h('i', { class: 'crown', svg: CROWN }));
       }
