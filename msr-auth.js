@@ -117,13 +117,13 @@
       var yes=el('button',{type:'button',class:'msr-btn'},'YES — Профайл байгаа');
       var no=el('button',{type:'button',class:'msr-btn'},'NO — Энгийн нэвтрэлт');
       var choice=el('div',{style:'display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%'},[yes,no]);
-      var claimName=el('input',{type:'text',name:'msr-player-lookup',autocomplete:'off',placeholder:'Өөрийн nickname эсвэл Standoff 2 ID-гаа бичнэ үү',maxlength:80,value:''});
+      var claimName=el('input',{type:'text',name:'msr-player-lookup',autocomplete:'off',placeholder:'Standoff 2 ID-гаа бичнэ үү',maxlength:80,value:''});
       var claimCode=el('input',{type:'text',placeholder:'MSR Code',autocomplete:'off',maxlength:64});
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Нэвтэрсний дараа Settings хэсгээс password болон Gmail-ээ тохируулна уу.');
       var claimLogin=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
  var code=claimCode.value.trim().toUpperCase();
- if(!/^MSR-[A-F0-9]{16}$/.test(code)||!claimPass.value||!claimName.value.trim()){claimNote.textContent='Nickname, Code, Password оруулна уу.';return;}
+ if(!/^MSR-[A-F0-9]{16}$/.test(code)||!claimPass.value||!claimName.value.trim()){claimNote.textContent='Standoff 2 ID, Code, Password оруулна уу.';return;}
  claimLogin.disabled=true;
  try{
   var email='msr-'+code.slice(4).toLowerCase()+'@accounts.msr.invalid';
@@ -131,8 +131,8 @@
   if(result.error)throw result.error;
   var claim=await sb.from('msr_player_claims').select('team_id,nickname,game_id').eq('user_id',result.data.user.id).maybeSingle();
   var typed=claimName.value.trim().toLowerCase();
-  var valid=!!(claim.data&&(String(claim.data.nickname).toLowerCase()===typed||(claim.data.game_id&&String(claim.data.game_id)===typed)));
-  if(!valid){await sb.auth.signOut();throw new Error('Тоглогчийн нэр / ID тохирохгүй байна.');}
+  var valid=!!(claim.data&&(claim.data.game_id&&String(claim.data.game_id)===typed));
+  if(!valid){await sb.auth.signOut();throw new Error('Standoff 2 ID тохирохгүй байна.');}
   closeModal();toast('Нэвтэрлээ');
  }catch(e){claimNote.textContent=err(e);}finally{claimLogin.disabled=false;}
 }},'Confirm / Log in');
