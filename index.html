@@ -1585,6 +1585,45 @@ border-bottom:.025em solid #e8c369!important;border-radius:0 0 55% 45%!important
 transform:rotate(-3deg) skewX(-16deg)!important;
 }
 </style>
+<style id="msr-flowing-clan-profile-background">
+#app.msr-clan-profile .hl-top,#app.msr-clan-profile .prof{
+position:relative!important;isolation:isolate;overflow:hidden!important;
+background:radial-gradient(ellipse at 50% 0%,#16212e 0%,#080e17 70%)!important;
+}
+#app.msr-clan-profile .hl-top::before,#app.msr-clan-profile .prof::before{
+content:"";position:absolute;inset:-35%;z-index:-2;pointer-events:none;
+background:
+radial-gradient(ellipse at 22% 30%,var(--clan-accent) 0%,transparent 47%),
+radial-gradient(ellipse at 78% 65%,var(--clan-accent) 0%,transparent 43%),
+radial-gradient(ellipse at 40% 88%,#648caf 0%,transparent 40%)!important;
+filter:blur(26px)!important;opacity:.38!important;will-change:transform;
+animation:msr-clan-aurora-flow 16s ease-in-out infinite alternate!important;
+}
+#app.msr-clan-profile .hl-top::after,#app.msr-clan-profile .prof::after{
+content:"";position:absolute;inset:-14%;z-index:-1;pointer-events:none;
+background:
+radial-gradient(circle at 12% 21%,#fff9 0 1px,transparent 2px),
+radial-gradient(circle at 83% 18%,#fffb 0 1px,transparent 2px),
+radial-gradient(circle at 69% 72%,#fff8 0 1px,transparent 2px),
+radial-gradient(circle at 21% 82%,#fff7 0 1px,transparent 2px),
+radial-gradient(circle at 44% 48%,#fff6 0 1px,transparent 2px),
+radial-gradient(ellipse at 50% 50%,transparent 32%,#0207118c 84%)!important;
+animation:msr-clan-particle-float 11s ease-in-out infinite alternate!important;
+}
+@keyframes msr-clan-aurora-flow{
+0%{transform:translate(-5%,-4%) rotate(-12deg) scale(1)}
+50%{transform:translate(6%,3%) rotate(8deg) scale(1.13)}
+100%{transform:translate(-2%,7%) rotate(20deg) scale(1.06)}
+}
+@keyframes msr-clan-particle-float{
+from{transform:translate3d(0,9px,0);opacity:.45}
+to{transform:translate3d(8px,-13px,0);opacity:.9}
+}
+@media(prefers-reduced-motion:reduce){
+#app.msr-clan-profile .hl-top::before,#app.msr-clan-profile .hl-top::after,
+#app.msr-clan-profile .prof::before,#app.msr-clan-profile .prof::after{animation:none!important;will-change:auto}
+}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
