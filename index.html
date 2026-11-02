@@ -1436,6 +1436,12 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 #app.msr-clan-profile .hl-grid .msr-stat-tile:last-child:nth-child(odd){grid-column:1/-1}
 @media(max-width:600px){#app.msr-clan-profile .hl-grid{gap:7px!important;padding:9px!important}#app.msr-clan-profile .hl-grid .msr-stat-tile{min-height:63px!important;padding:8px!important;gap:8px!important}#app.msr-clan-profile .hl-grid .msr-stat-tile .k{font-size:9px!important}#app.msr-clan-profile .hl-grid .msr-stat-tile .v{font-size:20px!important}#app.msr-clan-profile .msr-stat-icon{flex-basis:24px}#app.msr-clan-profile .msr-stat-icon svg{width:24px;height:24px}}
 </style>
+<style id="msr-signature-glow-removal">
+/* Keep the signature itself crisp; remove its surrounding halo/ring glow. */
+#app.msr-clan-profile .bigav.sg.hl{box-shadow:none!important;filter:none!important;border-color:transparent!important}
+#app.msr-clan-profile .bigav.sg.hl .sigtxt{text-shadow:1px 2px 2px #000!important;filter:none!important;-webkit-text-stroke:0!important}
+#app.msr-clan-profile .bigav.sg.hl::before,#app.msr-clan-profile .bigav.sg.hl::after{filter:none!important;box-shadow:none!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
