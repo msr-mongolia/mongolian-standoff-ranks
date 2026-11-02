@@ -3334,17 +3334,18 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
     try {
-      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids&order=source_timestamp.asc,name.asc', {
+      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids&order=source_timestamp.asc,name.asc&limit=1000', {
         headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(10000)
       });
-      if (!response.ok) return;
+      if (!response.ok) { console.warn('MSR teams sync HTTP',response.status); return; }
       var rows = await response.json();
       if (!Array.isArray(rows)) return;
       mergeDiscordTeams(rows);
-      if (/^(ranking|team|players|player)(\/|$)/.test(H)) route();
-    } catch (e) { /* Keep the original teams available if the service is offline. */ }
+      if (/^(ranking|team|players|player|stats)(\/|$)/.test(H)) route();
+    } catch (e) { console.warn('MSR teams sync error',e); }
   }
   document.addEventListener('DOMContentLoaded', loadDiscordTeams);
+  window.addEventListener('pageshow',function(e){if(e.persisted)loadDiscordTeams();});
 
   function route() {
     var raw = H || 'news', parts = raw.split('/'), name = parts[0], arg = decodeURIComponent(parts[1] || '');
