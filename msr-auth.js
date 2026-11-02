@@ -117,7 +117,7 @@
       var yes=el('button',{type:'button',class:'msr-btn'},'YES — Профайл байгаа');
       var no=el('button',{type:'button',class:'msr-btn'},'NO — Энгийн нэвтрэлт');
       var choice=el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},[yes,no]);
-      var claimName=el('input',{type:'text',placeholder:'Тоглогчийн nickname эсвэл Standoff 2 ID',maxlength:80});
+      var claimName=el('input',{type:'text',name:'msr-player-lookup',autocomplete:'off',placeholder:'Өөрийн nickname эсвэл Standoff 2 ID-гаа бичнэ үү',maxlength:80,value:''});
       var claimCode=el('input',{type:'text',placeholder:'MSR Code',autocomplete:'off',maxlength:64});
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Серверийн баталгаажуулалт хараахан идэвхжээгүй тул одоогоор нэвтрэх боломжгүй.');
@@ -135,13 +135,13 @@
       var claimArea=el('div',{style:'display:flex;flex-direction:column;gap:10px;width:100%;margin-top:12px'},[
         el('label',{style:'font-weight:700'},'Player nickname / Standoff 2 ID'),
         claimName,
+        discordRequest,
+        claimRequestStatus,
         el('label',{style:'font-weight:700'},'MSR Code'),
         claimCode,
         el('label',{style:'font-weight:700'},'MSR Password'),
         claimPass,
         claimLogin,
-        discordRequest,
-        claimRequestStatus,
         claimNote
       ]);
       claimArea.hidden=true;
@@ -153,7 +153,7 @@
         yes.setAttribute('aria-pressed',String(exists));
         no.setAttribute('aria-pressed',String(!exists));
       }
-      yes.addEventListener('click',function(){pickExisting(true);});
+      yes.addEventListener('click',function(){claimName.value='';pickExisting(true);});
       no.addEventListener('click',function(){pickExisting(false);});
       fields=[existingPrompt,choice,claimArea].concat(regularFields);
       pickExisting(false);
