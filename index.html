@@ -1774,6 +1774,12 @@ object-fit:cover!important;object-position:center!important;opacity:.35!importan
 #app .msr-ranking-event-watermark{height:100%;width:100%;object-fit:cover;object-position:center;opacity:.22;filter:saturate(1.1);-webkit-mask-image:none;mask-image:none}
 #app .ap-card.msr-ranking-has-event>.ap-body{background:rgba(16,23,34,.76)}
 </style>
+<style id="msr-accacin-red-team-theme">
+#app.msr-clan-profile:has(.prof) .msr-team-stats{transition:border-color .2s}
+#app.msr-clan-profile .msr-team-stat,#app.msr-clan-profile .msr-team-stats,#app.msr-clan-profile .msr-team-stats-heading{border-color:var(--clan-accent)!important}
+#app.msr-clan-profile .msr-team-stat-icon,#app.msr-clan-profile .msr-team-stats-heading svg{color:var(--clan-accent)!important}
+#app.msr-clan-profile .msr-team-stat{background:linear-gradient(135deg,#101820 55%,var(--clan-glow))!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3754,7 +3760,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       if (clan) {
         var palette=['#45d98b','#53b5ff','#b58cff','#ff6c8d','#f4b94e','#22d5d1','#a3e65d','#fa8855'];
         var hash=0; Array.from(clanCode).forEach(function(ch){hash=(hash*31+ch.charCodeAt(0))>>>0;});
-        var namedAccent = /(?:purple|violet)/i.test(clan.n+' '+clanCode)?'#a44cff':/(?:ascend|peace|green)/i.test(clan.n+' '+clanCode)?'#50ff20':/(?:red|scarlet)/i.test(clan.n+' '+clanCode)?'#ff465d':/(?:blue|cyan)/i.test(clan.n+' '+clanCode)?'#27baff':null;
+        var namedAccent = /(?:accacin|acca)/i.test(clan.n+' '+clanCode)?'#FF344C':/(?:wonderart|woart)/i.test(clan.n+' '+clanCode)?'#B56CFF':/(?:purple|violet)/i.test(clan.n+' '+clanCode)?'#a44cff':/(?:ascend|peace|green)/i.test(clan.n+' '+clanCode)?'#50ff20':/(?:red|scarlet)/i.test(clan.n+' '+clanCode)?'#ff465d':/(?:blue|cyan)/i.test(clan.n+' '+clanCode)?'#27baff':null;
         var accent=namedAccent || (/^#[0-9a-f]{6}$/i.test(clan.c||'') && !/^#(?:3b4658|2a3445|202b3a)$/i.test(clan.c) ? clan.c : palette[hash%palette.length]);
         // Dark clan branding needs a readable accent on the dark profile surface.
         var accentRGB=/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(accent);
