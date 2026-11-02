@@ -353,23 +353,6 @@
         emailStatus,gmailInput,gmailButton,
         el('p',{class:'msr-note'},'Email change becomes active only after required verification links are confirmed.')
       ]));
-      if(S.admin){
-        var issueName=el('input',{type:'text',inputmode:'numeric',pattern:'[0-9]{5,12}',maxlength:12,placeholder:'Профайлын ID (5–12 цифр)'});
-        var issueResult=el('textarea',{rows:5,readOnly:true,placeholder:'Код энд харагдана'});
-        var issueBtn=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
-          if(!/^[0-9]{5,12}$/.test(issueName.value.trim())){issueResult.value='Профайлын ID (5–12 цифр) оруулна уу.';return;}
-          issueBtn.disabled=true;issueResult.value='Үүсгэж байна...';
-          try{
-            var session=(await sb.auth.getSession()).data.session;
-            if(!session)throw new Error('Админ нэвтрэлт шаардлагатай');
-            var res=await fetch(C.SUPABASE_URL+'/functions/v1/msr-issue-player-login',{method:'POST',headers:{'Content-Type':'application/json','apikey':C.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify({game_id:issueName.value.trim()})});
-            var data=await res.json();
-            if(!res.ok)throw new Error(data.error||'Алдаа');
-            issueResult.value='Player: '+data.nickname+'\\nID: '+data.game_id+'\\nTeam: '+data.team+'\\nCode: '+data.code+'\\nPassword: '+data.password;
-          }catch(e){issueResult.value=err(e);}finally{issueBtn.disabled=false;}
-        }},'Generate Code + Password');
-        settings.appendChild(el('div',{style:'display:flex;flex-direction:column;gap:10px;margin-top:20px'},[el('h3',null,'Admin · Player Codes'),issueName,issueBtn,issueResult]));
-      }
       var oldPass=el('input',{type:'password',placeholder:'Одоогийн password',autocomplete:'current-password'});
       var newPass=el('input',{type:'password',placeholder:'Шинэ password (8+)',autocomplete:'new-password'});
       var passStatus=el('p',{class:'msr-note',role:'status'});
