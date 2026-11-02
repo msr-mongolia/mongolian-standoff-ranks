@@ -2110,14 +2110,19 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return h('span', { class: 'sigtxt', 'data-hand':hash%3, 'data-box':box, 'data-nick':nick,
       style:'font-size:'+(box*.42).toFixed(1)+'px' }, String(nick));
   }
-  var CROWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9A0"/><stop offset="1" stop-color="#E0A92F"/></linearGradient></defs><path d="M3 18 L2 7.5 L7.5 12 L12 4.5 L16.5 12 L22 7.5 L21 18 Z" fill="url(#cg)" stroke="#7A5A12" stroke-width="1.1" stroke-linejoin="round"/><rect x="3.2" y="18.6" width="17.6" height="2.4" rx="1" fill="#E0A92F" stroke="#7A5A12" stroke-width="1"/><circle cx="2" cy="7.5" r="1.5" fill="#FFE9A0"/><circle cx="12" cy="4.5" r="1.6" fill="#FFE9A0"/><circle cx="22" cy="7.5" r="1.5" fill="#FFE9A0"/></svg>';
+  var CROWN = '<svg viewBox="0 0 24 24" fill="none" stroke="#F5D079" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18 2 7.5 7.5 12 12 4.5 16.5 12 22 7.5 21 18Z"/><rect x="3.2" y="19" width="17.6" height="2" rx="1"/><circle cx="2" cy="6.7" r="1.1"/><circle cx="12" cy="3.3" r="1.1"/><circle cx="22" cy="6.7" r="1.1"/></svg>';
+  function teamCaptain(code) { return code==='TLNRS'?'Visilefox':((ROSTER[code]||[])[0]||''); }
+  function captainFirstRoster(code) {
+    var captain=teamCaptain(code);
+    return (ROSTER[code]||[]).slice().sort(function(a,b){return Number(b===captain)-Number(a===captain);});
+  }
   function crownSigs() {
     [].forEach.call(document.querySelectorAll('.sg:not([data-cw])'), function (a) {
       a.setAttribute('data-cw', '1');
       var m = /(?:^|\s)t-(\S+)/.exec(a.className), sg = a.querySelector('.sigtxt');
       if (!m || !sg) return;
       var r = ROSTER[m[1]];
-      var captain = m[1] === 'TLNRS' ? 'Visilefox' : (r && r[0]);
+      var captain = teamCaptain(m[1]);
       if (captain && captain === sg.getAttribute('data-nick')) {
         a.classList.add('cap'); a.setAttribute('title', 'Captain');
         a.appendChild(h('i', { class: 'crown', svg: CROWN }));
@@ -3355,7 +3360,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     code = String(code || '').toUpperCase();
     if (!T[code]) return V.ranking();
     var r = RANK.filter(function (x) { return x[0] === code; })[0], pos = rankOf(code), wp = (r[3] + r[4]) ? Math.round(r[3] / (r[3] + r[4]) * 100) : 0;
-    var roster = PLAYERS.filter(function (p) { return p.team === code; }).sort(function (a, b) { return b.rating - a.rating; });
+    var roster = PLAYERS.filter(function (p) { return p.team === code; }).sort(function (a, b) { return Number(b.nick===teamCaptain(code))-Number(a.nick===teamCaptain(code)) || b.rating-a.rating; });
     var mine = ALLM.filter(function (m) { return m.a === code || m.b === code; });
     var upcoming = mine.filter(function (m) { return m.state !== 'done'; }), past = doneList().filter(function (m) { return m.a === code || m.b === code; });
     var titles = EVENTS.filter(function (e) { return e.win === code; });
@@ -3531,7 +3536,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         h('span', { class: 'no' }, i + 1), crest(code, 'md'),
         h('span', { class: 'nm' }, h('b', null, T[code].n, isFav(code) ? h('i', { class: 'fv', svg: starSvg(true).replace('width="22" height="22"', 'width="14" height="14"') }) : null), h('small', null, fmt(r[1]) + ' points')),
         h('span', { class: 'mv ' + mv[0] }, mv[1]));
-      var body = h('div', { class: 'ap-body' }, h('div', { class: 'ap-pls' }, (ROSTER[code] || []).map(function (n) { return plAv(n, code); })), h('div', { class: 'ap-acts' }, h('a', { class: 'ap-btn', href: teamHref(code) }, 'Go to teampage'), (function () {
+      var body = h('div', { class: 'ap-body' }, h('div', { class: 'ap-pls' }, captainFirstRoster(code).map(function (n) { return plAv(n, code); })), h('div', { class: 'ap-acts' }, h('a', { class: 'ap-btn', href: teamHref(code) }, 'Go to teampage'), (function () {
         var sb = h('button', { type: 'button', class: 'ap-star', 'aria-label': 'Follow ' + T[code].n, 'aria-pressed': isFav(code) ? 'true' : 'false', svg: starSvg(isFav(code)) });
         sb.addEventListener('click', function () {
           toggleFav(code); var on = isFav(code);
