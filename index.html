@@ -1397,6 +1397,21 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 .hl-head .hl-grid .hl-cell .v,.hl-head .hl-grid .hl-cell.main .v{font-size:21px!important}
 }
 </style>
+<style id="msr-clan-themed-profiles">
+/* Each clan has its own accent; profile content remains accessible and readable. */
+#app.msr-clan-profile .hl-head .hl-card:first-child,#app.msr-clan-profile .prof{border:1px solid var(--clan-accent)!important;box-shadow:0 0 25px var(--clan-glow)!important;border-radius:16px!important;overflow:hidden}
+#app.msr-clan-profile .hl-top{background:radial-gradient(ellipse at 50% 10%,var(--clan-glow),transparent 72%),linear-gradient(145deg,#101821,#080c14)!important;padding:18px 12px!important}
+#app.msr-clan-profile .hl-top h1,#app.msr-clan-profile .prof h1{color:#f9fbff!important;text-shadow:0 2px 10px #000,0 0 15px var(--clan-accent)!important;font-weight:900!important}
+#app.msr-clan-profile .hl-top h1 .ctag,#app.msr-clan-profile .prof .ctag{color:var(--clan-accent)!important}
+#app.msr-clan-profile .bigav.sg.hl{border:3px solid var(--clan-accent)!important;box-shadow:0 0 0 5px var(--clan-glow),0 0 36px var(--clan-glow)!important;background-color:#080e15!important}
+#app.msr-clan-profile .bigav.sg.hl .sigtxt{color:#fff!important;-webkit-text-stroke:1px var(--clan-accent);text-shadow:0 2px 3px #000,2px 2px 0 #000,-2px -2px 0 #000,0 0 10px var(--clan-accent),0 0 20px var(--clan-accent)!important;font-weight:900!important;filter:drop-shadow(0 0 3px var(--clan-accent))}
+#app.msr-clan-profile .hl-grid .hl-cell .v{color:#f8fbff!important;text-shadow:0 0 8px var(--clan-glow)}
+#app.msr-clan-profile .hl-head .hl-card:has(.hl-grid){border:1px solid var(--clan-glow)!important;box-shadow:0 0 12px var(--clan-glow)}
+#app.msr-clan-profile .hl-h{border-bottom:1px solid var(--clan-glow)}
+#app.msr-clan-profile .prof{background:radial-gradient(ellipse at 20% 20%,var(--clan-glow),transparent 70%),#101722!important;padding:16px!important}
+#app.msr-clan-profile .prof .crest{box-shadow:0 0 20px var(--clan-glow)!important}
+@media(max-width:600px){#app.msr-clan-profile .hl-top h1{font-size:25px!important}#app.msr-clan-profile .bigav.sg.hl{width:108px!important;height:108px!important}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3288,6 +3303,22 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     }
     app.textContent = ''; app.appendChild(node);
     syncPlayerClanAvatars(app);
+    app.classList.remove('msr-clan-profile');
+    app.style.removeProperty('--clan-accent');
+    app.style.removeProperty('--clan-glow');
+    if (name === 'player' || name === 'team') {
+      var clanCode = name === 'team' ? decodeURIComponent((H.split('/')[1]||'')).toUpperCase() : ((PBY[decodeURIComponent(H.split('/')[1]||'')]||{}).team||'');
+      var clan = T[clanCode];
+      if (clan) {
+        var palette=['#45d98b','#53b5ff','#b58cff','#ff6c8d','#f4b94e','#22d5d1','#a3e65d','#fa8855'];
+        var hash=0; Array.from(clanCode).forEach(function(ch){hash=(hash*31+ch.charCodeAt(0))>>>0;});
+        var accent=/^#[0-9a-f]{6}$/i.test(clan.c||'') && !/^#(?:3b4658|2a3445|202b3a)$/i.test(clan.c) ? clan.c : palette[hash%palette.length];
+        app.style.setProperty('--clan-accent',accent);
+        app.style.setProperty('--clan-glow',accent+'45');
+        app.classList.add('msr-clan-profile');
+      }
+    }
+
     app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
     var navName = { article: 'news', team: 'ranking', player: 'players', event: 'events', match: 'matches' }[name] || name;
     [].slice.call(document.querySelectorAll('nav.main a, .snav a')).forEach(function (a) {
