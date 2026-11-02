@@ -300,30 +300,33 @@
       (async function(){
         if(!S.user)return;
         var uid=S.user.id;
+        var claim=await sb.from('msr_player_claims').select('game_id,nickname').eq('user_id',uid).maybeSingle();
         var verification=await sb.from('player_id_verifications').select('game_id,status').eq('user_id',uid).limit(1);
         if(!statsBody.isConnected||!S.user||S.user.id!==uid)return;
-        if(verification.error||!verification.data||!verification.data.length){
-          statsBody.appendChild(el('p',{class:'msr-note'},'Your player profile is not linked yet. Ask an MSR admin to verify your existing Standoff 2 player ID.'));return;
+        var linked=claim.data&&claim.data.game_id?String(claim.data.game_id):null;
+        var record=verification.data&&verification.data[0];
+        if(!linked&&record&&['verified','approved'].indexOf(record.status)>=0)linked=String(record.game_id);
+        if(!linked){
+          statsBody.appendChild(el('p',{class:'msr-note'},'Таны MSR тоглогчийн профайл хараахан холбогдоогүй байна. Discord-оор админд ID-гаа баталгаажуулна уу.'));
+          return;
         }
-        var record=verification.data[0];
-        statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Standoff 2 ID'),el('strong',null,String(record.game_id))]));
-        statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Verification'),el('strong',null,String(record.status||'pending'))]));
-        if(record.status!=='verified'&&record.status!=='approved'){
-          statsBody.appendChild(el('p',{class:'msr-note'},'Clan and match stats will appear after account-to-player verification.'));return;
+        statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Standoff 2 ID'),el('strong',null,linked)]));
+        statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Verification'),el('strong',null,'Verified')]));
+        function renderStats(){
+          if(!statsBody.isConnected||!S.user||S.user.id!==uid)return;
+          var stats=typeof window.MSR_PLAYER_STATS_BY_ID==='function'?window.MSR_PLAYER_STATS_BY_ID(linked):null;
+          if(!stats){statsBody.appendChild(el('p',{class:'msr-note'},'Тоглогчийн статистик ачаалагдаагүй эсвэл ID багийн мэдээлэлд байхгүй байна.'));return;}
+          statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Player'),el('strong',null,stats.nick)]));
+          statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Team'),el('strong',null,stats.team)]));
+          var values=[['RATING',stats.rating,2],['K/D',stats.kd,2],['ADR',stats.adr,1],['KAST',stats.kast,1,'%'],['KILLS / ROUND',stats.kpr,2],['DEATHS / ROUND',stats.dpr,2],['MAPS PLAYED',stats.maps,0]];
+          var grid=el('div',{style:'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px'});
+          values.forEach(function(v){grid.appendChild(el('div',{class:'msr-profile-stat',style:'min-width:0'},[
+            el('span',null,v[0]),el('strong',{style:'font-size:21px'},Number(v[1]||0).toFixed(v[2])+(v[3]||''))
+          ]));});
+          statsBody.appendChild(grid);
+          statsBody.appendChild(el('a',{href:stats.url,class:'msr-btn pri',style:'display:block;text-align:center;text-decoration:none;margin-top:12px'},'View full player stats'));
         }
-        var teams=await sb.from('msr_discord_teams').select('name,tag,roster,player_ids');
-        if(!statsBody.isConnected||!S.user||S.user.id!==uid)return;
-        if(teams.error){statsBody.appendChild(el('p',{class:'msr-note'},'Clan data is temporarily unavailable.'));return;}
-        var found=(teams.data||[]).filter(function(team){
-          var ids=team.player_ids;
-          return Array.isArray(ids)&&ids.some(function(id){return String(id)===String(record.game_id);});
-        });
-        if(found.length===1){
-          statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Clan'),el('strong',null,found[0].name+(found[0].tag?' ['+found[0].tag+']':''))]));
-        }else{
-          statsBody.appendChild(el('p',{class:'msr-note'},found.length?'Multiple clan records match your ID. Contact admin.':'Clan not linked to your Standoff 2 ID yet.'));
-        }
-        statsBody.appendChild(el('p',{class:'msr-note'},'Kills, deaths, K/D, maps played and player rating will appear here once verified match statistics are linked. Missing match screenshots will not reset your stats.'));
+        renderStats();
       })();
       var settings=el('div',{id:'msr-profile-settings',class:'msr-profile-card',hidden:true},[
         el('h3',{class:'msr-profile-title'},'⚙ Account Settings'),
