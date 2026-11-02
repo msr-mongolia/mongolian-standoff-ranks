@@ -1,11 +1,11 @@
 import {Client, GatewayIntentBits, Partials, EmbedBuilder} from 'discord.js';
 
-const required=['DISCORD_BOT_TOKEN','MATCH_SCREENSHOT_CHANNEL_ID','MATCH_REVIEW_CHANNEL_ID'];
+const required=['DISCORD_BOT_TOKEN','MATCH_SCREENSHOT_CHANNEL_IDS','MATCH_REVIEW_CHANNEL_ID'];
 for(const key of required) if(!process.env[key]) throw new Error('Missing '+key);
 const client=new Client({intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent],partials:[Partials.Channel,Partials.Message]});
 const allowed=new Set(['image/png','image/jpeg','image/webp']);
 const reviewChannel=process.env.MATCH_REVIEW_CHANNEL_ID;
-const sourceChannel=process.env.MATCH_SCREENSHOT_CHANNEL_ID;
+const sourceChannels=new Set(process.env.MATCH_SCREENSHOT_CHANNEL_IDS.split(',').map(id=>id.trim()).filter(Boolean));
 const maxSize=8*1024*1024;
 async function inspectScreenshot(url,details){
  if(!process.env.OPENAI_API_KEY)return {status:'NOT CONFIGURED',reason:'Add OPENAI_API_KEY on the server'};
@@ -18,7 +18,7 @@ async function inspectScreenshot(url,details){
 
 client.on('ready',()=>console.log('MSR screenshot intake online as '+client.user.tag));
 client.on('messageCreate',async message=>{
- if(message.author.bot||message.channelId!==sourceChannel)return;
+ if(message.author.bot||!sourceChannels.has(message.channelId))return;
  const attachments=[...message.attachments.values()].filter(a=>allowed.has(a.contentType?.split(';')[0])&&a.size<=maxSize);
  if(!attachments.length)return;
  const channel=await client.channels.fetch(reviewChannel).catch(()=>null);
@@ -27,7 +27,7 @@ client.on('messageCreate',async message=>{
  for(const attachment of attachments.slice(0,5)){
   const ai=await inspectScreenshot(attachment.url,text);
   const embed=new EmbedBuilder().setTitle('MSR • Map / Round Screenshot — PENDING')
-   .setColor(0xe0a94b).setDescription('**Submitted by:** <@'+message.author.id+'>\n**Match details:** '+text+'\n**Source:** [Original message]('+message.url+')\n**Status:** Pending admin review')
+   .setColor(0xe0a94b).setDescription('**Submitted by:** <@'+message.author.id+'>\n**Match details:** '+text+'\n**Group channel:** <#'+message.channelId+'>\n**Source:** [Original message]('+message.url+')\n**Status:** Pending admin review')
    .addFields({name:'AI review (requires admin confirmation)',value:String(ai.status||'REVIEW').slice(0,30)+' — '+String(ai.reason||'').slice(0,250)},{name:'Extracted match',value:JSON.stringify({teamA:ai.teamA||null,teamB:ai.teamB||null,map:ai.map||null,scoreA:ai.scoreA??null,scoreB:ai.scoreB??null}).slice(0,500)})
    .setImage(attachment.url).setTimestamp();
   try{const posted=await channel.send({embeds:[embed]});await posted.react('✅');await posted.react('❌');}
