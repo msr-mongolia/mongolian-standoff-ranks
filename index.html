@@ -1368,6 +1368,17 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 /* Temporarily hide account entry and cosmetic shop UI; preserve stored data. */
 #msr-auth,.msr-shop,.msr-shop-grid,.msr-profile-promo,.msr-profile-tabs,.msr-cosmetic-preview-art,.msr-cosmetic-picker,.msr-avatar-frame-picker{display:none!important}
 </style>
+
+<style id="msr-hide-account-features-v2">
+#msr-auth,#mobile-auth-slot,.msr-mobile-profile-shortcut,.msr-shop,.msr-shop-grid,.msr-profile-promo,.msr-profile-tabs,.msr-cosmetic-preview-art,.msr-cosmetic-picker,.msr-avatar-frame-picker{display:none!important}
+#mmenu a[href="#profile"],#mmenu a[href="#shop"],a[data-r="profile"],a[data-r="shop"]{display:none!important}
+</style>
+<script>
+(function(){
+ function blockPrivateRoute(){if(/^#(profile|shop)(?:[/?]|$)/i.test(location.hash))location.replace(location.pathname+location.search+'#news');}
+ window.addEventListener('hashchange',blockPrivateRoute);blockPrivateRoute();
+})();
+</script>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
