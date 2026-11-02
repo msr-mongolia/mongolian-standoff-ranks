@@ -1376,6 +1376,9 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 
 <style id="msr-retired-features">#msr-auth,#mobile-auth-slot,.msr-mobile-profile-shortcut,a[href="#profile"],a[href="#shop"],.msr-shop,.msr-shop-grid{display:none!important}</style>
 <style id="msr-language-inline-fix">#mmenu #msr-language-switch{display:flex!important;flex-direction:row!important;justify-content:space-between!important;align-items:center!important;width:100%!important;box-sizing:border-box!important}#mmenu #msr-language-switch .msr-language-options{display:flex!important;flex-direction:row!important;flex:0 0 auto!important;width:auto!important;gap:7px!important}#mmenu #msr-language-switch .msr-language-options button{flex:0 0 auto!important;width:57px!important;min-width:57px!important;padding:10px 7px!important}#mmenu #msr-language-switch .msr-language-label{margin:0!important;white-space:nowrap!important}</style>
+<style id="msr-sponsor-style">
+.msr-sponsor-section{max-width:1200px;margin:26px auto 40px;padding:0 16px}.msr-sponsor-panel{border:1px solid #344963;background:linear-gradient(135deg,#151f32,#101725);border-radius:20px;padding:24px}.msr-sponsor-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.msr-sponsor-heading h2{font-size:22px;margin:0;color:#f2f6ff}.msr-sponsor-heading p{margin:8px 0 0;color:#a9b8ce;font-size:14px}.msr-sponsor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin-top:20px}.msr-sponsor-card{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;min-height:125px;border-radius:15px;border:1px solid #455672;background:#1c2a40;text-decoration:none;color:#f5f8ff;font-weight:800;transition:transform .2s,border-color .2s}.msr-sponsor-card:hover,.msr-sponsor-card:focus-visible{transform:translateY(-2px);border-color:#64a4ff}.msr-sponsor-card img{max-width:135px;max-height:64px;object-fit:contain}.msr-sponsor-empty{padding:22px 12px;text-align:center;border:1px dashed #53647b;border-radius:13px;color:#b7c5d9;margin-top:18px}.msr-sponsor-contact{display:inline-block;margin-top:12px;color:#9bc5ff;font-weight:700;text-decoration:underline}@media(max-width:600px){.msr-sponsor-panel{padding:17px}.msr-sponsor-heading h2{font-size:19px}.msr-sponsor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -1429,6 +1432,29 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 <div class="shell">
   <main id="app" tabindex="-1"></main>
 </div>
+
+<section class="msr-sponsor-section" id="msr-sponsors" aria-label="MSR Sponsors">
+ <div class="msr-sponsor-panel">
+  <div class="msr-sponsor-heading"><div><h2>Our Sponsors</h2><p>Organizations supporting Mongolian Standoff Ranks</p></div></div>
+  <div id="msr-sponsor-grid" class="msr-sponsor-grid" aria-live="polite"></div>
+  <div id="msr-sponsor-empty" class="msr-sponsor-empty">Sponsor announcements coming soon.<div><a class="msr-sponsor-contact" href="https://discord.com/users/1128188613230874727" target="_blank" rel="noopener noreferrer">Become a sponsor · Contact MSR</a></div></div>
+ </div>
+</section>
+<script>
+/* Add confirmed sponsors only: {name:'Organization',url:'https://...',logo:'https://...'} */
+window.MSR_SPONSORS=window.MSR_SPONSORS||[];
+(function(){
+ var grid=document.getElementById('msr-sponsor-grid'),empty=document.getElementById('msr-sponsor-empty');
+ function safeUrl(v){try{var u=new URL(v);return u.protocol==='https:'?u.href:null}catch(e){return null}}
+ (window.MSR_SPONSORS||[]).forEach(function(sp){
+  if(!sp||!sp.name)return;var url=safeUrl(sp.url);if(!url)return;
+  var a=document.createElement('a');a.className='msr-sponsor-card';a.href=url;a.target='_blank';a.rel='noopener noreferrer sponsored';a.setAttribute('aria-label','Visit '+sp.name);
+  var logo=safeUrl(sp.logo);if(logo){var img=document.createElement('img');img.src=logo;img.alt=sp.name+' logo';img.loading='lazy';a.appendChild(img)}
+  var title=document.createElement('span');title.textContent=sp.name;a.appendChild(title);grid.appendChild(a);
+ });
+ if(grid.children.length)empty.hidden=true;
+})();
+</script>
 
 <footer>
   <div class="foot">
