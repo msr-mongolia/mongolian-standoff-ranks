@@ -1866,6 +1866,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   }
   function fitSigs() {
     crownSigs();
+    syncPlayerClanAvatars(document);
     [].forEach.call(document.querySelectorAll('.sigtxt'), function(e) {
       var avatar=e.closest('.sg');if(!avatar)return;
       var diameter=Math.min(avatar.clientWidth,avatar.clientHeight);
