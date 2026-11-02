@@ -1622,6 +1622,23 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     return id ? h('small', { class: 'game-id', style: 'display:block;font-size:12px;color:var(--muted);font-weight:500;line-height:1.7' }, 'ID: ' + id) : null;
   }
   function playerHref(nick) { return '#player/' + encodeURIComponent(nick); }
+  // Public, read-only player stats lookup for the signed-in account Stats tab.
+  window.MSR_PLAYER_STATS_BY_ID = function(gameId) {
+    var id = String(gameId || '').trim();
+    if (!/^\\d{5,12}$/.test(id)) return null;
+    var matches = PLAYERS.filter(function(p) {
+      var k = p.team + '|' + String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, '');
+      return String(GAME_IDS[k] || '') === id;
+    });
+    if (matches.length !== 1) return null;
+    var p = matches[0], rows = (PROWS[p.nick] || []).filter(function(r){return !r.team || r.team === p.team;});
+    var g = agg(rows);
+    return { nick:p.nick, team:(T[p.team] && T[p.team].n) || p.team, id:id,
+      rating:g.rating, kd:g.kd, adr:g.adr, kast:g.kast,
+      kpr:g.kpr, dpr:g.dpr, maps:rows.length, kills:g.k, deaths:g.d,
+      url:playerHref(p.nick) };
+  };
+
   function tc(p) { return p && p.team && T[p.team] && T[p.team].img ? ' t-' + p.team : ''; }
   (function () {
     var ringSvg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#F6E3A1'/><stop offset='.55' stop-color='#C9A24A'/><stop offset='1' stop-color='#7E5F1E'/></linearGradient></defs><circle cx='50' cy='50' r='46.5' fill='none' stroke='url(#g)' stroke-width='2.4'/><circle cx='50' cy='50' r='42' fill='none' stroke='url(#g)' stroke-width='.8' opacity='.7'/><circle cx='50' cy='50' r='44.3' fill='none' stroke='#C9A24A' stroke-width='1.2' stroke-dasharray='.6 3.1' stroke-linecap='round' opacity='.8'/></svg>", ring = 'url("data:image/svg+xml,' + encodeURIComponent(ringSvg) + '")', css = '';
