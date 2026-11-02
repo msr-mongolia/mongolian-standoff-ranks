@@ -1548,7 +1548,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
   RANK.forEach(function (r, idx) {
     var code = r[0], rnd = seeded(code), q = 1 - idx / 14;
     ROSTER[code].forEach(function (nick, k) {
-      PLAYERS.push({ nick: nick, team: code, maps: 0, kills: 0, deatkd: 0 });
+      PLAYERS.push({ nick: nick, team: code, maps: 0, kills: 0, deaths: 0, kd: 0, rating: 0, msrRating: 1, rank: 0, provisional: true });
     });
   });
   // MSR custom player rating (not official HLTV rating).
@@ -1990,8 +1990,8 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
             h('div', null, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), T[p.team].n)),
             h('span', { class: 'rank' }, p.provisional ? 'Provisional' : '#' + p.rank)),
           h('div', { class: 'row3' },
-            h('div', { class: 's kd' }, h('div', { class: 'k' }, 'KD'), h('div', { class: 'v' }, p.kd.toFixed(2))),
-            h('div', { class: 's' }, h('div', { class: 'k' }, 'MSR Rating'), h('div', { class: 'v' }, p.msrRating.toFixed(2))),
+            h('div', { class: 's kd' }, h('div', { class: 'k' }, 'KD'), h('div', { class: 'v' }, (Number(p.kd) || 0).toFixed(2))),
+            h('div', { class: 's' }, h('div', { class: 'k' }, 'MSR Rating'), h('div', { class: 'v' }, (Number(p.msrRating) || 0).toFixed(2))),
             h('div', { class: 's' }, h('div', { class: 'k' }, 'Maps'), h('div', { class: 'v' }, p.maps)))));
       });
       more.style.display = matched.length > 20 ? 'block' : 'none';
