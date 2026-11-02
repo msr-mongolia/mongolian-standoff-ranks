@@ -3899,6 +3899,19 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if (shared >= 5) code = 'COR';
       }
       code = code || row.id.toUpperCase();
+      // Discord submissions sometimes include device notes and unmatched '(' after a nickname.
+      // Keep the submitted data in Supabase, but use clean public nicknames consistently.
+      if (code === 'COR') {
+        var originalRoster = row.roster.slice();
+        row.roster = originalRoster.map(function (nick) {
+          return String(nick).replace(/^\s*ign\s*:\s*/i, '').replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim();
+        });
+        var originalIds = row.player_ids || {};
+        row.player_ids = Object.assign({}, originalIds);
+        originalRoster.forEach(function (nick, index) {
+          if (Object.prototype.hasOwnProperty.call(originalIds, nick)) row.player_ids[row.roster[index]] = originalIds[nick];
+        });
+      }
       var existing = !!T[code];
       if (!existing) {
         T[code] = { n: row.name.slice(0,100), i: row.name.slice(0,2).toUpperCase(), tag: row.tag || '', c: /^(?:wonderart|woart)$/i.test(row.name.trim()) ? '#B56CFF' : '#3B4658', city: 'Mongolia' };
