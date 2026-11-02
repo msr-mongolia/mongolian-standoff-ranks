@@ -116,7 +116,7 @@
       var existingPrompt=el('p',{class:'msr-note'},'MSR-д таны тоглогчийн профайл өмнө нь бүртгэгдсэн үү?');
       var yes=el('button',{type:'button',class:'msr-btn'},'YES — Профайл байгаа');
       var no=el('button',{type:'button',class:'msr-btn'},'NO — Энгийн нэвтрэлт');
-      var choice=el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},[yes,no]);
+      var choice=el('div',{style:'display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%'},[yes,no]);
       var claimName=el('input',{type:'text',name:'msr-player-lookup',autocomplete:'off',placeholder:'Өөрийн nickname эсвэл Standoff 2 ID-гаа бичнэ үү',maxlength:80,value:''});
       var claimCode=el('input',{type:'text',placeholder:'MSR Code',autocomplete:'off',maxlength:64});
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
