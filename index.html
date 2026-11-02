@@ -1365,7 +1365,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 .msr-equipped-frame-art,.msr-cosmetic-frame.msr-cosmetic-preview-art img{filter:url(#msr-remove-black);mix-blend-mode:normal!important;clip-path:none!important;border-radius:0!important}
 </style><style id="msr-mobile-profile-shortcut-style">@media(max-width:760px){.mobile-dock .msr-mobile-profile-shortcut{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:48px;padding:8px 5px;color:inherit;text-decoration:none;font-size:11px;font-weight:650}.mobile-dock .msr-mobile-profile-shortcut svg{height:23px;width:23px;display:block}.mobile-dock .msr-mobile-profile-shortcut:focus-visible{outline:2px solid #5bc8ff;outline-offset:-3px}#mmenu #mobile-auth-slot{display:block!important;visibility:visible!important}}</style>
 <style id="msr-temporary-feature-hide">
-/* Temporarily hide account entry and cosmetic shop UI; preserve stored data. */
+/* Account entry and cosmetic shop removed from public interface; preserve stored data. */
 #msr-auth,.msr-shop,.msr-shop-grid,.msr-profile-promo,.msr-profile-tabs,.msr-cosmetic-preview-art,.msr-cosmetic-picker,.msr-avatar-frame-picker{display:none!important}
 </style>
 
@@ -1379,6 +1379,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
  window.addEventListener('hashchange',blockPrivateRoute);blockPrivateRoute();
 })();
 </script>
+<style id="msr-retire-account-ui">#msr-auth,#mobile-auth-slot,.msr-mobile-profile-shortcut,a[href="#profile"],a[href="#shop"],.msr-shop,.msr-shop-grid{display:none!important}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -1421,9 +1422,9 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     <a href="#stats" data-r="stats">Stats</a>
     <a href="#gold" data-r="gold">Gold</a>
     <a href="#vip" data-r="vip">VIP Clan</a>
-    <div id="mobile-auth-slot"></div>
+    
   </nav>
-<nav class="mobile-dock" aria-label="Quick navigation"><div class="dock-tabs"><a href="#matches" data-r="matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M8 3v4M16 3v4"/></svg><span>Matches</span></a><a href="#news" data-r="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>News</span></a><a href="#events" data-r="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/></svg><span>Events</span></a></div><a href="#profile" class="msr-mobile-profile-shortcut" aria-label="Profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span>Profile</span></a><div id="mobile-burger-slot"></div></nav>
+<nav class="mobile-dock" aria-label="Quick navigation"><div class="dock-tabs"><a href="#matches" data-r="matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M8 3v4M16 3v4"/></svg><span>Matches</span></a><a href="#news" data-r="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>News</span></a><a href="#events" data-r="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/></svg><span>Events</span></a></div><div id="mobile-burger-slot"></div></nav>
 
 <div class="shell">
   <main id="app" tabindex="-1"></main>
@@ -3236,7 +3237,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     );
   };
 
-  V.profile = function () { return V.news ? V.news() : h('div', null, 'News'); };
+  delete V.profile; // Account/profile page retired from public navigation.
   var articleView = V.article;
   V.article = function (id) {
     var node = articleView(id);
@@ -3246,12 +3247,12 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     return node;
   };
   document.addEventListener('msr:ready', function () {
-    if (/^(profile|article)(\/|$)/.test(H)) route();
+    if (/^article(\/|$)/.test(H)) route();
   });
 
   /* ================= router ================= */
   var app = document.getElementById('app'), q = document.getElementById('q');
-  var TITLES = { profile: 'Profile', match: 'Match', event: 'Events', gold: 'Gold', team: 'Team', player: 'Player', news: 'News', article: 'News', matches: 'Matches', results: 'Results', events: 'Events', ranking: 'Ranking', players: 'Players', stats: 'Stats', live: 'Live', major: 'Major', search: 'Search' };
+  var TITLES = { match: 'Match', event: 'Events', gold: 'Gold', team: 'Team', player: 'Player', news: 'News', article: 'News', matches: 'Matches', results: 'Results', events: 'Events', ranking: 'Ranking', players: 'Players', stats: 'Stats', live: 'Live', major: 'Major', search: 'Search' };
   function goBack() { var i = history.state && history.state.i || 0; if (i > 0) history.back(); else navTo('news'); }
   function paint(name, node) {
     if (name !== 'news' && !node.querySelector('.back')) {
