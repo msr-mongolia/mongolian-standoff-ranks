@@ -1780,6 +1780,11 @@ object-fit:cover!important;object-position:center!important;opacity:.35!importan
 #app.msr-clan-profile .msr-team-stat-icon,#app.msr-clan-profile .msr-team-stats-heading svg{color:var(--clan-accent)!important}
 #app.msr-clan-profile .msr-team-stat{background:linear-gradient(135deg,#101820 55%,var(--clan-glow))!important}
 </style>
+<style id="msr-result-msl-background">
+#app .results-match-group.msr-result-event-background{position:relative;isolation:isolate;overflow:hidden;background-color:#121923!important}
+#app .results-match-group.msr-result-event-background::before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(90deg,rgba(10,15,23,.82),rgba(10,15,23,.62),rgba(10,15,23,.82)),var(--msr-result-event-image);background-position:center;background-size:cover;opacity:.68;pointer-events:none}
+#app .results-match-group.msr-result-event-background .match-row,#app .results-match-group.msr-result-event-background .mr{background-color:transparent!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3083,7 +3088,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         var badge=h(event?'a':'span',{class:'msr-result-event-badge',href:event?'#event/'+encodeURIComponent(event.id):null,title:eventName},
           event&&event.img?h('img',{src:event.img,alt:'',loading:'lazy',decoding:'async'}):h('span',{'aria-hidden':'true',svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8"/></svg>'}),
           h('span',null,event?event.n:eventName));
-        var heading=h('div',{class:'grp-h msr-result-date-heading'},h('span',{class:'msr-result-date'},g[0]),badge), rows=h('div',{class:'box results-match-group'});
+        var heading=h('div',{class:'grp-h msr-result-date-heading'},h('span',{class:'msr-result-date'},g[0]),badge), rows=h('div',{class:'box results-match-group'+(event&&event.img?' msr-result-event-background':'')});
+        if(event&&event.img)rows.style.setProperty('--msr-result-event-image','url("'+String(event.img).replace(/"/g,'%22')+'")');
         matches.forEach(function(m,i){var row=matchRow(m);if(i>=3)row.classList.add('results-extra-match');rows.appendChild(row);});
         box.appendChild(heading);box.appendChild(rows);
         if(matches.length>3){
