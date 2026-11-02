@@ -362,6 +362,21 @@
         }},'Generate Code + Password');
         settings.appendChild(el('div',{style:'display:flex;flex-direction:column;gap:10px;margin-top:20px'},[el('h3',null,'Admin · Player Codes'),issueName,issueBtn,issueResult]));
       }
+      var oldPass=el('input',{type:'password',placeholder:'Одоогийн password',autocomplete:'current-password'});
+      var newPass=el('input',{type:'password',placeholder:'Шинэ password (8+)',autocomplete:'new-password'});
+      var passStatus=el('p',{class:'msr-note',role:'status'});
+      var changePass=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
+        if(newPass.value.length<8){passStatus.textContent='8-аас дээш тэмдэгт оруулна уу.';return;}
+        changePass.disabled=true;
+        try{
+          var check=await sb.auth.signInWithPassword({email:S.user.email,password:oldPass.value});
+          if(check.error)throw check.error;
+          var result=await sb.auth.updateUser({password:newPass.value});
+          if(result.error)throw result.error;
+          oldPass.value='';newPass.value='';passStatus.textContent='Password солигдлоо.';
+        }catch(e){passStatus.textContent=err(e);}finally{changePass.disabled=false;}
+      }},'Change Password');
+      settings.appendChild(el('div',{style:'display:flex;flex-direction:column;gap:10px;margin-top:18px'},[el('h3',null,'Change Password'),oldPass,newPass,changePass,passStatus]));
       settings.appendChild(save);settings.appendChild(msg);settingsPanel.appendChild(settings);
       editPanel.appendChild(el('h3',{class:'msr-profile-title'},'Edit Profile · Customize'));
       editPanel.appendChild(el('p',{class:'msr-note'},'Профайл зураг, Frame, Banner, Effect-ээ эндээс тохируулна.'));
