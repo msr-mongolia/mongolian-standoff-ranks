@@ -2117,7 +2117,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var m = /(?:^|\s)t-(\S+)/.exec(a.className), sg = a.querySelector('.sigtxt');
       if (!m || !sg) return;
       var r = ROSTER[m[1]];
-      if (r && r.length && r[0] === sg.getAttribute('data-nick')) {
+      var captain = m[1] === 'TLNRS' ? 'Visilefox' : (r && r[0]);
+      if (captain && captain === sg.getAttribute('data-nick')) {
         a.classList.add('cap'); a.setAttribute('title', 'Captain');
         a.appendChild(h('i', { class: 'crown', svg: CROWN }));
       }
