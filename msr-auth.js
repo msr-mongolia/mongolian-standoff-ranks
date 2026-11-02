@@ -118,8 +118,11 @@
       var no=el('button',{type:'button',class:'msr-btn'},'NO — Энгийн нэвтрэлт');
       var choice=el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},[yes,no]);
       var claimName=el('input',{type:'text',placeholder:'Тоглогчийн nickname эсвэл Standoff 2 ID',maxlength:80});
-      var claimNote=el('p',{class:'msr-note'},'Тоглогчийн нэр эсвэл ID-гаа бичнэ үү. Хуучин профайлыг Code + Password-оор эзэмших серверийн холболт хараахан идэвхжээгүй тул энэ сонголтоор нэвтрэх боломжгүй.');
-      var claimArea=el('div',null,[claimName,claimNote]);
+      var claimCode=el('input',{type:'text',placeholder:'MSR Code',autocomplete:'off',maxlength:64});
+      var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
+      var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Серверийн баталгаажуулалт хараахан идэвхжээгүй тул одоогоор нэвтрэх боломжгүй.');
+      var claimLogin=el('button',{type:'button',class:'msr-btn pri',disabled:true},'Code + Password-оор нэвтрэх (удахгүй)');
+      var claimArea=el('div',null,[claimName,claimCode,claimPass,claimLogin,claimNote]);
       claimArea.hidden=true;
       var regularFields=fields.slice();
       function pickExisting(exists){
