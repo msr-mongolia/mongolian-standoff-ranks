@@ -3878,6 +3878,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         byName[key(row.name)] = code;
       }
       if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
+      if (/^(?:wonderart|woart)$/i.test(row.name.trim())) { T[code].img = 'assets/woart-logo.svg'; T[code].c = '#B56CFF'; }
       Object.keys(row.player_ids || {}).forEach(function(nick) {
         var id = String(row.player_ids[nick]);
         if (/^\d{5,12}$/.test(id)) GAME_IDS[code + '|' + key(nick)] = id;
