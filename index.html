@@ -1983,7 +1983,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     var wrap = h('div', { class: 'pl-grid' });
     function draw() {
       wrap.textContent = '';
-      var matched = PLAYERS.slice().sort(function (a, b) { return a.rank - b.rank; });
+      var matched = PLAYERS.filter(function (p) { return p.team && T[p.team]; }).slice().sort(function (a, b) { return a.rank - b.rank; });
       matched.slice(0, showAll ? matched.length : 20).forEach(function (p) {
         wrap.appendChild(h('a', { class: 'plc', href: playerHref(p.nick) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
@@ -3253,11 +3253,14 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
         if(current){current.nick=nick;PBY[nick]=current;return;}
         var returning=PLAYERS.find(function(p){return key(p.nick)===key(nick)&&!p.team&&p.previousTeam===code;});
         if(returning){returning.team=code;returning.nick=nick;PBY[nick]=returning;return;}
-        var p = { nick: nick, team: code, maps: 0, kills: 0, deaths: 0, kd: 0, rating: 0, rank: PLAYERS.length + 1, skill: 1, hs0: 0 };
+        var p = { nick: nick, team: code, maps: 0, kills: 0, deaths: 0, kd: 0, rating: 0, msrRating: 1, provisional: true, rank: PLAYERS.length + 1, skill: 1, hs0: 0 };
         PLAYERS.push(p);
         if (!PBY[nick]) PBY[nick] = p;
       });
     });
+    // Keep rankings consistent after async Discord roster changes. Exclude inactive roster entries.
+    PLAYERS.forEach(function (p) { p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
+    sortPlayerRanking();
     RANK.sort(function (a,b) { return b[1]-a[1]; });
   }
   async function loadDiscordTeams() {
