@@ -3873,11 +3873,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       code = code || row.id.toUpperCase();
       var existing = !!T[code];
       if (!existing) {
-        T[code] = { n: row.name.slice(0,100), i: row.name.slice(0,2).toUpperCase(), tag: row.tag || '', c: '#3B4658', city: 'Mongolia' };
+        T[code] = { n: row.name.slice(0,100), i: row.name.slice(0,2).toUpperCase(), tag: row.tag || '', c: /^(?:wonderart|woart)$/i.test(row.name.trim()) ? '#B56CFF' : '#3B4658', city: 'Mongolia' };
         RANK.push([code, Number.isFinite(row.points) ? row.points : 50, 0, 0, 0, '']);
         byName[key(row.name)] = code;
       }
-      if (!existing && typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
+      if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
       Object.keys(row.player_ids || {}).forEach(function(nick) {
         var id = String(row.player_ids[nick]);
         if (/^\d{5,12}$/.test(id)) GAME_IDS[code + '|' + key(nick)] = id;
