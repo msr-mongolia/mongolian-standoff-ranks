@@ -1363,23 +1363,18 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 #msr-profile-hero .msr-equipped-effect-art{position:absolute;inset:0 0 0 auto;width:48%;height:100%;object-fit:cover;opacity:.6;mix-blend-mode:screen;z-index:-1}
 </style><style>
 .msr-equipped-frame-art,.msr-cosmetic-frame.msr-cosmetic-preview-art img{filter:url(#msr-remove-black);mix-blend-mode:normal!important;clip-path:none!important;border-radius:0!important}
-</style><style id="msr-mobile-profile-shortcut-style">@media(max-width:760px){.mobile-dock .msr-mobile-profile-shortcut{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:48px;padding:8px 5px;color:inherit;text-decoration:none;font-size:11px;font-weight:650}.mobile-dock .msr-mobile-profile-shortcut svg{height:23px;width:23px;display:block}.mobile-dock .msr-mobile-profile-shortcut:focus-visible{outline:2px solid #5bc8ff;outline-offset:-3px}#mmenu #mobile-auth-slot{display:block!important;visibility:visible!important}}</style>
-<style id="msr-temporary-feature-hide">
-/* Account entry and cosmetic shop removed from public interface; preserve stored data. */
-#msr-auth,.msr-shop,.msr-shop-grid,.msr-profile-promo,.msr-profile-tabs,.msr-cosmetic-preview-art,.msr-cosmetic-picker,.msr-avatar-frame-picker{display:none!important}
 </style>
 
-<style id="msr-hide-account-features-v2">
-#msr-auth,#mobile-auth-slot,.msr-mobile-profile-shortcut,.msr-shop,.msr-shop-grid,.msr-profile-promo,.msr-profile-tabs,.msr-cosmetic-preview-art,.msr-cosmetic-picker,.msr-avatar-frame-picker{display:none!important}
-#mmenu a[href="#profile"],#mmenu a[href="#shop"],a[data-r="profile"],a[data-r="shop"]{display:none!important}
-</style>
+
+
 <script>
 (function(){
  function blockPrivateRoute(){if(/^#(profile|shop)(?:[/?]|$)/i.test(location.hash))location.replace(location.pathname+location.search+'#news');}
  window.addEventListener('hashchange',blockPrivateRoute);blockPrivateRoute();
 })();
 </script>
-<style id="msr-retire-account-ui">#msr-auth,#mobile-auth-slot,.msr-mobile-profile-shortcut,a[href="#profile"],a[href="#shop"],.msr-shop,.msr-shop-grid{display:none!important}</style>
+
+<style id="msr-retired-features">#msr-auth,#mobile-auth-slot,.msr-mobile-profile-shortcut,a[href="#profile"],a[href="#shop"],.msr-shop,.msr-shop-grid{display:none!important}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2453,19 +2448,6 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
-      { id: 'msr-login-guide', g: 'Today', t: '11-р сарын 2', c: 0, h: 'MSR-д хэрхэн бүртгүүлж, нэвтрэх вэ? — Алхам алхмаар заавар',
-        lead: 'Mongolian Standoff Ranks-ийн аккаунт үүсгэх, Standoff 2 ID бүртгүүлэх, имэйл баталгаажуулах болон нууц үгээ сэргээх заавар.',
-        body: [
-          'MSR (Mongolian Standoff Ranks) дээр хувийн профайл үүсгэхийн тулд сайтын Log in товчийг дарна. Хэрэв аккаунтгүй бол Register / Бүртгүүлэх хэсгийг сонгоорой.',
-          '1. Username: 3–32 тэмдэгттэй нэрээ оруулна. Дараа нь өөрийн Standoff 2 ID-г 4–20 оронтой тоогоор, алдаагүй бичнэ. Энэ ID-г өөр хүнийхээр бүртгүүлэхгүй.',
-          '2. Ашигладаг имэйл хаягаа оруулж, 8-аас дээш тэмдэгттэй нууц үг үүсгэн давтан баталгаажуулна. Бүртгүүлэх товчийг дарна.',
-          '3. Хэрэв баталгаажуулах имэйл ирвэл имэйл доторх холбоос дээр дарж бүртгэлээ идэвхжүүлнэ. Дараа нь Log in хэсэгт имэйл болон нууц үгээрээ нэвтэрнэ.',
-          '4. Standoff 2 ID-ийн баталгаажуулалт тусдаа явагдана. Өөрийн тоглоомын профайлын screenshot-ийг MSR админд Discord-оор явуулна. ID давхардсан эсвэл буруу бол админтай холбогдоорой.',
-          '5. Нэвтэрсний дараа Profile хэсэгт username болон профайл зургаа тохируулж болно. Shop хэсэгт захиалгын түүх, өөрийн Inventory болон эзэмшдэг item-аа харах боломжтой. Төлбөр автоматаар баталгаажих үйлчилгээ одоогоор идэвхгүй тул төлбөр хийхээсээ өмнө админтай баталгаажуулна.',
-          'Нууц үгээ мартсан бол Log in → Нууц үгээ мартсан уу? хэсэгт имэйлээ оруулж сэргээх холбоос авна. Нууц үг болон имэйл баталгаажуулах кодоо хэнд ч битгий дамжуулаарай.',
-          'Тусламж хэрэгтэй бол MSR-ийн админтай Discord-оор холбогдоно уу: https://discord.com/users/1128188613230874727'
-        ]
-      },
       { id: 4, g: 'Earlier', t: '10-р сарын 9', c: 27, h: 'Standoff 2: Osiris шинэчлэл — 12-р улирал ба SO2 Remastered', lead: 'Тоглоом шинэ client-server архитектурт шилжиж, Pyramid газрын зураг болон Battle Shop нэмэгдлээ.',
         body: [
           'Standoff 2-ын 12-р улирал "Osiris" шинэчлэлтээр эхэллээ. Хамгийн том өөрчлөлт нь SO2 Remastered: тоглоомыг шинэ client-server архитектур дээр ажиллуулж, тоглолтын чухал үйл явдлыг сервер илүү найдвартай хянадаг болгожээ. Хөгжүүлэгчдийн тайлбараар онилт бүртгэгдэх, тоглогчдын хоорондын синхрончлол, холболтын тогтвортой байдал сайжирна.',
