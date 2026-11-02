@@ -1766,6 +1766,14 @@ object-fit:cover!important;object-position:center!important;opacity:.35!importan
 }
 #app .ap-card.msr-ranking-has-event .ap-rk{background:linear-gradient(90deg,#101821bc,#10182175)!important}
 </style>
+
+<style id="msr-all-teams-tournament-backdrop">
+/* Tournament artwork across the whole ranking card for every MSL entrant. */
+#app .ap-card.msr-ranking-has-event{isolation:isolate;overflow:hidden}
+#app .msr-ranking-event-backdrop{inset:0;z-index:-1;justify-content:stretch;background:linear-gradient(90deg,rgba(7,12,20,.78),rgba(7,12,20,.26) 48%,rgba(7,12,20,.52))}
+#app .msr-ranking-event-watermark{height:100%;width:100%;object-fit:cover;object-position:center;opacity:.22;filter:saturate(1.1);-webkit-mask-image:none;mask-image:none}
+#app .ap-card.msr-ranking-has-event>.ap-body{background:rgba(16,23,34,.76)}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3532,6 +3540,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   function rankingEventBadges(code) {
     var entries=EVENTS.filter(function(event){
       if(event.st!=='now' && event.st!=='soon')return false;
+      // Every currently registered ranking team is participating in MSL.
+      if(event.id==='msl')return true;
       var listed=[event.participants,event.teamCodes,event.registeredTeams].some(function(rows){
         return Array.isArray(rows)&&rows.some(function(row){return (typeof row==='string'?row:row.code||row.team_id)===code;});
       });
