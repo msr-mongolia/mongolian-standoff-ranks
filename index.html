@@ -1442,6 +1442,12 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 #app.msr-clan-profile .bigav.sg.hl .sigtxt{text-shadow:1px 2px 2px #000!important;filter:none!important;-webkit-text-stroke:0!important}
 #app.msr-clan-profile .bigav.sg.hl::before,#app.msr-clan-profile .bigav.sg.hl::after{filter:none!important;box-shadow:none!important}
 </style>
+<style id="msr-signature-contrast-boost">
+/* High-contrast player signatures without restoring the removed outer halo. */
+#app.msr-clan-profile .bigav.sg.hl .sigtxt{color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:.65px #101010!important;font-weight:950!important;opacity:1!important;filter:none!important;text-shadow:1px 1px 0 #050505,-1px -1px 0 #050505,0 2px 3px #000!important}
+#app.msr-clan-profile .hl-top h1{color:#fff!important;font-weight:900!important;text-shadow:0 2px 3px #000!important}
+#app.msr-clan-profile .hl-top h1 .ctag{color:var(--clan-accent)!important;-webkit-text-stroke:.35px #050505!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
