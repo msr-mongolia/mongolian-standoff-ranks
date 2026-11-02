@@ -1736,6 +1736,27 @@ background-size:114% 114%!important;background-position:100% 50%!important;
 #app .ap-card.msr-ranking-has-event .ap-rk small{color:#bcc7d5;text-shadow:0 1px 2px #000}
 @media(max-width:480px){#app .msr-ranking-event-watermark{width:48%;opacity:.30}}
 </style>
+<style id="msr-clan-colored-animated-crowns">
+html body #app .sg .crown{
+color:var(--signature-color,var(--clan-accent,#e4edf7))!important;
+animation:msr-captain-crown-float 3.6s ease-in-out infinite;
+}
+html body #app .sg .crown svg{
+fill:none!important;stroke:currentColor!important;
+animation:msr-captain-crown-shine 3.6s ease-in-out infinite;
+}
+@keyframes msr-captain-crown-float{
+0%,100%{transform:translate(-50%,-66%) rotate(-6deg)}
+50%{transform:translate(-50%,-76%) rotate(3deg)}
+}
+@keyframes msr-captain-crown-shine{
+0%,100%{opacity:.8;filter:drop-shadow(0 0 1px currentColor)}
+50%{opacity:1;filter:drop-shadow(0 0 4px currentColor)}
+}
+@media(prefers-reduced-motion:reduce){
+html body #app .sg .crown,html body #app .sg .crown svg{animation:none!important}
+}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2110,7 +2131,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return h('span', { class: 'sigtxt', 'data-hand':hash%3, 'data-box':box, 'data-nick':nick,
       style:'font-size:'+(box*.42).toFixed(1)+'px' }, String(nick));
   }
-  var CROWN = '<svg viewBox="0 0 24 24" fill="none" stroke="#F5D079" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18 2 7.5 7.5 12 12 4.5 16.5 12 22 7.5 21 18Z"/><rect x="3.2" y="19" width="17.6" height="2" rx="1"/><circle cx="2" cy="6.7" r="1.1"/><circle cx="12" cy="3.3" r="1.1"/><circle cx="22" cy="6.7" r="1.1"/></svg>';
+  var CROWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18 2 7.5 7.5 12 12 4.5 16.5 12 22 7.5 21 18Z"/><rect x="3.2" y="19" width="17.6" height="2" rx="1"/><circle cx="2" cy="6.7" r="1.1"/><circle cx="12" cy="3.3" r="1.1"/><circle cx="22" cy="6.7" r="1.1"/></svg>';
   function teamCaptain(code) { return code==='TLNRS'?'Visilefox':((ROSTER[code]||[])[0]||''); }
   function captainFirstRoster(code) {
     var captain=teamCaptain(code);
