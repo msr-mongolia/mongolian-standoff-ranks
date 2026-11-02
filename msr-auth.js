@@ -206,7 +206,7 @@
       var inventoryPanel=el('section',{class:'msr-profile-panel',id:'msr-tab-inventory',hidden:true});
       var settingsPanel=el('section',{class:'msr-profile-panel',id:'msr-tab-settings',hidden:true});
       var editPanel=el('section',{class:'msr-profile-panel',id:'msr-tab-edit',hidden:true});
-      var tabsData=[['main','Main'],['activity','Activity'],['inventory','Inventory'],['settings','Settings']];
+      var tabsData=[['main','Main'],['activity','Activity'],['inventory','Stats'],['settings','Settings']];
       function showTab(id){tabsData.forEach(function(t){var pane=panels.querySelector('#msr-tab-'+t[0]);if(pane)pane.hidden=t[0]!==id;var btn=tabs.querySelector('[data-tab="'+t[0]+'"]');if(btn){btn.classList.toggle('active',t[0]===id);btn.setAttribute('aria-selected',String(t[0]===id));}});var account=panels.querySelector('#msr-profile-settings');if(account)account.hidden=id!=='settings';var editor=panels.querySelector('#msr-tab-edit');if(editor)editor.hidden=id!=='edit';}
       tabsData.forEach(function(t){tabs.appendChild(el('button',{type:'button','data-tab':t[0],class:t[0]==='main'?'active':'',onclick:function(){showTab(t[0]);}},t[1]));});
       box.appendChild(tabs);
@@ -228,9 +228,36 @@
         el('strong',null,'Your activity'),
         el('p',null,'Your matches and tournament activity will appear here when available.')
       ]));
-      inventoryPanel.appendChild(el('h3',null,'My Inventory'));
-      var inventoryRows=el('div');inventoryPanel.appendChild(inventoryRows);
-      (async function(){var items=await sb.from('msr_shop_inventory').select('product_id,category,equipped').eq('user_id',S.user.id).order('acquired_at',{ascending:false});if(!inventoryRows.isConnected)return;if(items.error){inventoryRows.textContent='Could not load inventory.';return;}if(!items.data.length){inventoryRows.textContent='No items equipped yet. Visit Shop to choose your cosmetics.';return;}items.data.forEach(function(it){var row=el('div',{class:'msr-profile-stat'},[el('span',null,it.product_id+' · '+it.category),el('strong',null,it.equipped?'Equipped':'Owned')]);inventoryRows.appendChild(row);});})();
+      inventoryPanel.appendChild(el('h3',null,'Player Stats & Clan'));
+      var statsBody=el('div');inventoryPanel.appendChild(statsBody);
+      (async function(){
+        if(!S.user)return;
+        var uid=S.user.id;
+        var verification=await sb.from('player_id_verifications').select('game_id,status').eq('user_id',uid).limit(1);
+        if(!statsBody.isConnected||!S.user||S.user.id!==uid)return;
+        if(verification.error||!verification.data||!verification.data.length){
+          statsBody.appendChild(el('p',{class:'msr-note'},'Your player profile is not linked yet. Ask an MSR admin to verify your existing Standoff 2 player ID.'));return;
+        }
+        var record=verification.data[0];
+        statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Standoff 2 ID'),el('strong',null,String(record.game_id))]));
+        statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Verification'),el('strong',null,String(record.status||'pending'))]));
+        if(record.status!=='verified'&&record.status!=='approved'){
+          statsBody.appendChild(el('p',{class:'msr-note'},'Clan and match stats will appear after account-to-player verification.'));return;
+        }
+        var teams=await sb.from('msr_discord_teams').select('name,tag,roster,player_ids');
+        if(!statsBody.isConnected||!S.user||S.user.id!==uid)return;
+        if(teams.error){statsBody.appendChild(el('p',{class:'msr-note'},'Clan data is temporarily unavailable.'));return;}
+        var found=(teams.data||[]).filter(function(team){
+          var ids=team.player_ids;
+          return Array.isArray(ids)&&ids.some(function(id){return String(id)===String(record.game_id);});
+        });
+        if(found.length===1){
+          statsBody.appendChild(el('div',{class:'msr-profile-stat'},[el('span',null,'Clan'),el('strong',null,found[0].name+(found[0].tag?' ['+found[0].tag+']':''))]));
+        }else{
+          statsBody.appendChild(el('p',{class:'msr-note'},found.length?'Multiple clan records match your ID. Contact admin.':'Clan not linked to your Standoff 2 ID yet.'));
+        }
+        statsBody.appendChild(el('p',{class:'msr-note'},'Kills, deaths, K/D, maps played and player rating will appear here once verified match statistics are linked. Missing match screenshots will not reset your stats.'));
+      })();
       var settings=el('div',{id:'msr-profile-settings',class:'msr-profile-card',hidden:true},[
         el('h3',{class:'msr-profile-title'},'⚙ Account Settings'),
         el('dl',null,[el('dt',null,'Имэйл'),el('dd',null,S.user.email),el('dt',null,'Бүртгүүлсэн'),el('dd',null,new Date(S.user.created_at).toLocaleDateString('mn-MN')),el('dt',null,'Username'),el('dd',null,name),el('dt',null,'Профайл зураг'),el('dd',null,'Зураг солихын тулд дээрх харандаа дээр дарна уу.')])
