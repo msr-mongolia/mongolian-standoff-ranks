@@ -1704,6 +1704,16 @@ html body #app .sg.t-MANAI.msr-has-clan-logo{
 background-size:114% 114%!important;background-position:100% 50%!important;
 }
 </style>
+<style id="msr-result-event-logo-heading">
+#app .msr-result-date-heading{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding-top:9px;padding-bottom:9px}
+#app .msr-result-date{white-space:nowrap;flex:0 0 auto}
+#app .msr-result-event-badge{display:inline-flex;align-items:center;gap:8px;max-width:100%;min-width:0;color:#edf4fc;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:0;text-transform:none;line-height:1.3;padding:4px 10px 4px 5px;border:1px solid #536276;border-radius:8px;background:#111b28}
+#app a.msr-result-event-badge:hover{border-color:#9dbde4;background:#1b2c40}
+#app .msr-result-event-badge img{display:block;width:32px;height:32px;flex:0 0 32px;object-fit:contain;border-radius:5px;background:#080d15}
+#app .msr-result-event-badge svg{display:block;width:25px;height:25px}
+#app .msr-result-event-badge>span:last-child{overflow-wrap:anywhere}
+@media(max-width:480px){#app .msr-result-date-heading{gap:8px}#app .msr-result-event-badge{font-size:11px;padding-right:7px;gap:6px}#app .msr-result-event-badge img{width:28px;height:28px;flex-basis:28px}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2995,7 +3005,13 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var from = RF.page * PAGE, part = list.slice(from, from + PAGE);
       cnt.textContent = list.length ? 'Showing ' + (from + 1) + '–' + (from + part.length) + ' of ' + list.length + ' results' : '0 results';
       byDate(part).forEach(function (g) {
-        var matches=g[1], heading=h('div',{class:'grp-h'},g[0]), rows=h('div',{class:'box results-match-group'});
+        Array.from(new Set(g[1].map(function(m){return m.ev||'Tournament';}))).forEach(function(eventName){
+        var matches=g[1].filter(function(m){return (m.ev||'Tournament')===eventName;});
+        var event=EVENTS.find(function(e){return e.n===eventName||e.id===eventName;});
+        var badge=h(event?'a':'span',{class:'msr-result-event-badge',href:event?'#event/'+encodeURIComponent(event.id):null,title:eventName},
+          event&&event.img?h('img',{src:event.img,alt:'',loading:'lazy',decoding:'async'}):h('span',{'aria-hidden':'true',svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8"/></svg>'}),
+          h('span',null,event?event.n:eventName));
+        var heading=h('div',{class:'grp-h msr-result-date-heading'},h('span',{class:'msr-result-date'},g[0]),badge), rows=h('div',{class:'box results-match-group'});
         matches.forEach(function(m,i){var row=matchRow(m);if(i>=3)row.classList.add('results-extra-match');rows.appendChild(row);});
         box.appendChild(heading);box.appendChild(rows);
         if(matches.length>3){
@@ -3009,6 +3025,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           });
           box.appendChild(expand);
         }
+        });
       });
       if (!list.length) box.appendChild(h('div', { class: 'empty' }, 'No results match these filters.'));
       if (pages > 1) {
