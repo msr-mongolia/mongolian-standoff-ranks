@@ -1543,6 +1543,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
   var REWARD = function (rank) { return rank === 1 ? 5000 : rank === 2 ? 3000 : rank === 3 ? 2000 : rank <= 10 ? 1000 : 500; };
 
   /* players with seeded stats, biased by team rank */
+  RANK.forEach(function(r){r[1]=50;r[2]=0;r[3]=0;r[4]=0;r[5]='';});
   var PLAYERS = [];
   RANK.forEach(function (r, idx) {
     var code = r[0], rnd = seeded(code), q = 1 - idx / 14;
@@ -2503,11 +2504,13 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     });
   });
   var PROWS = {};
+  // Start the league with no recorded player statistics.
+  PMROWS.length=0;
   PMROWS.forEach(function (r) { (PROWS[r.nick] = PROWS[r.nick] || []).push(r); });
   PLAYERS.forEach(function (p) {
     var g = agg(PROWS[p.nick] || []);
     if (g.n) { p.maps = g.n; p.kills = g.k; p.deaths = g.d; p.kd = +g.kd.toFixed(2); }
-    p.rating = g.rating || 0;
+    p.maps=0;p.kills=0;p.deaths=0;p.kd=0;p.rating=0;p.hs0=0;p.assists=0;p.adr=0;p.kast=0;
   });
   sortPlayerRanking();
 
@@ -2973,7 +2976,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
       host.textContent = ''; sb.textContent = '';
       var rows = filterRows(PROWS[nick] || [], F), g = agg(rows);
       var recent = rows.slice().sort(function (a, b) { return b.date - a.date || b.m.id - a.m.id || b.mi - a.mi; });
-      if (!rows.length) { host.appendChild(h('div', { class: 'empty' }, 'No maps recorded for these filters.')); sb.appendChild(h('div', { class: 'hl-empty' }, 'No maps recorded for these filters.')); return; }
+      if (!rows.length) { host.appendChild(h('div', { class: 'empty' }, 'No maps recorded for these filters.')); ['Rating','K/D','ADR','KAST','Kills / round','Deaths / round','Maps played'].forEach(function(label){sb.appendChild(h('div',{class:'hl-cell'},h('span',{class:'k'},label),h('span',{class:'v'},'0')));}); return; }
       var cards = [['Rating', g.rating.toFixed(2), 1], ['K/D', g.kd.toFixed(2)], ['ADR', g.adr.toFixed(1)], ['KAST', g.kast.toFixed(1) + '%'], ['Kills / round', g.kpr.toFixed(2)], ['Deaths / round', g.dpr.toFixed(2)], ['Maps played', rows.length]];
       cards.forEach(function (c) { sb.appendChild(h('div', { class: 'hl-cell' + (c[2] ? ' main' : '') }, h('span', { class: 'k' }, c[0]), h('span', { class: 'v' + (c[2] ? (g.rating >= 1 ? ' up' : ' dn') : '') }, c[1]))); });
       // rating trend
