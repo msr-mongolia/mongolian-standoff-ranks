@@ -1448,6 +1448,13 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 #app.msr-clan-profile .hl-top h1{color:#fff!important;font-weight:900!important;text-shadow:0 2px 3px #000!important}
 #app.msr-clan-profile .hl-top h1 .ctag{color:var(--clan-accent)!important;-webkit-text-stroke:.35px #050505!important}
 </style>
+<style id="msr-clan-signature-colors">
+html body #app .sg .sigtxt,html body #app.msr-clan-profile .bigav.sg.hl .sigtxt{
+background:none!important;background-image:none!important;color:var(--signature-color,#ffd86b)!important;
+-webkit-text-fill-color:var(--signature-color,#ffd86b)!important;-webkit-text-stroke:.35px #101010!important;
+font-weight:900!important;opacity:1!important;filter:none!important;text-shadow:0 1px 1px #050505,1px 2px 2px #050505!important}
+html body #app .sg .sigtxt::after{background:var(--signature-color,#ffd86b)!important;opacity:1!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3381,13 +3388,59 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     [].slice.call(app.querySelectorAll('table.t')).forEach(function (tb) { var th = tb.querySelector('th'); if (th && th.textContent.trim() === '#') tb.classList.add('rk'); });
   }
 
+  /* Sample each clan logo once, ignoring dark and neutral background pixels. */
+  var clanSignatureColors = new Map();
+  function brightSignatureColor(r,g,b) {
+    var max=Math.max(r,g,b), min=Math.min(r,g,b);
+    if(max-min<18)return '#e4edf7';
+    var scale=255/max;
+    return '#'+[r,g,b].map(function(v){return Math.round(Math.max(48,v*scale)).toString(16).padStart(2,'0');}).join('');
+  }
+  function signatureFallback(clan) {
+    var m=/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(clan.c||'');
+    return m?brightSignatureColor(parseInt(m[1],16),parseInt(m[2],16),parseInt(m[3],16)):'#ffd86b';
+  }
+  function signatureLogoColor(clan) {
+    var src=clan.img;
+    if(!src)return Promise.resolve(signatureFallback(clan));
+    if(clanSignatureColors.has(src))return clanSignatureColors.get(src);
+    var promise=new Promise(function(resolve){
+      var image=new Image();image.crossOrigin='anonymous';
+      image.onload=function(){
+        try{
+          var canvas=document.createElement('canvas');canvas.width=canvas.height=48;
+          var ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,48,48);
+          var pixels=ctx.getImageData(0,0,48,48).data,bins={};
+          for(var i=0;i<pixels.length;i+=4){
+            var r=pixels[i],g=pixels[i+1],b=pixels[i+2],max=Math.max(r,g,b),min=Math.min(r,g,b);
+            if(pixels[i+3]<128 || max<55 || max-min<25 || (max-min)/max<.22)continue;
+            var hue=max===r?((g-b)/(max-min)+6)%6:max===g?(b-r)/(max-min)+2:(r-g)/(max-min)+4;
+            var key=Math.round(hue*6)%36,weight=(max-min)/255*(pixels[i+3]/255);
+            var bin=bins[key]||(bins[key]={w:0,r:0,g:0,b:0});
+            bin.w+=weight;bin.r+=r*weight;bin.g+=g*weight;bin.b+=b*weight;
+          }
+          var winner=Object.keys(bins).reduce(function(best,k){return !best||bins[k].w>best.w?bins[k]:best;},null);
+          resolve(winner?brightSignatureColor(winner.r/winner.w,winner.g/winner.w,winner.b/winner.w):signatureFallback(clan));
+        }catch(e){resolve(signatureFallback(clan));}
+      };
+      image.onerror=function(){resolve(signatureFallback(clan));};
+      image.src=src;
+    });
+    clanSignatureColors.set(src,promise);return promise;
+  }
+
   /* Player avatar: display the current clan crest behind the player's signature. */
   function syncPlayerClanAvatars(root) {
     (root || document).querySelectorAll('.sg .sigtxt[data-nick]').forEach(function(label) {
       var nick=label.getAttribute('data-nick'),avatar=label.closest('.sg');
-      var p=PBY[nick] || PLAYERS.find(function(x){return x.nick===nick;});
+      var teamClass=avatar && /(?:^|\s)t-(\S+)/.exec(avatar.className);
+      var p=(teamClass && PLAYERS.find(function(x){return x.nick===nick && x.team===teamClass[1];})) || PBY[nick] || PLAYERS.find(function(x){return x.nick===nick;});
       if(!avatar||!p||!p.team||!T[p.team])return;
       var clan=T[p.team],logo=clan.img;
+      avatar.style.setProperty('--signature-color',signatureFallback(clan));
+      signatureLogoColor(clan).then(function(color){
+        if(avatar.isConnected)avatar.style.setProperty('--signature-color',color);
+      });
       avatar.classList.add('msr-clan-avatar');
       avatar.setAttribute('data-clan-initials',clan.i||clan.tag||clan.n.slice(0,2).toUpperCase());
       if(typeof logo==='string' && /^(https:\/\/|assets\/|\.\/assets\/)/i.test(logo)) {
