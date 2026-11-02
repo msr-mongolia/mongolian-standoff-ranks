@@ -3236,9 +3236,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     );
   };
 
-  V.profile = function () {
-    return window.MSR ? window.MSR.profileView() : h('div', null, 'Ачаалж байна…');
-  };
+  V.profile = function () { return V.news ? V.news() : h('div', null, 'News'); };
   var articleView = V.article;
   V.article = function (id) {
     var node = articleView(id);
@@ -3338,7 +3336,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 
   function route() {
     var raw = H || 'news', parts = raw.split('/'), name = parts[0], arg = decodeURIComponent(parts[1] || '');
-    if (!V[name] || name === 'search') name = 'news';
+    if (!V[name] || name === 'search' || name === 'profile' || name === 'shop') { name = 'news'; if (/^#(?:profile|shop)(?:[/?]|$)/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#news'); }
     q.value = '';
     paint(name, V[name](arg));
     window.scrollTo(0, 0);
