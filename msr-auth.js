@@ -262,6 +262,27 @@
         el('h3',{class:'msr-profile-title'},'⚙ Account Settings'),
         el('dl',null,[el('dt',null,'Имэйл'),el('dd',null,S.user.email),el('dt',null,'Бүртгүүлсэн'),el('dd',null,new Date(S.user.created_at).toLocaleDateString('mn-MN')),el('dt',null,'Username'),el('dd',null,name),el('dt',null,'Профайл зураг'),el('dd',null,'Зураг солихын тулд дээрх харандаа дээр дарна уу.')])
       ]);
+      var emailStatus=el('p',{class:'msr-note',role:'status'},S.user.email_confirmed_at?'Email verified':'Email not verified yet');
+      var gmailInput=el('input',{type:'email',autocomplete:'email',placeholder:'name@gmail.com',required:true,style:'width:100%;max-width:360px;box-sizing:border-box;padding:10px;margin:8px 0'});
+      var gmailButton=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
+        var next=gmailInput.value.trim();
+        if(!/^[^\\s@]+@gmail\\.com$/i.test(next)){emailStatus.textContent='Зөв Gmail хаяг оруулна уу.';return;}
+        if(next.toLowerCase()===(S.user.email||'').toLowerCase()){emailStatus.textContent='Энэ Gmail одоогоор холбогдсон байна.';return;}
+        gmailButton.disabled=true;emailStatus.textContent='Баталгаажуулах хүсэлт илгээж байна...';
+        try{
+          var response=await sb.auth.updateUser({email:next},{emailRedirectTo:BACK});
+          if(response.error)throw response.error;
+          emailStatus.textContent='Баталгаажуулах холбоос илгээгдлээ. Gmail inbox болон spam хавтсаа шалгаарай. Одоогийн имэйлд мөн баталгаажуулалт шаардагдаж болно.';
+          gmailInput.value='';
+        }catch(e){emailStatus.textContent=err(e);}
+        finally{gmailButton.disabled=false;}
+      }},'Link Gmail / Verify');
+      settings.appendChild(el('div',{class:'msr-profile-stat'},[
+        el('strong',null,'Gmail verification'),
+        el('p',{class:'msr-note'},'Current email: '+(S.user.email||'Not linked')),
+        emailStatus,gmailInput,gmailButton,
+        el('p',{class:'msr-note'},'Email change becomes active only after required verification links are confirmed.')
+      ]));
       settings.appendChild(save);settings.appendChild(msg);settingsPanel.appendChild(settings);
       editPanel.appendChild(el('h3',{class:'msr-profile-title'},'Edit Profile · Customize'));
       editPanel.appendChild(el('p',{class:'msr-note'},'Профайл зураг, Frame, Banner, Effect-ээ эндээс тохируулна.'));
