@@ -932,6 +932,11 @@ html .plc .av.sg { width: 62px; height: 62px; }
 /* MSR Shop: tighter responsive product cards */
 @media(max-width:650px){.msr-shop-grid{gap:6px!important}.msr-shop-preview{height:68px!important;min-height:68px!important}.msr-shop-ring{width:49px!important;height:49px!important}.msr-shop-effect-art{width:48px!important;height:48px!important}.msr-banner-art{height:43px!important}.msr-shop-detail{padding:6px!important}.msr-shop-detail h3{font-size:11px!important;margin:3px 0 5px!important}.msr-shop-foot b{font-size:11px!important}.msr-shop-buy{font-size:9px!important;padding:5px 7px!important}.msr-shop-head h1{font-size:21px!important}}
 @media(min-width:651px){.msr-shop-grid{gap:9px!important}.msr-shop-preview{height:108px!important}.msr-shop-detail{padding:8px!important}}
+
+/* MSR podium medals: gold, silver, bronze for team and player ranks */
+.msr-medal-1{color:#ffd56a!important;background:linear-gradient(135deg,#6a4b0b,#2c2514)!important;border:1px solid #e6b944!important;text-shadow:0 0 10px #e6b94466;font-weight:900!important}
+.msr-medal-2{color:#e2e9f2!important;background:linear-gradient(135deg,#536273,#26313e)!important;border:1px solid #aebac8!important;font-weight:900!important}
+.msr-medal-3{color:#f0b787!important;background:linear-gradient(135deg,#704125,#2c211b)!important;border:1px solid #bb7849!important;font-weight:900!important}
 </style>
 
 <style id="polish">
@@ -1965,7 +1970,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
         h('tbody', null, RANK.map(function (r, i) {
           var mv = r[2] > 0 ? ['up', '▲ ' + r[2]] : r[2] < 0 ? ['dn', '▼ ' + Math.abs(r[2])] : ['eq', '—'];
           return h('tr', { class: 'clk', onclick: go(teamHref(r[0])) },
-            h('td', { class: 'pos' + (i === 0 ? ' g' : '') }, i + 1),
+            h('td', { class: 'pos msr-medal-' + (i < 3 ? i + 1 : 0) }, i + 1),
             h('td', null, h('div', { class: 'tcell' }, crest(r[0], 'md'), h('div', null, h('a', { class: 'tl', href: teamHref(r[0]) }, tagEl(r[0]), h('b', null, T[r[0]].n)), h('span', { class: 's' }, T[r[0]].city)))),
             h('td', { class: 'n' }, h('span', { class: 'pts' }, fmt(r[1]))),
             h('td', { class: 'n' }, h('span', { class: 'mv ' + mv[0] }, mv[1])),
@@ -1988,7 +1993,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
         wrap.appendChild(h('a', { class: 'plc', href: playerHref(p.nick) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
             h('div', null, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), T[p.team].n)),
-            h('span', { class: 'rank' }, p.provisional ? 'Provisional' : '#' + p.rank)),
+            h('span', { class: 'rank msr-medal-' + (p.rank <= 3 ? p.rank : 0) }, '#' + p.rank + (p.provisional ? ' · Provisional' : ''))),
           h('div', { class: 'row3' },
             h('div', { class: 's kd' }, h('div', { class: 'k' }, 'KD'), h('div', { class: 'v' }, (Number(p.kd) || 0).toFixed(2))),
             h('div', { class: 's' }, h('div', { class: 'k' }, 'MSR Rating'), h('div', { class: 'v' }, (Number(p.msrRating) || 0).toFixed(2))),
@@ -2052,7 +2057,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
       h('tbody', null, RANK.slice(0, 10).map(function (r, i) {
         var cut = i === 7 ? ' cut' : '';
         return h('tr', { class: 'q-row clk', onclick: go(teamHref(r[0])) },
-          h('td', { class: 'pos' + (i === 0 ? ' g' : '') + cut }, i + 1),
+          h('td', { class: 'pos msr-medal-' + (i < 3 ? i + 1 : 0) + cut }, i + 1),
           h('td', { class: cut.trim() }, h('div', { class: 'tcell' }, crest(r[0]), h('a', { class: 'tl', href: teamHref(r[0]) }, h('b', null, T[r[0]].n)))),
           h('td', { class: 'n' + cut }, fmt(r[1])),
           h('td', { class: 'n' + cut }, i < 6 ? h('span', { class: 'tag gold' }, 'Qualified') : i < 8 ? h('span', { class: 'tag soft' }, 'In contention') : h('span', { class: 'tag dim' }, 'Outside')));
@@ -2199,7 +2204,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
       h('div', { class: 'prof-grid' },
         h('div', { class: 'box' }, panelHead('The top 20 players receive gold every 6 months', 'By current KD ranking · final when the season ends'),
           h('div', null, top20.slice(0, 10).map(function (p) {
-            return h('a', { class: 'rew', href: playerHref(p.nick) }, h('span', { class: 'pos' + (p.rank === 1 ? ' g' : ''), style: 'font-size:14px;width:auto' }, p.rank),
+            return h('a', { class: 'rew', href: playerHref(p.nick) }, h('span', { class: 'pos msr-medal-' + (p.rank <= 3 ? p.rank : 0), style: 'font-size:14px;width:auto' }, p.rank),
               h('span', { class: 'tcell' }, crest(p.team), h('b', null, p.nick)), h('span', { style: 'font-size:12.5px;color:var(--dim)' }, 'KD ' + p.kd.toFixed(2)), h('span', { class: 'g' }, fmt(REWARD(p.rank)) + ' gold'));
           })),
           h('p', { class: 'mini', style: 'padding-top:12px' }, '11th–20th: 500 gold each. ', h('a', { href: '#players', style: 'color:var(--gold)' }, 'All players →'))),
