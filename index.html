@@ -1375,6 +1375,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 </script>
 
 <style id="msr-retired-features">#msr-auth,#mobile-auth-slot,.msr-mobile-profile-shortcut,a[href="#profile"],a[href="#shop"],.msr-shop,.msr-shop-grid{display:none!important}</style>
+<style id="msr-language-inline-fix">#mmenu #msr-language-switch{display:flex!important;flex-direction:row!important;justify-content:space-between!important;align-items:center!important;width:100%!important;box-sizing:border-box!important}#mmenu #msr-language-switch .msr-language-options{display:flex!important;flex-direction:row!important;flex:0 0 auto!important;width:auto!important;gap:7px!important}#mmenu #msr-language-switch .msr-language-options button{flex:0 0 auto!important;width:57px!important;min-width:57px!important;padding:10px 7px!important}#mmenu #msr-language-switch .msr-language-label{margin:0!important;white-space:nowrap!important}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -1418,9 +1419,9 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     <a href="#gold" data-r="gold">Gold</a>
     <a href="#vip" data-r="vip">VIP Clan</a>
     
-      <div id="msr-language-switch" class="msr-language-switch" style="display:flex!important;align-items:center;gap:12px;padding:14px 12px;border-top:1px solid #394555;color:#e5ebf6">
-      <span class="msr-language-label" style="display:inline!important;font-size:14px;font-weight:700">Language</span>
-      <div class="msr-language-options" style="display:flex;gap:8px"><button type="button" data-msr-lang="en">EN</button><button type="button" data-msr-lang="mn">MGL</button></div>
+      <div id="msr-language-switch" class="msr-language-switch" style="display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:12px;padding:14px 12px;border-top:1px solid #394555;color:#e5ebf6">
+      <span class="msr-language-label" style="display:inline!important;flex:0 0 auto;font-size:14px;font-weight:700;margin:0!important">Language</span>
+      <div class="msr-language-options" style="display:flex!important;flex-direction:row!important;align-items:center;gap:8px;flex:0 0 auto"><button type="button" data-msr-lang="en">EN</button><button type="button" data-msr-lang="mn">MGL</button></div>
     </div>
   </nav>
 <nav class="mobile-dock" aria-label="Quick navigation"><div class="dock-tabs"><a href="#matches" data-r="matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M8 3v4M16 3v4"/></svg><span>Matches</span></a><a href="#news" data-r="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>News</span></a><a href="#events" data-r="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/></svg><span>Events</span></a></div><div id="mobile-burger-slot"></div></nav>
