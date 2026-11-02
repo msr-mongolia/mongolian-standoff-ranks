@@ -934,6 +934,15 @@ html .plc .av.sg { width: 62px; height: 62px; }
 @media(min-width:651px){.msr-shop-grid{gap:9px!important}.msr-shop-preview{height:108px!important}.msr-shop-detail{padding:8px!important}}
 
 
+
+/* Keep the rank pinned to the right; prevent long names from covering it. */
+.pl-grid .plc .top{display:flex!important;min-width:0!important;width:100%;align-items:flex-start!important}
+.pl-grid .plc .msr-player-identity{flex:1 1 0!important;min-width:0!important;overflow:hidden!important}
+.pl-grid .plc .msr-player-identity .nk{display:block!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;max-width:100%!important}
+.pl-grid .plc .msr-player-identity .nk .ctag{display:inline!important}
+.pl-grid .plc .msr-player-identity .game-id,.pl-grid .plc .msr-player-identity .tm{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;max-width:100%!important}
+.pl-grid .plc .rank{flex:0 0 auto!important;margin-left:5px!important;white-space:nowrap!important;align-self:flex-start!important;position:relative!important;z-index:2!important}
+
 /* Full background podium treatment, not just the rank badge */
 tr.msr-podium-row-1>td{background:linear-gradient(110deg,#5b4115,#3b301c)!important;border-top:1px solid #b68b34!important;border-bottom:1px solid #b68b34!important}
 tr.msr-podium-row-2>td{background:linear-gradient(110deg,#394657,#283440)!important;border-top:1px solid #9ba9bc!important;border-bottom:1px solid #9ba9bc!important}
@@ -2002,7 +2011,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
       matched.slice(0, showAll ? matched.length : 20).forEach(function (p) {
         wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
-            h('div', null, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), T[p.team].n)),
+            h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), T[p.team].n)),
             h('span', { class: 'rank msr-medal-' + (p.rank <= 3 ? p.rank : 0) }, '#' + p.rank)),
           h('div', { class: 'row3' },
             h('div', { class: 's kd' }, h('div', { class: 'k' }, 'KD'), h('div', { class: 'v' }, (Number(p.kd) || 0).toFixed(2))),
