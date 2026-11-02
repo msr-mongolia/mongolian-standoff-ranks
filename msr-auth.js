@@ -121,7 +121,22 @@
       var claimCode=el('input',{type:'text',placeholder:'MSR Code',autocomplete:'off',maxlength:64});
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Серверийн баталгаажуулалт хараахан идэвхжээгүй тул одоогоор нэвтрэх боломжгүй.');
-      var claimLogin=el('button',{type:'button',class:'msr-btn pri',onclick:function(){claimNote.textContent='Энэ код одоогоор серверт бүртгэгдээгүй. Админ сервер дээр эрх үүсгэж баталгаажуулсны дараа нэвтрэх боломжтой болно.';}},'Confirm / Log in');
+      var claimLogin=el('button',{type:'button',class:'msr-btn pri',onclick:async function(){
+ var code=claimCode.value.trim().toUpperCase();
+ if(!/^MSR-[A-F0-9]{16}$/.test(code)||!claimPass.value||!claimName.value.trim()){claimNote.textContent='Nickname, Code, Password оруулна уу.';return;}
+ claimLogin.disabled=true;
+ try{
+  var email='msr-'+code.slice(4).toLowerCase()+'@accounts.msr.invalid';
+  var result=await sb.auth.signInWithPassword({email:email,password:claimPass.value});
+  if(result.error)throw result.error;
+  var verify=await sb.from('player_id_verifications').select('game_id').eq('user_id',result.data.user.id).maybeSingle();
+  var teams=await sb.from('msr_discord_teams').select('roster,player_ids');
+  var typed=claimName.value.trim().toLowerCase();
+  var valid=(teams.data||[]).some(function(t){return (Array.isArray(t.roster)?t.roster:[]).some(function(n){return (String(n).toLowerCase()===typed||String((t.player_ids||{})[n]||'')===typed)&&String((t.player_ids||{})[n]||'')===String(verify.data&&verify.data.game_id);});});
+  if(!valid){await sb.auth.signOut();throw new Error('Тоглогчийн нэр / ID тохирохгүй байна.');}
+  closeModal();toast('Нэвтэрлээ');
+ }catch(e){claimNote.textContent=err(e);}finally{claimLogin.disabled=false;}
+}},'Confirm / Log in');
       var discordRequest=el('a',{class:'msr-btn pri',href:'https://discord.com/users/1128188613230874727',target:'_blank',rel:'noopener noreferrer',style:'display:block;text-align:center;text-decoration:none',onclick:function(e){
         var player=claimName.value.trim();
         if(!player){e.preventDefault();claimName.focus();claimRequestStatus.textContent='Эхлээд nickname эсвэл Standoff 2 ID-гаа оруулна уу.';return;}
