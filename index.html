@@ -1482,6 +1482,38 @@ html body #app .sg .sigtxt::after{left:8%!important;right:7%!important;bottom:.0
 #app .msr-team-stat .v{font-size:23px;line-height:1.1;color:#f4f8fc;font-variant-numeric:tabular-nums}
 @media(max-width:760px){#app .msr-team-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:9px}#app .msr-team-stat{padding:11px 9px;gap:9px}#app .msr-team-stat-icon{flex-basis:23px}#app .msr-team-stat-icon svg{width:23px;height:23px}#app .msr-team-stat .v{font-size:21px}#app .msr-team-stat .k{font-size:9px}}
 </style>
+<style id="msr-animated-clan-avatar-item">
+html body #app .sg.msr-clan-avatar,
+html body #app.msr-clan-profile .bigav.sg.hl.msr-clan-avatar{
+overflow:visible!important;border:0!important;border-radius:50%!important;
+box-shadow:none!important;background-color:#080e15!important;
+}
+html body #app .sg.msr-clan-avatar .msr-clan-avatar-item{
+position:absolute;inset:-4px;border-radius:50%;pointer-events:none;z-index:3;
+color:var(--signature-color,#83dfb0);
+}
+html body #app .msr-clan-avatar-item::before{
+content:"";position:absolute;inset:0;border-radius:50%;padding:2px;
+background:conic-gradient(from 0deg,transparent 0deg,currentColor 40deg,#fff 52deg,currentColor 66deg,transparent 100deg,transparent 180deg,currentColor 220deg,#fff 232deg,currentColor 246deg,transparent 280deg);
+-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;
+animation:msr-clan-item-orbit 6s linear infinite;
+}
+html body #app .msr-clan-avatar-item::after{
+content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid currentColor;opacity:.6;
+}
+html body #app .msr-clan-avatar-tag{
+position:absolute;bottom:0;left:50%;transform:translateX(-50%);max-width:85%;
+padding:1px 5px 2px;border:1px solid currentColor;border-radius:5px;
+background:#07101bed;color:inherit;font-family:var(--b),sans-serif;
+font-size:clamp(7px,calc(var(--avatar-size,64px)*.095),11px);
+font-weight:800;line-height:1.15;letter-spacing:.07em;white-space:nowrap;
+overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 1px #000;box-sizing:border-box;
+}
+html body #app .sg.msr-clan-avatar .crown{z-index:4}
+@keyframes msr-clan-item-orbit{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){html body #app .msr-clan-avatar-item::before{animation:none}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -1787,15 +1819,6 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   };
 
   function tc(p) { return p && p.team && T[p.team] && T[p.team].img ? ' t-' + p.team : ''; }
-  (function () {
-    var ringSvg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#F6E3A1'/><stop offset='.55' stop-color='#C9A24A'/><stop offset='1' stop-color='#7E5F1E'/></linearGradient></defs><circle cx='50' cy='50' r='46.5' fill='none' stroke='url(#g)' stroke-width='2.4'/><circle cx='50' cy='50' r='42' fill='none' stroke='url(#g)' stroke-width='.8' opacity='.7'/><circle cx='50' cy='50' r='44.3' fill='none' stroke='#C9A24A' stroke-width='1.2' stroke-dasharray='.6 3.1' stroke-linecap='round' opacity='.8'/></svg>", ring = 'url("data:image/svg+xml,' + encodeURIComponent(ringSvg) + '")', css = '';
-    Object.keys(T).forEach(function (k) {
-      if (!T[k].img) return;
-      css += 'html .sg.t-' + k + '{background-image:' + ring + ',radial-gradient(circle,rgba(8,8,12,.58) 0%,rgba(8,8,12,.82) 100%),url("' + T[k].img + '");background-size:cover;background-position:center}\n';
-    });
-    var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
-  })();
-
   /* falling snow: six-armed crystals + soft dots */
   (function () {
     var c = document.createElement('canvas'); c.id = 'snow'; c.setAttribute('aria-hidden', 'true'); document.body.appendChild(c);
@@ -3496,6 +3519,16 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if(avatar.isConnected)avatar.style.setProperty('--signature-color',color);
       });
       avatar.classList.add('msr-clan-avatar');
+      var item=avatar.querySelector('.msr-clan-avatar-item');
+      if(!item){
+        item=h('span',{class:'msr-clan-avatar-item','aria-hidden':'true'},h('span',{class:'msr-clan-avatar-tag'}));
+        avatar.appendChild(item);
+      }
+      var tag=String(clan.tag||clan.i||p.team);
+      var badge=item.querySelector('.msr-clan-avatar-tag');
+      if(badge.textContent!==tag)badge.textContent=tag;
+      item.setAttribute('title',tag);
+      avatar.style.setProperty('--avatar-size',Math.min(avatar.clientWidth,avatar.clientHeight)+'px');
       avatar.setAttribute('data-clan-initials',clan.i||clan.tag||clan.n.slice(0,2).toUpperCase());
       if(typeof logo==='string' && /^(https:\/\/|assets\/|\.\/assets\/)/i.test(logo)) {
         avatar.style.setProperty('background-image','linear-gradient(rgba(9,15,25,.27),rgba(9,15,25,.45)),url("'+logo.replace(/["'()\\]/g,'')+'")','important');
