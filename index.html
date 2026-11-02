@@ -1391,7 +1391,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     <a class="brand" href="#news" aria-label="MSR — home">
       <span class="nm">MSR</span><span class="msr-demo-mark">DEMO VERSION</span>
     </a>
-    <div id="msr-auth" class="msr-auth"></div>
+    
     <nav class="main" aria-label="Main menu">
       <a href="#news" data-r="news">News</a>
       <a href="#matches" data-r="matches">Matches</a>
@@ -3237,18 +3237,14 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     );
   };
 
-  delete V.profile; // Account/profile page retired from public navigation.
+  delete V.profile; // Profile route removed.
   var articleView = V.article;
   V.article = function (id) {
     var node = articleView(id);
-    if (window.MSR && NEWS.some(function (n) { return String(n.id) === String(id); })) {
-      node.appendChild(window.MSR.comments(id));
-    }
+    // Legacy authenticated comment widget removed with account system.
     return node;
   };
-  document.addEventListener('msr:ready', function () {
-    if (/^article(\/|$)/.test(H)) route();
-  });
+
 
   /* ================= router ================= */
   var app = document.getElementById('app'), q = document.getElementById('q');
@@ -3399,11 +3395,11 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
   /* ================= polish: mobile menu ================= */
   (function () {
     var hd = document.querySelector('header.top'), bg = document.getElementById('burger'), mq = document.getElementById('mq');
-    var auth = document.getElementById('msr-auth'), topIn = document.querySelector('.top-in'), dock = document.querySelector('.mobile-dock');
+    var topIn = document.querySelector('.top-in'), dock = document.querySelector('.mobile-dock');
     function placeControls() {
       var mobile = window.innerWidth <= 760;
       (mobile ? document.getElementById('mobile-burger-slot') : topIn).appendChild(bg);
-      topIn.appendChild(auth); // Keep the auth mount stable; mobile menu has its own profile control.
+      // Login/profile controls were permanently removed from the public website.
     }
     placeControls();
     window.addEventListener('resize', placeControls);
@@ -3479,7 +3475,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="msr-config.js"></script>
-<script src="msr-auth.js?v=a8c6a4b"></script>
+
 <script src="msr-language.js"></script>
 <script>
 /* MSR Shop ownership and order requests. Payments remain unverified until a trusted provider webhook is connected. */
