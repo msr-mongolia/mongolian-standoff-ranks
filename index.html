@@ -933,6 +933,16 @@ html .plc .av.sg { width: 62px; height: 62px; }
 @media(max-width:650px){.msr-shop-grid{gap:6px!important}.msr-shop-preview{height:68px!important;min-height:68px!important}.msr-shop-ring{width:49px!important;height:49px!important}.msr-shop-effect-art{width:48px!important;height:48px!important}.msr-banner-art{height:43px!important}.msr-shop-detail{padding:6px!important}.msr-shop-detail h3{font-size:11px!important;margin:3px 0 5px!important}.msr-shop-foot b{font-size:11px!important}.msr-shop-buy{font-size:9px!important;padding:5px 7px!important}.msr-shop-head h1{font-size:21px!important}}
 @media(min-width:651px){.msr-shop-grid{gap:9px!important}.msr-shop-preview{height:108px!important}.msr-shop-detail{padding:8px!important}}
 
+
+/* Full background podium treatment, not just the rank badge */
+tr.msr-podium-row-1>td{background:linear-gradient(110deg,#5b4115,#3b301c)!important;border-top:1px solid #b68b34!important;border-bottom:1px solid #b68b34!important}
+tr.msr-podium-row-2>td{background:linear-gradient(110deg,#394657,#283440)!important;border-top:1px solid #9ba9bc!important;border-bottom:1px solid #9ba9bc!important}
+tr.msr-podium-row-3>td{background:linear-gradient(110deg,#593821,#34271f)!important;border-top:1px solid #ae7145!important;border-bottom:1px solid #ae7145!important}
+tr.msr-podium-row-1:hover>td{background:#665024!important}tr.msr-podium-row-2:hover>td{background:#465365!important}tr.msr-podium-row-3:hover>td{background:#69452b!important}
+.plc.msr-podium-card-1{background:linear-gradient(135deg,#5c431b,#2d2619 80%)!important;border:1px solid #d1a23f!important;box-shadow:0 0 18px #d1a23f22}
+.plc.msr-podium-card-2{background:linear-gradient(135deg,#4a5869,#252f3d 80%)!important;border:1px solid #aebac9!important;box-shadow:0 0 18px #aebac922}
+.plc.msr-podium-card-3{background:linear-gradient(135deg,#654026,#30241e 80%)!important;border:1px solid #c38755!important;box-shadow:0 0 18px #c3875522}
+
 /* MSR podium medals: gold, silver, bronze for team and player ranks */
 .msr-medal-1{color:#ffd56a!important;background:linear-gradient(135deg,#6a4b0b,#2c2514)!important;border:1px solid #e6b944!important;text-shadow:0 0 10px #e6b94466;font-weight:900!important}
 .msr-medal-2{color:#e2e9f2!important;background:linear-gradient(135deg,#536273,#26313e)!important;border:1px solid #aebac8!important;font-weight:900!important}
@@ -1969,7 +1979,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
         h('thead', null, h('tr', null, h('th', { class: 'pos' }, '#'), h('th', null, 'Team'), h('th', { class: 'n' }, 'Points'), h('th', { class: 'n' }, 'Change'), h('th', { class: 'n' }, 'W–L'), h('th', { class: 'n' }, 'Win %'), h('th', { class: 'n' }, 'Last 5'))),
         h('tbody', null, RANK.map(function (r, i) {
           var mv = r[2] > 0 ? ['up', '▲ ' + r[2]] : r[2] < 0 ? ['dn', '▼ ' + Math.abs(r[2])] : ['eq', '—'];
-          return h('tr', { class: 'clk', onclick: go(teamHref(r[0])) },
+          return h('tr', { class: 'clk msr-podium-row-' + (i < 3 ? i + 1 : 0), onclick: go(teamHref(r[0])) },
             h('td', { class: 'pos msr-medal-' + (i < 3 ? i + 1 : 0) }, i + 1),
             h('td', null, h('div', { class: 'tcell' }, crest(r[0], 'md'), h('div', null, h('a', { class: 'tl', href: teamHref(r[0]) }, tagEl(r[0]), h('b', null, T[r[0]].n)), h('span', { class: 's' }, T[r[0]].city)))),
             h('td', { class: 'n' }, h('span', { class: 'pts' }, fmt(r[1]))),
@@ -1990,7 +2000,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
       wrap.textContent = '';
       var matched = PLAYERS.filter(function (p) { return p.team && T[p.team]; }).slice().sort(function (a, b) { return a.rank - b.rank; });
       matched.slice(0, showAll ? matched.length : 20).forEach(function (p) {
-        wrap.appendChild(h('a', { class: 'plc', href: playerHref(p.nick) },
+        wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
             h('div', null, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), T[p.team].n)),
             h('span', { class: 'rank msr-medal-' + (p.rank <= 3 ? p.rank : 0) }, '#' + p.rank + (p.provisional ? ' · Provisional' : ''))),
