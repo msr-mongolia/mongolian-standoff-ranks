@@ -13,7 +13,7 @@
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Mongolian Standoff Ranks","alternateName":"MSR Standoff 2 Mongolia","url":"https://msr-mongolia.github.io/mongolian-standoff-ranks/","description":"Mongolian Standoff 2 team and player rankings, tournaments and match results."}</script>
 <title>Mongolian Standoff Ranks (MSR) | Standoff 2 Mongolia</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600&family=Golos+Text:wght@400;500;600;700&family=Russo+One&family=Kaushan+Script&family=Marck+Script&family=Mrs+Saint+Delafield&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600&family=Golos+Text:wght@400;500;600;700&family=Russo+One&family=Kaushan+Script&family=Marck+Script&family=Mrs+Saint+Delafield&family=Caveat:wght@700&family=Kalam:wght@700&family=Permanent+Marker&display=swap">
 <style>
   :root {
     --bg: #0D121A; --surface: #161E2A; --raised: #1E2836; --sunk: #0A0E14;
@@ -1518,6 +1518,29 @@ html body #app .sg.msr-clan-avatar .crown{z-index:4}
 <style id="msr-full-width-player-signatures">
 html body #app .sg .sigtxt,html body #app.msr-clan-profile .bigav.sg.hl .sigtxt{padding:0 .025em .08em!important;letter-spacing:-.015em!important}
 </style>
+<style id="msr-readable-signature-redesign">
+/* Separate the ink from the clan-colored frame and busy logo behind it. */
+html body #app .sg .sigtxt,
+html body #app.msr-clan-profile .bigav.sg.hl .sigtxt{
+font-family:"Caveat","Kaushan Script",cursive!important;font-weight:700!important;
+font-style:normal!important;letter-spacing:0!important;line-height:1.1!important;
+color:#fff9e9!important;-webkit-text-fill-color:#fff9e9!important;
+color:color-mix(in srgb,var(--signature-color,#8cdaff) 10%,white 90%)!important;
+-webkit-text-fill-color:color-mix(in srgb,var(--signature-color,#8cdaff) 10%,white 90%)!important;
+-webkit-text-stroke:.045em #030710!important;paint-order:stroke fill!important;
+text-shadow:0 1px 1px #000,1px 2px 2px #000,-1px 0 1px #000!important;
+background:linear-gradient(90deg,transparent,#020610b8 18%,#020610b8 82%,transparent)!important;
+border-radius:5px!important;padding:.025em .025em .09em!important;
+transform:rotate(-6deg)!important;filter:none!important;
+}
+html body #app .sg .sigtxt[data-hand="1"],
+html body #app.msr-clan-profile .bigav.sg.hl .sigtxt[data-hand="1"]{
+font-family:"Kalam","Marck Script",cursive!important;transform:rotate(-4deg)!important;font-weight:700!important}
+html body #app .sg .sigtxt[data-hand="2"],
+html body #app.msr-clan-profile .bigav.sg.hl .sigtxt[data-hand="2"]{
+font-family:"Permanent Marker","Kaushan Script",cursive!important;transform:rotate(-7deg)!important;font-weight:400!important;letter-spacing:-.025em!important}
+html body #app .sg .sigtxt::after{background:linear-gradient(90deg,transparent,#fff 20%,#fff 80%,transparent)!important;height:1px!important;opacity:.9!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -1916,7 +1939,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var base=diameter*.85;
       e.style.fontSize=base.toFixed(2)+'px';
       var width=Math.max(e.scrollWidth,e.offsetWidth),height=e.offsetHeight;
-      var angle=({'0':7,'1':5,'2':9}[e.getAttribute('data-hand')]||7)*Math.PI/180;
+      var angle=({'0':6,'1':4,'2':7}[e.getAttribute('data-hand')]||7)*Math.PI/180;
       var rotatedWidth=width*Math.cos(angle)+height*Math.sin(angle);
       var rotatedHeight=height*Math.cos(angle)+width*Math.sin(angle);
       var scale=Math.min(diameter*.97/Math.max(1,rotatedWidth),
