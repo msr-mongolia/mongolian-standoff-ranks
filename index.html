@@ -2077,7 +2077,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var id = GAME_IDS[team + '|' + String(nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')];
     return id ? h('small', { class: 'game-id', style: 'display:block;font-size:12px;color:var(--muted);font-weight:500;line-height:1.7' }, 'ID: ' + id) : null;
   }
-  function playerHref(nick) { return '#player/' + encodeURIComponent(nick); }
+  function playerHref(nick, team) { return '#player/' + encodeURIComponent(nick) + (team ? '/' + encodeURIComponent(team) : ''); }
   // Public, read-only player stats lookup for the signed-in account Stats tab.
   window.MSR_PLAYER_STATS_BY_ID = function(gameId) {
     var id = String(gameId || '').trim();
@@ -2092,7 +2092,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return { nick:p.nick, team:(T[p.team] && (T[p.team] || {n:'Free agent'}).n) || p.team, id:id,
       rating:g.rating, kd:g.kd, adr:g.adr, kast:g.kast,
       kpr:g.kpr, dpr:g.dpr, maps:rows.length, kills:g.k, deaths:g.d,
-      url:playerHref(p.nick) };
+      url:playerHref(p.nick, p.team) };
   };
 
   function tc(p) { return p && p.team && T[p.team] && T[p.team].img ? ' t-' + p.team : ''; }
@@ -2100,6 +2100,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   (function () {
     var c = document.createElement('canvas'); c.id = 'snow'; c.setAttribute('aria-hidden', 'true'); document.body.appendChild(c);
     var x = c.getContext('2d'), W = 0, H = 0, fl = [], S = 64;
+    if (!x) { c.remove(); return; }
     function crystal(pairs, hex) {
       var cv = document.createElement('canvas'); cv.width = cv.height = S; var g = cv.getContext('2d');
       g.translate(S / 2, S / 2); var R = S * 0.44;
@@ -2500,7 +2501,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       wrap.textContent = '';
       var matched = PLAYERS.filter(function (p) { return p.team && T[p.team]; }).slice().sort(function (a, b) { return a.rank - b.rank; });
       matched.slice(0, showAll ? matched.length : 20).forEach(function (p) {
-        wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick) },
+        wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick, p.team) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
             h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), (T[p.team] || {n:'Free agent'}).n)),
             h('span', { class: 'rank msr-medal-' + (p.rank <= 3 ? p.rank : 0) }, '#' + p.rank)),
@@ -2714,7 +2715,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('div', { class: 'prof-grid' },
         h('div', { class: 'box' }, panelHead('The top 20 players receive gold every 6 months', 'By current KD ranking · final when the season ends'),
           h('div', null, top20.slice(0, 10).map(function (p) {
-            return h('a', { class: 'rew', href: playerHref(p.nick) }, h('span', { class: 'pos msr-medal-' + (p.rank <= 3 ? p.rank : 0), style: 'font-size:14px;width:auto' }, p.rank),
+            return h('a', { class: 'rew', href: playerHref(p.nick, p.team) }, h('span', { class: 'pos msr-medal-' + (p.rank <= 3 ? p.rank : 0), style: 'font-size:14px;width:auto' }, p.rank),
               h('span', { class: 'tcell' }, crest(p.team), h('b', null, p.nick)), h('span', { style: 'font-size:12.5px;color:var(--dim)' }, 'KD ' + p.kd.toFixed(2)), h('span', { class: 'g' }, fmt(REWARD(p.rank)) + ' gold'));
           })),
           h('p', { class: 'mini', style: 'padding-top:12px' }, '11th–20th: 500 gold each. ', h('a', { href: '#players', style: 'color:var(--gold)' }, 'All players →'))),
@@ -2752,7 +2753,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       return h('a', { class: 'nrow', href: teamHref(k), style: 'grid-template-columns:28px minmax(0,1fr) auto' }, crest(k, 'md'), h('span', { class: 'hd' }, T[k].n), h('span', { class: 'tm' }, '#' + pos + ' · ' + fmt(r[1]) + ' pts'));
     }))));
     if (players.length) out.push(h('div', { class: 'sr-sec' }, h('div', { class: 'grp-h' }, 'Players'), h('div', { class: 'box' }, players.map(function (p) {
-      return h('a', { class: 'nrow', href: playerHref(p.nick), style: 'grid-template-columns:28px minmax(0,1fr) auto' }, crest(p.team, 'md'), h('span', { class: 'hd' }, p.nick + ' · ' + (T[p.team] || {n:'Free agent'}).n), h('span', { class: 'tm' }, 'KD ' + p.kd.toFixed(2)));
+      return h('a', { class: 'nrow', href: playerHref(p.nick, p.team), style: 'grid-template-columns:28px minmax(0,1fr) auto' }, crest(p.team, 'md'), h('span', { class: 'hd' }, p.nick + ' · ' + (T[p.team] || {n:'Free agent'}).n), h('span', { class: 'tm' }, 'KD ' + p.kd.toFixed(2)));
     }))));
     if (matches.length) out.push(h('div', { class: 'sr-sec' }, h('div', { class: 'grp-h' }, 'Matches'), h('div', { class: 'box' }, matches.map(matchRow))));
     if (news.length) out.push(h('div', { class: 'sr-sec' }, h('div', { class: 'grp-h' }, 'News'), h('div', { class: 'box' }, news.map(function (n) {
@@ -2902,7 +2903,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return { hist: hist, soon: soon, swiss: { rounds: rounds, q30: q30, e03: e03, q31: q31, e13: e13 }, skill: SKILL, rank: rank, r5ok: r5ok, count: id, r5: r5 };
   }
 
-  var DEMO = buildDemo({ CODES: RANK.map(function (r) { return r[0]; }), ROSTER: ROSTER, MAPS: MAPS, TODAY: TODAY, YEAR: YEAR, seed: 'msr-month-1', real: function (c) { return !!T[c]; } });
+  // Production starts with no fabricated matches, scores or Swiss results.
+  var DEMO = { hist: [], soon: [], swiss: { rounds: [], q30: [], e03: [], q31: [], e13: [] }, skill: {}, rank: RANK.map(function (r) { return r.slice(); }) };
   DEMO.soon.forEach(function (m) { M.push(m); });
   SWISS.rounds = DEMO.swiss.rounds; SWISS.q30 = DEMO.swiss.q30; SWISS.e03 = DEMO.swiss.e03; SWISS.q31 = DEMO.swiss.q31; SWISS.e13 = DEMO.swiss.e13;
   RANK.splice(0, RANK.length); DEMO.rank.forEach(function (r) { RANK.push([r[0],50,0,0,0,'']); });
@@ -3061,7 +3063,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var dd = f.days === 'all' ? 1e9 : +f.days;
     return rows.filter(function (r) { return r.ago <= dd && (f.ev === 'all' || r.ev === f.ev) && (f.map === 'all' || r.map === f.map) && (!f.team || f.team === 'all' || r.team === f.team); });
   }
-  function playerCell(nick, team) { return h('div', { class: 'tcell' }, crest(team), h('div', null, h('a', { class: 'tl', href: playerHref(nick) }, h('b', null, nick)), h('span', { class: 's' }, (T[team] || {n:'Free agent'}).n))); }
+  function playerCell(nick, team) { return h('div', { class: 'tcell' }, crest(team), h('div', null, h('a', { class: 'tl', href: playerHref(nick, team) }, h('b', null, nick)), h('span', { class: 's' }, (T[team] || {n:'Free agent'}).n))); }
 
   /* ================= Matches ================= */
   var MF = { ev: 'all', team: 'all' };
@@ -3209,7 +3211,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         h('thead', null, h('tr', null, h('th', null, 'Player'), h('th', { class: 'n' }, 'K–D'), h('th', { class: 'n' }, '+/−'), h('th', { class: 'n' }, 'ADR'), h('th', { class: 'n' }, 'KAST'), h('th', { class: 'n' }, 'Rating'))),
         h('tbody', null, rows.map(function (r) {
           var df = r.k - r.d;
-          return h('tr', { class: 'clk', onclick: go(playerHref(r.nick)) }, h('td', null, h('a', { class: 'tl', href: playerHref(r.nick) }, h('b', null, r.nick)), mvp === r.nick ? h('span', { class: 'mvp' }, '★ MVP') : null),
+          return h('tr', { class: 'clk', onclick: go(playerHref(r.nick, r.team)) }, h('td', null, h('a', { class: 'tl', href: playerHref(r.nick, r.team) }, h('b', null, r.nick)), mvp === r.nick ? h('span', { class: 'mvp' }, '★ MVP') : null),
             h('td', { class: 'n' }, r.k + '–' + r.d), h('td', { class: 'n ' + (df > 0 ? 'pos' : df < 0 ? 'neg' : '') }, (df > 0 ? '+' : '') + df),
             h('td', { class: 'n' }, Math.round(r.adr)), h('td', { class: 'n' }, Math.round(r.kast) + '%'), h('td', { class: 'n' }, rt(r.rating)));
         })))));
@@ -3275,7 +3277,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var pl = PLAYERS.filter(function (p) { return p.team === code; }).sort(function (a, b) { return b.rating - a.rating; });
       return h('div', { class: 'box' }, h('div', { class: 'panel-h', style: 'display:flex;align-items:center;gap:10px' }, crest(code), h('a', { class: 'tl', href: teamHref(code) }, h('b', null, T[code].n))),
         h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:300px' }, h('thead', null, h('tr', null, h('th', null, 'Player'), h('th', { class: 'n' }, 'Maps'), h('th', { class: 'n' }, 'K/D'), h('th', { class: 'n' }, 'Rating'))),
-          h('tbody', null, pl.map(function (p) { return h('tr', { class: 'clk', onclick: go(playerHref(p.nick)) }, h('td', null, h('a', { class: 'tl', href: playerHref(p.nick) }, h('b', null, p.nick))), h('td', { class: 'n' }, p.maps), h('td', { class: 'n' }, p.kd.toFixed(2)), h('td', { class: 'n' }, rt(p.rating))); })))));
+          h('tbody', null, pl.map(function (p) { return h('tr', { class: 'clk', onclick: go(playerHref(p.nick, p.team)) }, h('td', null, h('a', { class: 'tl', href: playerHref(p.nick, p.team) }, h('b', null, p.nick))), h('td', { class: 'n' }, p.maps), h('td', { class: 'n' }, p.kd.toFixed(2)), h('td', { class: 'n' }, rt(p.rating))); })))));
     })));
 
     parts.push(h('div', { class: 'grp-h' }, 'Recent matches'));
@@ -3325,7 +3327,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   }
   function board(title, sub, rows, valFn) {
     return h('div', { class: 'box' }, panelHead(title, sub), h('div', { class: 'lb2' }, rows.map(function (g, i) {
-      return h('a', { class: 'lr', href: playerHref(g.nick) }, h('span', { class: 'ps' + (i === 0 ? ' g' : '') }, i + 1), crest(g.team), h('b', null, g.nick), h('span', { class: 'v' }, valFn(g)));
+      return h('a', { class: 'lr', href: playerHref(g.nick, g.team) }, h('span', { class: 'ps' + (i === 0 ? ' g' : '') }, i + 1), crest(g.team), h('b', null, g.nick), h('span', { class: 'v' }, valFn(g)));
     })));
   }
   V.stats = function () {
@@ -3362,7 +3364,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           var sorted = sortBy(list, SF.sp);
           body.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:760px' }, thead(cols, SF.sp, draw2),
             h('tbody', null, sorted.map(function (g, i) {
-              return h('tr', { class: 'clk', onclick: go(playerHref(g.nick)) }, h('td', { class: 'pos' }, i + 1), h('td', null, playerCell(g.nick, g.team)), h('td', { class: 'n' }, g.maps), h('td', { class: 'n' }, g.R),
+              return h('tr', { class: 'clk', onclick: go(playerHref(g.nick, g.team)) }, h('td', { class: 'pos' }, i + 1), h('td', null, playerCell(g.nick, g.team)), h('td', { class: 'n' }, g.maps), h('td', { class: 'n' }, g.R),
                 h('td', { class: 'n' }, g.k + '–' + g.d), h('td', { class: 'n ' + (g.diff > 0 ? 'pos' : g.diff < 0 ? 'neg' : '') }, (g.diff > 0 ? '+' : '') + g.diff), h('td', { class: 'n' }, g.kd.toFixed(2)),
                 h('td', { class: 'n' }, g.adr.toFixed(1)), h('td', { class: 'n' }, g.kast.toFixed(1) + '%'), h('td', { class: 'n' }, rt(g.rating)));
             }))))));
@@ -3435,8 +3437,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('thead', null, h('tr', null, h('th', null, 'Player'), h('th', { class: 'n' }, 'Maps'), h('th', { class: 'n' }, 'K/D'), h('th', { class: 'n' }, 'ADR'), h('th', { class: 'n' }, 'KAST'), h('th', { class: 'n' }, 'Rating'))),
       h('tbody', null, roster.map(function (p) {
         var g = agg(PROWS[p.nick] || []);
-        return h('tr', { class: 'clk', onclick: go(playerHref(p.nick)) }, h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'bigav sg' + tc(p), style: 'width:30px;height:30px', 'aria-hidden': 'true' }, sig(p.nick, 30)),
-          h('div', null, h('a', { class: 'tl', href: playerHref(p.nick) }, h('b', null, (function () { var nick = String(p.nick || '').replace(/^\s*ign\s*:\s*/i, '').trim(); if (p.team === 'COR') nick = nick.replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim(); return nick; })()))))),
+        return h('tr', { class: 'clk', onclick: go(playerHref(p.nick, p.team)) }, h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'bigav sg' + tc(p), style: 'width:30px;height:30px', 'aria-hidden': 'true' }, sig(p.nick, 30)),
+          h('div', null, h('a', { class: 'tl', href: playerHref(p.nick, p.team) }, h('b', null, (function () { var nick = String(p.nick || '').replace(/^\s*ign\s*:\s*/i, '').trim(); if (p.team === 'COR') nick = nick.replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim(); return nick; })()))))),
           h('td', { class: 'n' }, p.maps), h('td', { class: 'n' }, p.kd.toFixed(2)), h('td', { class: 'n' }, g.adr.toFixed(1)), h('td', { class: 'n' }, g.kast.toFixed(1) + '%'), h('td', { class: 'n' }, rt(p.rating)));
       }))));
 
@@ -3479,8 +3481,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   };
 
   /* ================= Player page ================= */
-  V.player = function (nick) {
-    var p = PBY[nick];
+  V.player = function (nick, teamCode) {
+    var p = teamCode ? PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) : PBY[nick];
     if (!p) return V.players();
     var team = p.team, F = { days: 'all', ev: 'all', map: 'all' }, host = h('div', null);
     var mates = PLAYERS.filter(function (x) { return x.team === team && x.nick !== p.nick; });
@@ -3530,7 +3532,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         }))))));
       if (recent.length > 25) host.appendChild(h('p', { class: 'mini' }, 'Showing the 25 most recent of ' + recent.length + ' maps.'));
       host.appendChild(h('div', { class: 'grp-h' }, 'Teammates'));
-      host.appendChild(h('div', { class: 'box' }, h('div', { class: 'mates' }, mates.map(function (x) { return h('a', { href: playerHref(x.nick) }, h('span', { class: 'sav sg' + tc(x), 'aria-hidden': 'true' }, sig(x.nick, 30)), h('b', null, x.nick), h('span', { class: 'k' }, x.rating.toFixed(2))); }))));
+      host.appendChild(h('div', { class: 'box' }, h('div', { class: 'mates' }, mates.map(function (x) { return h('a', { href: playerHref(x.nick, x.team) }, h('span', { class: 'sav sg' + tc(x), 'aria-hidden': 'true' }, sig(x.nick, 30)), h('b', null, x.nick), h('span', { class: 'k' }, x.rating.toFixed(2))); }))));
     }
     var flt = h('div', { class: 'flt' }, sel('Date', DATEOPT, 'all', function (v) { F.days = v; draw(); }), sel('Event', EVOPT, 'all', function (v) { F.ev = v; draw(); }), sel('Map', MAPOPT, 'all', function (v) { F.map = v; draw(); }));
     draw();
@@ -3591,7 +3593,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   function rankApp() {
     var open = APR.open, cards = [];
     var dt = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    function plAv(nick, code) { var avatar=h('span', { class: 'bigav sg' + tc({ team: code }), 'aria-hidden': 'true' }, sig(nick, 64)); var team=T[code]; if(team && team.img){ avatar.style.backgroundImage='radial-gradient(circle,rgba(8,8,12,.58) 0%,rgba(8,8,12,.82) 100%),url("'+String(team.img).replace(/"/g,'')+'")'; avatar.style.backgroundPosition='center'; avatar.style.backgroundSize='cover'; } return h('a', { class: 'ap-pl', href: playerHref(nick) }, avatar, h('span', { class: 'n' }, String(nick || '').replace(/^\s*ign\s*:\s*/i, '').trim())); }
+    function plAv(nick, code) { var avatar=h('span', { class: 'bigav sg' + tc({ team: code }), 'aria-hidden': 'true' }, sig(nick, 64)); var team=T[code]; if(team && team.img){ avatar.style.backgroundImage='radial-gradient(circle,rgba(8,8,12,.58) 0%,rgba(8,8,12,.82) 100%),url("'+String(team.img).replace(/"/g,'')+'")'; avatar.style.backgroundPosition='center'; avatar.style.backgroundSize='cover'; } return h('a', { class: 'ap-pl', href: playerHref(nick, code) }, avatar, h('span', { class: 'n' }, String(nick || '').replace(/^\s*ign\s*:\s*/i, '').trim())); }
     function setOpen(i) {
       open = open === i ? -1 : i; APR.open = open;
       cards.forEach(function (c, k) { var on = k === open; c.el.classList.toggle('open', on); c.btn.setAttribute('aria-expanded', on ? 'true' : 'false'); });
@@ -3776,7 +3778,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     app.style.removeProperty('--clan-accent');
     app.style.removeProperty('--clan-glow');
     if (name === 'player' || name === 'team') {
-      var clanCode = name === 'team' ? safeRouteDecode((H.split('/')[1]||'')).toUpperCase() : ((PBY[safeRouteDecode(H.split('/')[1]||'')]||{}).team||'');
+      var clanCode = name === 'team' ? safeRouteDecode((H.split('/')[1]||'')).toUpperCase() : (safeRouteDecode(H.split('/')[2]||'') || (PBY[safeRouteDecode(H.split('/')[1]||'')]||{}).team||'');
       var clan = T[clanCode];
       if (clan) {
         var palette=['#45d98b','#53b5ff','#b58cff','#ff6c8d','#f4b94e','#22d5d1','#a3e65d','#fa8855'];
@@ -3918,6 +3920,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         RANK.push([code, Number.isFinite(row.points) ? row.points : 50, 0, 0, 0, '']);
         byName[key(row.name)] = code;
       }
+      var rankingRow = RANK.find(function (r) { return r[0] === code; });
+      if (rankingRow && Number.isFinite(row.points) && row.points >= 0) rankingRow[1] = row.points;
       if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
       if (/^(?:wonderart|woart)$/i.test(row.name.trim())) { T[code].img = 'assets/woart-logo.svg'; T[code].c = '#B56CFF'; }
       Object.keys(row.player_ids || {}).forEach(function(nick) {
@@ -3967,9 +3971,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   }
   function route() {
     var raw = H || 'news', parts = raw.split('/'), name = parts[0], arg = safeRouteDecode(parts.slice(1).join('/') || '');
-    if (!V[name] || name === 'profile' || name === 'shop') { name = 'news'; if (/^#(?:profile|shop)(?:[/?]|$)/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#news'); }
+    if (!Object.prototype.hasOwnProperty.call(V, name) || typeof V[name] !== 'function' || name === 'profile' || name === 'shop') { name = 'news'; if (/^#(?:profile|shop)(?:[/?]|$)/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#news'); }
     q.value = name === 'search' ? arg : '';
-    paint(name, V[name](arg));
+    var playerTeam = name === 'player' ? safeRouteDecode(parts[2] || '') : '';
+    if (name === 'player') arg = safeRouteDecode(parts[1] || '');
+    paint(name, V[name](arg, playerTeam));
     window.scrollTo(0, 0);
   }
   var H = '';
