@@ -1514,6 +1514,7 @@ html body #app .sg.msr-clan-avatar .crown{z-index:4}
 @keyframes msr-clan-item-orbit{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){html body #app .msr-clan-avatar-item::before{animation:none}}
 </style>
+<style>html body #app .sg.msr-clan-avatar:not(.msr-has-clan-logo)::before{color:var(--signature-color,#83dfb0)!important;opacity:.22!important}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3530,7 +3531,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       item.setAttribute('title',tag);
       avatar.style.setProperty('--avatar-size',Math.min(avatar.clientWidth,avatar.clientHeight)+'px');
       avatar.setAttribute('data-clan-initials',clan.i||clan.tag||clan.n.slice(0,2).toUpperCase());
-      if(typeof logo==='string' && /^(https:\/\/|assets\/|\.\/assets\/)/i.test(logo)) {
+      if(typeof logo==='string' && /^(https:\/\/|assets\/|\.\/assets\/|data:image\/(?:png|jpeg|webp|gif|svg\+xml)[;,])/i.test(logo)) {
         avatar.style.setProperty('background-image','linear-gradient(rgba(9,15,25,.27),rgba(9,15,25,.45)),url("'+logo.replace(/["'()\\]/g,'')+'")','important');
         avatar.classList.add('msr-has-clan-logo');
       } else {
