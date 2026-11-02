@@ -2014,11 +2014,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
   var STREAMS = [];
 
-  var AGENTS = [
-    { id: 'A', n: 'GoldMN', i: 'GM', rate: 2900, eta: '15 min', since: '2024' },
-    { id: 'B', n: 'Steppe Store', i: 'SS', rate: 3000, eta: '10 min', since: '2025' },
-    { id: 'C', n: 'UB Top-up', i: 'UT', rate: 2950, eta: '20 min', since: '2025' }
-  ];
+  // Sellers appear only after their contact and payment details are configured.
+  var AGENTS = [];
   var PACKS = [100, 500, 1000, 3000];
   var REWARD = function (rank) { return rank === 1 ? 5000 : rank === 2 ? 3000 : rank === 3 ? 2000 : rank <= 10 ? 1000 : 500; };
 
@@ -2601,6 +2598,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
   var COIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M14.8 9.6a3.4 3.4 0 1 0 .2 4.6V12h-2.3"></path></svg>';
   function goldBanner() {
+    if (!AGENTS.length) return h('div', { class: 'gbanner' }, h('span', { class: 'gt' }, h('b', null, 'Partner announcements coming soon'), h('span', null, 'Gold orders are not available yet.')));
     var k = 0, a = AGENTS[0];
     var name = h('b', { class: 'rot' }), sub = h('span', { class: 'rot' });
     function fill() { a = AGENTS[k % AGENTS.length]; name.textContent = a.n + ' — 100 gold ' + fmt(a.rate) + '₮'; sub.textContent = 'Partner seller · delivered within ' + a.eta + ' · bank transfer or QPay'; }
@@ -2636,6 +2634,10 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     );
   };
   V.gold = function () {
+    if (!AGENTS.length) return h('div', null, pageHead('Gold', 'Partner sellers and payments'),
+      h('section', { class: 'box' }, h('h2', null, 'Gold orders are not available yet'),
+        h('p', null, 'Verified seller contacts and payment details have not been configured. Ordering and automatic payment confirmation are unavailable.'),
+        h('a', { class: 'btn', href: 'https://discord.com/users/1128188613230874727', target: '_blank', rel: 'noopener noreferrer' }, 'Contact MSR on Discord')));
     var state = { id: '', pack: 1000, agent: 'A' };
     var summary = h('div', { class: 'summary' }), copied = h('div', { class: 'copied', role: 'status' });
     var idIn = h('input', { id: 'gid', type: 'text', inputmode: 'numeric', autocomplete: 'off', maxlength: '20', placeholder: 'Your in-game ID' });
