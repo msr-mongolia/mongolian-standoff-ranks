@@ -1625,9 +1625,9 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
   // Public, read-only player stats lookup for the signed-in account Stats tab.
   window.MSR_PLAYER_STATS_BY_ID = function(gameId) {
     var id = String(gameId || '').trim();
-    if (!/^\\d{5,12}$/.test(id)) return null;
+    if (!/^\d{5,12}$/.test(id)) return null;
     var matches = PLAYERS.filter(function(p) {
-      var k = p.team + '|' + String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, '');
+      var k = p.team + '|' + String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
       return String(GAME_IDS[k] || '') === id;
     });
     if (matches.length !== 1) return null;
@@ -3464,7 +3464,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="msr-config.js"></script>
-<script src="msr-auth.js?v=1b6f0b9"></script>
+<script src="msr-auth.js?v=54086e3"></script>
 <script src="msr-language.js"></script>
 <script>
 /* MSR Shop ownership and order requests. Payments remain unverified until a trusted provider webhook is connected. */
