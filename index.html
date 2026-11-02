@@ -3905,6 +3905,20 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if (shared >= 5) code = 'COR';
       }
       code = code || row.id.toUpperCase();
+      // Correct Manai's submitted list numbers without changing the players' game IDs.
+      if (code === 'MANAI') {
+        var manaiNames = { '5 1330': '1330', '6': 'Finn', '7 Vibes?': 'Vibes?', '8 Ign-ApriL': 'ApriL' };
+        var manaiIds = Object.assign({}, row.player_ids || {});
+        row.roster = row.roster.map(function (nick) {
+          var clean = Object.prototype.hasOwnProperty.call(manaiNames, nick) ? manaiNames[nick] : nick;
+          if (clean !== nick && Object.prototype.hasOwnProperty.call(manaiIds, nick)) {
+            manaiIds[clean] = manaiIds[nick];
+            delete manaiIds[nick];
+          }
+          return clean;
+        });
+        row.player_ids = manaiIds;
+      }
       // Discord submissions sometimes include device notes and unmatched '(' after a nickname.
       // Keep the submitted data in Supabase, but use clean public nicknames consistently.
       if (code === 'COR') {
