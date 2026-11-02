@@ -122,6 +122,16 @@
       var claimPass=el('input',{type:'password',placeholder:'MSR Password',autocomplete:'off',maxlength:128});
       var claimNote=el('p',{class:'msr-note'},'MSR Code + Password-ийг админ олгоно. Серверийн баталгаажуулалт хараахан идэвхжээгүй тул одоогоор нэвтрэх боломжгүй.');
       var claimLogin=el('button',{type:'button',class:'msr-btn pri',disabled:true},'Code + Password-оор нэвтрэх (удахгүй)');
+      var discordRequest=el('a',{class:'msr-btn pri',href:'https://discord.com/users/1128188613230874727',target:'_blank',rel:'noopener noreferrer',style:'display:block;text-align:center;text-decoration:none',onclick:function(e){
+        var player=claimName.value.trim();
+        if(!player){e.preventDefault();claimName.focus();claimRequestStatus.textContent='Эхлээд nickname эсвэл Standoff 2 ID-гаа оруулна уу.';return;}
+        var message='Сайн байна уу, MSR профайлын Code + Password авах хүсэлт.\\nNickname / Standoff 2 ID: '+player;
+        claimRequestStatus.textContent='Discord DM нээгдэнэ. Хүсэлтийн текстийг хуулж, чат руу paste хийгээд Send дарна уу.';
+        if(navigator.clipboard&&navigator.clipboard.writeText){
+          navigator.clipboard.writeText(message).then(function(){claimRequestStatus.textContent='Хүсэлтийн текст хуулагдлаа. Discord чат руу paste хийгээд Send дарна уу.';}).catch(function(){claimRequestStatus.textContent='Автоматаар хуулах боломжгүй. Доорх текстийг гараар хуулж Discord руу илгээнэ үү: '+message;});
+        }else{claimRequestStatus.textContent='Доорх текстийг хуулж Discord руу илгээнэ үү: '+message;}
+      }},'Код авах · Discord DM');
+      var claimRequestStatus=el('p',{class:'msr-note',role:'status'},'Nickname / ID-гаа оруулаад Код авах дээр дарна уу.');
       var claimArea=el('div',{style:'display:flex;flex-direction:column;gap:10px;width:100%;margin-top:12px'},[
         el('label',{style:'font-weight:700'},'Player nickname / Standoff 2 ID'),
         claimName,
@@ -130,6 +140,8 @@
         el('label',{style:'font-weight:700'},'MSR Password'),
         claimPass,
         claimLogin,
+        discordRequest,
+        claimRequestStatus,
         claimNote
       ]);
       claimArea.hidden=true;
