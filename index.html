@@ -2070,7 +2070,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   function flag() { return h('span', { class: 'flag', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')); }
   function comments(n) { return h('span', { class: 'cm', svg: ICON.cm }, String(n)); }
   function go(hash) { return function () { navTo(hash.replace(/^#/, '')); }; }
-  function tagEl(code) { var t = T[code]; return t && t.tag ? h('span', { class: 'ctag' }, '[' + t.tag + ']') : null; }
+  function tagEl(code) { var t = T[code] || {}; var name = String(t.n || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''); var known = { warriorkingzz: 'WOART', elitekingzz: 'EknZ', civilizationofruin: 'CioR', kingzz: 'KngZz' }; var tag = known[name] || t.tag; return tag ? h('span', { class: 'ctag' }, '[' + tag + ']') : null; }
   function teamHref(code) { return '#team/' + code; }
   var GAME_IDS = {};
   function gameIdEl(nick, team) {
@@ -3462,7 +3462,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return h('div', null,
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
       h('div', { class: 'prof' }, crest(code, 'xl'),
-        h('div', null, h('h1', null, /kingzz/i.test(T[code].n||'') ? null : tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null))),
+        h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null))),
       h('section', { class:'msr-team-stats', 'aria-label':'Team stats' },
         h('div',{class:'msr-team-stats-heading'},h('span',{svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></svg>'}),h('h2',null,'Team stats')),
         h('div',{class:'msr-team-stat-grid'},
