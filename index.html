@@ -3898,6 +3898,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           !Array.isArray(row.roster) || row.roster.length < 5 || row.roster.length > 12 ||
           row.roster.some(function (n) { return typeof n !== 'string' || !n || n.length > 40; })) return;
       if (row.id === 'ds_b248643101cd3a4e8594fabf' || /^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim())) return; // Duplicate KingZz registration
+      if (row.id === 'ds_b8ba2ec7e90713c104377816') row = Object.assign({}, row, { name: 'VAMP EMPIRE' });
       var code = byName[key(row.name)];
       // CioR White is the confirmed roster already stored under COR.
       if (!code && key(row.name) === 'ciorwhite' && ROSTER.COR) {
