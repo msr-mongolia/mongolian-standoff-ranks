@@ -3253,10 +3253,17 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
         var id = String(row.player_ids[nick]);
         if (/^\d{5,12}$/.test(id)) GAME_IDS[code + '|' + key(nick)] = id;
       });
-      if (existing) return;
+      PLAYERS.forEach(function(p) {
+        if(p.team===code && !row.roster.some(function(n){return key(n)===key(p.nick);})) {
+          p.previousTeam=code; p.team='';
+        }
+      });
       ROSTER[code] = row.roster.slice();
       row.roster.forEach(function (nick) {
-        if (PLAYERS.some(function (p) { return p.nick === nick && p.team === code; })) return;
+        var current=PLAYERS.find(function(p){return key(p.nick)===key(nick)&&p.team===code;});
+        if(current){current.nick=nick;PBY[nick]=current;return;}
+        var returning=PLAYERS.find(function(p){return key(p.nick)===key(nick)&&!p.team&&p.previousTeam===code;});
+        if(returning){returning.team=code;returning.nick=nick;PBY[nick]=returning;return;}
         var p = { nick: nick, team: code, maps: 0, kills: 0, deaths: 0, kd: 0, rating: 0, rank: PLAYERS.length + 1, skill: 1, hs0: 0 };
         PLAYERS.push(p);
         if (!PBY[nick]) PBY[nick] = p;
@@ -3268,7 +3275,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
     try {
-      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids&order=name', {
+      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids&order=source_timestamp.asc,name.asc', {
         headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(10000)
       });
       if (!response.ok) return;
