@@ -374,7 +374,7 @@
         if(newPass.value.length<8){passStatus.textContent='8-аас дээш тэмдэгт оруулна уу.';return;}
         changePass.disabled=true;
         try{
-          var temporary=/^msr-[a-f0-9]{16}@accounts\\.msr\\.invalid$/i.test(S.user.email||'');
+          var temporary=/^msr-[a-f0-9]{16}@accounts\.msr\.invalid$/i.test(S.user.email||'');
           if(!temporary){
             var check=await sb.auth.signInWithPassword({email:S.user.email,password:oldPass.value});
             if(check.error)throw check.error;
