@@ -3436,7 +3436,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('tbody', null, roster.map(function (p) {
         var g = agg(PROWS[p.nick] || []);
         return h('tr', { class: 'clk', onclick: go(playerHref(p.nick)) }, h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'bigav sg' + tc(p), style: 'width:30px;height:30px', 'aria-hidden': 'true' }, sig(p.nick, 30)),
-          h('div', null, h('a', { class: 'tl', href: playerHref(p.nick) }, h('b', null, (function () { var nick = String(p.nick || '').replace(/^\s*ign\s*:\s*/i, '').trim(); if (p.team === 'COR') nick = nick.replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim(); return nick; })())))),
+          h('div', null, h('a', { class: 'tl', href: playerHref(p.nick) }, h('b', null, (function () { var nick = String(p.nick || '').replace(/^\s*ign\s*:\s*/i, '').trim(); if (p.team === 'COR') nick = nick.replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim(); return nick; })()))))),
           h('td', { class: 'n' }, p.maps), h('td', { class: 'n' }, p.kd.toFixed(2)), h('td', { class: 'n' }, g.adr.toFixed(1)), h('td', { class: 'n' }, g.kast.toFixed(1) + '%'), h('td', { class: 'n' }, rt(p.rating)));
       }))));
 
