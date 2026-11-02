@@ -2003,7 +2003,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
         wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
             h('div', null, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), T[p.team].n)),
-            h('span', { class: 'rank msr-medal-' + (p.rank <= 3 ? p.rank : 0) }, '#' + p.rank + (p.provisional ? ' · Provisional' : ''))),
+            h('span', { class: 'rank msr-medal-' + (p.rank <= 3 ? p.rank : 0) }, '#' + p.rank)),
           h('div', { class: 'row3' },
             h('div', { class: 's kd' }, h('div', { class: 'k' }, 'KD'), h('div', { class: 'v' }, (Number(p.kd) || 0).toFixed(2))),
             h('div', { class: 's' }, h('div', { class: 'k' }, 'MSR Rating'), h('div', { class: 'v' }, (Number(p.msrRating) || 0).toFixed(2))),
