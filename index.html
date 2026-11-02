@@ -2110,7 +2110,8 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
       h('section',{style:'background:#1d2733;border:1px solid #3a495b;border-radius:18px;padding:22px'},
         h('div',{style:'font-size:13px;color:#e7bf68;font-weight:800;letter-spacing:1px'},'MSR PREMIUM'),
         h('h2',{style:'margin:10px 0;font-size:26px'},'VIP CLAN'),
-        item('Хязгааргүй ELO өсөлт','VIP идэвхтэй багийн ELO-д дээд хязгаар тавихгүй. ELO нь баталгаажсан тоглолтын үр дүнгээр өөрчлөгдөнө.'),
+        item('300 ELO хүртэл үнэгүй','Шинэ баг 50 ELO-оос эхэлнэ. 300 ELO хүртэл VIP шаардлагагүй. 300-аас дээш өсөхөд VIP Clan эрх шаардлагатай.'),
+        item('Хязгааргүй ELO өсөлт','VIP идэвхтэй баг 300 ELO-оос дээш хязгааргүй өсөх боломжтой. VIP хугацаа дуусвал ELO царцана. ELO нь баталгаажсан тоглолтын үр дүнгээр өөрчлөгдөнө.'),
         item('Team Page хөгжүүлэлт','Багийн профайлын нэмэлт тохиргоо, танилцуулга болон илүү дэлгэрэнгүй мэдээлэл.'),
         item('Team Profile Banner','Багийн профайл дээр өөрийн banner зураг байрлуулах боломж.'),
         item('VIP Clan Badge','Багийн нэрийн хажууд VIP тэмдэг харуулах.'),
@@ -2348,7 +2349,7 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
       mm.maps = [[shuf(MAPS)[0], null, null, 'soon', 'Decider']]; soon.push(mm);
     }
     // 4) ranking (elo)
-    // MSR ELO v2: initial 50, hard cap 300, match gain <=35 and loss <=40.
+    // MSR ELO v2: initial 50, free tier cap 300, match gain <=35 and loss <=40. VIP ELO requires verified entitlement from backend.
     // All completed maps and their round scores contribute to the result.
     function elo(until) {
       var r = {}; CODES.forEach(function (c) { r[c] = { e: 50, w: 0, l: 0, f: [] }; });
