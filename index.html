@@ -2661,6 +2661,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if (next >= 0) { e.preventDefault(); selectZone(next); tabbar.children[next].focus(); }
       });
       tabbar.appendChild(button);
+      if (zi === 4) return; // Group E uses its confirmed seven-day schedule instead of draft Swiss bracket.
       var board = h('div', { class: 'msr-swiss-board' });
       var connectors = '<svg viewBox="0 0 1520 760" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#5b7ba7" stroke-width="2"><path d="M248 350H274V185H310M274 350V525H310"/><path d="M558 185H584V130H620M584 185V360H620"/><path d="M558 525H600V360H620M600 525V590H620"/><path d="M868 130H894V265H930M868 360H908V265H930M908 360V535H930M868 590H894V535H930"/><path d="M1178 265H1200V410H1240M1178 535H1216V410H1240"/></g></svg>';
       board.appendChild(h('div', { class: 'msr-swiss-lines', svg: connectors }));
