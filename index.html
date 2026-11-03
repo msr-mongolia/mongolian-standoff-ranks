@@ -2622,7 +2622,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('div', { class: 'msr-zone-grid' }, zones.map(function (teams, zi) {
         var label = String.fromCharCode(65 + zi);
         if (zi === 4) {
-          var groupETeams = ['1InfinityX','METAS','DRDRX','Starfire Nirvana Team','SIX LENCE PURPLE','MANAI','OMEN ESPORTS'];
+          var groupETeams = ['1nfinityX','METAS','DRDRX','Starfire Nirvana Team','SIX LENCE PURPLE','MANAI','OMEN ESPORTS'];
           var groupEDays = [
             [[0,1],[2,3],[4,5]],
             [[3,4],[5,0],[6,2]],
@@ -2634,13 +2634,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           ];
           function groupETeam(name) {
             var norm = function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
-            var aliases = {'s ix lence purple':'SIXP'};
             var keys = Object.keys(T);
-            var code = keys.find(function(k){return norm(T[k].n)===norm(name);});
-            if (!code && name === 'SIX LENCE PURPLE' && T.SIXP) code='SIXP';
-            if (!code && name === '1InfinityX' && T.INFYX) code='INFYX';
+            var fixed = {'1nfinityX':'INFYX','SIX LENCE PURPLE':'SIXP','MANAI':'MANAI','OMEN ESPORTS':'OMEN','Starfire Nirvana Team':'SNT'};
+            var code = fixed[name] && T[fixed[name]] ? fixed[name] : keys.find(function(k){return norm(T[k].n)===norm(name);});
             return code ? h('a',{class:'msr-rr-team',href:teamHref(code),title:'Open '+T[code].n+' clan profile'},
-              crest(code,'md'),h('span',null,name)) :
+              crest(code,'md'),h('span',null,T[code].n)) :
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback'},name.slice(0,2).toUpperCase()),h('span',null,name));
           }
           var groupECard = h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group E round robin schedule'},
