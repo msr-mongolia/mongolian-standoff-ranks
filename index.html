@@ -2041,6 +2041,22 @@ background-color:#121923!important
 .msr-round-robin-page .msr-zone-card[data-group="B"] .msr-rr-day-head{color:#28baf2!important}
 .msr-round-robin-page .msr-zone-card[data-group="A"] .msr-rr-match{border-color:rgba(255,182,39,.3)!important}
 .msr-round-robin-page .msr-zone-card[data-group="B"] .msr-rr-match{border-color:rgba(40,186,242,.3)!important}
+</style>
+<style id="msr-unified-group-match-layout">
+#app .msr-round-robin-page .msr-zone-card.msr-rr-card{display:block!important;width:100%!important;max-width:none!important}
+#app .msr-rr-schedule{display:flex!important;flex-direction:column!important;gap:12px!important}
+#app .msr-rr-day{display:grid!important;grid-template-columns:116px minmax(0,1fr)!important;gap:10px!important}
+#app .msr-rr-matches{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+#app .msr-rr-match{min-height:112px!important}
+#app .msr-rr-team .crest,#app .msr-rr-team .crest.md,#app .msr-rr-fallback{width:46px!important;height:46px!important;border-radius:9px!important;flex:0 0 46px!important}
+#app .msr-rr-team .crest img{width:100%!important;height:100%!important;object-fit:contain!important}
+#app .msr-rr-identity{display:flex;flex-direction:column;gap:3px;min-width:0}
+#app .msr-rr-clan-tag{font-size:16px;line-height:1.15;color:#fff;overflow-wrap:anywhere}
+#app .msr-rr-identity small{font-size:11px;line-height:1.25;color:#b9c7d4}
+#app .msr-rr-day>.msr-zone-note{grid-column:2;margin:0}
+@media(max-width:1100px){#app .msr-rr-day{grid-template-columns:1fr!important}#app .msr-rr-day-head{flex-direction:row!important;justify-content:space-between!important}#app .msr-rr-day>.msr-zone-note{grid-column:1}}
+@media(max-width:850px){#app .msr-rr-matches{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){#app .msr-rr-matches{grid-template-columns:1fr!important}#app .msr-rr-clan-tag{font-size:17px}}
 </style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2707,7 +2723,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
             var key = Object.keys(T).find(function(k){return norm(T[k].tag)===norm(item[1]);}) ||
               Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]);});
             var name = item[0];
-            return key ? h('a',{class:'msr-rr-team',href:teamHref(key),title:'Open '+T[key].n+' clan profile'},crest(key,'md'),h('span',null,name)) :
+            return key ? h('a',{class:'msr-rr-team',href:teamHref(key),title:'Open '+T[key].n+' clan profile'},crest(key,'md'),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name))) :
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback'},item[1].slice(0,2).toUpperCase()),h('span',null,name+' ('+item[1]+')'));
           }
           return h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group '+label+' round robin schedule'},
@@ -2741,7 +2757,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
             var fixed = {'1nfinityX':'INFYX','SIX LENCE PURPLE':'SIXP','MANAI':'MANAI','OMEN ESPORTS':'OMEN','Starfire Nirvana Team':'SNT'};
             var code = fixed[name] && T[fixed[name]] ? fixed[name] : keys.find(function(k){return norm(T[k].n)===norm(name);});
             return code ? h('a',{class:'msr-rr-team',href:teamHref(code),title:'Open '+T[code].n+' clan profile'},
-              crest(code,'md'),h('span',null,T[code].n)) :
+              crest(code,'md'),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},T[code].tag||T[code].i||name),h('small',null,T[code].n))) :
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback'},name.slice(0,2).toUpperCase()),h('span',null,name));
           }
           var groupECard = h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group E round robin schedule'},
