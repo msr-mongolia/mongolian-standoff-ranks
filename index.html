@@ -4101,7 +4101,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var registrations = (Array.isArray(rows) ? rows : []).filter(function (row) {
       return row && /^[a-z0-9_]{3,40}$/i.test(row.id) && typeof row.name === 'string' && Array.isArray(row.roster) &&
         row.roster.length >= 5 && row.roster.length <= 12 && row.roster.every(function (nick) { return typeof nick === 'string' && nick && nick.length <= 40; }) &&
-        row.id !== 'ds_b248643101cd3a4e8594fabf' && !/^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim());
+        row.id !== 'ds_b248643101cd3a4e8594fabf' && row.id !== 'ds_fbf308278120e648e045eb7b' && !/^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim());
     }).map(function (row) { return Object.assign({}, row, { roster: row.roster.slice(), player_ids: Object.assign({}, row.player_ids || {}) }); }).sort(compareRegistrations);
     var latestClanById = new Map();
     registrations.forEach(function (row) {
