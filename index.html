@@ -3638,7 +3638,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return h('div', null,
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
       h('div', { class: 'prof' }, crest(code, 'xl'),
-        h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null))),
+        h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class: 'tag gold', title: 'VIP until '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP CLAN') : null))),
       h('section', { class:'msr-team-stats', 'aria-label':'Team stats' },
         h('div',{class:'msr-team-stats-heading'},h('span',{svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></svg>'}),h('h2',null,'Team stats')),
         h('div',{class:'msr-team-stat-grid'},
@@ -4173,6 +4173,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         RANK.push([code, Number.isFinite(row.points) ? row.points : 50, 0, 0, 0, '']);
         byName[key(row.name)] = code;
       }
+      T[code].vipExpiresAt = row.vip_expires_at || null;
       var rankingRow = RANK.find(function (r) { return r[0] === code; });
       if (rankingRow && Number.isFinite(row.points) && row.points >= 0) rankingRow[1] = row.points;
       if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
@@ -4224,7 +4225,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
     try {
-      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id&order=source_timestamp.asc,name.asc&limit=1000', {
+      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id,vip_started_at,vip_expires_at&order=source_timestamp.asc,name.asc&limit=1000', {
         headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(10000)
       });
       if (!response.ok) { console.warn('MSR teams sync HTTP',response.status); return; }
