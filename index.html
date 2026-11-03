@@ -2727,8 +2727,10 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           var byeIndices = [0,3,6,2,1,5,4];
           function groupTeam(item) {
             var norm = function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
-            var key = Object.keys(T).find(function(k){return norm(T[k].tag)===norm(item[1]);}) ||
-              Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]);});
+            var key = Object.keys(T).find(function(k){return T[k].tag && norm(T[k].tag)===norm(item[1]);}) ||
+              Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]);}) ||
+              Object.keys(T).find(function(k){return norm(String(T[k].n).replace(/\\s*\\([^)]*\\)\\s*$/,''))===norm(item[0]);}) ||
+              Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]+' ('+item[1]+')');});
             var name = item[0];
             return key ? h('a',{class:'msr-rr-team',href:teamHref(key),title:'Open '+T[key].n+' clan profile'},crest(key,'md'),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name))) :
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback msr-rr-fallback-'+norm(item[1])},item[1]==='RESKK'?'✳':item[1].slice(0,2).toUpperCase()),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name)));
