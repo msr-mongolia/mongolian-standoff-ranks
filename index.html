@@ -4418,7 +4418,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   function applyKnightBack1(node){
     var panels=Array.from(node.querySelectorAll('.prof,.msr-team-stats,.hl-top,.hl-card:has(.hl-grid)'));
     panels.forEach(function(panel){panel.classList.add('msr-knight-video-panel');});
-    if(!msrKnightVideoPromise)msrKnightVideoPromise=fetch('assets/kgtss_back1_video.json').then(function(response){
+    if(!msrKnightVideoPromise)msrKnightVideoPromise=fetch('assets/kgtss_back1_video.json?v=smooth-loop-1').then(function(response){
       if(!response.ok)throw Error('Video unavailable');return response.json();
     }).then(function(asset){
       var bytes=Uint8Array.from(atob(asset.base64),function(c){return c.charCodeAt(0);});
