@@ -2064,6 +2064,9 @@ background-color:#121923!important
 .msr-rr-unlinked .msr-rr-identity{display:flex;flex-direction:column;gap:2px;min-width:0}
 .msr-rr-unlinked .msr-rr-clan-tag{font-weight:900;color:#f6f7fb}
 .msr-rr-unlinked .msr-rr-identity small{color:#cbd2dd}
+</style><style id="msr-vip-tier-colors">
+#app .msr-vip-plus{color:#ffda70!important;border:1px solid #d6a53f!important;background:linear-gradient(120deg,#694514,#2b2315)!important;box-shadow:0 0 10px #e9ac382e!important}
+#app .msr-vip-standard{color:#ff6572!important;border:1px solid #da4052!important;background:linear-gradient(120deg,#591923,#29131b)!important;box-shadow:0 0 10px #df35452e!important}
 </style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2952,7 +2955,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           var mv = r[2] > 0 ? ['up', '▲ ' + r[2]] : r[2] < 0 ? ['dn', '▼ ' + Math.abs(r[2])] : ['eq', '—'];
           return h('tr', { class: 'clk msr-podium-row-' + (i < 3 ? i + 1 : 0), onclick: go(teamHref(r[0])) },
             h('td', { class: 'pos msr-medal-' + (i < 3 ? i + 1 : 0) }, i + 1),
-            h('td', null, h('div', { class: 'tcell' }, crest(r[0], 'md'), h('div', null, h('a', { class: 'tl', href: teamHref(r[0]) }, tagEl(r[0]), h('b', null, T[r[0]].n)), (T[r[0]].vipExpiresAt && Date.parse(T[r[0]].vipExpiresAt) > Date.now()) ? h('span', { class: 'msr-ranking-vip-badge', title: 'VIP CLAN · Valid until '+new Date(T[r[0]].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP') : null, h('span', { class: 's' }, T[r[0]].city)))),
+            h('td', null, h('div', { class: 'tcell' }, crest(r[0], 'md'), h('div', null, h('a', { class: 'tl', href: teamHref(r[0]) }, tagEl(r[0]), h('b', null, T[r[0]].n)), (T[r[0]].vipExpiresAt && Date.parse(T[r[0]].vipExpiresAt) > Date.now()) ? h('span', { class: 'msr-ranking-vip-badge '+(msrVipPlus(r[0])?'msr-vip-plus':'msr-vip-standard'), title: 'VIP CLAN · Valid until '+new Date(T[r[0]].vipExpiresAt).toLocaleDateString('mn-MN') }, msrVipPlus(r[0])?'👑 VIP+':'👑 VIP') : null, h('span', { class: 's' }, T[r[0]].city)))),
             h('td', { class: 'n' }, h('span', { class: 'pts' }, fmt(r[1]))),
             h('td', { class: 'n' }, h('span', { class: 'mv ' + mv[0] }, mv[1])),
             h('td', { class: 'n' }, r[3] + '–' + r[4]),
@@ -3925,6 +3928,10 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close();});
     dialog.addEventListener('close',function(){dialog.remove();});document.body.appendChild(dialog);dialog.showModal();close.focus();
   }
+  function msrVipPlus(code){
+    var t=T[code]||{},end=Date.parse(t.vipExpiresAt),start=Date.parse(t.vipStartedAt);
+    return Number.isFinite(end)&&end-(Number.isFinite(start)?start:Date.now())>180*86400000;
+  }
   V.team = function (code) {
     code = String(code || '').toUpperCase();
     if (!T[code]) return V.ranking();
@@ -3967,7 +3974,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
       h('div', { class: 'prof' + (code === 'ETXEN' ? ' msr-etxen-winter' : '') + (code === 'TLNRS' ? ' msr-lunaris-clean' : '') }, crest(code, 'xl'),
         (code === 'TLNRS' || code === 'ETXEN') ? h('button', {type:'button',class:'msr-team-gold-sticker','aria-label':code==='ETXEN'?'Enlarge ETXEN golden sticker':'Enlarge Team Lunaris golden sticker',onclick:function(){openTeamGoldSticker(code);}},h('img',{src:code==='ETXEN'?'assets/etxen_gold_sticker.png':'assets/lunaris_gold_sticker.png',alt:code==='ETXEN'?'ETXEN golden sticker':'Team Lunaris golden sticker'})) : null,
-        h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class: 'tag gold', title: 'VIP until '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP CLAN') : null))),
+        h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class: 'tag '+(msrVipPlus(code)?'msr-vip-plus':'msr-vip-standard'), title: 'VIP until '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, msrVipPlus(code)?'👑 VIP+ CLAN':'👑 VIP CLAN') : null))),
       h('section', { class:'msr-team-stats', 'aria-label':'Team stats' },
         h('div',{class:'msr-team-stats-heading'},h('span',{svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></svg>'}),h('h2',null,'Team stats')),
         h('div',{class:'msr-team-stat-grid'},
@@ -4106,7 +4113,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var code = r[0], mv = r[2] > 0 ? ['up', '+' + r[2]] : r[2] < 0 ? ['dn', '−' + Math.abs(r[2])] : ['eq', '0'];
       var btn = h('button', { type: 'button', class: 'ap-rk' + (String(T[code].tag || '').toUpperCase() === 'ETXEN' || /^ETXEN\b/i.test(T[code].n || '') ? ' msr-etxen-clean' : ''), 'aria-expanded': i === open ? 'true' : 'false' },
         h('span', { class: 'no' }, i + 1), crest(code, 'md'),
-        h('span', { class: 'nm' }, h('b', null, T[code].n, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class:'msr-rank-vip-inline', title:'VIP CLAN · '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP') : null, isFav(code) ? h('i', { class: 'fv', svg: starSvg(true).replace('width="22" height="22"', 'width="14" height="14"') }) : null), h('small', null, fmt(r[1]) + ' points')),
+        h('span', { class: 'nm' }, h('b', null, T[code].n, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class:'msr-rank-vip-inline '+(msrVipPlus(code)?'msr-vip-plus':'msr-vip-standard'), title:'VIP CLAN · '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, msrVipPlus(code)?'👑 VIP+':'👑 VIP') : null, isFav(code) ? h('i', { class: 'fv', svg: starSvg(true).replace('width="22" height="22"', 'width="14" height="14"') }) : null), h('small', null, fmt(r[1]) + ' points')),
         h('span', { class: 'mv ' + mv[0] }, mv[1]));
       var body = h('div', { class: 'ap-body' + (String(T[code].tag || '').toUpperCase() === 'ETXEN' || /^ETXEN\b/i.test(T[code].n || '') ? ' msr-etxen-clean' : '') }, h('div', { class: 'ap-pls' }, captainFirstRoster(code).map(function (n) { return plAv(n, code); })), h('div', { class: 'ap-acts' }, h('a', { class: 'ap-btn', href: teamHref(code) }, 'Go to teampage'), (function () {
         var sb = h('button', { type: 'button', class: 'ap-star', 'aria-label': 'Follow ' + T[code].n, 'aria-pressed': isFav(code) ? 'true' : 'false', svg: starSvg(isFav(code)) });
@@ -4500,6 +4507,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         RANK.push([code, Number.isFinite(row.points) ? row.points : 50, 0, 0, 0, '']);
         byName[key(row.name)] = code;
       }
+      T[code].vipStartedAt = row.vip_started_at || T[code].vipStartedAt || null;
       T[code].vipExpiresAt = row.vip_expires_at || null;
       var rankingRow = RANK.find(function (r) { return r[0] === code; });
       if (rankingRow && Number.isFinite(row.points) && row.points >= 0) rankingRow[1] = row.points;
