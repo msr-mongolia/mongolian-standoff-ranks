@@ -66,13 +66,17 @@ function parseRel(content:string){
  if(lines.filter(s=>/\bvs\b/i.test(s)).length!==1)return null;
  const versus=lines[0]?.match(/^(.+?)\s+vs\s+(.+?)(?:\s+(\d{1,2}:\d{2}))?$/i);
  if(!versus)return null;
- const map=(s:string)=>{const n=s.toLowerCase().replace(/[^a-z]/g,'');return ({dune:'Dune',rust:'Rust',breeze:'Breeze',hanami:'Hanami',prov:'Province',provice:'Province',province:'Province',sandstone:'Sandstone'} as Record<string,string>)[n]||null;};
+ const map=(s:string)=>{const n=s.toLowerCase().replace(/[^a-z]/g,'');return ({dune:'Dune',rust:'Rust',breeze:'Breeze',hanami:'Hanami',prison:'Prison',sakura:'Sakura',prov:'Province',provice:'Province',province:'Province',sandstone:'Sandstone'} as Record<string,string>)[n]||null;};
+ const clean=(s:string)=>s.replace(/^\d+[.]\s*/,'').replace(/[-:\s]*pick[-:\s]*/ig,'').replace(/^[-:\s]+|[-:\s]+$/g,'');
  const picks:any[]=[];let decider=null,time=versus[3]||null;
  for(const line of lines.slice(1)){
-  const tm=line.match(/^time\s*:?\s*(\d{1,2}:\d{2}|\d{1,2})$/i);if(tm){time=tm[1];continue;}
-  const dm=line.match(/^(?:decider|dec)\s*[-:]?\s*(.+)$/i);if(dm){decider=map(dm[1]);continue;}
-  const pm=line.match(/^(.+?)\s+(?:pick\s+|[-:]\s*)?([a-z]+)$/i);
-  if(pm&&map(pm[2]))picks.push({team:pm[1].trim(),map:map(pm[2])});
+  const tm=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2}|\d{1,2})$/i);if(tm){time=tm[1];continue;}
+  const evening=line.match(/^oroini\s+(\d{1,2})\s*tsgaas$/i);if(evening){const hour=Number(evening[1]);if(hour>=1&&hour<=11)time=String(hour+12)+':00';continue;}
+  const dm=line.match(/^(?:decider|dec)\s*[-:]?\s*(.+)$/i)||line.match(/^(.+?)\s+(?:decider|dec)$/i);if(dm){decider=map(dm[1]);continue;}
+  const pm=line.match(/^(.+?)\s*(?:[-:]\s*|\s+)([a-z]+)$/i);
+  if(pm&&map(pm[2])){picks.push({team:clean(pm[1]),map:map(pm[2])});continue;}
+  const reverse=line.match(/^([a-z]+)\s*[-: ]\s*(.+)$/i);
+  if(reverse&&map(reverse[1]))picks.push({team:clean(reverse[2]),map:map(reverse[1])});
  }
  if(picks.length!==2||!decider)return null;
  return {team_a:versus[1].trim().slice(0,100),team_b:versus[2].trim().slice(0,100),time_label:time,picks,decider};
