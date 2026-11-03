@@ -1981,7 +1981,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     // ALTN: ['player1', 'player2', 'player3', 'player4', 'player5'],
     P2990: ['softKENBE', 'jennie666', 'B.T', 'ANNIHILATION', 'f0rest', 'Rizix', 'rain'],
     W2990: ['Yuna', 'S1lent', 'Yakuya', 'Drexer', 'Jerry', '7uan'],
-    SIXL: ['Muck-', 'VorK1ng', 'Mitsk', 'Cavendish', 'MIND', 'Ваникс', 'USAF', 'Kairos', 'Coldshi'],
+    SIXL: ['Muck', 'Kairos', 'Mitsk', 'Heavyqqq', 'Coldshi', 'Ryo', 'VorK1ng', 'Niko'],
     KGTSS: ['DiDi', 'KIZO', 'Rivo', 'Tami', 'keoz', 'Ada', 'dotaenjoyer', 'Oscar'],
     TLNRS: ['Nox', 'Winters', 'Dl', 'Dlwlmra', 'Tenny', 'Visilefox', 'Batashi', 'Micky'],
     HUMN7: ['Lunox', 'Osaka', 'Crosn', 'August', '.xioQQ', 'Iwatoku', 'Coldbullet67', '献身'],
@@ -4005,6 +4005,21 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           row.roster.some(function (n) { return typeof n !== 'string' || !n || n.length > 40; })) return;
       if (row.id === 'ds_b248643101cd3a4e8594fabf' || /^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim())) return; // Duplicate KingZz registration
       if (row.id === 'ds_b8ba2ec7e90713c104377816') row = Object.assign({}, row, { name: 'VAMP EMPIRE' });
+      // Confirmed 6LC roster; device and serial information is never included.
+      if (row.id === 'ds_3b58bc4ef94967967f5dee31') {
+        row = Object.assign({}, row, {
+          roster: ['Muck', 'Kairos', 'Mitsk', 'Heavyqqq', 'Coldshi', 'Ryo', 'VorK1ng', 'Niko'],
+          player_ids: { Muck:'250311397', Kairos:'87463821', Mitsk:'276179806', Heavyqqq:'212543848', Coldshi:'261838109', Ryo:'271227843', VorK1ng:'100000125', Niko:'174580933' }
+        });
+      }
+      // Heavyqqq moved to 6LC; remove the previous XvrN Divine team2 registration.
+      if (row.id === 'ds_fbf308278120e648e045eb7b') {
+        var divineIds = row.player_ids || {};
+        row = Object.assign({}, row, {
+          roster: row.roster.filter(function (nick) { return String(divineIds[nick] || '') !== '212543848'; }),
+          player_ids: Object.fromEntries(Object.entries(divineIds).filter(function (item) { return String(item[1]) !== '212543848'; }))
+        });
+      }
       // Staff correction: game ID 136499554 belongs to 2990 RED, not METAS.
       if (row.id === 'ds_38a897c7315f8a83c63e1ba7') {
         var metasIds = row.player_ids || {};
