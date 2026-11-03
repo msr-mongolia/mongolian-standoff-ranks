@@ -2013,6 +2013,27 @@ background-color:#121923!important
 .msr-rr-rules p{font-size:12px;color:#d1d4dc;padding-left:12px;border-left:2px solid #ff394f;line-height:1.6}
 @media(max-width:850px){.msr-rr-summary-grid{grid-template-columns:1fr}.msr-rr-summary{padding:12px!important}}
 </style>
+<style id="msr-rr-group-colors">
+.msr-round-robin-page{--group-accent:#f13a50;--group-soft:rgba(241,58,80,.18)}
+.msr-round-robin-page[data-active-group="A"]{--group-accent:#ffb627;--group-soft:rgba(255,182,39,.18)}
+.msr-round-robin-page[data-active-group="B"]{--group-accent:#28baf2;--group-soft:rgba(40,186,242,.18)}
+.msr-round-robin-page[data-active-group="C"]{--group-accent:#b77aff;--group-soft:rgba(183,122,255,.18)}
+.msr-round-robin-page[data-active-group="D"]{--group-accent:#ff8b39;--group-soft:rgba(255,139,57,.18)}
+.msr-round-robin-page[data-active-group="E"]{--group-accent:#f13a50;--group-soft:rgba(241,58,80,.18)}
+.msr-round-robin-page[data-active-group="F"]{--group-accent:#35db75;--group-soft:rgba(53,219,117,.18)}
+.msr-round-robin-page .msr-zone-tabs button:nth-child(1){--tab-color:#ffb627}
+.msr-round-robin-page .msr-zone-tabs button:nth-child(2){--tab-color:#28baf2}
+.msr-round-robin-page .msr-zone-tabs button:nth-child(3){--tab-color:#b77aff}
+.msr-round-robin-page .msr-zone-tabs button:nth-child(4){--tab-color:#ff8b39}
+.msr-round-robin-page .msr-zone-tabs button:nth-child(5){--tab-color:#f13a50}
+.msr-round-robin-page .msr-zone-tabs button:nth-child(6){--tab-color:#35db75}
+.msr-round-robin-page .msr-zone-tabs button{border-color:color-mix(in srgb,var(--tab-color) 45%,#23344a)!important}
+.msr-round-robin-page .msr-zone-tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--tab-color) 24%,#101a2b)!important;border-color:var(--tab-color)!important;color:#fff!important;box-shadow:0 0 15px color-mix(in srgb,var(--tab-color) 24%,transparent)}
+.msr-round-robin-page .msr-zone-card{border-color:var(--group-accent)!important}
+.msr-round-robin-page .msr-zone-title h2{color:var(--group-accent)}
+.msr-round-robin-page .msr-rr-summary[hidden]{display:none!important}
+.msr-round-robin-page .msr-rr-summary{border-color:var(--group-accent)!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2638,7 +2659,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       return code ? h('a', { class: 'msr-zone-team', href: teamHref(code) }, crest(code, 'md'), h('span', null, T[code].n))
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
-    var root = h('div', { class: 'msr-zones' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
+    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
           h('div',null,h('h2',null,'GROUP ',h('em',null,'E')),h('p',null,'ROUND ROBIN STAGE'))),
@@ -2713,10 +2734,14 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var cards = Array.from(root.querySelectorAll('.msr-zone-card'));
     function selectZone(index) {
       cards.forEach(function (card, i) { card.hidden = i !== index; });
+      var summary = root.querySelector('.msr-rr-summary');
+      if (summary) summary.hidden = index !== 4;
+      root.setAttribute('data-active-group',String.fromCharCode(65+index));
       Array.from(tabbar.children).forEach(function (button, i) { button.setAttribute('aria-selected', String(i === index)); button.tabIndex = i === index ? 0 : -1; });
     }
     cards.forEach(function (card, zi) {
       var label = String.fromCharCode(65 + zi), title = card.querySelector('.msr-zone-title');
+      card.setAttribute('data-group',label);
       var tournament = EVENTS.find(function (event) { return event.id === 'msl'; });
       if (tournament && tournament.img) card.style.setProperty('--msr-zone-logo', 'url("' + String(tournament.img).replace(/"/g, '%22') + '")');
       var firstMatches = Array.from(card.querySelectorAll('.msr-zone-match'));
