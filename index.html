@@ -2067,7 +2067,7 @@ background-color:#121923!important
 </style><style id="msr-vip-tier-colors">
 #app .msr-vip-plus{color:#ffda70!important;border:1px solid #d6a53f!important;background:linear-gradient(120deg,#694514,#2b2315)!important;box-shadow:0 0 10px #e9ac382e!important}
 #app .msr-vip-standard{color:#ff6572!important;border:1px solid #da4052!important;background:linear-gradient(120deg,#591923,#29131b)!important;box-shadow:0 0 10px #df35452e!important}
-</style></head>
+</style><style id="msr-rel-details">#app .msr-rel-details{grid-column:1/-1;display:flex;flex-direction:column;gap:3px;padding-top:8px;border-top:1px solid #ffffff20;font-size:10px;color:#b7c9dd;text-align:center;overflow-wrap:anywhere}#app .msr-rel-details b{color:var(--group-accent,#e7c367);font-size:12px}</style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
 <div id="sky" aria-hidden="true"><span class="st2"></span><span class="au au1"></span><span class="au au2"></span><span class="au au3"></span></div>
@@ -2747,7 +2747,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
                 h('div',{class:'msr-rr-matches'},day.map(function(pair,mi){
                   return h('div',{class:'msr-rr-match','data-match':label+'-D'+(di+1)+'-M'+(mi+1)},
                     groupTeam(groupTeams[pair[0]]),h('span',{class:'msr-rr-versus'},'VS'),
-                    groupTeam(groupTeams[pair[1]]),h('span',{class:'msr-rr-status'},'UPCOMING'));
+                    groupTeam(groupTeams[pair[1]]),h('span',{class:'msr-rr-status'},'UPCOMING'),msrRelInfo(groupTeams[pair[0]],groupTeams[pair[1]],di));
                 })),label==='F'?h('p',{class:'msr-zone-note'},'BYE · '+groupTeams[byeIndices[di]][0]):null);
             })),
             h('div',{class:'msr-rr-foot'},label==='F'?'Schedule supplied by tournament staff. Results pending.':'Each team plays the other seven teams once. Results pending.'));
@@ -3928,6 +3928,21 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close();});
     dialog.addEventListener('close',function(){dialog.remove();});document.body.appendChild(dialog);dialog.showModal();close.focus();
   }
+
+  var MSR_REL_MATCHES=[];
+  function msrRelInfo(a,b,day){
+    if(day!==0)return null;
+    var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+    var matches=function(text,item){return item.some(function(v){return norm(v)===norm(text);});};
+    var detail=MSR_REL_MATCHES.find(function(row){return (matches(row.team_a,a)&&matches(row.team_b,b))||(matches(row.team_a,b)&&matches(row.team_b,a));});
+    if(!detail)return null;
+    var time=detail.time_label||'';
+    return h('div',{class:'msr-rel-details'},
+      time?h('b',null,/^\d{1,2}:\d{2}$/.test(time)?'Time · '+time:'Time · '+time+' (confirm)'):null,
+      (detail.picks||[]).map(function(p){return h('span',null,p.team+' pick · '+p.map);}),
+      h('span',null,'Decider · '+detail.decider));
+  }
+
   function msrVipPlus(code){
     var t=T[code]||{},end=Date.parse(t.vipExpiresAt),start=Date.parse(t.vipStartedAt);
     return Number.isFinite(end)&&end-(Number.isFinite(start)?start:Date.now())>180*86400000;
@@ -4584,6 +4599,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var rows = await response.json();
       if (!Array.isArray(rows)) return;
       mergeDiscordTeams(rows);
+      try{
+        var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
+        if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows;}
+      }catch(_relError){}
+
       if (/^(ranking|team|players|player|stats|event|events)(\/|$)/.test(H)) route();
     } catch (e) { console.warn('MSR teams sync error',e); }
   }
