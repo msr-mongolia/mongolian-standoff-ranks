@@ -2638,7 +2638,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
             var keys = Object.keys(T);
             var code = keys.find(function(k){return norm(T[k].n)===norm(name);});
             if (!code && name === 'SIX LENCE PURPLE' && T.SIXP) code='SIXP';
-            if (!code && name === '1InfinityX') code=keys.find(function(k){return norm(T[k].n).includes('infinity');});
+            if (!code && name === '1InfinityX' && T.INFYX) code='INFYX';
             return code ? h('a',{class:'msr-rr-team',href:teamHref(code),title:'Open '+T[code].n+' clan profile'},
               crest(code,'md'),h('span',null,name)) :
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback'},name.slice(0,2).toUpperCase()),h('span',null,name));
