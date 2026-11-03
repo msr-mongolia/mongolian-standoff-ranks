@@ -2129,7 +2129,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   function flag() { return h('span', { class: 'flag', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')); }
   function comments(n) { return h('span', { class: 'cm', svg: ICON.cm }, String(n)); }
   function go(hash) { return function () { navTo(hash.replace(/^#/, '')); }; }
-  function tagEl(code) { var t = T[code] || {}; var name = String(t.n || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''); var known = { warriorkingzz: 'WOART', elitekingzz: 'EknZ', elitekings: 'EknZ', civilizationofruin: 'CioR', kingzz: 'KngZz' }; var tag = known[name] || String(t.tag || '').trim(); if (!tag && code === 'COR') tag = 'CioR'; return tag ? h('span', { class: 'ctag', style: 'color:var(--tracer);display:inline-block;white-space:nowrap;' }, '[' + tag + ']') : null; }
+  function tagEl(code) { var t = T[code] || {}; var name = String(t.n || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''); var known = { warriorkingzz: 'WarKz', elitekingzz: 'EknZ', elitekings: 'EknZ', civilizationofruin: 'CioR', kingzz: 'KngZz' }; var tag = known[name] || String(t.tag || '').trim(); if (!tag && code === 'COR') tag = 'CioR'; return tag ? h('span', { class: 'ctag', style: 'color:var(--tracer);display:inline-block;white-space:nowrap;' }, '[' + tag + ']') : null; }
   function teamHref(code) { return '#team/' + code; }
   var GAME_IDS = {};
   function gameIdEl(nick, team) {
@@ -4077,6 +4077,15 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           delete imtllIds[nick]; imtllIds.Explore = '282271750'; return 'Explore';
         }), player_ids: imtllIds });
       }
+      if (row.id === 'ds_1777105f96769efea0121a7e') {
+        var whiteIds = Object.assign({}, row.player_ids || {});
+        var originalWhiteIds = Object.assign({}, whiteIds);
+        row = Object.assign({}, row, { roster: row.roster.map(function (nick) {
+          if (String(originalWhiteIds[nick] || '') !== '102638966') return nick;
+          delete whiteIds[nick]; whiteIds.Dvrs = '102638966'; return 'Dvrs';
+        }), player_ids: whiteIds });
+      }
+      if (row.id === 'ds_458bacb8c3562ea7529ea5bb') row = Object.assign({}, row, { tag: 'WarKz' });
       var code = byName[key(row.name)];
       // CioR White is the confirmed roster already stored under COR.
       if (!code && key(row.name) === 'ciorwhite' && ROSTER.COR) {
