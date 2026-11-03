@@ -1853,6 +1853,14 @@ background-color:#121923!important
 </style>
 <style id="msr-ranking-vip-style">.msr-ranking-vip-badge{display:inline-flex;align-items:center;gap:3px;margin:3px 0 2px 7px;padding:2px 7px;border:1px solid rgba(245,195,73,.55);border-radius:6px;background:linear-gradient(120deg,rgba(117,80,19,.34),rgba(236,173,53,.15));color:#ffda7b;font-size:10px;font-weight:900;letter-spacing:.3px;white-space:nowrap;vertical-align:middle;box-shadow:0 0 9px rgba(231,166,36,.12)}</style>
 <style id="msr-rank-card-vip-style">#app .ap-rk .msr-rank-vip-inline{display:inline-flex;align-items:center;margin-left:10px;padding:3px 8px;border:1px solid #d6a53f;border-radius:6px;background:linear-gradient(120deg,#694514,#2b2315);color:#ffe39a;font-size:11px;font-weight:900;line-height:1.3;white-space:nowrap;vertical-align:middle;box-shadow:0 0 10px rgba(233,172,56,.18)}@media(max-width:480px){#app .ap-rk .msr-rank-vip-inline{margin-left:6px;padding:2px 5px;font-size:9px}}</style>
+
+<style id="msr-etxen-santa-hats">
+/* Seasonal hats on ETXEN's team logo and all roster avatars. */
+.prof.msr-etxen-winter .crest.xl,.msr-etxen-member-hat{position:relative;overflow:visible!important;isolation:isolate}
+.prof.msr-etxen-winter .crest.xl::after,.msr-etxen-member-hat::after{content:'🎅';position:absolute;z-index:5;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));line-height:1;transform:rotate(-24deg)}
+.prof.msr-etxen-winter .crest.xl::after{font-size:35px;top:-23px;left:-18px}
+.msr-etxen-member-hat::after{font-size:18px;top:-13px;left:-10px}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3613,7 +3621,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('thead', null, h('tr', null, h('th', null, 'Player'), h('th', { class: 'n' }, 'Maps'), h('th', { class: 'n' }, 'K/D'), h('th', { class: 'n' }, 'ADR'), h('th', { class: 'n' }, 'KAST'), h('th', { class: 'n' }, 'Rating'))),
       h('tbody', null, roster.map(function (p) {
         var g = agg(PROWS[p.nick] || []);
-        return h('tr', { class: 'clk', onclick: go(playerHref(p.nick, p.team)) }, h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'bigav sg' + tc(p), style: 'width:30px;height:30px', 'aria-hidden': 'true' }, sig(p.nick, 30)),
+        return h('tr', { class: 'clk', onclick: go(playerHref(p.nick, p.team)) }, h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'bigav sg' + tc(p) + (code === 'ETXEN' ? ' msr-etxen-member-hat' : ''), style: 'width:30px;height:30px', 'aria-hidden': 'true' }, sig(p.nick, 30)),
           h('div', null, h('a', { class: 'tl', href: playerHref(p.nick, p.team) }, h('b', null, (function () { var nick = String(p.nick || '').replace(/^\s*ign\s*:\s*/i, '').trim(); if (p.team === 'COR') nick = nick.replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim(); return nick; })()))))),
           h('td', { class: 'n' }, p.maps), h('td', { class: 'n' }, p.kd.toFixed(2)), h('td', { class: 'n' }, g.adr.toFixed(1)), h('td', { class: 'n' }, g.kast.toFixed(1) + '%'), h('td', { class: 'n' }, rt(p.rating)));
       }))));
@@ -3639,7 +3647,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
     return h('div', null,
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
-      h('div', { class: 'prof' }, crest(code, 'xl'),
+      h('div', { class: 'prof' + (code === 'ETXEN' ? ' msr-etxen-winter' : '') }, crest(code, 'xl'),
         h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class: 'tag gold', title: 'VIP until '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP CLAN') : null))),
       h('section', { class:'msr-team-stats', 'aria-label':'Team stats' },
         h('div',{class:'msr-team-stats-heading'},h('span',{svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></svg>'}),h('h2',null,'Team stats')),
