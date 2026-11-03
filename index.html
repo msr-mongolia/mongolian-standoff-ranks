@@ -2755,13 +2755,13 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if (zi === 4) {
           var groupETeams = ['1nfinityX','METAS','DRDRX','Starfire Nirvana Team','SIX LENCE PURPLE','MANAI','OMEN ESPORTS'];
           var groupEDays = [
-            [[0,1],[2,3],[4,5]],
-            [[3,4],[5,0],[6,2]],
-            [[1,6],[4,2],[0,3]],
-            [[2,0],[6,4],[1,5]],
-            [[5,6],[3,1],[0,4]],
-            [[5,3],[6,0],[1,2]],
-            [[4,1],[2,5],[3,6]]
+            [[1,3],[5,0],[4,2]],
+            [[6,3],[1,2],[5,4]],
+            [[6,0],[3,2],[1,5]],
+            [[6,2],[0,4],[3,5]],
+            [[6,4],[2,5],[0,1]],
+            [[6,5],[4,1],[0,3]],
+            [[6,1],[4,3],[2,0]]
           ];
           function groupETeam(name) {
             var norm = function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
@@ -2777,14 +2777,15 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
             h('p',{class:'msr-zone-note'},'7 days · 21 matches · Each team plays 6 matches'),
             h('div',{class:'msr-rr-schedule'},groupEDays.map(function(day,di){
               return h('section',{class:'msr-rr-day'},
-                h('div',{class:'msr-rr-day-head'},h('strong',null,'DAY '+(di+1)),h('small',null,'3 MATCHES')),
+                h('div',{class:'msr-rr-day-head'},h('strong',null,'DAY '+(di+1)),h('small',null,'NOV '+(di+4)+' · 3 MATCHES')),
                 h('div',{class:'msr-rr-matches'},day.map(function(pair,mi){
                   return h('div',{class:'msr-rr-match','data-match':'E-D'+(di+1)+'-M'+(mi+1)},
                     groupETeam(groupETeams[pair[0]]),
                     h('span',{class:'msr-rr-versus'},'VS'),
                     groupETeam(groupETeams[pair[1]]),
-                    h('span',{class:'msr-rr-status'},'UPCOMING'));
-                })));
+                    h('span',{class:'msr-rr-status'},'UPCOMING'),
+                    msrRelInfo([groupETeams[pair[0]],{0:'1NFYx',1:'MetaS',2:'DRDRX',3:'SNT',4:'6LC purple',5:'8MNA',6:'OMEN'}[pair[0]]],[groupETeams[pair[1]],{0:'1NFYx',1:'MetaS',2:'DRDRX',3:'SNT',4:'6LC purple',5:'8MNA',6:'OMEN'}[pair[1]]],di));
+                })),h('p',{class:'msr-zone-note'},'BYE · '+groupETeams[[6,0,4,1,3,2,5][di]]));
             })),
             h('div',{class:'msr-rr-foot'},'All 7 teams play each other once. Match results are pending.'));
           return groupECard;
