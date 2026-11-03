@@ -2067,7 +2067,22 @@ background-color:#121923!important
 </style><style id="msr-vip-tier-colors">
 #app .msr-vip-plus{color:#ffda70!important;border:1px solid #d6a53f!important;background:linear-gradient(120deg,#694514,#2b2315)!important;box-shadow:0 0 10px #e9ac382e!important}
 #app .msr-vip-standard{color:#ff6572!important;border:1px solid #da4052!important;background:linear-gradient(120deg,#591923,#29131b)!important;box-shadow:0 0 10px #df35452e!important}
-</style><style id="msr-rel-details">#app .msr-rel-details{grid-column:1/-1;display:flex;flex-direction:column;gap:3px;padding-top:8px;border-top:1px solid #ffffff20;font-size:10px;color:#b7c9dd;text-align:center;overflow-wrap:anywhere}#app .msr-rel-details b{color:var(--group-accent,#e7c367);font-size:12px}</style></head>
+</style><style id="msr-rel-details">#app .msr-rel-details{grid-column:1/-1;display:flex;flex-direction:column;gap:3px;padding-top:8px;border-top:1px solid #ffffff20;font-size:10px;color:#b7c9dd;text-align:center;overflow-wrap:anywhere}#app .msr-rel-details b{color:var(--group-accent,#e7c367);font-size:12px}</style><style id="msr-rel-matches-style">
+.msr-rel-match-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.msr-rel-match{padding:18px;margin:0;min-width:0}
+.msr-rel-match-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.msr-rel-match-time{color:#b8d7ff;font-size:14px}
+.msr-rel-match-teams{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:12px;align-items:center;margin:22px 0}
+.msr-rel-team{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none}
+.msr-rel-team>span{min-width:0;overflow-wrap:anywhere}.msr-rel-team small{display:block;color:#9baabb;font-size:12px;margin-top:3px}
+.msr-rel-match-vs{color:#8298ad;text-align:center;font-size:12px}
+.msr-rel-match-maps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.msr-rel-match-maps>div{background:#ffffff06;border:1px solid #ffffff15;border-radius:8px;padding:10px;min-width:0;overflow-wrap:anywhere}
+.msr-rel-match-maps small{display:block;color:#9baabb;font-size:11px;margin-bottom:5px}
+.msr-rel-match-maps b{font-size:14px}
+@media(max-width:760px){.msr-rel-match-list{grid-template-columns:1fr}.msr-rel-match{padding:14px}.msr-rel-match-teams{gap:8px}.msr-rel-team{gap:7px}}
+</style>
+</head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
 <div id="sky" aria-hidden="true"><span class="st2"></span><span class="au au1"></span><span class="au au2"></span><span class="au au3"></span></div>
@@ -3562,15 +3577,49 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
   /* ================= Matches ================= */
   var MF = { ev: 'all', team: 'all' };
+
+  function msrRelTeamKey(name){
+    var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},n=norm(name);
+    var fixed={ '6lcpurple':'SIXP','8mna':'MANAI','1nfyx':'INFYX' };
+    if(fixed[n]&&T[fixed[n]])return fixed[n];
+    return Object.keys(T).find(function(k){return norm(T[k].n)===n;})||
+      Object.keys(T).find(function(k){return norm(T[k].tag)===n;})||null;
+  }
+  function msrRelUpcoming(){
+    var seen={};
+    return MSR_REL_MATCHES.slice().sort(function(a,b){return String(b.source_timestamp).localeCompare(String(a.source_timestamp));}).filter(function(row){
+      var pair=[row.team_a,row.team_b].map(function(name){return msrRelTeamKey(name)||String(name).toLowerCase().replace(/[^a-z0-9]/g,'');}).sort().join('|');
+      if(seen[pair])return false;seen[pair]=true;return true;
+    });
+  }
+  function msrRelMatchCard(row){
+    function team(name){
+      var key=msrRelTeamKey(name);
+      return h(key?'a':'span',{class:'msr-rel-team',href:key?teamHref(key):null},
+        key?crest(key,'md'):null,h('span',null,h('b',null,key?(T[key].tag||name):name),key?h('small',null,T[key].n):null));
+    }
+    var time=row.time_label||'';
+    return h('article',{class:'box msr-rel-match','aria-label':row.team_a+' vs '+row.team_b},
+      h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · UPCOMING'),
+        h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):'Time · TBA')),
+      h('div',{class:'msr-rel-match-teams'},team(row.team_a),h('b',{class:'msr-rel-match-vs'},'VS'),team(row.team_b)),
+      h('div',{class:'msr-rel-match-maps'},(row.picks||[]).map(function(p){return h('div',null,h('small',null,p.team+' pick'),h('b',null,p.map));}),
+        h('div',null,h('small',null,'Decider'),h('b',null,row.decider))));
+  }
+
   V.matches = function () {
     var box = h('div', null);
     function draw() {
       box.textContent = '';
+      var relList=msrRelUpcoming().filter(function(row){
+        return (MF.ev==='all'||MF.ev==='MSL Major S2')&&(MF.team==='all'||msrRelTeamKey(row.team_a)===MF.team||msrRelTeamKey(row.team_b)===MF.team);
+      });
+      if(relList.length){box.appendChild(h('div',{class:'grp-h'},'Upcoming · MSL Major S2'));box.appendChild(h('div',{class:'msr-rel-match-list'},relList.map(msrRelMatchCard)));}
       var list = M.filter(function (m) { return m.state !== 'done' && (MF.ev === 'all' || m.ev === MF.ev) && (MF.team === 'all' || m.a === MF.team || m.b === MF.team); });
       var live = list.filter(function (m) { return m.state === 'live'; }), soon = list.filter(function (m) { return m.state === 'soon'; }).sort(function (a, b) { return a.date - b.date || String(a.when).localeCompare(String(b.when)); });
       if (live.length) { box.appendChild(h('div', { class: 'grp-h' }, h('span', { class: 'pip' }), ' Live matches')); box.appendChild(h('div', { class: 'box' }, live.map(matchRow))); }
       byDate(soon).forEach(function (g) { box.appendChild(h('div', { class: 'grp-h' }, g[0])); box.appendChild(h('div', { class: 'box' }, g[1].map(matchRow))); });
-      if (!list.length) box.appendChild(h('div', { class: 'empty' }, 'No matches found for these filters.'));
+      if (!list.length && !relList.length) box.appendChild(h('div', { class: 'empty' }, 'No matches found for these filters.'));
     }
     var flt = h('div', { class: 'flt' },
       sel('Event', [['all', 'All events']].concat(['MSL Major S2'].map(function (n) { return [n, n]; })), MF.ev, function (v) { MF.ev = v; draw(); }),
@@ -4605,7 +4654,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows;}
       }catch(_relError){}
 
-      if (/^(ranking|team|players|player|stats|event|events)(\/|$)/.test(H)) route();
+      if (/^(ranking|team|players|player|stats|event|events|matches)(\/|$)/.test(H)) route();
     } catch (e) { console.warn('MSR teams sync error',e); }
   }
   document.addEventListener('DOMContentLoaded', loadDiscordTeams);
