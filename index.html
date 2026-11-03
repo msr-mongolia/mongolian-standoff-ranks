@@ -2604,6 +2604,32 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         h('p', null, 'Awaiting-team slots are not BYEs or automatic wins. No match results have been entered.')),
       h('div', { class: 'msr-zone-grid' }, zones.map(function (teams, zi) {
         var label = String.fromCharCode(65 + zi);
+        if (zi === 4) {
+          var groupETeams = ['1InfinityX','METAS','DRDRX','Starfire Nirvana Team','SIX LENCE PURPLE','MANAI','OMEN ESPORTS'];
+          var groupEDays = [
+            [[0,1],[2,3],[4,5]],
+            [[3,4],[5,0],[6,2]],
+            [[1,6],[4,2],[0,3]],
+            [[2,0],[6,4],[1,5]],
+            [[5,6],[3,1],[0,4]],
+            [[5,3],[6,0],[1,2]],
+            [[4,1],[2,5],[3,6]]
+          ];
+          return h('section', { class:'box msr-zone-card', 'aria-label':'Group E official schedule' },
+            h('div', {class:'msr-zone-title'}, h('h2',null,'GROUP E'),h('span',{class:'tag soft'},'7 teams · 21 matches')),
+            h('p',{class:'msr-zone-note'},'Official 7-day round-robin schedule · Results pending'),
+            groupEDays.map(function(day,di){
+              return h('div',{class:'msr-group-e-day',style:'margin:14px 0;padding:12px;border:1px solid rgba(140,165,200,.22);border-radius:10px'},
+                h('h3',{style:'font-size:15px;margin:0 0 10px'},'Day '+(di+1)),
+                day.map(function(pair,mi){
+                  return h('div',{class:'msr-zone-match','data-match':'E-D'+(di+1)+'-M'+(mi+1)},
+                    h('span',{class:'msr-zone-team'},groupETeams[pair[0]]),
+                    h('span',{class:'msr-zone-vs'},'VS'),
+                    h('span',{class:'msr-zone-team'},groupETeams[pair[1]]),
+                    h('span',{class:'tag soft',style:'font-size:10px'},'Upcoming'));
+                }));
+            }));
+        }
         return h('section', { class: 'box msr-zone-card', 'aria-label': 'Zone ' + label },
           h('div', { class: 'msr-zone-title' }, h('h2', null, 'ZONE ' + label), h('span', { class: 'tag soft' }, teams.length + ' / 8 teams')),
           h('p', { class: 'msr-zone-note' }, 'Round 1 · Provisional pairings · Scores pending'),
