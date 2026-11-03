@@ -1990,6 +1990,29 @@ background-color:#121923!important
 @media(max-width:1050px){.msr-rr-day{grid-template-columns:1fr}.msr-rr-day-head{flex-direction:row;justify-content:space-between;align-items:center;padding:10px 12px}}
 @media(max-width:700px){.msr-rr-matches{grid-template-columns:1fr}.msr-rr-match{min-height:76px}.msr-rr-team{font-size:12px}}
 </style>
+<style id="msr-rr-standings-design">
+.msr-rr-summary{padding:18px!important;border:1px solid rgba(245,57,69,.65)!important;background:linear-gradient(125deg,rgba(40,8,16,.98),rgba(9,14,23,.98) 40%,rgba(26,6,12,.97))!important;border-radius:16px!important;overflow:hidden}
+.msr-rr-summary-head{display:flex;align-items:center;gap:18px;padding:8px 10px 20px;border-bottom:1px solid rgba(239,50,62,.55);margin-bottom:16px}
+.msr-rr-summary-head h2{font-size:clamp(27px,3.4vw,46px);font-style:italic;font-weight:900;letter-spacing:.05em;margin:0;color:#f4f5f7}
+.msr-rr-summary-head h2 em{color:#ff344b;font-style:italic}
+.msr-rr-summary-head p{color:#f9b4bb;letter-spacing:.23em;font-size:12px;margin:5px 0}
+.msr-rr-trophy{display:grid;place-items:center;min-width:65px;height:65px;border:1px solid #f03a4d;border-radius:14px;background:#360c17;font-size:32px}
+.msr-rr-summary-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px}
+.msr-rr-standings,.msr-rr-rules{min-width:0;border:1px solid rgba(233,58,71,.55);border-radius:12px;background:rgba(3,9,16,.78);padding:14px}
+.msr-rr-standings h3,.msr-rr-rules h3{font-size:15px;letter-spacing:.07em;color:#f1f2f5;margin:0 0 12px}
+.msr-rr-table-scroll{overflow-x:auto}.msr-rr-table{width:100%;border-collapse:collapse;font-size:12px}
+.msr-rr-table th{color:#b9c1cc;text-align:left;font-size:10px;padding:9px 6px;border-bottom:1px solid #7c2c38}
+.msr-rr-table td{padding:7px 6px;border-bottom:1px solid rgba(237,68,81,.18);white-space:nowrap}
+.msr-rr-table th:not(:nth-child(2)),.msr-rr-table td:not(:nth-child(2)){text-align:center}
+.msr-rr-standing-team{display:flex;align-items:center;gap:8px;color:#f1f4f7!important;text-decoration:none!important;font-weight:700}
+.msr-rr-standing-team:hover{color:#ff5265!important}.msr-rr-standing-team .crest{flex:none}
+.msr-rr-pts{display:inline-block;min-width:32px;padding:3px 6px;border:1px solid #fa364a;border-radius:6px;background:#4a0c1a;color:#fff}
+.msr-rr-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:14px 0 18px}
+.msr-rr-facts>div{padding:12px 4px;text-align:center;border:1px solid rgba(234,55,73,.4);border-radius:8px;background:rgba(74,13,25,.32)}
+.msr-rr-facts b{display:block;font-size:25px;color:#ff4c60}.msr-rr-facts small{font-size:9px;color:#d7c4c9}
+.msr-rr-rules p{font-size:12px;color:#d1d4dc;padding-left:12px;border-left:2px solid #ff394f;line-height:1.6}
+@media(max-width:850px){.msr-rr-summary-grid{grid-template-columns:1fr}.msr-rr-summary{padding:12px!important}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2616,9 +2639,31 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
     var root = h('div', { class: 'msr-zones' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
-      h('section', { class: 'box', role: 'status' }, h('h2', null, 'Group schedules'),
-        h('p', null, 'GROUP E: official 7-day fixture list (7 teams, 21 matches). Other group fixtures await confirmed team allocations and schedules.'),
-        h('p', null, 'No match results have been entered.')),
+      h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
+        h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
+          h('div',null,h('h2',null,'GROUP ',h('em',null,'E')),h('p',null,'ROUND ROBIN STAGE'))),
+        h('div',{class:'msr-rr-summary-grid'},
+          h('div',{class:'msr-rr-standings'},
+            h('h3',null,'GROUP E STANDINGS'),
+            h('div',{class:'msr-rr-table-scroll'},h('table',{class:'msr-rr-table'},
+              h('thead',null,h('tr',null,['#','TEAM','MP','W','L','RD','PTS'].map(function(x){return h('th',null,x);}))),
+              h('tbody',null,[
+                ['INFYX','1nfinityX'],[null,'METAS'],[null,'DRDRX'],['SNT','Starfire Nirvana Team'],['SIXP','SIX LENCE PURPLE'],['MANAI','MANAI'],['OMEN','OMEN ESPORTS']
+              ].map(function(item,i){
+                var key=item[0],name=item[1];
+                var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+                if(!key) key=Object.keys(T).find(function(k){return norm(T[k].n)===norm(name);});
+                return h('tr',null,h('td',null,String(i+1)),
+                  h('td',null,key&&T[key]?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,T[key].n)):h('span',null,name)),
+                  [0,0,0,0].map(function(v){return h('td',null,String(v));}),
+                  h('td',null,h('strong',{class:'msr-rr-pts'},'0')));
+              }))))),
+          h('div',{class:'msr-rr-rules'},
+            h('h3',null,'ROUND ROBIN FORMAT'),
+            h('div',{class:'msr-rr-facts'},[['7','TEAMS'],['7','DAYS'],['21','MATCHES'],['6','PER TEAM']].map(function(x){return h('div',null,h('b',null,x[0]),h('small',null,x[1]));})),
+            h('p',null,'Each team plays every other team once.'),
+            h('p',null,'21 scheduled matches across 7 days.'),
+            h('p',null,'Results and standings will update after matches are recorded.')))),
       h('div', { class: 'msr-zone-grid' }, zones.map(function (teams, zi) {
         var label = String.fromCharCode(65 + zi);
         if (zi === 4) {
