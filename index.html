@@ -1878,7 +1878,7 @@ background-color:#121923!important
 @keyframes msr-santa-brim-sway{from{transform:rotate(-4deg) translateX(-2px)}to{transform:rotate(4deg) translateX(2px)}}
 @media(prefers-reduced-motion:reduce){.prof.msr-etxen-winter .crest.xl::before,.prof.msr-etxen-winter .crest.xl::after,.msr-etxen-member-hat::before,.msr-etxen-member-hat::after{animation:none!important}}
 </style>
-</head>
+<style id="msr-etxen-video-banner-style">.msr-etxen-video-banner{position:relative;overflow:hidden;height:clamp(155px,25vw,290px);border-radius:15px;margin:12px 0 18px;background:#101923;border:1px solid #66778c}.msr-etxen-video-banner video{display:block;width:100%;height:100%;object-fit:cover;filter:brightness(.75)}.msr-etxen-video-label{position:absolute;bottom:13px;left:16px;padding:7px 12px;border-radius:8px;background:#09121dcc;color:#fff;font-size:13px;font-weight:800;letter-spacing:.07em}@media(max-width:600px){.msr-etxen-video-banner{height:175px;margin:8px 0 14px}.msr-etxen-video-label{font-size:11px}}</style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
 <div id="sky" aria-hidden="true"><span class="st2"></span><span class="au au1"></span><span class="au au2"></span><span class="au au3"></span></div>
@@ -3664,6 +3664,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
     return h('div', null,
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
+      (String(T[code].tag || '').toUpperCase() === 'ETXEN' || /^ETXEN\b/i.test(T[code].n || '')) ? h('div', { class: 'msr-etxen-video-banner' }, h('video', { autoplay: true, muted: true, loop: true, playsinline: true, preload: 'metadata', poster: 'assets/etxen_vip_poster.jpg' }, h('source', { src: 'assets/etxen_vip_banner.mp4', type: 'video/mp4' })), h('span', { class: 'msr-etxen-video-label' }, '👑 ETXEN · VIP CLAN')) : null,
       h('div', { class: 'prof' + (code === 'ETXEN' ? ' msr-etxen-winter' : '') }, crest(code, 'xl'),
         h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class: 'tag gold', title: 'VIP until '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP CLAN') : null))),
       h('section', { class:'msr-team-stats', 'aria-label':'Team stats' },
