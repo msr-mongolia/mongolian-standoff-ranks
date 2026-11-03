@@ -1801,6 +1801,25 @@ background-color:#121923!important
 .msr-zone-card{background-image:linear-gradient(120deg,rgba(7,14,25,.83),rgba(7,14,25,.62) 50%,rgba(7,14,25,.84)),var(--msr-zone-logo)!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;isolation:isolate}
 .msr-swiss-board{background-color:transparent}.msr-swiss-group{background:linear-gradient(145deg,rgba(23,40,60,.96),rgba(13,23,39,.97))}
 </style>
+<style id="msr-mobile-vertical-bracket">
+.msr-bracket-mobile-help{display:none}
+@media(max-width:760px){
+.msr-bracket-desktop-help{display:none}.msr-bracket-mobile-help{display:inline}
+.msr-zones,.msr-zone-grid,.msr-zone-card{min-width:0;max-width:100%;box-sizing:border-box}
+.msr-swiss-scroll{overflow:visible!important;max-height:none!important;height:auto!important;padding:0;overscroll-behavior:auto;touch-action:pan-y}
+.msr-swiss-board{display:flex;flex-direction:column;gap:14px;position:relative;width:100%!important;height:auto!important;min-width:0;padding:4px 0 16px;box-sizing:border-box}
+.msr-swiss-lines{display:none}
+.msr-swiss-round-label,.msr-swiss-group{position:relative!important;left:auto!important;top:auto!important;width:100%!important;box-sizing:border-box;flex-shrink:0}
+.msr-swiss-round-label{margin-top:16px;padding:14px 12px;text-align:left;font-size:12px;border:1px solid #416894;border-left:3px solid #7bc6ff;border-radius:8px;background:#12243be8}
+.msr-swiss-round-label:not([data-round="1"])::before{content:"↓";display:block;color:#83caff;font-size:20px;position:absolute;top:-25px;left:calc(50% - 7px)}
+.msr-swiss-board>[data-round="1"]{order:10}.msr-swiss-board>.msr-swiss-group[data-round="1"]{order:11}
+.msr-swiss-board>[data-round="2"]{order:20}.msr-swiss-board>.msr-swiss-group[data-round="2"]{order:21}
+.msr-swiss-board>[data-round="3"]{order:30}.msr-swiss-board>.msr-swiss-group[data-round="3"]{order:31}
+.msr-swiss-board>[data-round="4"]{order:40}.msr-swiss-board>.msr-swiss-group[data-round="4"]{order:41}
+.msr-swiss-board>[data-round="5"]{order:50}.msr-swiss-board>.msr-swiss-group[data-round="5"]{order:51}
+.msr-swiss-group .msr-zone-team{min-height:31px;font-size:12px}.msr-swiss-group .msr-zone-match{padding:10px 12px}.msr-swiss-note{font-size:11px}.msr-swiss-await{min-height:52px;font-size:12px}
+}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2449,9 +2468,9 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var board = h('div', { class: 'msr-swiss-board' });
       var connectors = '<svg viewBox="0 0 1520 760" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#5b7ba7" stroke-width="2"><path d="M248 350H274V185H310M274 350V525H310"/><path d="M558 185H584V130H620M584 185V360H620"/><path d="M558 525H600V360H620M600 525V590H620"/><path d="M868 130H894V265H930M868 360H908V265H930M908 360V535H930M868 590H894V535H930"/><path d="M1178 265H1200V410H1240M1178 535H1216V410H1240"/></g></svg>';
       board.appendChild(h('div', { class: 'msr-swiss-lines', svg: connectors }));
-      ['ROUND 1', 'ROUND 2', 'ROUND 3', 'ROUND 4', 'ROUND 5'].forEach(function (round, i) { board.appendChild(h('div', { class: 'msr-swiss-round-label', style: 'left:' + (i * 310) + 'px' }, round)); });
+      ['ROUND 1', 'ROUND 2', 'ROUND 3', 'ROUND 4', 'ROUND 5'].forEach(function (round, i) { board.appendChild(h('div', { class: 'msr-swiss-round-label', 'data-round': i + 1, style: 'left:' + (i * 310) + 'px' }, round)); });
       function group(record, x, y, body, note, color) {
-        return h('section', { class: 'msr-swiss-group' + (color ? ' ' + color : ''), style: 'left:' + x + 'px;top:' + y + 'px', 'aria-label': record + ' record' },
+        return h('section', { class: 'msr-swiss-group' + (color ? ' ' + color : ''), 'data-round': record.split('–').reduce(function (sum, n) { return sum + Number(n); }, 1), style: 'left:' + x + 'px;top:' + y + 'px', 'aria-label': record + ' record' },
           h('div', { class: 'msr-swiss-record' }, h('b', null, record), h('span', null, record === '0–0' ? '8 TEAMS' : 'WIN / LOSS')),
           body, note ? h('div', { class: 'msr-swiss-note' }, note) : null);
       }
@@ -2465,8 +2484,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       board.appendChild(group('2–1', 930, 185, pending(), 'Win → QUALIFIED · Loss → 2–2', 'is-qualifier'));
       board.appendChild(group('1–2', 930, 455, pending(), 'Win → 2–2 · Loss → ELIMINATED', 'is-elimination'));
       board.appendChild(group('2–2', 1240, 330, pending('Final deciding round'), 'Win → QUALIFIED · Loss → ELIMINATED', 'is-decider'));
-      var scroll = h('div', { class: 'msr-swiss-scroll', tabindex: '0', role: 'region', 'aria-label': 'Zone ' + label + ' Swiss bracket, scroll horizontally for all five rounds' }, board);
-      card.replaceChildren(title, h('p', { class: 'msr-zone-note' }, 'SWISS STAGE · Follow the lines from left to right. Scroll sideways to see all rounds.'), scroll,
+      var scroll = h('div', { class: 'msr-swiss-scroll', tabindex: '0', role: 'region', 'aria-label': 'Zone ' + label + ' Swiss bracket, five rounds' }, board);
+      card.replaceChildren(title, h('p', { class: 'msr-zone-note' }, h('span', { class: 'msr-bracket-desktop-help' }, 'SWISS STAGE · Follow the lines from left to right. Scroll sideways to see all rounds.'), h('span', { class: 'msr-bracket-mobile-help' }, 'SWISS STAGE · Scroll down through rounds 1–5.')), scroll,
         h('div', { class: 'msr-swiss-outcomes' }, h('span', { class: 'qualified' }, '3 WINS · QUALIFIED'), h('span', { class: 'eliminated' }, '3 LOSSES · ELIMINATED')));
     });
     var grid = root.querySelector('.msr-zone-grid'); root.insertBefore(tabbar, grid); selectZone(0);
