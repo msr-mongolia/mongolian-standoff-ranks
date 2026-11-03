@@ -1899,10 +1899,18 @@ background-color:#121923!important
 #app.msr-clan-profile .prof.msr-etxen-winter::after{content:none!important}
 #app.msr-clan-profile .prof.msr-etxen-winter .msr-clan-background-logo{display:none!important}
 </style>
-<style id="msr-lunaris-clean-profile">
-#app.msr-clan-profile .prof.msr-lunaris-clean{background:#101923!important;background-image:none!important}
-#app.msr-clan-profile .prof.msr-lunaris-clean::before,#app.msr-clan-profile .prof.msr-lunaris-clean::after{content:none!important;background:none!important;animation:none!important}
+<style id="msr-lunaris-back1">
+/* Back1 is the existing Lunaris profile header, not an extra banner. */
+#app.msr-clan-profile .prof.msr-lunaris-clean{
+ background-color:#101923!important;
+ background-image:linear-gradient(90deg,rgba(9,16,27,.90) 0%,rgba(9,16,27,.78) 34%,rgba(9,16,27,.12) 78%),url("assets/lunaris_back1.png")!important;
+ background-position:center center!important;background-size:cover!important;background-repeat:no-repeat!important;
+}
+#app.msr-clan-profile .prof.msr-lunaris-clean::before,
+#app.msr-clan-profile .prof.msr-lunaris-clean::after{content:none!important;animation:none!important}
 #app.msr-clan-profile .prof.msr-lunaris-clean .msr-clan-background-logo{display:none!important}
+#app.msr-clan-profile .prof.msr-lunaris-clean> *{position:relative;z-index:1}
+@media(max-width:650px){#app.msr-clan-profile .prof.msr-lunaris-clean{background-position:60% center!important}}
 </style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
