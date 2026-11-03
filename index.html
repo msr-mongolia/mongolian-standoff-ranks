@@ -1929,7 +1929,18 @@ background-color:#121923!important
  background:rgba(9,16,27,.48)!important;
 }
 
-</style></head>
+</style>
+<style id="msr-team-gold-sticker">
+#app .prof.msr-lunaris-clean{padding-right:125px!important}
+#app .prof.msr-lunaris-clean .msr-team-gold-sticker{position:absolute!important;right:18px;top:50%;transform:translateY(-50%);width:90px;height:90px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 5px #0009)}
+.msr-team-gold-sticker img{display:block;width:100%;height:100%;object-fit:contain}
+.msr-gold-sticker-dialog{padding:32px;border:1px solid #b98b35;border-radius:18px;background:#0b111beF;max-width:90vw;max-height:90vh;overflow:auto}
+.msr-gold-sticker-dialog::backdrop{background:#000c}
+.msr-gold-sticker-dialog>img{display:block;width:min(640px,70vw);height:min(640px,70vh);object-fit:contain}
+.msr-gold-sticker-close{position:absolute;right:8px;top:5px;background:transparent;color:#fff;border:0;font-size:30px;cursor:pointer}
+@media(max-width:650px){#app .prof.msr-lunaris-clean{padding-right:90px!important}#app .prof.msr-lunaris-clean .msr-team-gold-sticker{width:65px;height:75px;right:10px}}
+</style>
+</head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
 <div id="sky" aria-hidden="true"><span class="st2"></span><span class="au au1"></span><span class="au au2"></span><span class="au au3"></span></div>
@@ -3675,6 +3686,14 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return h('div',{class:'msr-team-stat'},h('span',{class:'msr-team-stat-icon',svg:svg}),h('div',{class:'msr-team-stat-copy'},h('span',{class:'k'},label),h('strong',{class:'v'},String(value))));
   }
 
+
+  function openLunarisGoldSticker(){
+    var dialog=document.createElement('dialog');dialog.className='msr-gold-sticker-dialog';dialog.setAttribute('aria-label','Team Lunaris golden sticker');
+    var close=h('button',{type:'button',class:'msr-gold-sticker-close','aria-label':'Close sticker preview',onclick:function(){dialog.close();}},'×');
+    dialog.appendChild(close);dialog.appendChild(h('img',{src:'assets/lunaris_gold_sticker.png',alt:'Team Lunaris golden sticker'}));
+    dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close();});
+    dialog.addEventListener('close',function(){dialog.remove();});document.body.appendChild(dialog);dialog.showModal();close.focus();
+  }
   V.team = function (code) {
     code = String(code || '').toUpperCase();
     if (!T[code]) return V.ranking();
@@ -3716,6 +3735,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return h('div', null,
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
       h('div', { class: 'prof' + (code === 'ETXEN' ? ' msr-etxen-winter' : '') + (code === 'TLNRS' ? ' msr-lunaris-clean' : '') }, crest(code, 'xl'),
+        code === 'TLNRS' ? h('button', {type:'button',class:'msr-team-gold-sticker','aria-label':'Enlarge Team Lunaris golden sticker',onclick:openLunarisGoldSticker},h('img',{src:'assets/lunaris_gold_sticker.png',alt:'Team Lunaris golden sticker'})) : null,
         h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class: 'tag gold', title: 'VIP until '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP CLAN') : null))),
       h('section', { class:'msr-team-stats', 'aria-label':'Team stats' },
         h('div',{class:'msr-team-stats-heading'},h('span',{svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></svg>'}),h('h2',null,'Team stats')),
