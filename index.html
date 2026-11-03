@@ -1973,7 +1973,24 @@ background-color:#121923!important
 
 #app .prof.msr-etxen-winter{padding-right:125px!important}
 #app .prof.msr-etxen-winter .msr-team-gold-sticker{position:absolute!important;right:18px;top:50%;transform:translateY(-50%);width:90px;height:90px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 5px #0009)}
-@media(max-width:650px){#app .prof.msr-etxen-winter{padding-right:90px!important}#app .prof.msr-etxen-winter .msr-team-gold-sticker{width:65px;height:75px;right:10px}}</style></head>
+@media(max-width:650px){#app .prof.msr-etxen-winter{padding-right:90px!important}#app .prof.msr-etxen-winter .msr-team-gold-sticker{width:65px;height:75px;right:10px}}</style><style id="msr-round-robin-cards">
+.msr-rr-card{width:100%;max-width:100%;box-sizing:border-box}
+.msr-rr-schedule{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+.msr-rr-day{display:grid;grid-template-columns:116px minmax(0,1fr);gap:10px;align-items:stretch}
+.msr-rr-day-head{border:1px solid rgba(103,220,137,.42);border-radius:11px;background:rgba(12,29,28,.85);padding:14px 10px;display:flex;flex-direction:column;justify-content:center;gap:6px;color:#c3f6d1}
+.msr-rr-day-head strong{font-size:17px}.msr-rr-day-head small{font-size:10px;letter-spacing:.08em;color:#9cb2b4}
+.msr-rr-matches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.msr-rr-match{min-width:0;min-height:98px;display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);grid-template-rows:1fr auto;align-items:center;gap:5px;padding:12px;border:1px solid rgba(123,156,175,.28);border-radius:11px;background:linear-gradient(135deg,rgba(13,25,35,.96),rgba(6,17,23,.92))}
+.msr-rr-team{min-width:0;display:flex;align-items:center;gap:7px;color:#eaf2f5!important;text-decoration:none!important;font-size:12px;font-weight:700;overflow-wrap:anywhere}
+.msr-rr-team .crest{flex:none}.msr-rr-team:hover{color:#6bea91!important}
+.msr-rr-fallback{flex:none;width:32px;height:32px;display:grid;place-items:center;border-radius:8px;background:#1b3540;color:#e7f7fa;font-size:11px}
+.msr-rr-versus{text-align:center;color:#80a29a;font-size:10px}
+.msr-rr-status{grid-column:1/-1;justify-self:center;border-radius:4px;background:#1b2e40;color:#9db8d8;padding:3px 9px;font-size:9px;font-weight:800;letter-spacing:.1em}
+.msr-rr-foot{font-size:12px;color:#91a6ae;margin-top:8px}
+@media(max-width:1050px){.msr-rr-day{grid-template-columns:1fr}.msr-rr-day-head{flex-direction:row;justify-content:space-between;align-items:center;padding:10px 12px}}
+@media(max-width:700px){.msr-rr-matches{grid-template-columns:1fr}.msr-rr-match{min-height:76px}.msr-rr-team{font-size:12px}}
+</style>
+</head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
 <div id="sky" aria-hidden="true"><span class="st2"></span><span class="au au1"></span><span class="au au2"></span><span class="au au3"></span></div>
@@ -2615,20 +2632,33 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
             [[5,3],[6,0],[1,2]],
             [[4,1],[2,5],[3,6]]
           ];
-          return h('section', { class:'box msr-zone-card', 'aria-label':'Group E official schedule' },
-            h('div', {class:'msr-zone-title'}, h('h2',null,'GROUP E'),h('span',{class:'tag soft'},'7 teams · 21 matches')),
-            h('p',{class:'msr-zone-note'},'Official 7-day round-robin schedule · Results pending'),
-            groupEDays.map(function(day,di){
-              return h('div',{class:'msr-group-e-day',style:'margin:14px 0;padding:12px;border:1px solid rgba(140,165,200,.22);border-radius:10px'},
-                h('h3',{style:'font-size:15px;margin:0 0 10px'},'Day '+(di+1)),
-                day.map(function(pair,mi){
-                  return h('div',{class:'msr-zone-match','data-match':'E-D'+(di+1)+'-M'+(mi+1)},
-                    h('span',{class:'msr-zone-team'},groupETeams[pair[0]]),
-                    h('span',{class:'msr-zone-vs'},'VS'),
-                    h('span',{class:'msr-zone-team'},groupETeams[pair[1]]),
-                    h('span',{class:'tag soft',style:'font-size:10px'},'Upcoming'));
-                }));
-            }));
+          function groupETeam(name) {
+            var norm = function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+            var aliases = {'s ix lence purple':'SIXP'};
+            var keys = Object.keys(T);
+            var code = keys.find(function(k){return norm(T[k].n)===norm(name);});
+            if (!code && name === 'SIX LENCE PURPLE' && T.SIXP) code='SIXP';
+            if (!code && name === '1InfinityX') code=keys.find(function(k){return norm(T[k].n).includes('infinity');});
+            return code ? h('a',{class:'msr-rr-team',href:teamHref(code),title:'Open '+T[code].n+' clan profile'},
+              crest(code,'md'),h('span',null,name)) :
+              h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback'},name.slice(0,2).toUpperCase()),h('span',null,name));
+          }
+          var groupECard = h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group E round robin schedule'},
+            h('div',{class:'msr-zone-title'},h('h2',null,'GROUP E'),h('span',{class:'tag soft'},'ROUND ROBIN · 7 TEAMS')),
+            h('p',{class:'msr-zone-note'},'7 days · 21 matches · Each team plays 6 matches'),
+            h('div',{class:'msr-rr-schedule'},groupEDays.map(function(day,di){
+              return h('section',{class:'msr-rr-day'},
+                h('div',{class:'msr-rr-day-head'},h('strong',null,'DAY '+(di+1)),h('small',null,'3 MATCHES')),
+                h('div',{class:'msr-rr-matches'},day.map(function(pair,mi){
+                  return h('div',{class:'msr-rr-match','data-match':'E-D'+(di+1)+'-M'+(mi+1)},
+                    groupETeam(groupETeams[pair[0]]),
+                    h('span',{class:'msr-rr-versus'},'VS'),
+                    groupETeam(groupETeams[pair[1]]),
+                    h('span',{class:'msr-rr-status'},'UPCOMING'));
+                })));
+            })),
+            h('div',{class:'msr-rr-foot'},'All 7 teams play each other once. Match results are pending.'));
+          return groupECard;
         }
         return h('section', {class:'box msr-zone-card','aria-label':'Group '+label},
           h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'Round Robin')),
