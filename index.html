@@ -1899,7 +1899,11 @@ background-color:#121923!important
 #app.msr-clan-profile .prof.msr-etxen-winter::after{content:none!important}
 #app.msr-clan-profile .prof.msr-etxen-winter .msr-clan-background-logo{display:none!important}
 </style>
-</head>
+<style id="msr-lunaris-clean-profile">
+#app.msr-clan-profile .prof.msr-lunaris-clean{background:#101923!important;background-image:none!important}
+#app.msr-clan-profile .prof.msr-lunaris-clean::before,#app.msr-clan-profile .prof.msr-lunaris-clean::after{content:none!important;background:none!important;animation:none!important}
+#app.msr-clan-profile .prof.msr-lunaris-clean .msr-clan-background-logo{display:none!important}
+</style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
 <div id="sky" aria-hidden="true"><span class="st2"></span><span class="au au1"></span><span class="au au2"></span><span class="au au3"></span></div>
@@ -3685,7 +3689,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
     return h('div', null,
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
-      h('div', { class: 'prof' + (code === 'ETXEN' ? ' msr-etxen-winter' : '') }, crest(code, 'xl'),
+      h('div', { class: 'prof' + (code === 'ETXEN' ? ' msr-etxen-winter' : '') + (code === 'TLNRS' ? ' msr-lunaris-clean' : '') }, crest(code, 'xl'),
         h('div', null, h('h1', null, tagEl(code), String(T[code].n||'').replace(/\b(?:clan|team)\s*name\s*:\s*/gi,'').replace(/^\s*["']|["']\s*$/g,'').replace(/^\s*\[\s*\]\s*/,'').trim()), h('div', { class: 'psub' }, h('span', null, T[code].city), '·', h('b', null, 'Rank #' + pos), titles.length ? h('span', { class: 'tag gold' }, titles.length + ' titles') : null, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class: 'tag gold', title: 'VIP until '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP CLAN') : null))),
       h('section', { class:'msr-team-stats', 'aria-label':'Team stats' },
         h('div',{class:'msr-team-stats-heading'},h('span',{svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20v-6h4v6M10 20V9h4v11M16 20V4h4v16"/></svg>'}),h('h2',null,'Team stats')),
@@ -4014,7 +4018,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
         var banner=node.querySelector('.hl-top, .prof');
-        if(banner && clan.img && String(clan.tag || '').toUpperCase() !== 'ETXEN' && !/^ETXEN\b/i.test(clan.n || '')){
+        if(banner && clan.img && !['ETXEN','TLNRS'].includes(String(clan.tag || '').toUpperCase()) && !/^(ETXEN|TEAM LUNARIS)\b/i.test(clan.n || '')){
           banner.appendChild(h('img',{class:'msr-clan-background-logo','data-clan':clanCode,src:clan.img,alt:'','aria-hidden':'true',decoding:'async'}));
         }
       }
