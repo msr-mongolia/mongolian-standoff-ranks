@@ -2689,7 +2689,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       return code ? h('a', { class: 'msr-zone-team', href: teamHref(code) }, crest(code, 'md'), h('span', null, T[code].n))
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
-    var groupData = {"A":[["Ulseratif Colitis","uclt"],["IMTLL","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
+    var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
@@ -4427,6 +4427,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           delete dxIds[nick]; dxIds.xaise = '82006514'; return 'xaise';
         }), player_ids: dxIds });
       }
+      if (row.id === 'ds_0926c1d588589e2e6f997859' || String(row.tag || '').trim().toUpperCase() === 'IMTLL') row = Object.assign({}, row, { name: 'Immortal Dynasy' });
       if (row.id === 'ds_0926c1d588589e2e6f997859') {
         var imtllIds = Object.assign({}, row.player_ids || {});
         var originalImtllIds = Object.assign({}, imtllIds);
