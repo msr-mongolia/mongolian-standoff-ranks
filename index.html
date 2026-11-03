@@ -2666,6 +2666,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       return code ? h('a', { class: 'msr-zone-team', href: teamHref(code) }, crest(code, 'md'), h('span', null, T[code].n))
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
+    var groupData = {"A":[["Ulseratif Colitis","uclt"],["IMTLL","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
+    groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
@@ -2695,7 +2697,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('div', { class: 'msr-zone-grid' }, zones.map(function (teams, zi) {
         var label = String.fromCharCode(65 + zi);
         if (zi === 0 || zi === 1 || zi === 2 || zi === 3 || zi === 5) {
-          var groupData = {"A":[["Ulseratif Colitis","uclt"],["IMTLL","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
+
           var rrRounds = [[[0,1],[2,3],[4,5],[6,7]],[[0,3],[1,5],[2,7],[4,6]],[[0,5],[3,7],[1,6],[2,4]],[[0,7],[5,6],[3,4],[1,2]],[[0,6],[7,4],[5,2],[3,1]],[[0,4],[6,2],[7,1],[5,3]],[[0,2],[4,1],[6,3],[7,5]]];
           if(label==='F')rrRounds=[[[0,1],[2,3],[4,5]],[[0,3],[1,5],[2,6]],[[0,5],[3,6],[1,4]],[[0,6],[5,4],[3,2]],[[0,4],[6,2],[5,1]],[[0,2],[4,3],[6,1]],[[2,1],[4,6],[5,3]]];
           var groupTeams = groupData[label];
@@ -2770,7 +2772,22 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     function selectZone(index) {
       cards.forEach(function (card, i) { card.hidden = i !== index; });
       var summary = root.querySelector('.msr-rr-summary');
-      if (summary) summary.hidden = index !== 4;
+      if(summary){
+        var label=String.fromCharCode(65+index),entries=groupData[label],count=entries.length;
+        summary.hidden=false;
+        summary.setAttribute('aria-label','Group '+label+' standings and round robin information');
+        summary.querySelector('.msr-rr-summary-head em').textContent=label;
+        summary.querySelector('.msr-rr-standings h3').textContent='GROUP '+label+' STANDINGS';
+        var tbody=summary.querySelector('tbody');tbody.replaceChildren();
+        entries.forEach(function(item,i){
+          var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+          var key=Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]);})||Object.keys(T).find(function(k){return norm(T[k].tag)===norm(item[1]);});
+          tbody.appendChild(h('tr',null,h('td',null,String(i+1)),h('td',null,key?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,item[0])):h('span',null,item[0])),[0,0,0,0].map(function(v){return h('td',null,String(v));}),h('td',null,h('strong',{class:'msr-rr-pts'},'0'))));
+        });
+        var facts=summary.querySelectorAll('.msr-rr-facts b'),total=count===8?28:21;
+        [count,7,total,count-1].forEach(function(v,i){facts[i].textContent=String(v);});
+        summary.querySelectorAll('.msr-rr-rules p')[1].textContent=total+' scheduled matches across 7 days.';
+      }
       root.setAttribute('data-active-group',String.fromCharCode(65+index));
       Array.from(tabbar.children).forEach(function (button, i) { button.setAttribute('aria-selected', String(i === index)); button.tabIndex = i === index ? 0 : -1; });
     }
