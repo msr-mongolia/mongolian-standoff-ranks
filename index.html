@@ -3934,6 +3934,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   }
   V.team = function (code) {
     code = String(code || '').toUpperCase();
+    if(code==='DS_69E357FBA010A21CD6AD1364')code='DS_CC59ECCDC299850D94095877';
     if (!T[code]) return V.ranking();
     var r = RANK.filter(function (x) { return x[0] === code; })[0], pos = rankOf(code), wp = (r[3] + r[4]) ? Math.round(r[3] / (r[3] + r[4]) * 100) : 0;
     var roster = PLAYERS.filter(function (p) { return p.team === code; }).sort(function (a, b) { return Number(b.nick===teamCaptain(code))-Number(a.nick===teamCaptain(code)) || b.rating-a.rating; });
@@ -4411,6 +4412,15 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         row.roster.length >= 5 && row.roster.length <= 12 && row.roster.every(function (nick) { return typeof nick === 'string' && nick && nick.length <= 40; }) &&
         row.id !== 'ds_b248643101cd3a4e8594fabf' && row.id !== 'ds_fbf308278120e648e045eb7b' && !/^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim());
     }).map(function (row) { return Object.assign({}, row, { roster: row.roster.slice(), player_ids: Object.assign({}, row.player_ids || {}) }); }).sort(compareRegistrations);
+
+    // con1: these two submissions describe one ACCA clan; keep all unique player IDs.
+    var accaRows=registrations.filter(function(row){return row.id==='ds_cc59eccdc299850d94095877'||row.id==='ds_69e357fba010a21cd6ad1364';});
+    if(accaRows.length){
+      var merged=Object.assign({},accaRows[accaRows.length-1],{id:'ds_cc59eccdc299850d94095877',name:'ACCACIN',tag:'ACCA',roster:[],player_ids:{}}),accaPlayers=new Map();
+      accaRows.forEach(function(row){row.roster.forEach(function(nick){var id=String(row.player_ids[nick]||'');accaPlayers.set(id||key(nick),{nick:nick,id:id});});});
+      accaPlayers.forEach(function(p){merged.roster.push(p.nick);if(p.id)merged.player_ids[p.nick]=p.id;});
+      registrations=registrations.filter(function(row){return !accaRows.some(function(a){return a.id===row.id;});});registrations.push(merged);registrations.sort(compareRegistrations);
+    }
     var latestClanById = new Map();
     registrations.forEach(function (row) {
       row.roster.forEach(function (nick) {
@@ -4507,11 +4517,13 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         RANK.push([code, Number.isFinite(row.points) ? row.points : 50, 0, 0, 0, '']);
         byName[key(row.name)] = code;
       }
+      if(row.id==='ds_cc59eccdc299850d94095877'){T[code].n='ACCACIN';T[code].tag='ACCA';T[code].img='assets/acca_profile.jpg';T[code].c='#ed334d';}
       T[code].vipStartedAt = row.vip_started_at || T[code].vipStartedAt || null;
       T[code].vipExpiresAt = row.vip_expires_at || null;
       var rankingRow = RANK.find(function (r) { return r[0] === code; });
       if (rankingRow && Number.isFinite(row.points) && row.points >= 0) rankingRow[1] = row.points;
       if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
+      if(row.id==='ds_cc59eccdc299850d94095877')T[code].img='assets/acca_profile.jpg';
       if (/^(?:wonderart|woart)$/i.test(row.name.trim())) { T[code].img = 'assets/woart-logo.svg'; T[code].c = '#B56CFF'; }
       Object.keys(row.player_ids || {}).forEach(function(nick) {
         var id = String(row.player_ids[nick]);
