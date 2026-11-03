@@ -2057,6 +2057,11 @@ background-color:#121923!important
 @media(max-width:1100px){#app .msr-rr-day{grid-template-columns:1fr!important}#app .msr-rr-day-head{flex-direction:row!important;justify-content:space-between!important}#app .msr-rr-day>.msr-zone-note{grid-column:1}}
 @media(max-width:850px){#app .msr-rr-matches{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:600px){#app .msr-rr-matches{grid-template-columns:1fr!important}#app .msr-rr-clan-tag{font-size:17px}}
+</style><style id="msr-rr-asterisk-fallback">
+.msr-rr-fallback-reskk{background:#060708!important;color:#fff!important;border:1px solid #f4f5f5!important;font-size:25px!important;font-weight:800!important;border-radius:8px!important}
+.msr-rr-unlinked .msr-rr-identity{display:flex;flex-direction:column;gap:2px;min-width:0}
+.msr-rr-unlinked .msr-rr-clan-tag{font-weight:900;color:#f6f7fb}
+.msr-rr-unlinked .msr-rr-identity small{color:#cbd2dd}
 </style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2724,7 +2729,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
               Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]);});
             var name = item[0];
             return key ? h('a',{class:'msr-rr-team',href:teamHref(key),title:'Open '+T[key].n+' clan profile'},crest(key,'md'),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name))) :
-              h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback'},item[1].slice(0,2).toUpperCase()),h('span',null,name+' ('+item[1]+')'));
+              h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback msr-rr-fallback-'+norm(item[1])},item[1]==='RESKK'?'✳':item[1].slice(0,2).toUpperCase()),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name)));
           }
           return h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group '+label+' round robin schedule'},
             h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'ROUND ROBIN · '+groupTeams.length+' TEAMS')),
