@@ -964,7 +964,7 @@ tr.msr-podium-row-1:hover>td{background:#665024!important}tr.msr-podium-row-2:ho
 @media(max-width:600px){.msr-rel-match-maps .msr-rel-map-photo{min-height:112px;padding:11px}.msr-rel-match-maps .msr-rel-map-photo b{font-size:18px}}
 
 /* Standoff 2 map artwork across every team profile Map pool row */
-.mapr.msr-map-pool-photo{background-image:linear-gradient(90deg,rgba(13,19,30,.94),rgba(13,19,30,.76)),var(--mi)!important;background-size:cover!important;background-position:center!important}
+.mapr.msr-map-pool-photo{background:linear-gradient(90deg,rgba(10,16,27,.68),rgba(10,16,27,.43)),var(--mi) center / cover no-repeat!important;background-size:cover!important;background-position:center!important}
 .mapr.msr-map-pool-photo td{background:transparent!important;color:#f3f6ff;text-shadow:0 1px 4px #000}
 .mapr.msr-map-pool-photo td:first-child b{font-weight:800;color:#fff}
 </style>
@@ -3650,19 +3650,13 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     });
   }
   // Map photography for all seven Standoff 2 competitive maps.
-  var MSR_MAP_PHOTOS = {
-    dune:'https://cdn.donatov.blog/v6/assets/main/images/full_684d757593f585.44528099.webp',
-    hanami:'https://liquipedia.net/commons/images/3/31/Hanami_Map.png',
-    rust:'https://storage.respawn.media/T1uDwuJC91qisO0yv6XSg.webp',
-    breeze:'https://cdn.donatov.blog/v6/assets/main/images/full_684d722bb92348.29510326.webp',
-    prison:'https://pbs.twimg.com/media/HEv4Ylea8AAaQYQ.jpg',
-    province:'https://pbs.twimg.com/media/DK98fcoW4AA5s-m.jpg',
-    sandstone:'https://storage.respawn.media/nnh9M7amtSr-xSZHzv8YZ.webp'
-  };
+  // Reuse the seven map images already embedded in this site; no third-party image hosts.
+  var MSR_MAP_PHOTOS = {};
+  Object.keys(MAPART).forEach(function(name){ MSR_MAP_PHOTOS[String(name).toLowerCase()] = MAPART[name]; });
   function msrRelMapCard(label,map){
     var id=String(map||'').trim().toLowerCase();
     var photo=MSR_MAP_PHOTOS[id];
-    return h('div',{class:'msr-rel-map-photo',style:photo?'background-image:linear-gradient(0deg,rgba(5,10,19,.88),rgba(5,10,19,.18)),url("'+photo+'")':null},
+    return h('div',{class:'msr-rel-map-photo',style:photo?'background-image:linear-gradient(0deg,rgba(5,10,19,.82),rgba(5,10,19,.14)),'+photo:null},
       h('small',null,label),h('b',null,map||'TBA'));
   }
   function msrRelMatchCard(row){
@@ -4006,7 +4000,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           body.textContent = '';
           body.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:600px' }, thead(mc, SF.sm, draw4),
             h('tbody', null, sortBy(ml, SF.sm).map(function (o) {
-              return h('tr', { class: 'mapr msr-map-pool-photo', style: '--mi:' + (MSR_MAP_PHOTOS[String(o.map||'').toLowerCase()] ? 'url("'+MSR_MAP_PHOTOS[String(o.map||'').toLowerCase()]+'")' : MAPART[o.map]) }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, o.played ? o.avgR.toFixed(1) : '—'),
+              return h('tr', { class: 'mapr msr-map-pool-photo', style: '--mi:' + (MAPART[o.map] || 'none') }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, o.played ? o.avgR.toFixed(1) : '—'),
                 h('td', { class: 'n' }, o.played ? o.ctp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.played ? o.tp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.pick), h('td', { class: 'n' }, o.ban), h('td', { class: 'n' }, o.left));
             }))))));
           body.appendChild(h('p', { class: 'mini' }, 'Picked, removed and left over come from the map veto of every finished match.'));
