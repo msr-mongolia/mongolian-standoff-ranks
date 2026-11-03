@@ -4413,12 +4413,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         row.id !== 'ds_b248643101cd3a4e8594fabf' && row.id !== 'ds_fbf308278120e648e045eb7b' && !/^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim());
     }).map(function (row) { return Object.assign({}, row, { roster: row.roster.slice(), player_ids: Object.assign({}, row.player_ids || {}) }); }).sort(compareRegistrations);
 
-    // con1: these two submissions describe one ACCA clan; keep all unique player IDs.
+    // con1 identifies one clan; its newest Discord registration owns the current roster.
     var accaRows=registrations.filter(function(row){return row.id==='ds_cc59eccdc299850d94095877'||row.id==='ds_69e357fba010a21cd6ad1364';});
     if(accaRows.length){
-      var merged=Object.assign({},accaRows[accaRows.length-1],{id:'ds_cc59eccdc299850d94095877',name:'ACCACIN',tag:'ACCA',roster:[],player_ids:{}}),accaPlayers=new Map();
-      accaRows.forEach(function(row){row.roster.forEach(function(nick){var id=String(row.player_ids[nick]||'');accaPlayers.set(id||key(nick),{nick:nick,id:id});});});
-      accaPlayers.forEach(function(p){merged.roster.push(p.nick);if(p.id)merged.player_ids[p.nick]=p.id;});
+      var newestAcca=accaRows[accaRows.length-1];
+      var merged=Object.assign({},newestAcca,{id:'ds_cc59eccdc299850d94095877',name:'ACCACIN',tag:'ACCA',roster:newestAcca.roster.slice(),player_ids:Object.assign({},newestAcca.player_ids||{})});
       registrations=registrations.filter(function(row){return !accaRows.some(function(a){return a.id===row.id;});});registrations.push(merged);registrations.sort(compareRegistrations);
     }
     var latestClanById = new Map();
