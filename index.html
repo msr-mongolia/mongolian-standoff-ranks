@@ -2598,10 +2598,10 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       return code ? h('a', { class: 'msr-zone-team', href: teamHref(code) }, crest(code, 'md'), h('span', null, T[code].n))
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
-    var root = h('div', { class: 'msr-zones' }, pageHead('MSL Major S2 · 6 Zones', '48 teams · 8 teams per zone · Swiss: 3 wins to qualify / 3 losses eliminated'),
-      h('section', { class: 'box', role: 'status' }, h('h2', null, 'Draft allocation · Not the official draw'),
-        h('p', null, Math.min(codes.length, 48) + ' / 48 registered teams shown. ' + Math.max(0, 48 - codes.length) + ' slots awaiting teams. Draft positions can change until the entry list is complete.'),
-        h('p', null, 'Awaiting-team slots are not BYEs or automatic wins. No match results have been entered.')),
+    var root = h('div', { class: 'msr-zones' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
+      h('section', { class: 'box', role: 'status' }, h('h2', null, 'Group schedules'),
+        h('p', null, 'GROUP E: official 7-day fixture list (7 teams, 21 matches). Other group fixtures await confirmed team allocations and schedules.'),
+        h('p', null, 'No match results have been entered.')),
       h('div', { class: 'msr-zone-grid' }, zones.map(function (teams, zi) {
         var label = String.fromCharCode(65 + zi);
         if (zi === 4) {
@@ -2630,19 +2630,12 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
                 }));
             }));
         }
-        return h('section', { class: 'box msr-zone-card', 'aria-label': 'Zone ' + label },
-          h('div', { class: 'msr-zone-title' }, h('h2', null, 'ZONE ' + label), h('span', { class: 'tag soft' }, teams.length + ' / 8 teams')),
-          h('p', { class: 'msr-zone-note' }, 'Round 1 · Provisional pairings · Scores pending'),
-          [0, 1, 2, 3].map(function (mi) {
-            return h('div', { class: 'msr-zone-match', 'data-match': label + (mi + 1) },
-              h('div', { class: 'msr-zone-match-label' }, label + (mi + 1)), entry(teams[mi * 2], mi * 2 + 1),
-              h('span', { class: 'msr-zone-vs', 'aria-hidden': 'true' }, 'VS'), entry(teams[mi * 2 + 1], mi * 2 + 2));
-          }),
-          h('p', { class: 'msr-zone-note' }, '4 qualify · 4 eliminated after the zone stage'));
+        return h('section', {class:'box msr-zone-card','aria-label':'Group '+label},
+          h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'Round Robin')),
+          h('p',{class:'msr-zone-note'},'Official team list and match schedule pending. No provisional Swiss pairings shown.'));
       })),
-      h('section', { class: 'box' }, h('h2', null, 'Next rounds'),
-        h('p', null, 'Pair teams with the same win–loss record where possible. Odd score groups require pairing with the nearest record group. Avoid repeat opponents. Publish each next round after results are confirmed.'),
-        h('p', null, 'Each zone sends 4 teams to the next stage: 24 teams in total.')));
+      h('section', { class: 'box' }, h('h2', null, 'Round Robin group stage'),
+        h('p', null, 'Teams play each other once within their group. Qualification rules and other group schedules will be published when confirmed.')));
     var tabbar = h('div', { class: 'msr-zone-tabs', role: 'tablist', 'aria-label': 'Tournament zones' });
     var cards = Array.from(root.querySelectorAll('.msr-zone-card'));
     function selectZone(index) {
@@ -2661,7 +2654,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if (next >= 0) { e.preventDefault(); selectZone(next); tabbar.children[next].focus(); }
       });
       tabbar.appendChild(button);
-      if (zi === 4) return; // Group E uses its confirmed seven-day schedule instead of draft Swiss bracket.
+      return; // Round Robin group stage: no Swiss board for any group.
       var board = h('div', { class: 'msr-swiss-board' });
       var connectors = '<svg viewBox="0 0 1520 760" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#5b7ba7" stroke-width="2"><path d="M248 350H274V185H310M274 350V525H310"/><path d="M558 185H584V130H620M584 185V360H620"/><path d="M558 525H600V360H620M600 525V590H620"/><path d="M868 130H894V265H930M868 360H908V265H930M908 360V535H930M868 590H894V535H930"/><path d="M1178 265H1200V410H1240M1178 535H1216V410H1240"/></g></svg>';
       board.appendChild(h('div', { class: 'msr-swiss-lines', svg: connectors }));
