@@ -967,6 +967,12 @@ tr.msr-podium-row-1:hover>td{background:#665024!important}tr.msr-podium-row-2:ho
 .mapr.msr-map-pool-photo{background:linear-gradient(90deg,rgba(10,16,27,.68),rgba(10,16,27,.43)),var(--mi) center / cover no-repeat!important;background-size:cover!important;background-position:center!important}
 .mapr.msr-map-pool-photo td{background:transparent!important;color:#f3f6ff;text-shadow:0 1px 4px #000}
 .mapr.msr-map-pool-photo td:first-child b{font-weight:800;color:#fff}
+
+/* Prevent long map names (Province, Sandstone) from wrapping inside Ban/Pick cards */
+.msr-rel-match-maps .msr-rel-map-photo{min-width:0;overflow:hidden;padding:clamp(9px,1.3vw,15px)!important}
+.msr-rel-match-maps .msr-rel-map-photo b{display:block;max-width:100%;font-size:clamp(13px,1.7vw,22px)!important;line-height:1.2!important;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;word-break:normal}
+.msr-rel-match-maps .msr-rel-map-photo small{display:block;max-width:100%;font-size:clamp(11px,1.2vw,15px)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){.msr-rel-match-maps .msr-rel-map-photo b{font-size:clamp(12px,3.3vw,17px)!important}.msr-rel-match-maps .msr-rel-map-photo small{font-size:clamp(10px,2.6vw,13px)!important}}
 </style>
 
 <style id="polish">
