@@ -4069,6 +4069,14 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           delete dxIds[nick]; dxIds.xaise = '82006514'; return 'xaise';
         }), player_ids: dxIds });
       }
+      if (row.id === 'ds_0926c1d588589e2e6f997859') {
+        var imtllIds = Object.assign({}, row.player_ids || {});
+        var originalImtllIds = Object.assign({}, imtllIds);
+        row = Object.assign({}, row, { roster: row.roster.map(function (nick) {
+          if (String(originalImtllIds[nick] || '') !== '282271750') return nick;
+          delete imtllIds[nick]; imtllIds.Explore = '282271750'; return 'Explore';
+        }), player_ids: imtllIds });
+      }
       var code = byName[key(row.name)];
       // CioR White is the confirmed roster already stored under COR.
       if (!code && key(row.name) === 'ciorwhite' && ROSTER.COR) {
