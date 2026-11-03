@@ -1820,6 +1820,37 @@ background-color:#121923!important
 .msr-swiss-group .msr-zone-team{min-height:31px;font-size:12px}.msr-swiss-group .msr-zone-match{padding:10px 12px}.msr-swiss-note{font-size:11px}.msr-swiss-await{min-height:52px;font-size:12px}
 }
 </style>
+<style id="msr-mobile-compact-desktop-bracket">
+/* Keep the desktop Swiss bracket layout on phones, at a reduced scale.
+   Horizontal panning reveals later rounds without stacking the nodes. */
+@media (max-width:760px){
+  .msr-swiss-scroll{
+    overflow-x:auto!important;overflow-y:hidden!important;
+    width:100%;max-width:100%;height:auto!important;max-height:none!important;
+    padding:6px 0 10px!important;touch-action:pan-x pan-y!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .msr-swiss-board{
+    display:block!important;position:relative!important;
+    width:1520px!important;min-width:1520px!important;height:760px!important;
+    padding:0!important;box-sizing:content-box!important;
+    zoom:.58;
+  }
+  .msr-swiss-lines{display:block!important}
+  .msr-swiss-round-label,.msr-swiss-group{
+    position:absolute!important;width:248px!important;
+    flex-shrink:initial!important;margin-top:0!important;
+  }
+  .msr-swiss-round-label{top:5px!important;text-align:center!important;
+    padding:12px!important;border:0!important;border-bottom:2px solid #416894!important;
+    border-radius:0!important;background:transparent!important;font-size:11px!important}
+  .msr-swiss-round-label::before{display:none!important}
+  .msr-swiss-group .msr-zone-team{min-height:24px!important;font-size:11px!important}
+  .msr-swiss-group .msr-zone-match{padding:7px 11px!important}
+  .msr-swiss-note{font-size:10px!important}
+  .msr-swiss-await{min-height:59px!important;font-size:11px!important}
+}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
