@@ -2781,7 +2781,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       if (tournament && tournament.img) card.style.setProperty('--msr-zone-logo', 'url("' + String(tournament.img).replace(/"/g, '%22') + '")');
       var firstMatches = Array.from(card.querySelectorAll('.msr-zone-match'));
       card.id = 'msr-zone-panel-' + label; card.setAttribute('role', 'tabpanel'); card.setAttribute('aria-labelledby', 'msr-zone-tab-' + label);
-      var button = h('button', { type: 'button', id: 'msr-zone-tab-' + label, role: 'tab', 'aria-controls': card.id, 'aria-selected': String(zi === 0), onclick: function () { selectZone(zi); } }, 'ZONE ' + label, h('small', null, zi === 4 ? '7 teams' : (zi === 0 || zi === 1 ? '8 teams' : zones[zi].length + ' / 8')));
+      var button = h('button', { type: 'button', id: 'msr-zone-tab-' + label, role: 'tab', 'aria-controls': card.id, 'aria-selected': String(zi === 0), onclick: function () { selectZone(zi); } }, 'ZONE ' + label, h('small', null, (zi === 4 || zi === 5) ? '7 teams' : '8 teams'));
       button.addEventListener('keydown', function (e) {
         var next = e.key === 'ArrowRight' ? (zi + 1) % 6 : e.key === 'ArrowLeft' ? (zi + 5) % 6 : e.key === 'Home' ? 0 : e.key === 'End' ? 5 : -1;
         if (next >= 0) { e.preventDefault(); selectZone(next); tabbar.children[next].focus(); }
