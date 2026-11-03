@@ -2996,8 +2996,12 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         var expected = 1 / (1 + Math.pow(10, (loser.e - winner.e) / 100));
         var mapMargin = Math.abs(sa - sb) / completed;
         var roundMargin = Math.abs(roundsA - roundsB) / Math.max(1, roundsA + roundsB);
-        var quality = 0.65 + 0.20 * mapMargin + 0.15 * roundMargin;
-        var gain = Math.max(1, Math.min(35, Math.round((9 + 26 * (1 - expected)) * quality)));
+        // Match-based ELO: 2:0 / 2:1 map margin, total round margin,
+        // and opponent strength all affect the award. +35 / -40 are caps,
+        // not fixed values for every win or loss.
+        var dominance = Math.min(1, 0.55 * mapMargin + 0.45 * roundMargin);
+        var upsetBonus = 1 - expected;
+        var gain = Math.max(1, Math.min(35, Math.round(8 + 19 * dominance + 8 * upsetBonus)));
         var loss = Math.max(1, Math.min(40, Math.round(gain * 40 / 35)));
         winner.e = Math.min(300, winner.e + gain);
         loser.e = Math.max(0, loser.e - loss);
