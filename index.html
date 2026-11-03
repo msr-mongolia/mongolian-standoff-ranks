@@ -1794,6 +1794,9 @@ background-color:#121923!important
 <style id="msr-six-zone-bracket">
 .msr-zones>.box{margin-bottom:18px}.msr-zone-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:20px 0}.msr-zone-card{min-width:0;padding:16px}.msr-zone-title{display:flex;align-items:center;justify-content:space-between;gap:8px}.msr-zone-title h2{font-size:20px;margin:0}.msr-zone-note{font-size:12px;color:var(--dim);line-height:1.6}.msr-zone-match{position:relative;border:1px solid var(--line);border-radius:10px;padding:10px;margin:12px 0;background:rgba(5,11,22,.5)}.msr-zone-match-label{font-size:10px;color:var(--dim);margin-bottom:7px}.msr-zone-team{display:flex;align-items:center;gap:9px;color:var(--text);font-size:13px;min-height:34px;overflow-wrap:anywhere}.msr-zone-team .crest{flex-shrink:0}.msr-zone-team:hover{color:var(--tracer)}.msr-zone-vs{display:block;font-size:10px;letter-spacing:.12em;color:var(--dim);margin:3px 0 3px 43px}.msr-zone-pending{opacity:.6}@media(max-width:1050px){.msr-zone-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.msr-zone-grid{grid-template-columns:minmax(0,1fr);gap:14px}.msr-zone-card{padding:14px}}
 </style>
+<style id="msr-visual-zone-swiss">
+.msr-zone-grid{display:block!important}.msr-zone-card[hidden]{display:none!important}.msr-zone-card{padding:20px;background:linear-gradient(145deg,#101e32ee,#080f1bee);border:1px solid #344e6d}.msr-zone-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:22px 0}.msr-zone-tabs button{background:#101a2b;border:1px solid #31445f;border-radius:10px;padding:13px 8px;color:#a9b9ce;font-weight:800;cursor:pointer}.msr-zone-tabs button small{display:block;font-size:10px;font-weight:500;margin-top:5px}.msr-zone-tabs button[aria-selected=true]{color:#8aceff;border-color:#5aaafa;background:linear-gradient(135deg,#193d64,#101d33);box-shadow:0 0 18px #2385e526}.msr-zone-tabs button:focus-visible,.msr-swiss-scroll:focus-visible{outline:2px solid #7dc7ff;outline-offset:3px}.msr-swiss-scroll{overflow-x:auto;overscroll-behavior-x:contain;padding:10px 8px 0;scrollbar-color:#4f7aa5 #0b1423}.msr-swiss-board{position:relative;width:1520px;height:760px;background-image:radial-gradient(#6585aa22 1px,transparent 1px);background-size:18px 18px}.msr-swiss-lines{position:absolute;inset:0;pointer-events:none}.msr-swiss-lines svg{width:100%;height:100%}.msr-swiss-round-label{position:absolute;top:5px;width:248px;padding:12px;text-align:center;border-bottom:2px solid #416894;color:#a3c7ec;font-size:11px;font-weight:800;letter-spacing:.14em}.msr-swiss-group{position:absolute;width:248px;border:1px solid #47617f;border-radius:12px;background:linear-gradient(145deg,#17283c,#0d1727);box-shadow:0 10px 28px #0004;overflow:hidden;z-index:1}.msr-swiss-record{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:#1c314b;border-bottom:1px solid #385571}.msr-swiss-record b{font-size:22px;line-height:1}.msr-swiss-record>span{font-size:9px;color:#afc4dd;letter-spacing:.08em}.msr-swiss-group .msr-zone-match{margin:0;padding:7px 11px;border:0;border-radius:0;border-bottom:1px solid #31445b;background:transparent}.msr-swiss-group .msr-zone-match-label{float:right;font-size:9px;margin:0;color:#91a8c4}.msr-swiss-group .msr-zone-team{font-size:11px;min-height:24px;gap:7px}.msr-swiss-group .msr-zone-team .crest{width:23px;height:23px;font-size:10px}.msr-swiss-group .msr-zone-vs{display:none}.msr-swiss-note{padding:10px 12px;font-size:10px;line-height:1.5;color:#a3b8d0;border-top:1px solid #30445e}.msr-swiss-await{display:flex;align-items:center;gap:9px;min-height:59px;padding:13px;font-size:11px;color:#9cb0c9}.msr-swiss-await>span:first-child{font-size:22px;color:#5d7f9e}.msr-swiss-group.is-qualifier{border-color:#3f926f}.msr-swiss-group.is-qualifier .msr-swiss-note{color:#70dbaa}.msr-swiss-group.is-elimination{border-color:#90505e}.msr-swiss-group.is-elimination .msr-swiss-note{color:#f194a5}.msr-swiss-group.is-decider{border-color:#c7a158}.msr-swiss-outcomes{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 8px;font-size:12px;font-weight:800;letter-spacing:.07em}.msr-swiss-outcomes .qualified{color:#70dbaa}.msr-swiss-outcomes .eliminated{color:#f194a5}@media(max-width:650px){.msr-zone-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.msr-zone-card{padding:12px}.msr-swiss-outcomes{font-size:10px}.msr-zones .ph h1{font-size:23px}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2421,6 +2424,46 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('section', { class: 'box' }, h('h2', null, 'Next rounds'),
         h('p', null, 'Pair teams with the same win–loss record where possible. Odd score groups require pairing with the nearest record group. Avoid repeat opponents. Publish each next round after results are confirmed.'),
         h('p', null, 'Each zone sends 4 teams to the next stage: 24 teams in total.')));
+    var tabbar = h('div', { class: 'msr-zone-tabs', role: 'tablist', 'aria-label': 'Tournament zones' });
+    var cards = Array.from(root.querySelectorAll('.msr-zone-card'));
+    function selectZone(index) {
+      cards.forEach(function (card, i) { card.hidden = i !== index; });
+      Array.from(tabbar.children).forEach(function (button, i) { button.setAttribute('aria-selected', String(i === index)); button.tabIndex = i === index ? 0 : -1; });
+    }
+    cards.forEach(function (card, zi) {
+      var label = String.fromCharCode(65 + zi), title = card.querySelector('.msr-zone-title');
+      var firstMatches = Array.from(card.querySelectorAll('.msr-zone-match'));
+      card.id = 'msr-zone-panel-' + label; card.setAttribute('role', 'tabpanel'); card.setAttribute('aria-labelledby', 'msr-zone-tab-' + label);
+      var button = h('button', { type: 'button', id: 'msr-zone-tab-' + label, role: 'tab', 'aria-controls': card.id, 'aria-selected': String(zi === 0), onclick: function () { selectZone(zi); } }, 'ZONE ' + label, h('small', null, zones[zi].length + ' / 8'));
+      button.addEventListener('keydown', function (e) {
+        var next = e.key === 'ArrowRight' ? (zi + 1) % 6 : e.key === 'ArrowLeft' ? (zi + 5) % 6 : e.key === 'Home' ? 0 : e.key === 'End' ? 5 : -1;
+        if (next >= 0) { e.preventDefault(); selectZone(next); tabbar.children[next].focus(); }
+      });
+      tabbar.appendChild(button);
+      var board = h('div', { class: 'msr-swiss-board' });
+      var connectors = '<svg viewBox="0 0 1520 760" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#5b7ba7" stroke-width="2"><path d="M248 350H274V185H310M274 350V525H310"/><path d="M558 185H584V130H620M584 185V360H620"/><path d="M558 525H600V360H620M600 525V590H620"/><path d="M868 130H894V265H930M868 360H908V265H930M908 360V535H930M868 590H894V535H930"/><path d="M1178 265H1200V410H1240M1178 535H1216V410H1240"/></g></svg>';
+      board.appendChild(h('div', { class: 'msr-swiss-lines', svg: connectors }));
+      ['ROUND 1', 'ROUND 2', 'ROUND 3', 'ROUND 4', 'ROUND 5'].forEach(function (round, i) { board.appendChild(h('div', { class: 'msr-swiss-round-label', style: 'left:' + (i * 310) + 'px' }, round)); });
+      function group(record, x, y, body, note, color) {
+        return h('section', { class: 'msr-swiss-group' + (color ? ' ' + color : ''), style: 'left:' + x + 'px;top:' + y + 'px', 'aria-label': record + ' record' },
+          h('div', { class: 'msr-swiss-record' }, h('b', null, record), h('span', null, record === '0–0' ? '8 TEAMS' : 'WIN / LOSS')),
+          body, note ? h('div', { class: 'msr-swiss-note' }, note) : null);
+      }
+      function pending(text) { return h('div', { class: 'msr-swiss-await' }, h('span', { 'aria-hidden': 'true' }, '◇'), h('span', null, text || 'Teams determined by results')); }
+      board.appendChild(group('0–0', 0, 155, firstMatches, 'Provisional opening matches'));
+      board.appendChild(group('1–0', 310, 105, pending('Round 1 winners'), 'Win → 2–0 · Loss → 1–1'));
+      board.appendChild(group('0–1', 310, 445, pending('Round 1 losing teams'), 'Win → 1–1 · Loss → 0–2'));
+      board.appendChild(group('2–0', 620, 50, pending(), 'Win → QUALIFIED · Loss → 2–1', 'is-qualifier'));
+      board.appendChild(group('1–1', 620, 280, pending(), 'Win → 2–1 · Loss → 1–2'));
+      board.appendChild(group('0–2', 620, 510, pending(), 'Win → 1–2 · Loss → ELIMINATED', 'is-elimination'));
+      board.appendChild(group('2–1', 930, 185, pending(), 'Win → QUALIFIED · Loss → 2–2', 'is-qualifier'));
+      board.appendChild(group('1–2', 930, 455, pending(), 'Win → 2–2 · Loss → ELIMINATED', 'is-elimination'));
+      board.appendChild(group('2–2', 1240, 330, pending('Final deciding round'), 'Win → QUALIFIED · Loss → ELIMINATED', 'is-decider'));
+      var scroll = h('div', { class: 'msr-swiss-scroll', tabindex: '0', role: 'region', 'aria-label': 'Zone ' + label + ' Swiss bracket, scroll horizontally for all five rounds' }, board);
+      card.replaceChildren(title, h('p', { class: 'msr-zone-note' }, 'SWISS STAGE · Follow the lines from left to right. Scroll sideways to see all rounds.'), scroll,
+        h('div', { class: 'msr-swiss-outcomes' }, h('span', { class: 'qualified' }, '3 WINS · QUALIFIED'), h('span', { class: 'eliminated' }, '3 LOSSES · ELIMINATED')));
+    });
+    var grid = root.querySelector('.msr-zone-grid'); root.insertBefore(tabbar, grid); selectZone(0);
     return root;
   }
   V.event = function (arg) {
