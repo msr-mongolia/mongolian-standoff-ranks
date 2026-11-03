@@ -1852,6 +1852,7 @@ background-color:#121923!important
 }
 </style>
 <style id="msr-ranking-vip-style">.msr-ranking-vip-badge{display:inline-flex;align-items:center;gap:3px;margin:3px 0 2px 7px;padding:2px 7px;border:1px solid rgba(245,195,73,.55);border-radius:6px;background:linear-gradient(120deg,rgba(117,80,19,.34),rgba(236,173,53,.15));color:#ffda7b;font-size:10px;font-weight:900;letter-spacing:.3px;white-space:nowrap;vertical-align:middle;box-shadow:0 0 9px rgba(231,166,36,.12)}</style>
+<style id="msr-rank-card-vip-style">#app .ap-rk .msr-rank-vip-inline{display:inline-flex;align-items:center;margin-left:10px;padding:3px 8px;border:1px solid #d6a53f;border-radius:6px;background:linear-gradient(120deg,#694514,#2b2315);color:#ffe39a;font-size:11px;font-weight:900;line-height:1.3;white-space:nowrap;vertical-align:middle;box-shadow:0 0 10px rgba(233,172,56,.18)}@media(max-width:480px){#app .ap-rk .msr-rank-vip-inline{margin-left:6px;padding:2px 5px;font-size:9px}}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3778,7 +3779,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var code = r[0], mv = r[2] > 0 ? ['up', '+' + r[2]] : r[2] < 0 ? ['dn', '−' + Math.abs(r[2])] : ['eq', '0'];
       var btn = h('button', { type: 'button', class: 'ap-rk', 'aria-expanded': i === open ? 'true' : 'false' },
         h('span', { class: 'no' }, i + 1), crest(code, 'md'),
-        h('span', { class: 'nm' }, h('b', null, T[code].n, isFav(code) ? h('i', { class: 'fv', svg: starSvg(true).replace('width="22" height="22"', 'width="14" height="14"') }) : null), h('small', null, fmt(r[1]) + ' points')),
+        h('span', { class: 'nm' }, h('b', null, T[code].n, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class:'msr-rank-vip-inline', title:'VIP CLAN · '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP') : null, isFav(code) ? h('i', { class: 'fv', svg: starSvg(true).replace('width="22" height="22"', 'width="14" height="14"') }) : null), h('small', null, fmt(r[1]) + ' points')),
         h('span', { class: 'mv ' + mv[0] }, mv[1]));
       var body = h('div', { class: 'ap-body' }, h('div', { class: 'ap-pls' }, captainFirstRoster(code).map(function (n) { return plAv(n, code); })), h('div', { class: 'ap-acts' }, h('a', { class: 'ap-btn', href: teamHref(code) }, 'Go to teampage'), (function () {
         var sb = h('button', { type: 'button', class: 'ap-star', 'aria-label': 'Follow ' + T[code].n, 'aria-pressed': isFav(code) ? 'true' : 'false', svg: starSvg(isFav(code)) });
