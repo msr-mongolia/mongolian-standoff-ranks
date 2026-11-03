@@ -4414,17 +4414,17 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   var TITLES = { match: 'Match', event: 'Events', gold: 'Gold', team: 'Team', player: 'Player', news: 'News', article: 'News', matches: 'Matches', results: 'Results', events: 'Events', ranking: 'Ranking', players: 'Players', stats: 'Stats', live: 'Live', major: 'Major', search: 'Search' };
   function goBack() { var i = history.state && history.state.i || 0; if (i > 0) history.back(); else navTo('news'); }
 
-  var msrKnightVideoPromise;
-  function applyKnightBack1(node){
+  var msrClanVideoPromises={};
+  function applyClanVideoBack1(node,assetUrl){
     var panels=Array.from(node.querySelectorAll('.prof,.msr-team-stats,.hl-top,.hl-card:has(.hl-grid)'));
     panels.forEach(function(panel){panel.classList.add('msr-knight-video-panel');});
-    if(!msrKnightVideoPromise)msrKnightVideoPromise=fetch('assets/kgtss_back1_video.json?v=smooth-loop-1').then(function(response){
+    if(!msrClanVideoPromises[assetUrl])msrClanVideoPromises[assetUrl]=fetch(assetUrl).then(function(response){
       if(!response.ok)throw Error('Video unavailable');return response.json();
     }).then(function(asset){
       var bytes=Uint8Array.from(atob(asset.base64),function(c){return c.charCodeAt(0);});
       return URL.createObjectURL(new Blob([bytes],{type:'video/mp4'}));
-    }).catch(function(error){msrKnightVideoPromise=null;console.warn('KnightSS background video unavailable');return null;});
-    msrKnightVideoPromise.then(function(src){
+    }).catch(function(error){msrClanVideoPromises[assetUrl]=null;console.warn('Clan background video unavailable');return null;});
+    msrClanVideoPromises[assetUrl].then(function(src){
       if(!src||!node.isConnected)return;
       panels.forEach(function(panel){
         if(panel.querySelector('.msr-knight-back1-video'))return;
@@ -4462,7 +4462,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
         var banner=node.querySelector('.hl-top, .prof');
-        if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyKnightBack1(node);
+        if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
+        if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
         if(banner && clan.img && !['ETXEN','TLNRS'].includes(String(clan.tag || '').toUpperCase()) && !/^(ETXEN|TEAM LUNARIS)\b/i.test(clan.n || '')){
           banner.appendChild(h('img',{class:'msr-clan-background-logo','data-clan':clanCode,src:clan.img,alt:'','aria-hidden':'true',decoding:'async'}));
         }
