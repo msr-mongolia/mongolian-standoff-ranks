@@ -962,6 +962,11 @@ tr.msr-podium-row-1:hover>td{background:#665024!important}tr.msr-podium-row-2:ho
 .msr-rel-match-maps .msr-rel-map-photo small{color:#e0e9f6;font-size:clamp(12px,1.7vw,16px);font-weight:600}
 .msr-rel-match-maps .msr-rel-map-photo b{color:#fff;font-size:clamp(20px,2.5vw,28px);line-height:1.15}
 @media(max-width:600px){.msr-rel-match-maps .msr-rel-map-photo{min-height:112px;padding:11px}.msr-rel-match-maps .msr-rel-map-photo b{font-size:18px}}
+
+/* Standoff 2 map artwork across every team profile Map pool row */
+.mapr.msr-map-pool-photo{background-image:linear-gradient(90deg,rgba(13,19,30,.94),rgba(13,19,30,.76)),var(--mi)!important;background-size:cover!important;background-position:center!important}
+.mapr.msr-map-pool-photo td{background:transparent!important;color:#f3f6ff;text-shadow:0 1px 4px #000}
+.mapr.msr-map-pool-photo td:first-child b{font-weight:800;color:#fff}
 </style>
 
 <style id="polish">
@@ -4001,7 +4006,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           body.textContent = '';
           body.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:600px' }, thead(mc, SF.sm, draw4),
             h('tbody', null, sortBy(ml, SF.sm).map(function (o) {
-              return h('tr', { class: 'mapr', style: '--mi:' + MAPART[o.map] }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, o.played ? o.avgR.toFixed(1) : '—'),
+              return h('tr', { class: 'mapr msr-map-pool-photo', style: '--mi:' + (MSR_MAP_PHOTOS[String(o.map||'').toLowerCase()] ? 'url("'+MSR_MAP_PHOTOS[String(o.map||'').toLowerCase()]+'")' : MAPART[o.map]) }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, o.played ? o.avgR.toFixed(1) : '—'),
                 h('td', { class: 'n' }, o.played ? o.ctp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.played ? o.tp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.pick), h('td', { class: 'n' }, o.ban), h('td', { class: 'n' }, o.left));
             }))))));
           body.appendChild(h('p', { class: 'mini' }, 'Picked, removed and left over come from the map veto of every finished match.'));
