@@ -4420,6 +4420,12 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var merged=Object.assign({},newestAcca,{id:'ds_cc59eccdc299850d94095877',name:'ACCACIN',tag:'ACCA',roster:newestAcca.roster.slice(),player_ids:Object.assign({},newestAcca.player_ids||{})});
       registrations=registrations.filter(function(row){return !accaRows.some(function(a){return a.id===row.id;});});registrations.push(merged);registrations.sort(compareRegistrations);
     }
+    // Staff-confirmed roster addition survives repeated imports of the older Discord list.
+    var hexarionId='237613237',otrRow=registrations.find(function(row){return row.id==='ds_7b0c2d46f865045635cbfc29';});
+    if(otrRow){
+      var movedLater=registrations.some(function(row){return row.id!==otrRow.id&&compareRegistrations(otrRow,row)<0&&row.roster.some(function(nick){return String((row.player_ids||{})[nick]||'')===hexarionId;});});
+      if(!movedLater&&!otrRow.roster.some(function(nick){return String(otrRow.player_ids[nick]||'')===hexarionId;})){otrRow.roster.push('Hexarion');otrRow.player_ids.Hexarion=hexarionId;}
+    }
     var latestClanById = new Map();
     registrations.forEach(function (row) {
       row.roster.forEach(function (nick) {
