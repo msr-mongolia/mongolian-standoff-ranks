@@ -1851,6 +1851,7 @@ background-color:#121923!important
   .msr-swiss-await{min-height:59px!important;font-size:11px!important}
 }
 </style>
+<style id="msr-ranking-vip-style">.msr-ranking-vip-badge{display:inline-flex;align-items:center;gap:3px;margin:3px 0 2px 7px;padding:2px 7px;border:1px solid rgba(245,195,73,.55);border-radius:6px;background:linear-gradient(120deg,rgba(117,80,19,.34),rgba(236,173,53,.15));color:#ffda7b;font-size:10px;font-weight:900;letter-spacing:.3px;white-space:nowrap;vertical-align:middle;box-shadow:0 0 9px rgba(231,166,36,.12)}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2635,7 +2636,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           var mv = r[2] > 0 ? ['up', '▲ ' + r[2]] : r[2] < 0 ? ['dn', '▼ ' + Math.abs(r[2])] : ['eq', '—'];
           return h('tr', { class: 'clk msr-podium-row-' + (i < 3 ? i + 1 : 0), onclick: go(teamHref(r[0])) },
             h('td', { class: 'pos msr-medal-' + (i < 3 ? i + 1 : 0) }, i + 1),
-            h('td', null, h('div', { class: 'tcell' }, crest(r[0], 'md'), h('div', null, h('a', { class: 'tl', href: teamHref(r[0]) }, tagEl(r[0]), h('b', null, T[r[0]].n)), h('span', { class: 's' }, T[r[0]].city)))),
+            h('td', null, h('div', { class: 'tcell' }, crest(r[0], 'md'), h('div', null, h('a', { class: 'tl', href: teamHref(r[0]) }, tagEl(r[0]), h('b', null, T[r[0]].n)), (T[r[0]].vipExpiresAt && Date.parse(T[r[0]].vipExpiresAt) > Date.now()) ? h('span', { class: 'msr-ranking-vip-badge', title: 'VIP CLAN · Valid until '+new Date(T[r[0]].vipExpiresAt).toLocaleDateString('mn-MN') }, '👑 VIP') : null, h('span', { class: 's' }, T[r[0]].city)))),
             h('td', { class: 'n' }, h('span', { class: 'pts' }, fmt(r[1]))),
             h('td', { class: 'n' }, h('span', { class: 'mv ' + mv[0] }, mv[1])),
             h('td', { class: 'n' }, r[3] + '–' + r[4]),
