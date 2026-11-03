@@ -2047,6 +2047,7 @@ background-color:#121923!important
 #app .msr-rr-schedule{display:flex!important;flex-direction:column!important;gap:12px!important}
 #app .msr-rr-day{display:grid!important;grid-template-columns:116px minmax(0,1fr)!important;gap:10px!important}
 #app .msr-rr-matches{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+@media(min-width:1101px){#app .msr-rr-matches:has(>.msr-rr-match:nth-child(4)){grid-template-columns:repeat(4,minmax(0,1fr))!important}#app .msr-rr-matches:has(>.msr-rr-match:nth-child(4)) .msr-rr-team{flex-direction:column;text-align:center;gap:5px}#app .msr-rr-matches:has(>.msr-rr-match:nth-child(4)) .msr-rr-match{padding:10px 6px;grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr)}#app .msr-rr-matches:has(>.msr-rr-match:nth-child(4)) .msr-rr-clan-tag{font-size:14px}}
 #app .msr-rr-match{min-height:112px!important}
 #app .msr-rr-team .crest,#app .msr-rr-team .crest.md,#app .msr-rr-fallback{width:46px!important;height:46px!important;border-radius:9px!important;flex:0 0 46px!important}
 #app .msr-rr-team .crest img{width:100%!important;height:100%!important;object-fit:contain!important}
