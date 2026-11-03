@@ -4012,14 +4012,6 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           player_ids: { Muck:'250311397', Kairos:'87463821', Mitsk:'276179806', Heavyqqq:'212543848', Coldshi:'261838109', Ryo:'271227843', VorK1ng:'100000125', Niko:'174580933' }
         });
       }
-      // Heavyqqq moved to 6LC; remove the previous XvrN Divine team2 registration.
-      if (row.id === 'ds_fbf308278120e648e045eb7b') {
-        var divineIds = row.player_ids || {};
-        row = Object.assign({}, row, {
-          roster: row.roster.filter(function (nick) { return String(divineIds[nick] || '') !== '212543848'; }),
-          player_ids: Object.fromEntries(Object.entries(divineIds).filter(function (item) { return String(item[1]) !== '212543848'; }))
-        });
-      }
       // Staff correction: game ID 136499554 belongs to 2990 RED, not METAS.
       if (row.id === 'ds_38a897c7315f8a83c63e1ba7') {
         var metasIds = row.player_ids || {};
