@@ -4050,6 +4050,16 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           if (Object.prototype.hasOwnProperty.call(originalIds, nick)) row.player_ids[row.roster[index]] = originalIds[nick];
         });
       }
+      // A registration can repeat the same game ID with different nickname casing.
+      var rosterSeenIds = new Set(), rosterSeenNames = new Set(), rosterIds = row.player_ids || {};
+      row.roster = row.roster.filter(function (nick) {
+        var id = String(rosterIds[nick] || ''), nameKey = key(nick);
+        var hasId = /^\d{5,12}$/.test(id);
+        if ((hasId && rosterSeenIds.has(id)) || (!hasId && rosterSeenNames.has(nameKey))) return false;
+        if (hasId) rosterSeenIds.add(id);
+        rosterSeenNames.add(nameKey);
+        return true;
+      });
       var existing = !!T[code];
       if (!existing) {
         T[code] = { n: row.name.slice(0,100), i: row.name.slice(0,2).toUpperCase(), tag: row.tag || '', c: /^(?:wonderart|woart)$/i.test(row.name.trim()) ? '#B56CFF' : '#3B4658', city: 'Mongolia' };
@@ -4080,6 +4090,19 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if (!PBY[nick]) PBY[nick] = p;
       });
     });
+    // Remove obsolete, teamless entries from all public lists and profile lookups.
+    // This does not delete user accounts or archived match statistics.
+    for (var playerIndex = PLAYERS.length - 1; playerIndex >= 0; playerIndex--) {
+      var player = PLAYERS[playerIndex];
+      if (!player.team || !T[player.team] || !(ROSTER[player.team] || []).some(function (nick) { return nick === player.nick; })) PLAYERS.splice(playerIndex, 1);
+    }
+    Object.keys(PBY).forEach(function (nick) { delete PBY[nick]; });
+    var activeGameKeys = new Set();
+    PLAYERS.forEach(function (player) {
+      if (!Object.prototype.hasOwnProperty.call(PBY, player.nick)) PBY[player.nick] = player;
+      activeGameKeys.add(player.team + '|' + key(player.nick));
+    });
+    Object.keys(GAME_IDS).forEach(function (gameKey) { if (!activeGameKeys.has(gameKey)) delete GAME_IDS[gameKey]; });
     // Keep rankings consistent after async Discord roster changes. Exclude inactive roster entries.
     PLAYERS.forEach(function (p) { p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
     sortPlayerRanking();
