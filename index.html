@@ -2749,7 +2749,9 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
               Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]);}) ||
               Object.keys(T).find(function(k){return norm(String(T[k].n).replace(/\\s*\\([^)]*\\)\\s*$/,''))===norm(item[0]);}) ||
               Object.keys(T).find(function(k){return norm(T[k].n)===norm(item[0]+' ('+item[1]+')');});
-            var name = item[0];
+            // CON1: the EVKZ fixture and EVERLASTED clan profile are the same team.
+            if (norm(item[1]) === 'evkz') key = Object.keys(T).find(function(k){return norm(T[k].tag)==='evkz' || norm(T[k].n)==='everlasted';}) || key;
+            var name = key && norm(item[1]) === 'evkz' ? T[key].n : item[0];
             return key ? h('a',{class:'msr-rr-team',href:teamHref(key),title:'Open '+T[key].n+' clan profile'},crest(key,'md'),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name))) :
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback msr-rr-fallback-'+norm(item[1])},item[1]==='RESKK'?'✳':item[1].slice(0,2).toUpperCase()),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name)));
           }
