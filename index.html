@@ -1900,6 +1900,16 @@ background-color:#121923!important
 #app.msr-clan-profile .prof.msr-etxen-winter .msr-clan-background-logo{display:none!important}
 </style>
 <style id="msr-lunaris-back1">
+/* Lunaris Back1: every roster member's identity and stats panels. */
+#app .msr-lunaris-back1-player .hl-top,
+#app .msr-lunaris-back1-player .hl-card:has(.hl-grid){
+ background:linear-gradient(90deg,rgba(9,16,27,.82),rgba(9,16,27,.38)),url("assets/lunaris_back1.png") center/cover no-repeat!important;
+}
+#app .msr-lunaris-back1-player .hl-top::before,
+#app .msr-lunaris-back1-player .hl-top::after{content:none!important}
+#app .msr-lunaris-back1-player .hl-top .msr-clan-background-logo{display:none!important}
+#app .msr-lunaris-back1-player .hl-grid .msr-stat-tile{background:rgba(9,16,27,.48)!important}
+
 /* Back1 is the existing Lunaris profile header, not an extra banner. */
 #app.msr-clan-profile .prof.msr-lunaris-clean{
  background-color:#101923!important;
@@ -3780,7 +3790,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     draw();
     return h('div', null,
       h('a', { class: 'back', href: '#players', svg: ICON.back + '<span>Players</span>' }),
-      h('div', { class: 'hl-head' },
+      h('div', { class: 'hl-head' + (team === 'TLNRS' ? ' msr-lunaris-back1-player' : '') },
         h('div', { class: 'hl-card' },
           h('div', { class: 'hl-top' }, h('span', { class: 'bigav sg hl' + tc(p), 'aria-hidden': 'true' }, sig(p.nick, 120)), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
           h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', 'Mongolia'), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
