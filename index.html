@@ -1911,6 +1911,14 @@ background-color:#121923!important
 #app.msr-clan-profile .prof.msr-lunaris-clean .msr-clan-background-logo{display:none!important}
 #app.msr-clan-profile .prof.msr-lunaris-clean> *{position:relative;z-index:1}
 @media(max-width:650px){#app.msr-clan-profile .prof.msr-lunaris-clean{background-position:60% center!important}}
+/* Use Lunaris Back1 across this team's stats panel only. */
+#app.msr-clan-profile:has(.prof.msr-lunaris-clean) .msr-team-stats{
+ background:linear-gradient(90deg,rgba(9,16,27,.88),rgba(9,16,27,.38)),url("assets/lunaris_back1.png") center/cover no-repeat!important;
+}
+#app.msr-clan-profile:has(.prof.msr-lunaris-clean) .msr-team-stat{
+ background:rgba(9,16,27,.48)!important;
+}
+
 </style></head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
