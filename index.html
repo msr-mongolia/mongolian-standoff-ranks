@@ -3611,15 +3611,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var box = h('div', null);
     function draw() {
       box.textContent = '';
-      var relList=msrRelUpcoming().filter(function(row){
-        return (MF.ev==='all'||MF.ev==='MSL Major S2')&&(MF.team==='all'||msrRelTeamKey(row.team_a)===MF.team||msrRelTeamKey(row.team_b)===MF.team);
-      });
-      if(relList.length){box.appendChild(h('div',{class:'grp-h'},'Upcoming · MSL Major S2'));box.appendChild(h('div',{class:'msr-rel-match-list'},relList.map(msrRelMatchCard)));}
       var list = M.filter(function (m) { return m.state !== 'done' && (MF.ev === 'all' || m.ev === MF.ev) && (MF.team === 'all' || m.a === MF.team || m.b === MF.team); });
       var live = list.filter(function (m) { return m.state === 'live'; }), soon = list.filter(function (m) { return m.state === 'soon'; }).sort(function (a, b) { return a.date - b.date || String(a.when).localeCompare(String(b.when)); });
       if (live.length) { box.appendChild(h('div', { class: 'grp-h' }, h('span', { class: 'pip' }), ' Live matches')); box.appendChild(h('div', { class: 'box' }, live.map(matchRow))); }
       byDate(soon).forEach(function (g) { box.appendChild(h('div', { class: 'grp-h' }, g[0])); box.appendChild(h('div', { class: 'box' }, g[1].map(matchRow))); });
-      if (!list.length && !relList.length) box.appendChild(h('div', { class: 'empty' }, 'No matches found for these filters.'));
+      if (!list.length) box.appendChild(h('div', { class: 'empty' }, 'No matches found for these filters.'));
     }
     var flt = h('div', { class: 'flt' },
       sel('Event', [['all', 'All events']].concat(['MSL Major S2'].map(function (n) { return [n, n]; })), MF.ev, function (v) { MF.ev = v; draw(); }),
@@ -4230,6 +4226,13 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         strip.appendChild(h('button', { type: 'button', class: 'ap-day' + (n === APM.sel ? ' on' : ''), onclick: function () { APM.sel = n; draw(); } }, h('b', null, ('0' + (n % 100)).slice(-2)), h('span', null, n === TODAY ? 'Today' : wd)));
       });
       strip.appendChild(h('button', { type: 'button', class: 'ap-arrow', 'aria-label': 'Later', svg: APIC.next, onclick: function () { APM.sel = addDays(APM.sel, 1); draw(); } }));
+      var relList=(YEAR===2026&&APM.sel===1104?msrRelUpcoming():[]).filter(function(row){
+        return !APM.fav||isFav(msrRelTeamKey(row.team_a))||isFav(msrRelTeamKey(row.team_b));
+      });
+      if(relList.length){
+        box.appendChild(h('div',{class:'ap-sub'},h('h2',null,'MSL Major S2'),h('span',{class:'ap-date'},'Upcoming · November 4')));
+        box.appendChild(h('div',{class:'msr-rel-match-list'},relList.map(msrRelMatchCard)));
+      }
       var list = ALLM.filter(function (m) { return m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
       list.forEach(function (m) { if (!seen[m.ev]) { seen[m.ev] = []; groups.push([m.ev, seen[m.ev]]); } seen[m.ev].push(m); });
@@ -4247,7 +4250,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         }) : null;
         box.appendChild(h('div', { class: 'ap-card ap-grp' + (isOpen ? ' open' : '') }, head, rows ? h('div', { class: 'ap-rows' }, rows) : null));
       });
-      if (!groups.length) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
+      if (!groups.length && !relList.length) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
       favBtn.setAttribute('aria-pressed', APM.fav ? 'true' : 'false'); favBtn.innerHTML = starSvg(APM.fav);
     }
     draw();
