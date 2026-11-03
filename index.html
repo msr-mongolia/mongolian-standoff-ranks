@@ -2694,10 +2694,12 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
             h('p',null,'Results and standings will update after matches are recorded.')))),
       h('div', { class: 'msr-zone-grid' }, zones.map(function (teams, zi) {
         var label = String.fromCharCode(65 + zi);
-        if (zi === 0 || zi === 1) {
-          var groupData = {"A":[["Ulseratif Colitis","uclt"],["IMTLL","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]]};
+        if (zi === 0 || zi === 1 || zi === 2 || zi === 3 || zi === 5) {
+          var groupData = {"A":[["Ulseratif Colitis","uclt"],["IMTLL","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
           var rrRounds = [[[0,1],[2,3],[4,5],[6,7]],[[0,3],[1,5],[2,7],[4,6]],[[0,5],[3,7],[1,6],[2,4]],[[0,7],[5,6],[3,4],[1,2]],[[0,6],[7,4],[5,2],[3,1]],[[0,4],[6,2],[7,1],[5,3]],[[0,2],[4,1],[6,3],[7,5]]];
+          if(label==='F')rrRounds=[[[0,1],[2,3],[4,5]],[[0,3],[1,5],[2,6]],[[0,5],[3,6],[1,4]],[[0,6],[5,4],[3,2]],[[0,4],[6,2],[5,1]],[[0,2],[4,3],[6,1]],[[2,1],[4,6],[5,3]]];
           var groupTeams = groupData[label];
+          var byeIndices = [6,4,2,1,3,5,0];
           function groupTeam(item) {
             var norm = function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
             var key = Object.keys(T).find(function(k){return norm(T[k].tag)===norm(item[1]);}) ||
@@ -2707,18 +2709,18 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback'},item[1].slice(0,2).toUpperCase()),h('span',null,name+' ('+item[1]+')'));
           }
           return h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group '+label+' round robin schedule'},
-            h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'ROUND ROBIN · 8 TEAMS')),
-            h('p',{class:'msr-zone-note'},'November 4–10 · 7 days · 28 matches · Each team plays 7 matches'),
+            h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'ROUND ROBIN · '+groupTeams.length+' TEAMS')),
+            h('p',{class:'msr-zone-note'},label==='F'?'November 4–10 · 7 days · 21 matches · One bye per day':'November 4–10 · 7 days · 28 matches · Each team plays 7 matches'),
             h('div',{class:'msr-rr-schedule'},rrRounds.map(function(day,di){
               return h('section',{class:'msr-rr-day'},
-                h('div',{class:'msr-rr-day-head'},h('strong',null,'DAY '+(di+1)),h('small',null,'NOV '+(di+4)+' · 4 MATCHES')),
+                h('div',{class:'msr-rr-day-head'},h('strong',null,'DAY '+(di+1)),h('small',null,'NOV '+(di+4)+' · '+day.length+' MATCHES')),
                 h('div',{class:'msr-rr-matches'},day.map(function(pair,mi){
                   return h('div',{class:'msr-rr-match','data-match':label+'-D'+(di+1)+'-M'+(mi+1)},
                     groupTeam(groupTeams[pair[0]]),h('span',{class:'msr-rr-versus'},'VS'),
                     groupTeam(groupTeams[pair[1]]),h('span',{class:'msr-rr-status'},'UPCOMING'));
-                })));
+                })),label==='F'?h('p',{class:'msr-zone-note'},'BYE · '+groupTeams[byeIndices[di]][0]):null);
             })),
-            h('div',{class:'msr-rr-foot'},'Each team plays the other seven teams once. Results pending.'));
+            h('div',{class:'msr-rr-foot'},label==='F'?'Schedule supplied by tournament staff. Results pending.':'Each team plays the other seven teams once. Results pending.'));
         }
         if (zi === 4) {
           var groupETeams = ['1nfinityX','METAS','DRDRX','Starfire Nirvana Team','SIX LENCE PURPLE','MANAI','OMEN ESPORTS'];
