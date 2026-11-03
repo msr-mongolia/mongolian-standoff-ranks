@@ -4032,37 +4032,35 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   /* Confirmed Discord registrations: reuse existing ranking UI and team records. */
   function mergeDiscordTeams(rows) {
     function key(s) { return String(s || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }
+    function registrationTime(row) {
+      var time = Date.parse(String(row.source_timestamp || '').replace(' ', 'T').replace(/\+00$/, '+00:00'));
+      return Number.isFinite(time) ? time : 0;
+    }
+    function compareRegistrations(a, b) {
+      var time = registrationTime(a) - registrationTime(b); if (time) return time;
+      var am = String(a.source_message_id || ''), bm = String(b.source_message_id || '');
+      return am.length - bm.length || am.localeCompare(bm) || String(a.id).localeCompare(String(b.id));
+    }
+    var registrations = (Array.isArray(rows) ? rows : []).filter(function (row) {
+      return row && /^[a-z0-9_]{3,40}$/i.test(row.id) && typeof row.name === 'string' && Array.isArray(row.roster) &&
+        row.roster.length >= 5 && row.roster.length <= 12 && row.roster.every(function (nick) { return typeof nick === 'string' && nick && nick.length <= 40; }) &&
+        row.id !== 'ds_b248643101cd3a4e8594fabf' && !/^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim());
+    }).map(function (row) { return Object.assign({}, row, { roster: row.roster.slice(), player_ids: Object.assign({}, row.player_ids || {}) }); }).sort(compareRegistrations);
+    var latestClanById = new Map();
+    registrations.forEach(function (row) {
+      row.roster.forEach(function (nick) {
+        var id = String(row.player_ids[nick] || '');
+        if (/^\d{5,12}$/.test(id)) latestClanById.set(id, row.id);
+      });
+    });
     var byName = {};
     Object.keys(T).forEach(function (code) { byName[key(T[code].n)] = code; });
-    rows.forEach(function (row) {
+    registrations.forEach(function (row) {
       if (!row || !/^[a-z0-9_]{3,40}$/i.test(row.id) || typeof row.name !== 'string' ||
           !Array.isArray(row.roster) || row.roster.length < 5 || row.roster.length > 12 ||
           row.roster.some(function (n) { return typeof n !== 'string' || !n || n.length > 40; })) return;
       if (row.id === 'ds_b248643101cd3a4e8594fabf' || /^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim())) return; // Duplicate KingZz registration
       if (row.id === 'ds_b8ba2ec7e90713c104377816') row = Object.assign({}, row, { name: 'VAMP EMPIRE' });
-      // Confirmed 6LC roster; device and serial information is never included.
-      if (row.id === 'ds_3b58bc4ef94967967f5dee31') {
-        row = Object.assign({}, row, {
-          roster: ['Muck', 'Kairos', 'Mitsk', 'Heavyqqq', 'Coldshi', 'Ryo', 'VorK1ng', 'Niko'],
-          player_ids: { Muck:'250311397', Kairos:'87463821', Mitsk:'276179806', Heavyqqq:'212543848', Coldshi:'261838109', Ryo:'271227843', VorK1ng:'100000125', Niko:'174580933' }
-        });
-      }
-      // Confirmed: Heavyqqq belongs to 6LC, not the previous XvrN Divine team2 roster.
-      if (row.id === 'ds_fbf308278120e648e045eb7b') {
-        var divineIds = row.player_ids || {};
-        row = Object.assign({}, row, {
-          roster: row.roster.filter(function (nick) { return String(divineIds[nick] || '') !== '212543848'; }),
-          player_ids: Object.fromEntries(Object.entries(divineIds).filter(function (item) { return String(item[1]) !== '212543848'; }))
-        });
-      }
-      // Staff correction: game ID 136499554 belongs to 2990 RED, not METAS.
-      if (row.id === 'ds_38a897c7315f8a83c63e1ba7') {
-        var metasIds = row.player_ids || {};
-        row = Object.assign({}, row, {
-          roster: row.roster.filter(function (nick) { return String(metasIds[nick] || '') !== '136499554'; }),
-          player_ids: Object.fromEntries(Object.entries(metasIds).filter(function (item) { return String(item[1]) !== '136499554'; }))
-        });
-      }
       if (row.id === 'ds_5e67c1b8721d736ca5b5a960') {
         var dxIds = Object.assign({}, row.player_ids || {});
         var dxOriginalIds = Object.assign({}, dxIds);
@@ -4108,6 +4106,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
           if (Object.prototype.hasOwnProperty.call(originalIds, nick)) row.player_ids[row.roster[index]] = originalIds[nick];
         });
       }
+      // A game ID belongs only to its newest valid clan registration.
+      row.roster = row.roster.filter(function (nick) {
+        var id = String((row.player_ids || {})[nick] || '');
+        return !/^\d{5,12}$/.test(id) || latestClanById.get(id) === row.id;
+      });
       // A registration can repeat the same game ID with different nickname casing.
       var rosterSeenIds = new Set(), rosterSeenNames = new Set(), rosterIds = row.player_ids || {};
       row.roster = row.roster.filter(function (nick) {
@@ -4141,6 +4144,11 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       row.roster.forEach(function (nick) {
         var current=PLAYERS.find(function(p){return key(p.nick)===key(nick)&&p.team===code;});
         if(current){current.nick=nick;PBY[nick]=current;return;}
+        var gameId = String((row.player_ids || {})[nick] || '');
+        var transferred = /^\d{5,12}$/.test(gameId) && PLAYERS.find(function (player) {
+          return GAME_IDS[(player.team || player.previousTeam) + '|' + key(player.nick)] === gameId;
+        });
+        if (transferred) { transferred.team = code; transferred.nick = nick; delete transferred.previousTeam; PBY[nick] = transferred; return; }
         var returning=PLAYERS.find(function(p){return key(p.nick)===key(nick)&&!p.team&&p.previousTeam===code;});
         if(returning){returning.team=code;returning.nick=nick;PBY[nick]=returning;return;}
         var p = { nick: nick, team: code, maps: 0, kills: 0, deaths: 0, kd: 0, rating: 0, msrRating: 1, provisional: true, rank: PLAYERS.length + 1, skill: 1, hs0: 0 };
@@ -4170,7 +4178,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
     try {
-      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids&order=source_timestamp.asc,name.asc&limit=1000', {
+      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id&order=source_timestamp.asc,name.asc&limit=1000', {
         headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(10000)
       });
       if (!response.ok) { console.warn('MSR teams sync HTTP',response.status); return; }
