@@ -2082,6 +2082,16 @@ background-color:#121923!important
 .msr-rel-match-maps b{font-size:14px}
 @media(max-width:760px){.msr-rel-match-list{grid-template-columns:1fr}.msr-rel-match{padding:14px}.msr-rel-match-teams{gap:8px}.msr-rel-team{gap:7px}}
 </style>
+<style id="msr-rel-group-navigation">
+.msr-rel-tournament{overflow:hidden}.msr-rel-group-panel{padding:16px}
+.msr-rel-group-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.msr-rel-group-button{background:#101e2d;border:1px solid #39516b;border-radius:10px;color:#dce9f9;padding:15px 10px;cursor:pointer;text-align:left}
+.msr-rel-group-button b,.msr-rel-group-button small{display:block}.msr-rel-group-button small{font-size:11px;color:#96aac2;margin-top:5px}
+.msr-rel-group-button.on{background:#183c58;border-color:#71c7fa;box-shadow:inset 0 0 0 1px #71c7fa}
+.msr-rel-group-button:focus-visible{outline:2px solid #b8dcff;outline-offset:3px}
+.msr-rel-group-heading{font-size:18px;margin:22px 0 14px}
+@media(max-width:460px){.msr-rel-group-panel{padding:12px}.msr-rel-group-buttons{gap:8px}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -3585,6 +3595,20 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       keys.find(function(k){return norm(String(T[k].n).replace(/\s*\([^)]*\)\s*$/,''))===wanted;})||
       keys.find(function(k){return norm(T[k].tag)===n;})||null;
   }
+
+  var MSR_REL_GROUP_TEAMS={"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]],"E":[["1nfinityX","1NFYx"],["METAS","MetaS"],["DRDRX","DRDRX"],["Starfire Nirvana Team","SNT"],["SIX LENCE PURPLE","6LC purple"],["MANAI","8MNA"],["OMEN ESPORTS","OMEN"]]};
+  function msrRelGroup(row){
+    var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+    function belongs(name,entries){
+      var key=msrRelTeamKey(name);
+      return entries.some(function(item){return item.some(function(alias){return norm(alias)===norm(name);})||(key&&msrRelTeamKey(item[0])===key);});
+    }
+    return ['A','B','C','D','E','F'].find(function(group){
+      var entries=MSR_REL_GROUP_TEAMS[group];
+      return belongs(row.team_a,entries)&&belongs(row.team_b,entries);
+    })||null;
+  }
+
   function msrRelUpcoming(){
     var seen={};
     return MSR_REL_MATCHES.slice().sort(function(a,b){return String(b.source_timestamp).localeCompare(String(a.source_timestamp));}).filter(function(row){
@@ -4229,9 +4253,27 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var relList=(YEAR===2026&&APM.sel===1104?msrRelUpcoming():[]).filter(function(row){
         return !APM.fav||isFav(msrRelTeamKey(row.team_a))||isFav(msrRelTeamKey(row.team_b));
       });
-      if(relList.length){
-        box.appendChild(h('div',{class:'ap-sub'},h('h2',null,'MSL Major S2'),h('span',{class:'ap-date'},'Upcoming · November 4')));
-        box.appendChild(h('div',{class:'msr-rel-match-list'},relList.map(msrRelMatchCard)));
+      if(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110){
+        var mslPanel=h('section',{class:'ap-card msr-rel-tournament'});
+        var mslButton=h('button',{type:'button',class:'ap-gh','aria-expanded':String(!!APM.mslOpen),'aria-controls':'msr-rel-group-panel',onclick:function(){
+          APM.mslOpen=!APM.mslOpen;if(!APM.mslOpen)APM.mslGroup=null;draw();
+        }},evLogo('MSL Major S2'),h('b',null,'MSL Major S2'),h('span',{class:'ct'},'6 groups'),h('i',{class:'chv',svg:APIC.chev}));
+        mslPanel.appendChild(mslButton);
+        if(APM.mslOpen){
+          var groupPanel=h('div',{id:'msr-rel-group-panel',class:'msr-rel-group-panel'});
+          groupPanel.appendChild(h('div',{class:'msr-rel-group-buttons','aria-label':'MSL groups'},['A','B','C','D','E','F'].map(function(group){
+            var count=relList.filter(function(row){return msrRelGroup(row)===group;}).length;
+            return h('button',{type:'button',class:'msr-rel-group-button'+(APM.mslGroup===group?' on':''),'aria-pressed':String(APM.mslGroup===group),onclick:function(){APM.mslGroup=group;draw();}},
+              h('b',null,'Group '+group),h('small',null,count+' matches'));
+          })));
+          if(APM.mslGroup){
+            var selected=relList.filter(function(row){return msrRelGroup(row)===APM.mslGroup;});
+            groupPanel.appendChild(h('h2',{class:'msr-rel-group-heading'},'Group '+APM.mslGroup));
+            groupPanel.appendChild(selected.length?h('div',{class:'msr-rel-match-list'},selected.map(msrRelMatchCard)):h('div',{class:'ap-empty'},'No confirmed match details for this group on this day.'));
+          }
+          mslPanel.appendChild(groupPanel);
+        }
+        box.appendChild(mslPanel);
       }
       var list = ALLM.filter(function (m) { return m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
@@ -4250,7 +4292,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         }) : null;
         box.appendChild(h('div', { class: 'ap-card ap-grp' + (isOpen ? ' open' : '') }, head, rows ? h('div', { class: 'ap-rows' }, rows) : null));
       });
-      if (!groups.length && !relList.length) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
+      if (!groups.length && !(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110)) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
       favBtn.setAttribute('aria-pressed', APM.fav ? 'true' : 'false'); favBtn.innerHTML = starSvg(APM.fav);
     }
     draw();
