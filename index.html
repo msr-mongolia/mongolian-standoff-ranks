@@ -956,6 +956,12 @@ tr.msr-podium-row-1:hover>td{background:#665024!important}tr.msr-podium-row-2:ho
 .msr-medal-1{color:#ffd56a!important;background:linear-gradient(135deg,#6a4b0b,#2c2514)!important;border:1px solid #e6b944!important;text-shadow:0 0 10px #e6b94466;font-weight:900!important}
 .msr-medal-2{color:#e2e9f2!important;background:linear-gradient(135deg,#536273,#26313e)!important;border:1px solid #aebac8!important;font-weight:900!important}
 .msr-medal-3{color:#f0b787!important;background:linear-gradient(135deg,#704125,#2c211b)!important;border:1px solid #bb7849!important;font-weight:900!important}
+
+/* MSR REL Ban/Pick map photo tiles */
+.msr-rel-match-maps .msr-rel-map-photo{min-height:140px;background-color:#242b35;background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;gap:7px;padding:18px;border:1px solid #ffffff24;border-radius:14px;overflow:hidden;text-shadow:0 2px 8px #000,0 1px 3px #000}
+.msr-rel-match-maps .msr-rel-map-photo small{color:#e0e9f6;font-size:clamp(12px,1.7vw,16px);font-weight:600}
+.msr-rel-match-maps .msr-rel-map-photo b{color:#fff;font-size:clamp(20px,2.5vw,28px);line-height:1.15}
+@media(max-width:600px){.msr-rel-match-maps .msr-rel-map-photo{min-height:112px;padding:11px}.msr-rel-match-maps .msr-rel-map-photo b{font-size:18px}}
 </style>
 
 <style id="polish">
@@ -3638,6 +3644,22 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       if(seen[pair])return false;seen[pair]=true;return true;
     });
   }
+  // Map photography for all seven Standoff 2 competitive maps.
+  var MSR_MAP_PHOTOS = {
+    dune:'https://cdn.donatov.blog/v6/assets/main/images/full_684d757593f585.44528099.webp',
+    hanami:'https://liquipedia.net/commons/images/3/31/Hanami_Map.png',
+    rust:'https://storage.respawn.media/T1uDwuJC91qisO0yv6XSg.webp',
+    breeze:'https://cdn.donatov.blog/v6/assets/main/images/full_684d722bb92348.29510326.webp',
+    prison:'https://pbs.twimg.com/media/HEv4Ylea8AAaQYQ.jpg',
+    province:'https://pbs.twimg.com/media/DK98fcoW4AA5s-m.jpg',
+    sandstone:'https://storage.respawn.media/nnh9M7amtSr-xSZHzv8YZ.webp'
+  };
+  function msrRelMapCard(label,map){
+    var id=String(map||'').trim().toLowerCase();
+    var photo=MSR_MAP_PHOTOS[id];
+    return h('div',{class:'msr-rel-map-photo',style:photo?'background-image:linear-gradient(0deg,rgba(5,10,19,.88),rgba(5,10,19,.18)),url("'+photo+'")':null},
+      h('small',null,label),h('b',null,map||'TBA'));
+  }
   function msrRelMatchCard(row){
     function team(name){
       var key=msrRelTeamKey(name);
@@ -3649,8 +3671,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · UPCOMING'),
         h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):'Time · TBA')),
       h('div',{class:'msr-rel-match-teams'},team(row.team_a),h('b',{class:'msr-rel-match-vs'},'VS'),team(row.team_b)),
-      h('div',{class:'msr-rel-match-maps'},(row.picks||[]).map(function(p){return h('div',null,h('small',null,p.team+' pick'),h('b',null,p.map));}),
-        h('div',null,h('small',null,'Decider'),h('b',null,row.decider))));
+      h('div',{class:'msr-rel-match-maps'},(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}),
+        msrRelMapCard('Decider',row.decider)));
   }
 
   V.matches = function () {
