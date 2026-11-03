@@ -124,6 +124,8 @@ Deno.serve(async(req)=>{
     seen++;const snapshot=m.message_snapshots?.[0]?.message; const source=snapshot||m; const team=parse(source.content||'');if(!team){skipped++;continue;}
     const prev:any=map.get(team.name_key)||known.find((x:any)=>x.source_message_id===m.id);
     const timestamp=m.edited_timestamp||m.timestamp;
+    // Preserve newer roster corrections until the Discord post is edited again.
+    if(prev && Date.parse(prev.source_timestamp)>Date.parse(timestamp))continue;
     if(prev && prev.source_message_id!==m.id && Date.parse(prev.source_timestamp)>=Date.parse(timestamp))continue;
     if(prev && prev.logo_url && JSON.stringify(prev.roster)===JSON.stringify(team.roster) && prev.name===team.name && prev.tag===team.tag && Object.keys(prev.player_ids||{}).length && Date.parse(prev.source_timestamp) >= Date.parse(timestamp)) continue;
     const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(team.name_key)))).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,24);
