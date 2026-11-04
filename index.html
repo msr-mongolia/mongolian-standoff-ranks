@@ -1947,6 +1947,13 @@ background-color:#121923!important
 }
 
 </style>
+<style id="msr-xvrn-video-back1">
+#app .prof.msr-xvrn-profile{position:relative!important;isolation:isolate!important;overflow:hidden!important}
+#app .prof.msr-xvrn-profile>.msr-xvrn-back1-video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;z-index:0!important;pointer-events:none!important;transform:none!important}
+#app .prof.msr-xvrn-profile>*:not(.msr-xvrn-back1-video){position:relative;z-index:2}
+#app .prof.msr-xvrn-profile>.msr-team-gold-sticker{position:absolute!important;z-index:4!important}
+#app .prof.msr-xvrn-profile::before,#app .prof.msr-xvrn-profile::after{pointer-events:none}
+</style>
 <style id="msr-xvrn-pink-theme">
 #app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats,
 #app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats-heading,
@@ -4476,6 +4483,21 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     });
   }
 
+  function applyXvrnVideoBack1(node){
+    var panel=node.querySelector('.prof.msr-xvrn-profile');
+    if(!panel || panel.querySelector('.msr-xvrn-back1-video'))return;
+    var video=document.createElement('video');
+    video.className='msr-xvrn-back1-video';
+    video.src='assets/ScreenRecording_11-04-2026%2015-07-06_1%20%283%29.mov';
+    video.autoplay=true;video.loop=true;video.muted=true;video.defaultMuted=true;
+    video.playsInline=true;video.preload='auto';
+    video.setAttribute('muted','');video.setAttribute('autoplay','');
+    video.setAttribute('loop','');video.setAttribute('playsinline','');
+    video.setAttribute('aria-hidden','true');
+    panel.prepend(video);
+    video.play().catch(function(){});
+  }
+
   function paint(name, node) {
     if (name !== 'news' && !node.querySelector('.back')) {
       node.insertBefore(h('div', { class: 'ap-top' }, h('button', { type: 'button', class: 'ap-bk', 'aria-label': 'Back', svg: APIC.prev, onclick: goBack })), node.firstChild);
@@ -4503,6 +4525,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         var banner=node.querySelector('.hl-top, .prof');
         if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
         if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
+        if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
         if(banner && clan.img && !['ETXEN','TLNRS'].includes(String(clan.tag || '').toUpperCase()) && !/^(ETXEN|TEAM LUNARIS)\b/i.test(clan.n || '')){
           banner.appendChild(h('img',{class:'msr-clan-background-logo','data-clan':clanCode,src:clan.img,alt:'','aria-hidden':'true',decoding:'async'}));
         }
