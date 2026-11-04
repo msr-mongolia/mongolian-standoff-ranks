@@ -5700,7 +5700,8 @@ function updateVerifiedGroupStandings(){
   if(Math.max(aw,bw)<2||aw===bw)return;
   const rd=m.maps.reduce((n,x)=>n+x.aScore-x.bScore,0);
   const a=stats[ai],b=stats[bi];a.mp++;b.mp++;a.rd+=rd;b.rd-=rd;
-  if(aw>bw){a.w++;a.pts+=3;b.l++;}else{b.w++;b.pts+=3;a.l++;}
+  a.pts+=aw*3;b.pts+=bw*3;
+  if(aw>bw){a.w++;b.l++;}else{b.w++;a.l++;}
  });
  rows.forEach((row,i)=>{
   const cells=row.querySelectorAll('td');if(cells.length<6)return;
