@@ -3627,13 +3627,12 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     });
   });
   var PROWS = {};
-  // Start the league with no recorded player statistics.
-  PMROWS.length=0;
+  // Preserve recorded match rows; do not erase imported player statistics.
   PMROWS.forEach(function (r) { (PROWS[r.nick] = PROWS[r.nick] || []).push(r); });
   PLAYERS.forEach(function (p) {
     var g = agg(PROWS[p.nick] || []);
     if (g.n) { p.maps = g.n; p.kills = g.k; p.deaths = g.d; p.kd = +g.kd.toFixed(2); }
-    p.maps=0;p.kills=0;p.deaths=0;p.kd=0;p.rating=0;p.hs0=0;p.assists=0;p.adr=0;p.kast=0;
+    p.rating = g.n ? g.rating : 0; p.assists = g.a || 0; p.adr = g.adr || 0; p.kast = g.kast || 0;
   });
   sortPlayerRanking();
 
