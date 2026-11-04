@@ -2479,10 +2479,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   function sortPlayerRanking() {
     applyVerifiedPlayerStats();
     PLAYERS.sort(function (a, b) {
-      var eligibleA = (Number(a.maps) || 0) >= 5 ? 1 : 0;
-      var eligibleB = (Number(b.maps) || 0) >= 5 ? 1 : 0;
-      return eligibleB - eligibleA ||
-        playerRankScore(b) - playerRankScore(a) ||
+      // Rank by verified performance first; map sample is a tiebreaker, not a hard exclusion.
+      return playerRankScore(b) - playerRankScore(a) ||
         (Number(b.maps) || 0) - (Number(a.maps) || 0);
     });
     var activeRank = 0;
@@ -5240,7 +5238,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 <style id="msr-xvrn-sticker-transparent">#app .prof.msr-xvrn-profile .msr-team-gold-sticker img{filter:url(#msr-xvrn-sticker-chroma)!important;background:transparent!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{background:transparent!important}#app .msr-clan-panel-header-back1 .panel-h{overflow:hidden;background-repeat:no-repeat;background-position:center;background-size:cover}
 #app .msr-clan-panel-header-back1 .panel-h img:not(.msr-clan-panel-header-video){max-width:72px;max-height:72px;object-fit:contain}
 </style>
-<script defer src="assets/msr-verified-results.js?v=20261104-kingzz-lineup-30ab05c"></script>
+<script defer src="assets/msr-verified-results.js?v=20261104-ranking-refresh-2"></script>
 <style id="msr-finished-logo-size-emergency">#app .msr-finished-detail .msr-finished-teams{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;overflow:hidden!important}#app .msr-finished-detail .msr-finished-side{min-width:0!important;max-height:92px!important;overflow:hidden!important;align-items:center!important}#app .msr-finished-detail img.msr-finished-logo{width:46px!important;height:46px!important;max-width:46px!important;max-height:46px!important;min-width:46px!important;object-fit:contain!important;flex:0 0 46px!important}#app .msr-finished-detail img.msr-finished-logo[hidden]{display:none!important}@media(max-width:600px){#app .msr-finished-detail .msr-finished-teams{grid-template-columns:1fr!important}#app .msr-finished-detail img.msr-finished-logo{width:38px!important;height:38px!important;max-width:38px!important;max-height:38px!important;min-width:38px!important;flex-basis:38px!important}}</style>
 </body>
 </html>
