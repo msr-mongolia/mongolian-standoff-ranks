@@ -63,10 +63,70 @@ function verifiedPlayerStats(){
  el.innerHTML='<strong>MSL S2 · VERIFIED STATS</strong><div>Maps: '+all.length+' · Kills: '+k+' · Deaths: '+d+' · Assists: '+a+' · K/D: '+(k/Math.max(1,d)).toFixed(2)+'</div><small>Based on screenshots; ADR and KAST unavailable.</small>';
  host.appendChild(el);
 }
+function verifiedTeamProfiles(){
+ const profile=document.querySelector('.prof');if(!profile)return;
+ const title=norm(profile.querySelector('h1')?.textContent||'');
+ const code=title.includes('warriorkingzz')||title.includes('warkz')?'WarKz':title.includes('toexistwithpurpose')||title.includes('4zi')?'4zi':null;
+ if(!code)return;
+ const won=code==='WarKz',all={};
+ Object.keys(verifiedStats).forEach(map=>(verifiedStats[map][code]||[]).forEach(row=>{
+  const key=norm(row[0]),x=all[key]||(all[key]={nick:row[0],k:0,d:0,a:0,maps:0});
+  x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;
+ }));
+ const stats=document.querySelector('.msr-team-stats');
+ if(stats){
+  const tiles=[...stats.querySelectorAll('.msr-team-stat-grid > *')];
+  const update=(label,value)=>{const tile=tiles.find(x=>norm(x.textContent).startsWith(norm(label)));if(!tile)return;const valueEl=tile.querySelector('.v')||[...tile.querySelectorAll('*')].find(x=>x.children.length===0&&/^0$|^—$|^0%$/.test(x.textContent.trim()));if(valueEl&&valueEl.textContent!==value)valueEl.textContent=value;};
+  update('Matches','1');update('Win rate',won?'100%':'0%');
+  const k=Object.values(all).reduce((n,x)=>n+x.k,0),d=Object.values(all).reduce((n,x)=>n+x.d,0);
+  update('K/D',(k/Math.max(1,d)).toFixed(2));
+ }
+ const boxes=[...document.querySelectorAll('.prof-grid .box')];
+ const lineup=boxes.find(x=>/Lineup/i.test(x.querySelector('.panel-h')?.textContent||''));
+ if(lineup){
+  const rows=[...lineup.querySelectorAll('tbody tr')];
+  rows.forEach(row=>{
+   const nick=norm(row.cells[0]?.textContent||''),x=all[nick];
+   if(!x)return;
+   const set=(i,v)=>{if(row.cells[i]&&row.cells[i].textContent.trim()!==String(v))row.cells[i].textContent=String(v);};
+   set(1,x.maps);set(2,(x.k/Math.max(1,x.d)).toFixed(2));
+   // ADR, KAST, Rating are unavailable from the supplied screenshots.
+  });
+  if(!lineup.querySelector('.msr-team-kda-note')){
+   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR, KAST and Rating not supplied.';lineup.appendChild(note);
+  }
+  if(!lineup.querySelector('.msr-team-verified-players')){
+   const details=document.createElement('details');details.className='msr-team-verified-players';
+   const summary=document.createElement('summary');summary.textContent='Full match roster · K/D and assists';details.appendChild(summary);
+   Object.values(all).sort((a,b)=>b.k-a.k).forEach(x=>{const line=document.createElement('div');line.textContent=x.nick+' · '+x.maps+' maps · '+x.k+' K / '+x.d+' D / '+x.a+' A · K/D '+(x.k/Math.max(1,x.d)).toFixed(2);details.appendChild(line);});
+   lineup.appendChild(details);
+  }
+ }
+ const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
+ if(pool){
+  [...pool.querySelectorAll('tbody tr')].forEach(row=>{
+   const map=row.cells[0]?.textContent.trim(),m=results[0].maps.find(x=>norm(x[0])===norm(map));
+   if(!m)return;
+   const win=won?m[1]>m[2]:m[2]>m[1];
+   if(row.cells[1]&&row.cells[1].textContent.trim()!=='1')row.cells[1].textContent='1';
+   if(row.cells[2]&&row.cells[2].textContent.trim()!==(win?'100%':'0%'))row.cells[2].textContent=win?'100%':'0%';
+  });
+  if(!pool.querySelector('.msr-team-kda-note')){
+   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='Verified maps: Rust, Province, Sandstone. Pick/ban and CT/T rates are not confirmed.';pool.appendChild(note);
+  }
+ }
+ const form=document.querySelector('.form.left');
+ if(form&&form.dataset.msrVerifiedForm!=='1'){form.dataset.msrVerifiedForm='1';form.replaceChildren();const el=document.createElement('i');el.className=won?'w':'l';el.textContent=won?'W':'L';form.appendChild(el);}
+ if(stats&&!stats.querySelector('.msr-verified-match-summary')){
+  const info=document.createElement('div');info.className='msr-verified-match-summary';
+  info.textContent='MSL S2 · '+(won?'WIN 2–1 vs 4Zi':'LOSS 1–2 vs WarKz')+' · Rust 13–11 · Province 7–13 · Sandstone 13–10';
+  stats.appendChild(info);
+ }
+}
 function verifiedRanking(){ /* Main ranking is now sourced from Supabase team points. */ }
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
-function apply(){verifiedMainStandings();verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
+function apply(){verifiedTeamProfiles();verifiedMainStandings();verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
   const group=(section.querySelector('.msr-zone-title h2')?.textContent||'').match(/GROUP\s+([A-F])/i)?.[1];
   results.filter(r=>r.group===group).forEach(r=>{
@@ -83,6 +143,6 @@ function apply(){verifiedMainStandings();verifiedGroupExtras();verifiedPlayerSta
   });
  });
 }
-const style=document.createElement('style');style.textContent='.msr-standings-win{background:rgba(33,148,82,.15)!important}.msr-standings-win td:nth-child(4){color:#6ff0a0!important;font-weight:800}.msr-standings-loss{background:rgba(167,52,63,.10)!important}.msr-standings-loss td:nth-child(5){color:#ff9a9a!important;font-weight:800}.msr-verified-rank-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:9px 12px;border:1px solid #345f49;border-radius:8px}.msr-verified-rank-line strong{font-size:18px;color:#e5f7e9}.msr-verified-rank-line span{margin-left:auto;color:#9fe7b4}.msr-verified-ranking-note small{display:block;margin-top:10px;color:#9eb5a9}.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
+const style=document.createElement('style');style.textContent='.msr-team-kda-note,.msr-team-verified-players,.msr-verified-match-summary{padding:10px 14px;margin:8px 0;color:#b8ead2;background:rgba(19,75,49,.22);border:1px solid #2b7552;border-radius:8px;font-size:12px}.msr-team-verified-players div{padding:4px 0}.msr-standings-win{background:rgba(33,148,82,.15)!important}.msr-standings-win td:nth-child(4){color:#6ff0a0!important;font-weight:800}.msr-standings-loss{background:rgba(167,52,63,.10)!important}.msr-standings-loss td:nth-child(5){color:#ff9a9a!important;font-weight:800}.msr-verified-rank-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:9px 12px;border:1px solid #345f49;border-radius:8px}.msr-verified-rank-line strong{font-size:18px;color:#e5f7e9}.msr-verified-rank-line span{margin-left:auto;color:#9fe7b4}.msr-verified-ranking-note small{display:block;margin-top:10px;color:#9eb5a9}.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();
 })();
