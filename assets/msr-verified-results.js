@@ -236,6 +236,47 @@ function verifiedResultsDetail(){
   const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);updateFinishedClanMedia(side);
  });section.appendChild(card);
  const mapCards=document.createElement('div');mapCards.className='msr-finished-map-cards';section.appendChild(mapCards);
+ // Aggregate verified player stats across all maps, with a plain MVP label.
+ const allMapStats=new Map();
+ match.maps.forEach(([map])=>{
+  const source=match.screenshotMaps?match.screenshotMaps.find(x=>x.map===map):null;
+  [match.a,match.b].forEach(team=>{
+   const players=source?(source[team===match.a?'a':'b']||[]):(((matchIndex===0?verifiedStats:additionalMatchStats)[map]||{})[team]||[]);
+   players.forEach(([nick,k,d,a])=>{
+    const key=team+'|'+norm(nick);
+    const item=allMapStats.get(key)||{team,nick,k:0,d:0,a:0,rounds:0,maps:0};
+    item.k+=Number(k)||0;item.d+=Number(d)||0;item.a+=Number(a)||0;
+    const mapScore=match.maps.find(x=>x[0]===map);
+    item.rounds+=(mapScore?mapScore[1]+mapScore[2]:0);item.maps++;
+    allMapStats.set(key,item);
+   });
+  });
+ });
+ });
+ if(allMapStats.size){
+  const players=[...allMapStats.values()];
+  const rating=p=>Number(msrRating(p.k,p.d,p.a,p.rounds)||0);
+  players.sort((a,b)=>rating(b)-rating(a)||b.k-a.k||a.d-b.d);
+  const mvp=players[0];
+  const all=document.createElement('details');all.className='msr-finished-map msr-all-maps';all.open=true;
+  const label=document.createElement('summary');label.textContent='All Maps';all.appendChild(label);
+  const wrap=document.createElement('div');wrap.className='msr-finished-stats';
+  [match.a,match.b].forEach(team=>{
+   const group=document.createElement('div'),heading=document.createElement('h3');heading.textContent=team;group.appendChild(heading);
+   const table=document.createElement('table'),thead=document.createElement('thead'),tr=document.createElement('tr');
+   ['Player','K','D','A','K/D','Rating'].forEach(v=>{const th=document.createElement('th');th.textContent=v;tr.appendChild(th);});
+   thead.appendChild(tr);table.appendChild(thead);
+   const body=document.createElement('tbody');
+   players.filter(p=>p.team===team).forEach(p=>{
+    const row=document.createElement('tr'),name=document.createElement('td');name.textContent=p.nick;
+    if(p===mvp){const tag=document.createElement('strong');tag.className='msr-all-maps-mvp';tag.textContent=' MVP';name.appendChild(tag);}
+    row.appendChild(name);
+    [p.k,p.d,p.a,p.d?(p.k/p.d).toFixed(2):'—',msrRating(p.k,p.d,p.a,p.rounds)||'—'].forEach(v=>{const td=document.createElement('td');td.textContent=v;row.appendChild(td);});
+    body.appendChild(row);
+   });table.appendChild(body);group.appendChild(table);wrap.appendChild(group);
+  });
+  all.appendChild(wrap);mapCards.appendChild(all);
+ }
  match.maps.forEach(([map,a,b])=>{
   const details=document.createElement('details');details.className='msr-finished-map';details.open=false;
   const summary=document.createElement('summary');summary.className='msr-finished-map-tile';
@@ -285,6 +326,7 @@ const compactLogoStyle=document.createElement('style');
 compactLogoStyle.textContent='#app .msr-finished-detail .msr-finished-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:100%;overflow:hidden}#app .msr-finished-detail .msr-finished-side{min-width:0;min-height:74px;max-height:100px;overflow:hidden;align-items:center;padding:12px 14px}#app .msr-finished-detail .msr-finished-identity{display:flex;align-items:center;gap:10px;min-width:0;flex:1}#app .msr-finished-detail .msr-finished-logo{display:block!important;width:46px!important;height:46px!important;min-width:46px!important;max-width:46px!important;max-height:46px!important;object-fit:contain!important;flex:0 0 46px!important;border-radius:6px}#app .msr-finished-detail .msr-finished-logo[hidden]{display:none!important}#app .msr-finished-detail .msr-finished-identity strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-finished-detail .msr-finished-side>span{flex:none;font-size:12px}@media(max-width:600px){#app .msr-finished-detail .msr-finished-teams{grid-template-columns:1fr}#app .msr-finished-detail .msr-finished-side{min-height:64px;max-height:82px;flex-direction:row}#app .msr-finished-detail .msr-finished-logo{width:38px!important;height:38px!important;min-width:38px!important;max-width:38px!important;max-height:38px!important;flex-basis:38px!important}}';
 document.head.appendChild(compactLogoStyle);
 const clanBack1Style=document.createElement('style');clanBack1Style.textContent='#app .msr-finished-side{position:relative;isolation:isolate;background-position:center;background-size:cover}#app .msr-finished-side:before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(90deg,rgba(8,14,27,.93),rgba(8,14,27,.75)),var(--msr-back1-logo);background-repeat:no-repeat;background-size:cover,auto 160%;background-position:center,right 20% center;opacity:.85;pointer-events:none}#app .msr-finished-side[data-has-back1="true"]:before{display:none}#app .msr-finished-side .msr-finished-identity,#app .msr-finished-side>span{position:relative;z-index:1}';document.head.appendChild(clanBack1Style);
+const mvpStyle=document.createElement('style');mvpStyle.textContent='#app .msr-all-maps{grid-column:1/-1}#app .msr-all-maps-mvp{font-weight:800;color:#f5c451;margin-left:5px}';document.head.appendChild(mvpStyle);
 const mapCardStyle=document.createElement('style');mapCardStyle.textContent='#app .msr-finished-map-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0 26px}#app .msr-finished-map-cards .msr-finished-map{min-width:0;margin:0;border-radius:12px;overflow:hidden}#app .msr-finished-map-cards .msr-finished-map summary.msr-finished-map-tile{height:135px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;padding:16px 8px!important;background-color:#1b293d;background-position:center;background-size:cover;list-style:none;text-align:center;cursor:pointer}#app .msr-finished-map-cards .msr-finished-map summary::-webkit-details-marker{display:none}#app .msr-finished-map-cards .msr-finished-map summary b{font-size:clamp(15px,2vw,21px);color:#fff;text-shadow:0 2px 5px #000}#app .msr-finished-map-cards .msr-finished-map summary span{font-size:clamp(11px,1.3vw,15px);color:#fff;text-shadow:0 2px 5px #000}#app .msr-finished-map-cards .msr-finished-map[open]{grid-column:span 3}#app .msr-finished-map-cards .msr-finished-map[open] summary{height:135px}@media(max-width:650px){#app .msr-finished-map-cards{gap:7px}#app .msr-finished-map-cards .msr-finished-map summary.msr-finished-map-tile{height:100px;padding:8px 3px!important}#app .msr-finished-map-cards .msr-finished-map summary span{font-size:10px}}';document.head.appendChild(mapCardStyle);
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();loadMsrClanMedia();
 })();
