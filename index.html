@@ -2471,7 +2471,9 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     var normVerified=function(s){return String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
     var sums={};
     records.forEach(function(r){var key=r[0]+'|'+normVerified(r[1]);var x=sums[key]||(sums[key]={k:0,d:0,a:0,maps:0,rounds:0});x.k+=r[2];x.d+=r[3];x.a+=r[4];x.maps++;x.rounds+=r[5];});
-    PLAYERS.forEach(function(p){var t=T[p.team]||{};var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4zi'||name.includes('toexistwithpurpose')?'4zi':tag==='warkz'||name.includes('warriorkingzz')?'WarKz':tag==='kngzz'||name==='kingzz'?'KngZz':tag==='mpct'||name==='imp4ct'?'mpct':tag==='1nfyx'||name.includes('infinity')?'1NFYx':tag==='8mna'?'8MNA':tag==='drdrx'?'DRDRX':tag==='6lc'||name.includes('sixlence')?'6LC':tag==='sclat'?'sclat':tag==='acca'||name==='accacin'?'ACCA':tag==='aim4r'?'AIM4R':tag==='reskk'?'RESKK':null;if(!team)return;var nick=normVerified(p.nick);if(team==='4zi'&&nick==='hiro')nick='venn';if(team==='KngZz'&&nick==='tengri')nick='tengrigodl';if(team==='8MNA'&&nick==='verkuzzz')nick='verkuzzz';var x=sums[team+'|'+nick];if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=Math.max(0,Math.min(3,(.55*x.k+.18*x.a-.25*x.d)/x.rounds+.625));p.verifiedMSR=true;});
+    var confirmed=[['DXIII','Revi',23,16,6,2,33],['DXIII','Anukk',28,16,5,2,33],['DXIII','iQx.',32,16,3,2,33],['DXIII','Hexor',27,21,15,2,33],['DXIII','X AIS2',31,16,3,2,33],['TLnrs','Visilefox',22,30,2,2,33],['TLnrs','Batashi',16,30,2,2,33],['TLnrs','DlwImra',12,32,4,2,33],['TLnrs','TENNY',11,30,1,2,33],['TLnrs','RandomStu',16,16,3,1,19],['TLnrs',"Winter's",2,8,0,1,14]];
+    confirmed.forEach(function(x){sums[x[0]+'|'+normVerified(x[1])]={k:x[2],d:x[3],a:x[4],maps:x[5],rounds:x[6]};});
+    PLAYERS.forEach(function(p){var t=T[p.team]||{};var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4zi'||name.includes('toexistwithpurpose')?'4zi':tag==='warkz'||name.includes('warriorkingzz')?'WarKz':tag==='kngzz'||name==='kingzz'?'KngZz':tag==='mpct'||name==='imp4ct'?'mpct':tag==='1nfyx'||name.includes('infinity')?'1NFYx':tag==='8mna'?'8MNA':tag==='drdrx'?'DRDRX':tag==='6lc'||name.includes('sixlence')?'6LC':tag==='sclat'?'sclat':tag==='acca'||name==='accacin'?'ACCA':tag==='aim4r'?'AIM4R':tag==='reskk'?'RESKK':tag==='dxiii'||name==='dxvil13'?'DXIII':tag==='tlnrs'||name==='teamlunaris'?'TLnrs':null;if(!team)return;var nick=normVerified(p.nick);if(team==='DXIII'&&String((GAME_IDS[p.team+'|'+nick]||''))==='99959144')nick='revi';if(team==='4zi'&&nick==='hiro')nick='venn';if(team==='KngZz'&&nick==='tengri')nick='tengrigodl';if(team==='8MNA'&&nick==='verkuzzz')nick='verkuzzz';var x=sums[team+'|'+nick];if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=Math.max(0,Math.min(3,(.55*x.k+.18*x.a-.25*x.d)/x.rounds+.625));p.verifiedMSR=true;});
   }
   // MSR custom player rating (not official HLTV rating).
   // Under 5 maps: provisional. At 10+ maps: fully eligible.
@@ -2496,8 +2498,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     return (1 + (raw - 1) * sample) * opponentFactor;
   }
   function sortPlayerRanking() {
-    // Historical player statistics reset; wait for newly confirmed screenshots.
-  // applyVerifiedPlayerStats();
+    applyVerifiedPlayerStats();
     PLAYERS.sort(function (a, b) {
       // Rank by verified performance first; map sample is a tiebreaker, not a hard exclusion.
       return playerRankScore(b) - playerRankScore(a) ||
@@ -5073,6 +5074,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var rows = await response.json();
       if (!Array.isArray(rows)) return;
       mergeDiscordTeams(rows);
+      sortPlayerRanking();
       applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.svg';T[code].c='#ff344c';}});
       try{
@@ -5539,21 +5541,7 @@ function verifiedTeamProfiles(){
   stats.appendChild(info);
  }
 }
-function verifiedRanking(){
- const hash=decodeURIComponent(location.hash||'').toLowerCase();
- if(!/^#(players|stats)(\/|$)/.test(hash)){document.getElementById('msr-verified-live-standings')?.remove();return;}
- const app=document.getElementById('app');if(!app)return;
- let panel=app.querySelector('#msr-verified-live-standings');
- if(!panel){panel=document.createElement('section');panel.id='msr-verified-live-standings';panel.style.cssText='margin:18px auto;padding:16px;max-width:1100px;border:1px solid #34445c;border-radius:12px;background:#101827;color:#e7edf8';app.prepend(panel);}
- const teams=eloMatches.flatMap(m=>[{name:m.a,change:m.aChange,after:m.aAfter,w:m.aWins>m.bWins?1:0,l:m.aWins<m.bWins?1:0},{name:m.b,change:m.bChange,after:m.bAfter,w:m.bWins>m.aWins?1:0,l:m.bWins<m.aWins?1:0}]).sort((a,b)=>b.after-a.after);
- const players=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]))].flatMap(team=>{
-  const all={};verifiedPlayerRows(team).forEach(x=>{const k=norm(x.nick);const p=all[k]||(all[k]={nick:x.nick,team,k:0,d:0,a:0,rounds:0,maps:0});p.k+=x.k;p.d+=x.d;p.a+=x.a;p.rounds+=x.rounds;p.maps++;});
-  return Object.values(all).map(p=>({...p,rating:Number(msrRating(p.k,p.d,p.a,p.rounds))}));
- }).sort((a,b)=>b.rating-a.rating||b.k-a.k);
- const table=(heads,rows)=>'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:left"><thead><tr>'+heads.map(x=>'<th style="padding:9px;border-bottom:1px solid #34445c">'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(x=>'<td style="padding:9px;border-bottom:1px solid #26344a">'+x+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
- if(/^#(players|stats)/.test(hash)){panel.innerHTML='<h2>MSR · Verified Player Ranking (Top 20)</h2>'+table(['#','Player','Team','K/D','K','D','A','Maps','Rating'],players.slice(0,20).map((p,i)=>[i+1,p.nick,p.team,(p.k/Math.max(1,p.d)).toFixed(2),p.k,p.d,p.a,p.maps,p.rating.toFixed(2)]));}
- else{panel.innerHTML='<h2>MSR · Verified Team ELO</h2>'+table(['Team','W','L','ELO','Change'],teams.map(p=>[p.name,p.w,p.l,p.after,(p.change>=0?'+':'')+p.change]));}
-}
+function verifiedRanking(){document.getElementById('msr-verified-live-standings')?.remove();}
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
 // Shared clan media directory: automatically resolve logos for every finished-match team.
