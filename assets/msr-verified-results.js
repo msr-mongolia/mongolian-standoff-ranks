@@ -1,11 +1,15 @@
 /* MSR verified group-stage results. Only confirmed map scores are published. */
 (function(){
 'use strict';
-const results=[{group:'C',a:'WarKz',b:'4zi',winner:'WarKz',score:'2–1',maps:[['Rust',13,11],['Province',7,13],['Sandstone',13,10]]}];
+const results=[{group:'C',a:'WarKz',b:'4zi',winner:'WarKz',score:'2–1',maps:[['Rust',13,11],['Province',7,13],['Sandstone',13,10]]},{group:'',a:'KngZz',b:'mpct',winner:'KngZz',score:'2–0',maps:[['Dune',13,2],['Rust',13,7]]}];
 const verifiedStats={
 Rust:{WarKz:[['wu °',23,14,7],['softsyko',20,17,3],['УЙЛАНХАЙТ',19,19,2],['Petisha',14,21,1],['BatiLo',13,17,2]],'4zi':[['Venn',29,16,3],['art_shisu',25,19,3],['RASEL',13,18,1],['FasouXI.666',10,19,3],['lOwzs777',11,19,4]]},
 Province:{WarKz:[['wu °',24,15,2],['softsyko',14,16,3],['УЙЛАНХАЙТ',14,17,6],['Petisha',12,18,4],['BatiLo',6,15,1]],'4zi':[['art_shisu',27,12,3],['RASEL',13,15,3],['FasouXI.666',16,16,2],['Venn',13,13,2],['lOwzs777',12,14,4]]},
 Sandstone:{WarKz:[['БАТИЛО Prime',22,12,4],['softsyko',23,17,3],['wu °',19,17,4],['Petisha',13,18,3],['УЙЛАНХАЙТ',8,18,3]],'4zi':[['Careley',22,16,3],['RASEL',20,17,3],['art_shisu',14,16,5],['Venn',14,18,0],['FasouXI.666',11,18,3]]}
+};
+const additionalMatchStats={
+ Dune:{KngZz:[['SarNar',14,5,2],['r1sk',14,3,4],['yeji',17,10,1],['Tse Ka',14,10,5],['tengriGODL',14,11,3]],mpct:[['Ryze',14,14,2],['Zenix',11,14,1],['Bekul',7,15,3],['Tmk',4,15,2],['Baitsai god',3,15,0]]},
+ Rust:{KngZz:[['tengriGODL',18,11,1],['Tse Ka',20,15,4],['yeji',15,9,2],['r1sk',13,10,4],['SarNar',15,12,3]],mpct:[['Baitsai god',14,17,4],['Tmk',8,16,3],['Ryze',12,16,4],['Bekul',12,17,2],['Zenix',10,16,0]]}
 };
 const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1}};
 // Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
@@ -164,10 +168,11 @@ function verifiedResultsDetail(){
  const app=document.getElementById('app');if(!app||app.querySelector('.msr-finished-detail'))return;
  const heading=[...app.querySelectorAll('h1')].find(e=>e.textContent.trim()==='Results');if(!heading)return;
  const section=document.createElement('section');section.className='msr-finished-detail';
- const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · WarKz 2–1 4zi';section.appendChild(title);
- const subtitle=document.createElement('p');subtitle.textContent='Verified map scores and player K/D/A · Rust 13–11 · Province 7–13 · Sandstone 13–10';section.appendChild(subtitle);
+ results.forEach((match,matchIndex)=>{
+ const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+match.a+' '+match.score+' '+match.b;section.appendChild(title);
+ const subtitle=document.createElement('p');subtitle.textContent='Verified map scores and player K/D/A · '+match.maps.map(m=>m[0]+' '+m[1]+'–'+m[2]).join(' · ');section.appendChild(subtitle);
  const card=document.createElement('div');card.className='msr-finished-teams';
- [['WarKz','WIN · 2'],['4zi','LOSS · 1']].forEach(([name,status])=>{
+ [[match.a,'WIN · '+match.score.split('–')[0]],[match.b,'LOSS · '+match.score.split('–')[1]]].forEach(([name,status])=>{
   const side=document.createElement('div');side.className='msr-finished-side';
   side.dataset.team=name;
   // Reuse an existing clan BACK1 image when one is exposed by the site.
@@ -177,20 +182,21 @@ function verifiedResultsDetail(){
   const nameEl=document.createElement('strong');nameEl.textContent=name;side.appendChild(nameEl);
   const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);
  });section.appendChild(card);
- results[0].maps.forEach(([map,a,b])=>{
-  const details=document.createElement('details');details.className='msr-finished-map';details.open=map==='Rust';
-  const summary=document.createElement('summary');summary.textContent=map+' · WarKz '+a+'–'+b+' 4zi';details.appendChild(summary);
+ match.maps.forEach(([map,a,b])=>{
+  const details=document.createElement('details');details.className='msr-finished-map';details.open=map===match.maps[0][0];
+  const summary=document.createElement('summary');summary.textContent=map+' · '+match.a+' '+a+'–'+b+' '+match.b;details.appendChild(summary);
   const grid=document.createElement('div');grid.className='msr-finished-stats';
-  ['WarKz','4zi'].forEach(team=>{
+  [match.a,match.b].forEach(team=>{
    const group=document.createElement('div');const h=document.createElement('h3');h.textContent=team;group.appendChild(h);
    const table=document.createElement('table');const head=document.createElement('thead');const tr=document.createElement('tr');
    ['Player','Kills','Deaths','Assists','K/D'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.appendChild(th);});head.appendChild(tr);table.appendChild(head);
    const body=document.createElement('tbody');
-   (verifiedStats[map][team]||[]).forEach(([nick,k,d,assists])=>{const row=document.createElement('tr');[nick,k,d,assists,(k/Math.max(1,d)).toFixed(2)].forEach(v=>{const td=document.createElement('td');td.textContent=v;row.appendChild(td);});body.appendChild(row);});
+   ((matchIndex===0?verifiedStats:additionalMatchStats)[map][team]||[]).forEach(([nick,k,d,assists])=>{const row=document.createElement('tr');[nick,k,d,assists,(k/Math.max(1,d)).toFixed(2)].forEach(v=>{const td=document.createElement('td');td.textContent=v;row.appendChild(td);});body.appendChild(row);});
    table.appendChild(body);group.appendChild(table);grid.appendChild(group);
   });details.appendChild(grid);section.appendChild(details);
  });
  heading.parentElement?.after(section);
+ });
 }
 function apply(){verifiedResultsDetail();verifiedTeamProfiles();verifiedMainStandings();verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
