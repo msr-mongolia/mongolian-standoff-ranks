@@ -4601,6 +4601,20 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         row.id !== 'ds_b248643101cd3a4e8594fabf' && row.id !== 'ds_fbf308278120e648e045eb7b' && !/^\[\s*\]\s*team\s*name\s*:\s*kingzz$/i.test(row.name.trim());
     }).map(function (row) { return Object.assign({}, row, { roster: row.roster.slice(), player_ids: Object.assign({}, row.player_ids || {}) }); }).sort(compareRegistrations);
 
+    // CON 1: retire the duplicate pink Xiverion listing (former rank #14).
+    // Keep Xiverion DIVINE as the only live XvrN registration.
+    registrations = registrations.filter(function(row) {
+      return String(row.name || '').trim().toLowerCase() !== 'xiverion';
+    });
+    delete T.XVRN;
+    delete ROSTER.XVRN;
+    for (var xvrnRankIndex = RANK.length - 1; xvrnRankIndex >= 0; xvrnRankIndex--) {
+      if (RANK[xvrnRankIndex][0] === 'XVRN') RANK.splice(xvrnRankIndex, 1);
+    }
+    PLAYERS.forEach(function(player) {
+      if (player.team === 'XVRN') { player.previousTeam = 'XVRN'; player.team = ''; }
+    });
+
     // con1 identifies one clan; its newest Discord registration owns the current roster.
     var accaRows=registrations.filter(function(row){return row.id==='ds_cc59eccdc299850d94095877'||row.id==='ds_69e357fba010a21cd6ad1364';});
     if(accaRows.length){
