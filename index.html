@@ -2494,6 +2494,26 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       }
     }
     if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=Math.max(0,Math.min(3,(.55*x.k+.18*x.a-.25*x.d)/x.rounds+.625));p.verifiedMSR=true;});
+    // Screenshot-only players retain verified K/D/A without being silently registered in a clan roster.
+    var normTeam=function(v){return normVerified(v);};
+    var teamAliases={tlnrs:['tlnrs','teamlunaris'],dxiii:['dxiii','dxvil13'],reskk:['reskk','asteriskreskk'],okz:['0kz','omegaforcez'],woart:['woart','wonderart'],anot:['anot','nameanotherlevel'],fourzi:['4zi','toexistwithpurpose']};
+    confirmed.forEach(function(x){
+      var tag=normTeam(x[0]);
+      var aliases=teamAliases[tag]||[tag];
+      var codes=Object.keys(T).filter(function(code){var t=T[code]||{};return aliases.indexOf(normTeam(t.tag))>=0||aliases.indexOf(normTeam(t.n))>=0;});
+      // Duplicate clan tags (e.g. two 6LC rosters) require manual resolution.
+      if(codes.length!==1)return;
+      var code=codes[0],nick=normVerified(x[1]);
+      var existing=PLAYERS.filter(function(p){return p.team===code;});
+      var same=existing.some(function(p){return normVerified(p.nick)===nick;});
+      if(same)return;
+      var distance=function(a,b){var prev=Array.from({length:b.length+1},function(_,i){return i;});for(var i=1;i<=a.length;i++){var next=[i];for(var j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=next;}return prev[b.length];};
+      if(existing.some(function(p){var n=normVerified(p.nick);return (n.length>=3&&nick.length>=3&&distance(n,nick)<=2)||n.includes(nick)&&nick.length>=4||nick.includes(n)&&n.length>=4;}))return;
+      var already=existing.some(function(p){return p.screenshotOnly&&normVerified(p.nick)===nick;});
+      if(already)return;
+      var rounds=Math.max(1,x[6]);
+      PLAYERS.push({nick:x[1],team:code,maps:x[5],kills:x[2],deaths:x[3],assists:x[4],rounds:rounds,kd:x[2]/Math.max(1,x[3]),rating:Math.max(0,Math.min(3,(.55*x[2]+.18*x[4]-.25*x[3])/rounds+.625)),verifiedMSR:true,screenshotOnly:true,rank:0,provisional:x[5]<5});
+    });
   }
   // MSR custom player rating (not official HLTV rating).
   // Under 5 maps: provisional. At 10+ maps: fully eligible.
