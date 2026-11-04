@@ -2208,6 +2208,19 @@ background-color:#121923!important
 #app .msr-knight-video-panel .msr-team-stat,#app .msr-knight-video-panel .msr-stat-tile{background:rgba(4,10,23,.48)!important}
 </style>
 <style id="msr-risk-mongol-sticker">.msr-risk-mongol-sticker{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;background:radial-gradient(circle,rgba(5,7,10,.22) 0%,rgba(5,7,10,.56) 100%),var(--msr-risk-team-logo)!important;background-size:cover!important;background-position:center!important;border:3px solid #d9aa43!important;box-shadow:inset 0 0 0 3px #352a13,0 0 16px rgba(219,164,48,.35)!important}.hl-top .bigav.msr-risk-mongol-sticker{width:172px!important;height:172px!important;min-width:172px!important;flex:0 0 172px!important}.msr-risk-mongol-sticker .msr-risk-vertical-script{writing-mode:vertical-lr!important;text-orientation:mixed!important;direction:ltr!important;font-family:'Mongolian Baiti','Noto Sans Mongolian','Mongolian White',serif!important;font-size:48px!important;line-height:1.15!important;font-weight:700!important;color:#f4ce6b!important;text-shadow:1px 1px 0 #845719,0 0 7px #e5a735!important;white-space:nowrap!important;position:relative!important;z-index:5!important}.msr-risk-mongol-sticker .msr-clan-avatar-item{display:none!important}</style>
+
+<style>
+/* MSR mobile scroll optimization v1 */
+@media (max-width: 720px) {
+  /* Skip layout and painting of cards outside the visible viewport. */
+  #app .nrow, #app .msr-rr-card, #app .msr-rr-match {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 110px;
+  }
+  /* Reduce continuously repainted decoration on touch screens. */
+  #app .pip { animation: none; }
+}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
