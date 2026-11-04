@@ -2,6 +2,8 @@
 (function(){
 'use strict';
 const results=[{group:'C',a:'WarKz',b:'4zi',winner:'WarKz',score:'2–1',maps:[['Rust',13,11],['Province',7,13],['Sandstone',13,10]]},{group:'',a:'KngZz',b:'mpct',winner:'KngZz',score:'2–0',maps:[['Dune',13,2],['Rust',13,7]]}];
+const screenshotMatches=(window.MSR_SCREENSHOT_MATCHES||[]);
+screenshotMatches.forEach(m=>{const wins=m.maps.filter(x=>x.aScore>x.bScore).length;const losses=m.maps.length-wins;results.push({group:'',a:m.a,b:m.b,winner:wins>losses?m.a:m.b,score:wins+'–'+losses,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:m.maps});});
 const verifiedStats={
 Rust:{WarKz:[['wu °',23,14,7],['softsyko',20,17,3],['УЙЛАНХАЙТ',19,19,2],['Petisha',14,21,1],['BatiLo',13,17,2]],'4zi':[['Venn',29,16,3],['art_shisu',25,19,3],['RASEL',13,18,1],['FasouXI.666',10,19,3],['lOwzs777',11,19,4]]},
 Province:{WarKz:[['wu °',24,15,2],['softsyko',14,16,3],['УЙЛАНХАЙТ',14,17,6],['Petisha',12,18,4],['BatiLo',6,15,1]],'4zi':[['art_shisu',27,12,3],['RASEL',13,15,3],['FasouXI.666',16,16,2],['Venn',13,13,2],['lOwzs777',12,14,4]]},
@@ -15,7 +17,7 @@ const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50
 // Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
 const verifiedRounds={Rust:24,Province:20,Sandstone:23};
 const matchRounds={KngZz:{Dune:15,Rust:20},mpct:{Dune:15,Rust:20}};
-function verifiedPlayerRows(team){const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;return Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));}
+function verifiedPlayerRows(team){const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick,map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
 // MSR custom rating (not an official Standoff 2 rating). 1.00 represents
 // approximately one kill per round, 0.7 deaths per round and 0.2 assists per round.
@@ -97,7 +99,7 @@ function verifiedPlayerStats(){
 function verifiedTeamProfiles(){
  const profile=document.querySelector('.prof');if(!profile)return;
  const title=norm(profile.querySelector('h1')?.textContent||'');
- const code=title.includes('warriorkingzz')||title.includes('warkz')?'WarKz':title.includes('toexistwithpurpose')||title.includes('4zi')?'4zi':title.includes('kingzz')?'KngZz':title.includes('impact')||title.includes('mpct')?'mpct':null;
+ const code=title.includes('warriorkingzz')||title.includes('warkz')?'WarKz':title.includes('toexistwithpurpose')||title.includes('4zi')?'4zi':title.includes('kingzz')?'KngZz':title.includes('impact')||title.includes('mpct')?'mpct':[['1NFYx','1nfy'],['8MNA','8mna'],['DRDRX','drdrx'],['6LC','6lc'],['sclat','sclat'],['ACCA','acca'],['AIM4R','aim4r'],['RESKK','reskk']].find(x=>title.includes(x[1]))?.[0]||null;
  if(!code)return;
  const won=results.some(r=>r.winner===code),all={};
  verifiedPlayerRows(code).forEach(row=>{
@@ -237,7 +239,7 @@ function verifiedResultsDetail(){
    const table=document.createElement('table');const head=document.createElement('thead');const tr=document.createElement('tr');
    ['Player','Kills','Deaths','Assists','K/D'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.appendChild(th);});head.appendChild(tr);table.appendChild(head);
    const body=document.createElement('tbody');
-   ((matchIndex===0?verifiedStats:additionalMatchStats)[map][team]||[]).forEach(([nick,k,d,assists])=>{const row=document.createElement('tr');[nick,k,d,assists,(k/Math.max(1,d)).toFixed(2)].forEach(v=>{const td=document.createElement('td');td.textContent=v;row.appendChild(td);});body.appendChild(row);});
+   (match.screenshotMaps ? ((match.screenshotMaps.find(x=>x.map===map)||{})[team===match.a?'a':'b']||[]) : ((matchIndex===0?verifiedStats:additionalMatchStats)[map][team]||[])).forEach(([nick,k,d,assists])=>{const row=document.createElement('tr');[nick,k,d,assists,(k/Math.max(1,d)).toFixed(2)].forEach(v=>{const td=document.createElement('td');td.textContent=v;row.appendChild(td);});body.appendChild(row);});
    table.appendChild(body);group.appendChild(table);grid.appendChild(group);
   });details.appendChild(grid);mapCards.appendChild(details);
  });
