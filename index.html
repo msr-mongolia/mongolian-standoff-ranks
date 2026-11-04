@@ -1947,6 +1947,15 @@ background-color:#121923!important
 }
 
 </style>
+<style id="msr-xvrn-back1-all-panels">
+#app .msr-xvrn-video-panel{position:relative!important;isolation:isolate!important;overflow:hidden!important;background-color:#11101c!important}
+#app .msr-xvrn-video-panel>.msr-xvrn-back1-video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;z-index:0!important;pointer-events:none!important;transform:none!important;filter:brightness(.55)!important}
+#app .msr-xvrn-video-panel>*:not(.msr-xvrn-back1-video){position:relative;z-index:2}
+#app .msr-xvrn-video-panel>.msr-team-gold-sticker{position:absolute!important;z-index:4!important}
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stat.msr-xvrn-video-panel{background:transparent!important}
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats.msr-xvrn-video-panel{background:#0b0d18!important}
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .prof-grid>.box.msr-xvrn-video-panel{background:#11101c!important}
+</style>
 <style id="msr-xvrn-video-back1">
 #app .prof.msr-xvrn-profile{position:relative!important;isolation:isolate!important;overflow:hidden!important}
 #app .prof.msr-xvrn-profile>.msr-xvrn-back1-video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;z-index:0!important;pointer-events:none!important;transform:none!important}
@@ -4484,18 +4493,22 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   }
 
   function applyXvrnVideoBack1(node){
-    var panel=node.querySelector('.prof.msr-xvrn-profile');
-    if(!panel || panel.querySelector('.msr-xvrn-back1-video'))return;
-    var video=document.createElement('video');
-    video.className='msr-xvrn-back1-video';
-    video.src='assets/ScreenRecording_11-04-2026%2015-07-06_1%20%283%29.mov';
-    video.autoplay=true;video.loop=true;video.muted=true;video.defaultMuted=true;
-    video.playsInline=true;video.preload='auto';
-    video.setAttribute('muted','');video.setAttribute('autoplay','');
-    video.setAttribute('loop','');video.setAttribute('playsinline','');
-    video.setAttribute('aria-hidden','true');
-    panel.prepend(video);
-    video.play().catch(function(){});
+    var panels=Array.from(node.querySelectorAll('.prof.msr-xvrn-profile,.msr-team-stats,.msr-team-stat,.prof-grid > .box,.hl-top,.hl-card:has(.hl-grid)'));
+    if(!panels.length)return;
+    var src='assets/ScreenRecording_11-04-2026%2015-07-06_1%20%283%29.mov';
+    panels.forEach(function(panel){
+      if(panel.querySelector(':scope > .msr-xvrn-back1-video'))return;
+      panel.classList.add('msr-xvrn-video-panel');
+      var video=document.createElement('video');
+      video.className='msr-xvrn-back1-video';
+      video.src=src;video.autoplay=true;video.loop=true;video.muted=true;
+      video.defaultMuted=true;video.playsInline=true;video.preload='metadata';
+      video.setAttribute('muted','');video.setAttribute('autoplay','');
+      video.setAttribute('loop','');video.setAttribute('playsinline','');
+      video.setAttribute('aria-hidden','true');video.tabIndex=-1;
+      panel.prepend(video);
+      video.play().catch(function(){});
+    });
   }
 
   function paint(name, node) {
