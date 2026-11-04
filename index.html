@@ -2249,6 +2249,7 @@ background-color:#121923!important
 <style id="msr-hltv-back1-panels">#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:66px;padding:8px 14px;border-radius:3px;background-repeat:no-repeat}#app .msr-hltv-summary-team[data-has-back1="true"] strong{color:#fff;text-shadow:0 2px 5px #000,0 0 8px #000}#app .msr-hltv-summary-team[data-has-back1="true"] img{filter:drop-shadow(0 2px 4px #000)}@media(max-width:650px){#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:46px;padding:5px}}</style>
 <style id="msr-results-remove-duplicate-team-panels">#app .msr-match-expand-content > .msr-finished-teams{display:none!important}</style>
 <style id="msr-results-hide-teams-v2">.msr-finished-detail .msr-finished-teams,.msr-match-expand .msr-finished-teams{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important}</style>
+<style id="msr-hltv-map-tab-styles">#app .msr-hltv-map-tabs{display:block!important;width:100%}#app .msr-hltv-tab-bar{display:flex;gap:6px;flex-wrap:wrap;background:#202b35;padding:10px;margin-bottom:10px}#app .msr-hltv-map-tab{display:flex;align-items:center;gap:9px;background:#34424f;color:#d7e2eb;border:1px solid #465663;border-radius:3px;padding:10px 17px;font-weight:800;cursor:pointer}#app .msr-hltv-map-tab.active{background:#54718b;color:#fff;border-color:#83a7c6}#app .msr-hltv-map-tab small{font-size:11px;color:#a7c4d7}#app .msr-hltv-tab-panel{background:#222d37}#app .msr-hltv-tab-panel .msr-finished-stats{padding:0!important}@media(max-width:650px){#app .msr-hltv-map-tab{padding:8px 11px;font-size:12px}}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -5727,27 +5728,58 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
   if(back1&&/^(https?:\/\/|assets\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
   const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);updateFinishedClanMedia(side);
  });card.hidden=true;card.style.setProperty('display','none','important');content.appendChild(card);
- const mapCards=document.createElement('div');mapCards.className='msr-finished-map-cards';content.appendChild(mapCards);
- match.maps.forEach(([map,a,b])=>{
-  const details=document.createElement('details');details.className='msr-finished-map';details.open=false;
-  const summary=document.createElement('summary');summary.className='msr-finished-map-tile';
-  const mapTitle=document.createElement('b');mapTitle.textContent=map;summary.appendChild(mapTitle);const statsHint=document.createElement('small');statsHint.className='msr-hltv-stats-hint';statsHint.textContent='STATS ▾';summary.appendChild(statsHint);
-  const scoreLabel=document.createElement('span');scoreLabel.textContent=finishedDisplayName(match.a)+' '+a+' – '+b+' '+finishedDisplayName(match.b);summary.appendChild(scoreLabel);
-  details.appendChild(summary);
-  const matchingMap=[...document.querySelectorAll('.msr-rel-map-photo,.msr-map-pool-photo')].find(el=>el.textContent.toLowerCase().includes(map.toLowerCase()));
-  const mapArt=window.MSR_MAPART?.[map];
-  if(mapArt){summary.style.backgroundImage='linear-gradient(0deg,rgba(6,12,23,.88),rgba(6,12,23,.12)), '+mapArt;}
-  else if(matchingMap){const bg=getComputedStyle(matchingMap).backgroundImage;if(bg&&bg!=='none')summary.style.backgroundImage='linear-gradient(0deg,rgba(6,12,23,.86),rgba(6,12,23,.14)), '+bg;}
-  const grid=document.createElement('div');grid.className='msr-finished-stats';
+ const mapCards=document.createElement('div');mapCards.className='msr-finished-map-cards msr-hltv-map-tabs';content.appendChild(mapCards);
+ const tabBar=document.createElement('div');tabBar.className='msr-hltv-tab-bar';mapCards.appendChild(tabBar);
+ const statPanel=document.createElement('div');statPanel.className='msr-hltv-tab-panel';mapCards.appendChild(statPanel);
+ const maps=match.maps.map(([name,a,b])=>({name,a,b}));
+ const getPlayers=(map,team)=>{
+  const side=team===match.a?'a':'b';
+  return match.screenshotMaps?
+   ((match.screenshotMaps.find(x=>x.map===map.name)||{})[side]||[]):
+   (((matchIndex===0?verifiedStats:additionalMatchStats)[map.name]||{})[team]||[]);
+ };
+ const tabs=[{name:'All Maps',all:true},...maps];
+ const buttons=[];
+ function showStats(tab,activeButton){
+  buttons.forEach(btn=>{btn.classList.toggle('active',btn===activeButton);btn.setAttribute('aria-selected',String(btn===activeButton));});
+  statPanel.replaceChildren();
+  const selected=tab.all?maps:[tab];
+  const grid=document.createElement('div');grid.className='msr-finished-stats';statPanel.appendChild(grid);
   [match.a,match.b].forEach(team=>{
-   const group=document.createElement('div');const h=document.createElement('h3');h.textContent=finishedDisplayName(team);group.appendChild(h);
-   const table=document.createElement('table');const head=document.createElement('thead');const tr=document.createElement('tr');
-   ['Player','K','D','A','K/D','Rating'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.appendChild(th);});head.appendChild(tr);table.appendChild(head);
+   const totals=new Map();
+   selected.forEach(m=>getPlayers(m,team).forEach(([nick,k,d,assists])=>{
+    const key=String(nick).normalize('NFKC').toLowerCase();
+    const current=totals.get(key)||{nick,k:0,d:0,a:0,rounds:0};
+    current.k+=Number(k)||0;current.d+=Number(d)||0;current.a+=Number(assists)||0;
+    current.rounds+=Number(m.a)+Number(m.b);totals.set(key,current);
+   }));
+   const group=document.createElement('div');
+   const h=document.createElement('h3');h.textContent=finishedDisplayName(team);group.appendChild(h);
+   const table=document.createElement('table');
+   const head=document.createElement('thead'),tr=document.createElement('tr');
+   ['Player','K','D','A','K/D','Rating'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.appendChild(th);});
+   head.appendChild(tr);table.appendChild(head);
    const body=document.createElement('tbody');
-   (match.screenshotMaps ? ((match.screenshotMaps.find(x=>x.map===map)||{})[team===match.a?'a':'b']||[]) : ((matchIndex===0?verifiedStats:additionalMatchStats)[map][team]||[])).forEach(([nick,k,d,assists])=>{const row=document.createElement('tr');[nick,k,d,assists,(k/Math.max(1,d)).toFixed(2),msrRating(k,d,assists,a+b)||'—'].forEach((v,idx)=>{const td=document.createElement('td');if(idx===0){const player=document.createElement('a');player.href='#player/'+encodeURIComponent(nick)+'/'+encodeURIComponent(team);player.textContent=nick;td.appendChild(player);}else{td.textContent=v;if(idx===5)td.className='msr-hltv-rating';}row.appendChild(td);});body.appendChild(row);});
+   [...totals.values()].sort((a,b)=>b.k-a.k).forEach(p=>{
+    const row=document.createElement('tr');
+    [p.nick,p.k,p.d,p.a,(p.k/Math.max(1,p.d)).toFixed(2),msrRating(p.k,p.d,p.a,p.rounds)||'—'].forEach((v,idx)=>{
+     const td=document.createElement('td');
+     if(idx===0){const link=document.createElement('a');link.href='#player/'+encodeURIComponent(p.nick)+'/'+encodeURIComponent(team);link.textContent=p.nick;td.appendChild(link);}
+     else{td.textContent=v;if(idx===5)td.className='msr-hltv-rating';}
+     row.appendChild(td);
+    });body.appendChild(row);
+   });
    table.appendChild(body);group.appendChild(table);grid.appendChild(group);
-  });details.appendChild(grid);mapCards.appendChild(details);
+  });
+ }
+ tabs.forEach((tab,i)=>{
+  const btn=document.createElement('button');btn.type='button';btn.className='msr-hltv-map-tab';
+  btn.setAttribute('role','tab');btn.textContent=tab.name;
+  if(!tab.all){const score=document.createElement('small');score.textContent=tab.a+'–'+tab.b;btn.appendChild(score);}
+  btn.addEventListener('click',()=>showStats(tab,btn));buttons.push(btn);tabBar.appendChild(btn);
  });
+ tabBar.setAttribute('role','tablist');
+ showStats(tabs[0],buttons[0]);
  });
  // Mount once after all match cards are built, independent of the filter markup.
  const filters=app.querySelector('.results-filter-shell,.flt');
