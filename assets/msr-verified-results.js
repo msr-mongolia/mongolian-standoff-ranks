@@ -74,7 +74,7 @@ function verifiedPlayerStats(){
    teamArg==='kngzz'||teamArg==='kingzz'||teamLabel.includes('kingzz')?'KngZz':
    teamArg==='mpct'||teamArg==='imp4ct'||teamLabel.includes('imp4ct')?'mpct':null;
  if(!team)return;
- const aliases=team==='4zi'?{'hiro':'venn'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
+ const aliases=team==='4zi'?{'hiro':'venn'}:team==='KngZz'?{'tengri':'tengrigodl','tseka':'tseka'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
  const name=aliases[rawNick]||aliases[visibleNick]||rawNick;
  const rows=[];
  verifiedPlayerRows(team).forEach(item=>{if(norm(item.nick)===norm(name)||norm(item.nick)===visibleNick)rows.push(item);});
@@ -118,7 +118,7 @@ function verifiedTeamProfiles(){
   const rows=[...lineup.querySelectorAll('tbody tr')];
   // Only update registered players already present in the team's lineup.
   // Never append extra match participants: mutation observers re-run this function.
-  const aliases={'hiro':'venn','petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
+  const aliases={'hiro':'venn','petish':'petisha','batilo':'батилопрime','makk':'батилопрime','tengri':'tengrigodl'};
   rows.forEach(row=>{
    if(row.classList.contains('msr-verified-participant')||/\s·\s*match\s*$/i.test(row.cells[0]?.textContent||'')){row.remove();return;}
    const nick=norm(row.cells[0]?.querySelector('a.tl b')?.textContent||row.cells[0]?.querySelector('a.tl')?.textContent||row.cells[0]?.textContent||'');
@@ -151,7 +151,7 @@ function verifiedTeamProfiles(){
    if(row.cells[2]&&row.cells[2].textContent.trim()!==(win?'100%':'0%'))row.cells[2].textContent=win?'100%':'0%';
   });
   if(!pool.querySelector('.msr-team-kda-note')){
-   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='Verified maps: Rust, Province, Sandstone. Pick/ban and CT/T rates are not confirmed.';pool.appendChild(note);
+   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='Verified maps: '+(results.find(r=>r.a===code||r.b===code)?.maps.map(m=>m[0]).join(', ')||'—')+'. Pick/ban and CT/T rates are not confirmed.';pool.appendChild(note);
   }
  }
  const form=document.querySelector('.form.left');
