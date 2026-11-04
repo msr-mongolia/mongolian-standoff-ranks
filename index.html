@@ -4575,6 +4575,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var source=stats||prof;
       bg=source?getComputedStyle(source).backgroundImage:'none';
       if((!bg||bg==='none')&&prof)bg=getComputedStyle(prof).backgroundImage;
+      if((!bg||bg==='none')&&stats)bg=getComputedStyle(stats).backgroundImage;
       // Every clan gets a unique visual even when it has no dedicated BACK1.
       if((!bg||bg==='none'||(!src&&!/url\(/i.test(bg)))&&clan.img){
         var crest=String(clan.img).replace(/["\\]/g,'');
@@ -4604,6 +4605,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       node.insertBefore(h('div', { class: 'ap-top' }, h('button', { type: 'button', class: 'ap-bk', 'aria-label': 'Back', svg: APIC.prev, onclick: goBack })), node.firstChild);
     }
     app.textContent = ''; app.appendChild(node);
+    if(name==='team' && node.dataset.msrBack1Team && T[node.dataset.msrBack1Team])applyAllClanPanelBack1(node,T[node.dataset.msrBack1Team]);
     syncPlayerClanAvatars(app);
     app.classList.remove('msr-clan-profile');
     app.style.removeProperty('--clan-accent');
@@ -4627,7 +4629,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
         if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
         if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
-        if(name==='team')applyAllClanPanelBack1(node,clan);
+        if(name==='team')node.dataset.msrBack1Team=clanCode;
         if(banner && clan.img && !['ETXEN','TLNRS'].includes(String(clan.tag || '').toUpperCase()) && !/^(ETXEN|TEAM LUNARIS)\b/i.test(clan.n || '')){
           banner.appendChild(h('img',{class:'msr-clan-background-logo','data-clan':clanCode,src:clan.img,alt:'','aria-hidden':'true',decoding:'async'}));
         }
