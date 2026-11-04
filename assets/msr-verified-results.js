@@ -95,9 +95,9 @@ function verifiedPlayerStats(){
 function verifiedTeamProfiles(){
  const profile=document.querySelector('.prof');if(!profile)return;
  const title=norm(profile.querySelector('h1')?.textContent||'');
- const code=title.includes('warriorkingzz')||title.includes('warkz')?'WarKz':title.includes('toexistwithpurpose')||title.includes('4zi')?'4zi':null;
+ const code=title.includes('warriorkingzz')||title.includes('warkz')?'WarKz':title.includes('toexistwithpurpose')||title.includes('4zi')?'4zi':title.includes('kingzz')?'KngZz':title.includes('impact')||title.includes('mpct')?'mpct':null;
  if(!code)return;
- const won=code==='WarKz',all={};
+ const won=results.some(r=>r.winner===code),all={};
  Object.keys(verifiedStats).forEach(map=>(verifiedStats[map][code]||[]).forEach(row=>{
   const key=norm(row[0]),x=all[key]||(all[key]={nick:row[0],k:0,d:0,a:0,maps:0,rounds:0});
   x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;x.rounds+=verifiedRounds[map]||0;
@@ -137,14 +137,14 @@ function verifiedTeamProfiles(){
    set(4,'—'); // KAST requires round-by-round participation data.
    set(5,String(msrRating(x.k,x.d,x.a,x.rounds)??'—'));
   });
-  lineup.querySelectorAll('.msr-finished-identity{display:flex;align-items:center;gap:12px;min-width:0}.msr-finished-logo{width:42px;height:42px;object-fit:contain;border-radius:7px;flex:none}.msr-finished-logo[hidden]{display:none}.msr-team-kda-note, .msr-team-verified-players').forEach(el=>el.remove());
+  lineup.querySelectorAll('.msr-team-kda-note, .msr-team-verified-players').forEach(el=>el.remove());
  }
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(pool){
   [...pool.querySelectorAll('tbody tr')].forEach(row=>{
-   const map=row.cells[0]?.textContent.trim(),m=results[0].maps.find(x=>norm(x[0])===norm(map));
+   const map=row.cells[0]?.textContent.trim(),teamMatch=results.find(r=>r.a===code||r.b===code),m=teamMatch?.maps.find(x=>norm(x[0])===norm(map));
    if(!m)return;
-   const win=won?m[1]>m[2]:m[2]>m[1];
+   const win=teamMatch.a===code?m[1]>m[2]:m[2]>m[1];
    if(row.cells[1]&&row.cells[1].textContent.trim()!=='1')row.cells[1].textContent='1';
    if(row.cells[2]&&row.cells[2].textContent.trim()!==(win?'100%':'0%'))row.cells[2].textContent=win?'100%':'0%';
   });
