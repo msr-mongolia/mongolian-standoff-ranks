@@ -73,7 +73,7 @@ function verifiedTeamProfiles(){
  if(!code)return;
  const won=code==='WarKz',all={};
  Object.keys(verifiedStats).forEach(map=>(verifiedStats[map][code]||[]).forEach(row=>{
-  const key=norm(row[0]),x=all[key]||(all[key]={nick:row[0],k:0,d:0,a:0,maps:0});
+  const key=norm(row[0]),x=all[key]||(all[key]={nick:row[0],k:0,d:0,a:0,maps:0,rounds:0});
   x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;x.rounds+=verifiedRounds[map]||0;
  }));
  const stats=document.querySelector('.msr-team-stats');
