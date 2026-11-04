@@ -1951,7 +1951,7 @@ background-color:#121923!important
 /* Every team uses its own clan artwork behind Lineup and Map Pool.
    Video BACK1 clans keep their existing video backgrounds. */
 #app.msr-clan-profile .prof-grid>.box.msr-clan-panel-back1{
-  background-image:linear-gradient(90deg,rgba(9,12,22,.78),rgba(9,12,22,.62)),var(--msr-panel-back1)!important;
+  background-image:var(--msr-panel-back1-image)!important;
   background-size:cover!important;background-position:center!important;
   background-repeat:no-repeat!important;
 }
@@ -4549,14 +4549,25 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   }
 
   function applyAllClanPanelBack1(node,clan){
-    if(!clan || !clan.img)return;
-    var isVideo=/^(?:xiverion divine|knightss|2990 white)$/i.test(clan.n||'');
-    if(isVideo)return; // Preserve existing moving BACK1 panels.
-    var src=String(clan.img);
-    if(!/^(?:assets\/|https:\/\/|data:image\/)/i.test(src))return;
+    if(!clan)return;
+    // Use the clan's actual BACK1/banner artwork, not its square profile logo.
+    var prof=node.querySelector('.prof');
+    var bannerImage=prof?getComputedStyle(prof).backgroundImage:'none';
+    var customBack1={
+      'OMV':'assets/omv_back1.svg',
+      'ETXEN':'assets/etxen_back1.png',
+      'TLNRS':'assets/lunaris_back1.png'
+    };
+    var code=String(clan.tag||'').toUpperCase();
+    var src=customBack1[code]||'';
+    var bg=src?'linear-gradient(90deg,rgba(9,12,22,.68),rgba(9,12,22,.50)),url("'+src+'")':
+      bannerImage&&bannerImage!=='none'?bannerImage:
+      clan.img?'linear-gradient(90deg,rgba(9,12,22,.78),rgba(9,12,22,.62)),url("'+String(clan.img).replace(/["\\]/g,'')+'")':'';
+    if(!bg)return;
     node.querySelectorAll('.prof-grid > .box').forEach(function(panel){
+      if(panel.classList.contains('msr-knight-video-panel'))return;
       panel.classList.add('msr-clan-panel-back1');
-      panel.style.setProperty('--msr-panel-back1','url("'+src.replace(/["\\]/g,'')+'")');
+      panel.style.setProperty('--msr-panel-back1-image',bg);
     });
   }
 
