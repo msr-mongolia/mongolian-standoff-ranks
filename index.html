@@ -5578,11 +5578,36 @@ function verifiedResultsDetail(){
 function apply(){verifiedResultsDetail();verifiedTeamProfiles();verifiedMainStandings();verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
   const group=(section.querySelector('.msr-zone-title h2')?.textContent||'').match(/GROUP\s+([A-F])/i)?.[1];
+  // Staff-confirmed screenshot: the scheduled DL340 vs Six Lence card is already
+  // present in Group E. Convert THAT card to final rather than posting a duplicate.
+  if(group==='E'){
+    const existing=[...section.querySelectorAll('.msr-rr-match')].find(card=>{
+      const labels=[...card.querySelectorAll('.msr-rr-team')].map(x=>x.textContent.replace(/\\s+/g,' ').toLowerCase());
+      return labels.length===2&&labels.some(x=>x.includes('dl340')&&x.includes('different level'))&&labels.some(x=>x.includes('6lc')&&x.includes('six lence')&&!x.includes('purple'));
+    });
+    if(existing){
+      existing.dataset.msrVerified='1';
+      existing.classList.add('msr-verified-result');
+      const versus=existing.querySelector('.msr-rr-versus');if(versus)versus.textContent='0 – 2';
+      const status=existing.querySelector('.msr-rr-status');if(status)status.textContent='FINAL · 6LC WIN';
+      existing.querySelectorAll('.msr-rr-team').forEach(team=>{
+        const isWinner=/six lence/i.test(team.textContent)&&!/purple/i.test(team.textContent);
+        team.classList.toggle('msr-match-winner',isWinner);
+        team.classList.toggle('msr-match-loser',!isWinner);
+      });
+      existing.querySelectorAll('.msr-rel-details').forEach(x=>x.remove());
+      const details=document.createElement('div');details.className='msr-rel-details';
+      ['Dune · DL340 10–13 6LC','Province · DL340 7–13 6LC','Round difference · DL340 −9 / 6LC +9'].forEach(line=>{
+        const el=document.createElement('span');el.textContent=line;details.appendChild(el);
+      });existing.appendChild(details);
+      section.querySelector('[data-msr-finished-group-e="6lc-dl340"]')?.remove();
+    }
+  }
   // Group E must show the completed 6LC–DL340 game even if its scheduled card
   // was omitted from the original round-robin fixture list.
   if(group==='E'){
    const match=results.find(r=>r.group==='E'&&r.a==='6LC'&&r.b==='DL340');
-   if(match&&!section.querySelector('[data-msr-finished-group-e="6lc-dl340"]')){
+   if(match&&!section.querySelector('[data-msr-finished-group-e="6lc-dl340"]')&&!section.querySelector('.msr-rr-match[data-msr-verified="1"] .msr-rr-status')){
     const panel=document.createElement('div');
     panel.dataset.msrFinishedGroupE='6lc-dl340';
     panel.className='msr-verified-standings msr-verified-result';
