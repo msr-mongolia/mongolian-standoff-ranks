@@ -9,27 +9,31 @@ Sandstone:{WarKz:[['БАТИЛО Prime',22,12,4],['softsyko',23,17,3],['wu °',1
 };
 const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1}};
 function verifiedMainStandings(){
- const summary=document.querySelector('.msr-rr-summary');if(!summary)return;
- const group=summary.querySelector('.msr-rr-summary-head em')?.textContent?.trim();
- if(group!=='C')return;
+ const summary=document.querySelector('.msr-rr-summary');
+ if(!summary||summary.querySelector('.msr-rr-summary-head em')?.textContent?.trim()!=='C')return;
  const body=summary.querySelector('.msr-rr-table tbody');if(!body)return;
- const rows=[...body.querySelectorAll('tr')];
+ const rows=[...body.rows];
+ const normName=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
  let changed=false;
- rows.forEach(row=>{
-  const name=norm(row.querySelector('.msr-rr-standing-team')?.textContent||row.cells[1]?.textContent||'');
-  const isWar=name==='warriorkingzz'||name==='warkz';
-  const isFour=name==='toexistwithpurpose'||name==='4zi';
-  if(!isWar&&!isFour)return;
-  const values=isWar?[1,1,0,1,3]:[1,0,1,-1,0];
-  for(let i=0;i<5;i++){const cell=row.cells[i+2];if(cell)cell.textContent=String(values[i]);}
-  row.classList.add(isWar?'msr-standings-win':'msr-standings-loss');
-  row.dataset.msrStandingScore=isWar?'3':'0';
-  changed=true;
- });
- if(changed){
-  rows.sort((a,b)=>Number(b.dataset.msrStandingScore||0)-Number(a.dataset.msrStandingScore||0));
-  rows.forEach((row,i)=>{body.appendChild(row);if(row.cells[0])row.cells[0].textContent=String(i+1);});
+ for(const row of rows){
+  const name=normName(row.cells[1]?.textContent);
+  const win=name==='warriorkingzz'||name==='warkz',lose=name==='toexistwithpurpose'||name==='4zi';
+  if(!win&&!lose)continue;
+  const values=win?[1,1,0,1,3]:[1,0,1,-1,0];
+  for(let i=0;i<5;i++){const cell=row.cells[i+2];if(cell&&cell.textContent.trim()!==String(values[i])){cell.textContent=String(values[i]);changed=true;}}
+  const className=win?'msr-standings-win':'msr-standings-loss';
+  if(!row.classList.contains(className)){row.classList.add(className);changed=true;}
  }
+ const sorted=rows.slice().sort((a,b)=>{
+  const points=row=>Number(row.cells[6]?.textContent.trim()||0);
+  const p=points(b)-points(a);if(p)return p;
+  const w=row=>Number(row.cells[3]?.textContent.trim()||0);
+  return w(b)-w(a);
+ });
+ sorted.forEach((row,i)=>{
+  if(body.rows[i]!==row){body.insertBefore(row,body.rows[i]||null);changed=true;}
+  if(row.cells[0]&&row.cells[0].textContent!==String(i+1)){row.cells[0].textContent=String(i+1);changed=true;}
+ });
 }
 function verifiedGroupExtras(){
  const group=document.querySelector('.msr-rr-card .msr-zone-title h2');
