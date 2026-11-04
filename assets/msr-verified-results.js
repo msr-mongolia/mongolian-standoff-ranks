@@ -96,6 +96,10 @@ function verifiedTeamProfiles(){
    if(!x)return;
    const set=(i,v)=>{if(row.cells[i]&&row.cells[i].textContent!==v)row.cells[i].textContent=v;};
    set(1,String(x.maps));set(2,(x.k/Math.max(1,x.d)).toFixed(2));
+   row.title='All verified maps · '+x.k+' kills / '+x.d+' deaths / '+x.a+' assists';
+   let totals=row.querySelector('.msr-total-kills');
+   if(!totals){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:nowrap';row.cells[2]?.appendChild(totals);}
+   if(totals)totals.textContent=x.k+' K / '+x.d+' D / '+x.a+' A';
    // Do not invent ADR, KAST or rating from kills/deaths alone.
    [3,4,5].forEach(i=>set(i,'—'));
   });
