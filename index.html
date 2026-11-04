@@ -4641,7 +4641,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       applyAllClanPanelBack1(node,back1Clan);
       var back1Code=String(back1Clan.tag||'').toUpperCase();
       var back1Asset=back1Code==='KGTSS'||/^knightss$/i.test(back1Clan.n||'')?'assets/kgtss_back1_video.json?v=smooth-loop-1':
-        back1Code==='W2990'||/^2990\\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':null;
+        back1Code==='W2990'||/^2990\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':null;
       if(back1Asset && msrClanVideoPromises[back1Asset]){
         msrClanVideoPromises[back1Asset].then(function(){
           if(node.isConnected)applyAllClanPanelBack1(node,back1Clan);
