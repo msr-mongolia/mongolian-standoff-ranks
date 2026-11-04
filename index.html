@@ -3794,7 +3794,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"
     var id=String(map||'').trim().toLowerCase();
     var photo=MSR_MAP_PHOTOS[id];
     return h('div',{class:'msr-rel-map-photo',style:photo?'background-image:linear-gradient(0deg,rgba(5,10,19,.82),rgba(5,10,19,.14)),'+photo:null},
-      h('small',{style:'font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block'},label),h('b',{style:'display:block;font-size:clamp(12px,3.2vw,19px);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal;overflow-wrap:normal;max-width:100%;letter-spacing:-.02em'},map||'TBA'));
+      h('small',{style:'font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block'},label),h('b',{style:'display:block;font-size:clamp(12px,3.2vw,19px);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal;overflow-wrap:normal;max-width:100%;letter-spacing:-.02em'},map||'Not announced yet'));
   }
   function msrRelMatchCard(row){
     function team(name){
@@ -3805,10 +3805,10 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"
     var time=row.time_label||'';
     return h('article',{class:'box msr-rel-match','aria-label':row.team_a+' vs '+row.team_b},
       h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · UPCOMING'),
-        h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):'Time · TBA')),
+        h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):'Time · Not announced yet')),
       h('div',{class:'msr-rel-match-teams'},team(row.team_a),h('b',{class:'msr-rel-match-vs'},'VS'),team(row.team_b)),
-      h('div',{class:'msr-rel-match-maps'},(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}),
-        msrRelMapCard('Decider',row.decider)));
+      h('div',{class:'msr-rel-match-maps'},(row.picks||[]).length?(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Map picks','Not announced yet')],
+        msrRelMapCard('Decider',row.decider||'Not announced yet')));
   }
 
   V.matches = function () {
@@ -4433,7 +4433,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"
         strip.appendChild(h('button', { type: 'button', class: 'ap-day' + (n === APM.sel ? ' on' : ''), onclick: function () { APM.sel = n; draw(); } }, h('b', null, ('0' + (n % 100)).slice(-2)), h('span', null, n === TODAY ? 'Today' : wd)));
       });
       strip.appendChild(h('button', { type: 'button', class: 'ap-arrow', 'aria-label': 'Later', svg: APIC.next, onclick: function () { APM.sel = addDays(APM.sel, 1); draw(); } }));
-      var relList=(YEAR===2026&&APM.sel===1104?msrRelUpcoming():[]).filter(function(row){
+      var relList=(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110?msrRelUpcoming():[]).filter(function(row){
         return !APM.fav||isFav(msrRelTeamKey(row.team_a))||isFav(msrRelTeamKey(row.team_b));
       });
       if(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110){
@@ -4452,7 +4452,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"
           if(APM.mslGroup){
             var selected=relList.filter(function(row){return msrRelGroup(row)===APM.mslGroup;});
             groupPanel.appendChild(h('h2',{class:'msr-rel-group-heading'},'Group '+APM.mslGroup));
-            groupPanel.appendChild(selected.length?h('div',{class:'msr-rel-match-list'},selected.map(msrRelMatchCard)):h('div',{class:'ap-empty'},'No confirmed match details for this group on this day.'));
+            groupPanel.appendChild(selected.length?h('div',{class:'msr-rel-match-list'},selected.map(msrRelMatchCard)):h('div',{class:'ap-empty'},'No match schedule has been published for this group yet.'));
           }
           mslPanel.appendChild(groupPanel);
         }
