@@ -102,10 +102,10 @@ function verifiedTeamProfiles(){
    const tooltip='All verified maps · '+x.k+' kills / '+x.d+' deaths / '+x.a+' assists';
    if(row.title!==tooltip)row.title=tooltip;
    let totals=row.cells[0]?.querySelector('.msr-total-kills');
-   if(!totals&&row.cells[0]){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:nowrap';row.cells[0].appendChild(totals);}
+   if(!totals&&row.cells[0]){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:normal;overflow-wrap:anywhere;line-height:1.4;max-width:190px';row.cells[0].appendChild(totals);}
    const pct=(v)=>x.rounds?(100*v/x.rounds).toFixed(1)+'%':'—';
    const roundsPerAssist=x.a?(x.rounds/x.a).toFixed(2):'—';
-   const totalLabel=x.k+' K / '+x.d+' D / '+x.a+' A · Kill '+pct(x.k)+' · Rounds/Assist '+roundsPerAssist+' ('+x.rounds+' rounds)';
+   const totalLabel=x.k+' K · '+x.d+' D · '+x.a+' A · '+x.rounds+' R · R/A '+roundsPerAssist;
    if(totals&&totals.textContent!==totalLabel)totals.textContent=totalLabel;
    set(3,String(estimatedAdr(x.k,x.a,x.rounds)??'—'));
    [4,5].forEach(i=>set(i,'—'));
