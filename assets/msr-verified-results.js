@@ -173,7 +173,7 @@ function verifiedResultsDetail(){
   // Reuse an existing clan BACK1 image when one is exposed by the site.
   const source=document.querySelector('[data-team="'+name+'"][data-back1], [data-clan="'+name+'"][data-back1]');
   const url=source?.getAttribute('data-back1');
-  if(url&&/^(assets\\/|https?:\\/\\/)/.test(url))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.75),rgba(6,12,23,.42)),url("'+url.replace(/"/g,'%22')+'")';
+  if(url&&(url.startsWith('assets/')||url.startsWith('https://')||url.startsWith('http://')))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.75),rgba(6,12,23,.42)),url("'+url.replace(/"/g,'%22')+'")';
   const nameEl=document.createElement('strong');nameEl.textContent=name;side.appendChild(nameEl);
   const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);
  });section.appendChild(card);
