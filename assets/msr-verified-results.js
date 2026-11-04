@@ -188,7 +188,7 @@ function updateFinishedClanMedia(side){
 function verifiedResultsDetail(){
  if(!location.hash.startsWith('#results'))return;
  const app=document.getElementById('app');if(!app||app.querySelector('.msr-finished-detail'))return;
- const heading=[...app.querySelectorAll('h1')].find(e=>e.textContent.trim()==='Results');if(!heading)return;
+ const heading=[...app.querySelectorAll('h1,h2')].find(e=>e.textContent.trim()==='Results');if(!heading)return;
  const section=document.createElement('section');section.className='msr-finished-detail';
  results.forEach((match,matchIndex)=>{
  const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+match.a+' '+match.score+' '+match.b;section.appendChild(title);
@@ -228,10 +228,11 @@ function verifiedResultsDetail(){
    table.appendChild(body);group.appendChild(table);grid.appendChild(group);
   });details.appendChild(grid);section.appendChild(details);
  });
- const filters=app.querySelector('.results-filter-shell');
- if(filters?.parentElement)filters.parentElement.insertBefore(section,filters);
- else heading.closest('.page-head')?.after(section);
  });
+ // Mount once after all match cards are built, independent of the filter markup.
+ const filters=app.querySelector('.results-filter-shell,.flt');
+ if(filters?.parentElement)filters.parentElement.insertBefore(section,filters);
+ else heading.parentElement?.after(section);
 }
 function apply(){verifiedResultsDetail();verifiedTeamProfiles();verifiedMainStandings();verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
