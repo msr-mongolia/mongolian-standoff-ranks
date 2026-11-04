@@ -4113,7 +4113,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
   function openLunarisGoldSticker(){openTeamGoldSticker('TLNRS');}
   function isXvrnDivine(code){return /^xiverion divine$/i.test((T[code]||{}).n||'');}
-  function teamGoldStickerSrc(code){return isXvrnDivine(code)?'assets/xvrn_gold_sticker.svg?v=2':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':'assets/lunaris_gold_sticker.png';}
+  function teamGoldStickerSrc(code){return isXvrnDivine(code)?'assets/xvrn_gold_sticker.png?v=1':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':'assets/lunaris_gold_sticker.png';}
   function isOmvTeam(code){return code==='DS_02454733FB68AAB2875350A0'||/^omnis\s+over$/i.test((T[code]||{}).n||'');}
   // Golden stickers must contain only the gold cutout with transparent alpha; never add a background.
   function openTeamGoldSticker(code){
