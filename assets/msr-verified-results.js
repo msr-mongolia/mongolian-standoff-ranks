@@ -58,16 +58,38 @@ function verifiedGroupExtras(){
 function verifiedPlayerStats(){
  const match=decodeURIComponent(location.hash||'').match(/^#player\/([^/]+)(?:\/([^/]+))?/);
  if(!match)return;
- const nick=norm(match[1]),team=norm(match[2]||'');
- if(team && !['warkz','4zi'].includes(team))return;
- const all=[];
- Object.keys(verifiedStats).forEach(map=>Object.keys(verifiedStats[map]).forEach(code=>verifiedStats[map][code].forEach(row=>{if(norm(row[0])===nick)all.push({map,code,k:row[1],d:row[2],a:row[3]});})));
- if(!all.length)return;
- const host=document.querySelector('.hl-head');if(!host||host.querySelector('.msr-verified-player-stats'))return;
- const k=all.reduce((v,x)=>v+x.k,0),d=all.reduce((v,x)=>v+x.d,0),a=all.reduce((v,x)=>v+x.a,0);
- const el=document.createElement('div');el.className='msr-verified-player-stats';
- el.innerHTML='<strong>MSL S2 · VERIFIED STATS</strong><div>Maps: '+all.length+' · Kills: '+k+' · Deaths: '+d+' · Assists: '+a+' · K/D: '+(k/Math.max(1,d)).toFixed(2)+'</div><small>Based on screenshots; ADR and KAST unavailable.</small>';
- host.appendChild(el);
+ const header=document.querySelector('.hl-head');
+ if(!header)return;
+ const rawNick=norm(match[1]), visibleNick=norm(header.querySelector('.hl-top h1')?.textContent||'');
+ const teamLabel=norm(header.querySelector('.hl-list')?.textContent||'');
+ const teamArg=norm(match[2]||'');
+ const team=teamArg==='4zi'||teamArg==='toexistwithpurpose'||teamLabel.includes('toexistwithpurpose')?'4zi':
+   teamArg==='warkz'||teamArg==='warriorkingzz'||teamLabel.includes('warriorkingzz')?'WarKz':null;
+ if(!team)return;
+ const aliases=team==='4zi'?{'hiro':'venn'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
+ const name=aliases[rawNick]||aliases[visibleNick]||rawNick;
+ const rows=[];
+ Object.keys(verifiedStats).forEach(map=>(verifiedStats[map][team]||[]).forEach(item=>{
+  if(norm(item[0])===norm(name)||norm(item[0])===visibleNick)rows.push({map,k:item[1],d:item[2],a:item[3]});
+ }));
+ if(!rows.length)return;
+ const k=rows.reduce((n,x)=>n+x.k,0),d=rows.reduce((n,x)=>n+x.d,0),a=rows.reduce((n,x)=>n+x.a,0);
+ const rounds=rows.reduce((n,x)=>n+(verifiedRounds[x.map]||0),0);
+ const values={'Rating':msrRating(k,d,a,rounds),'K/D':(k/Math.max(1,d)).toFixed(2),
+  'ADR':String(estimatedAdr(k,a,rounds)??'—'),'Kills / round':rounds?(k/rounds).toFixed(2):'—',
+  'Deaths / round':rounds?(d/rounds).toFixed(2):'—','Maps played':String(rows.length)};
+ const tiles=[...header.querySelectorAll('.msr-stat-tile')];
+ tiles.forEach(tile=>{
+  const label=tile.querySelector('.k')?.textContent.trim();
+  const value=values[label],target=tile.querySelector('.v');
+  if(value!=null&&target&&target.textContent!==String(value))target.textContent=String(value);
+  if(label==='Rating')tile.title='MSR-calculated rating from verified kills, deaths, assists and rounds';
+  if(label==='ADR')tile.title='Estimated ADR from kills, assists and rounds; not recorded damage';
+ });
+ let note=header.querySelector('.msr-verified-player-stats');
+ if(!note){note=document.createElement('div');note.className='msr-verified-player-stats';header.after(note);}
+ const content='MSL S2 · '+rows.length+' maps · '+rounds+' rounds · '+k+' kills · '+d+' deaths · '+a+' assists · R/A '+(a?(rounds/a).toFixed(2):'—')+' · Estimated ADR and MSR Rating. KAST unavailable.';
+ if(note.textContent!==content)note.textContent=content;
 }
 function verifiedTeamProfiles(){
  const profile=document.querySelector('.prof');if(!profile)return;
