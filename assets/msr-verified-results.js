@@ -212,7 +212,7 @@ function verifiedResultsDetail(){
   const candidates=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')];
   const matching=candidates.find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&norm(v)===norm(name)));
   const back1=matching?.dataset.back1||matching?.dataset.teamBack1||matching?.dataset.clanBack1;
-  if(back1&&/^(https?:\\/\\/|assets\\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
+  if(back1&&/^(https?:\/\/|assets\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
   const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);updateFinishedClanMedia(side);
  });section.appendChild(card);
  match.maps.forEach(([map,a,b])=>{
