@@ -8,6 +8,9 @@ Province:{WarKz:[['wu °',24,15,2],['softsyko',14,16,3],['УЙЛАНХАЙТ',14
 Sandstone:{WarKz:[['БАТИЛО Prime',22,12,4],['softsyko',23,17,3],['wu °',19,17,4],['Petisha',13,18,3],['УЙЛАНХАЙТ',8,18,3]],'4zi':[['Careley',22,16,3],['RASEL',20,17,3],['art_shisu',14,16,5],['Venn',14,18,0],['FasouXI.666',11,18,3]]}
 };
 const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1}};
+// Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
+const verifiedRounds={Rust:24,Province:20,Sandstone:23};
+const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
 function verifiedMainStandings(){
  const summary=document.querySelector('.msr-rr-summary');
  if(!summary||summary.querySelector('.msr-rr-summary-head em')?.textContent?.trim()!=='C')return;
@@ -43,7 +46,7 @@ function verifiedGroupExtras(){
   const panel=document.createElement('div');panel.className='msr-verified-standings';
   panel.innerHTML='<strong>GROUP C · CONFIRMED RESULTS</strong><div>WarKz · MP 1 · W 1 · L 0 · RD +1 · PTS 3 · ELO 66 (+16)</div><div>4zi · MP 1 · W 0 · L 1 · RD −1 · PTS 0 · ELO 32 (−18)</div><small>Other Group C matches are pending. Points: 3 per match win. ELO calculated from MSR v2 match formula; initial 50.</small>';
   section.querySelector('.msr-zone-note')?.after(panel);
-  const all={};Object.keys(verifiedStats).forEach(map=>Object.keys(verifiedStats[map]).forEach(code=>verifiedStats[map][code].forEach(row=>{const key=code+'|'+norm(row[0]);const x=all[key]||(all[key]={code,nick:row[0],k:0,d:0,a:0,maps:0});x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;})));
+  const all={};Object.keys(verifiedStats).forEach(map=>Object.keys(verifiedStats[map]).forEach(code=>verifiedStats[map][code].forEach(row=>{const key=code+'|'+norm(row[0]);const x=all[key]||(all[key]={code,nick:row[0],k:0,d:0,a:0,maps:0,rounds:0});x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;x.rounds+=verifiedRounds[map]||0;})));
   const table=document.createElement('details');table.className='msr-verified-standings';const summary=document.createElement('summary');summary.textContent='VERIFIED PLAYER K/D · WarKz vs 4zi (3 maps)';table.appendChild(summary);
   const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px';
   ['WarKz','4zi'].forEach(code=>{const pane=document.createElement('div');const title=document.createElement('strong');title.textContent=code;pane.appendChild(title);Object.values(all).filter(x=>x.code===code).sort((a,b)=>b.k-a.k).forEach(x=>{const line=document.createElement('div');line.textContent=x.nick+' · '+x.k+'K / '+x.d+'D / '+x.a+'A · KD '+(x.k/Math.max(1,x.d)).toFixed(2)+' · '+x.maps+' maps';pane.appendChild(line);});grid.appendChild(pane);});table.appendChild(grid);panel.after(table);
@@ -71,7 +74,7 @@ function verifiedTeamProfiles(){
  const won=code==='WarKz',all={};
  Object.keys(verifiedStats).forEach(map=>(verifiedStats[map][code]||[]).forEach(row=>{
   const key=norm(row[0]),x=all[key]||(all[key]={nick:row[0],k:0,d:0,a:0,maps:0});
-  x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;
+  x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;x.rounds+=verifiedRounds[map]||0;
  }));
  const stats=document.querySelector('.msr-team-stats');
  if(stats){
@@ -102,11 +105,11 @@ function verifiedTeamProfiles(){
    if(!totals&&row.cells[0]){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:nowrap';row.cells[0].appendChild(totals);}
    const totalLabel=x.k+' K / '+x.d+' D / '+x.a+' A';
    if(totals&&totals.textContent!==totalLabel)totals.textContent=totalLabel;
-   // Do not invent ADR, KAST or rating from kills/deaths alone.
-   [3,4,5].forEach(i=>set(i,'—'));
+   set(3,String(estimatedAdr(x.k,x.a,x.rounds)??'—'));
+   [4,5].forEach(i=>set(i,'—'));
   });
   if(!lineup.querySelector('.msr-team-kda-note')){
-   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR, KAST and Rating not supplied.';lineup.appendChild(note);
+   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR estimated from kills, assists and rounds; KAST and Rating not supplied.';lineup.appendChild(note);
   }
   if(!lineup.querySelector('.msr-team-verified-players')){
    const details=document.createElement('details');details.className='msr-team-verified-players';
