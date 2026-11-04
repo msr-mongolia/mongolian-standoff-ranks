@@ -14,6 +14,8 @@ const additionalMatchStats={
 const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1},KngZz:{before:50,after:85,change:35,w:1,l:0},mpct:{before:50,after:15,change:-35,w:0,l:1}};
 // Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
 const verifiedRounds={Rust:24,Province:20,Sandstone:23};
+const matchRounds={KngZz:{Dune:15,Rust:20},mpct:{Dune:15,Rust:20}};
+function verifiedPlayerRows(team){const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;return Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));}
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
 // MSR custom rating (not an official Standoff 2 rating). 1.00 represents
 // approximately one kill per round, 0.7 deaths per round and 0.2 assists per round.
@@ -68,17 +70,17 @@ function verifiedPlayerStats(){
  const teamLabel=norm(header.querySelector('.hl-list')?.textContent||'');
  const teamArg=norm(match[2]||'');
  const team=teamArg==='4zi'||teamArg==='toexistwithpurpose'||teamLabel.includes('toexistwithpurpose')?'4zi':
-   teamArg==='warkz'||teamArg==='warriorkingzz'||teamLabel.includes('warriorkingzz')?'WarKz':null;
+   teamArg==='warkz'||teamArg==='warriorkingzz'||teamLabel.includes('warriorkingzz')?'WarKz':
+   teamArg==='kngzz'||teamArg==='kingzz'||teamLabel.includes('kingzz')?'KngZz':
+   teamArg==='mpct'||teamArg==='imp4ct'||teamLabel.includes('imp4ct')?'mpct':null;
  if(!team)return;
  const aliases=team==='4zi'?{'hiro':'venn'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
  const name=aliases[rawNick]||aliases[visibleNick]||rawNick;
  const rows=[];
- Object.keys(verifiedStats).forEach(map=>(verifiedStats[map][team]||[]).forEach(item=>{
-  if(norm(item[0])===norm(name)||norm(item[0])===visibleNick)rows.push({map,k:item[1],d:item[2],a:item[3]});
- }));
+ verifiedPlayerRows(team).forEach(item=>{if(norm(item.nick)===norm(name)||norm(item.nick)===visibleNick)rows.push(item);});
  if(!rows.length)return;
  const k=rows.reduce((n,x)=>n+x.k,0),d=rows.reduce((n,x)=>n+x.d,0),a=rows.reduce((n,x)=>n+x.a,0);
- const rounds=rows.reduce((n,x)=>n+(verifiedRounds[x.map]||0),0);
+ const rounds=rows.reduce((n,x)=>n+x.rounds,0);
  const values={'Rating':msrRating(k,d,a,rounds),'K/D':(k/Math.max(1,d)).toFixed(2),
   'ADR':String(estimatedAdr(k,a,rounds)??'—'),'Kills / round':rounds?(k/rounds).toFixed(2):'—',
   'Deaths / round':rounds?(d/rounds).toFixed(2):'—','Maps played':String(rows.length)};
@@ -98,10 +100,10 @@ function verifiedTeamProfiles(){
  const code=title.includes('warriorkingzz')||title.includes('warkz')?'WarKz':title.includes('toexistwithpurpose')||title.includes('4zi')?'4zi':title.includes('kingzz')?'KngZz':title.includes('impact')||title.includes('mpct')?'mpct':null;
  if(!code)return;
  const won=results.some(r=>r.winner===code),all={};
- Object.keys(verifiedStats).forEach(map=>(verifiedStats[map][code]||[]).forEach(row=>{
-  const key=norm(row[0]),x=all[key]||(all[key]={nick:row[0],k:0,d:0,a:0,maps:0,rounds:0});
-  x.k+=row[1];x.d+=row[2];x.a+=row[3];x.maps++;x.rounds+=verifiedRounds[map]||0;
- }));
+ verifiedPlayerRows(code).forEach(row=>{
+  const key=norm(row.nick),x=all[key]||(all[key]={nick:row.nick,k:0,d:0,a:0,maps:0,rounds:0});
+  x.k+=row.k;x.d+=row.d;x.a+=row.a;x.maps++;x.rounds+=row.rounds;
+ });
  const stats=document.querySelector('.msr-team-stats');
  if(stats){
   const tiles=[...stats.querySelectorAll('.msr-team-stat-grid > *')];
