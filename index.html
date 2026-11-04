@@ -5440,9 +5440,9 @@ function updateFinishedClanMedia(side){
  if(back1&&/^(https?:\/\/|assets\/)/i.test(back1)){side.dataset.hasBack1='true';side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';}
 }
 function verifiedResultsDetail(){
- if(!location.hash.startsWith('#results'))return;
+ if(!/^#results(?:\/|$)/i.test(location.hash))return;
  const app=document.getElementById('app');if(!app||app.querySelector('.msr-finished-detail'))return;
- const heading=[...app.querySelectorAll('h1,h2')].find(e=>e.textContent.trim()==='Results');if(!heading)return;
+ const heading=[...app.querySelectorAll('h1,h2')].find(e=>/results/i.test(e.textContent.trim()))||app.querySelector('h1,h2')||app;
  const section=document.createElement('section');section.className='msr-finished-detail';
  results.forEach((match,matchIndex)=>{
  const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+match.a+' '+match.score+' '+match.b;section.appendChild(title);
