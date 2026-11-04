@@ -2745,9 +2745,25 @@ window.MSR_SCREENSHOT_MATCHES=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"Dune","aS
     });
   })();
   V.news = function () {
+    var mobileUpdate = NEWS.filter(function(n){return n.id===20261105})[0];
     var guide = NEWS.filter(function(n){return n.id==='msr-login-guide'})[0];
     var vip = NEWS.filter(function(n){return n.id===20261103})[0];
     return h('div', { class: 'msr-post-feed' },
+      mobileUpdate ? h('article', { class:'msr-about-post' },
+        h('header', { class:'msr-post-author' },
+          h('div', { class:'msr-post-avatar', 'aria-hidden':'true' }, 'MSR'),
+          h('div', { class:'msr-post-author-text' },
+            h('strong', null, 'Mongolian Standoff Ranks'),
+            h('span', null, 'Сайтын шинэчлэлт · '+mobileUpdate.t+' · Public')
+          )
+        ),
+        h('div', { class:'msr-post-copy' },
+          h('h1', null, mobileUpdate.h),
+          h('p', null, mobileUpdate.lead),
+          mobileUpdate.body.map(function(p){return h('p', null, p)}),
+          h('p', null, h('a', {href:'#article/20261105',class:'msr-shop-contact'},'Мэдээг нээх →'))
+        )
+      ) : null,
       vip ? h('article', { class:'msr-about-post' },
         h('header', { class:'msr-post-author' },
           h('div', { class:'msr-post-avatar', 'aria-hidden':'true' }, 'MSR'),
@@ -3562,6 +3578,12 @@ window.MSR_SCREENSHOT_MATCHES=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"Dune","aS
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
+      { id: 20261105, g: 'MSR NEWS', t: '11-р сарын 5', c: 0, h: 'MSR — Утасны гацалтыг багасгах шинэчлэлт', lead: 'Гар утсаар сайт руу орж, доош гүйлгэх үеийн ажиллагааг сайжруулах эхний шинэчлэлтийг хийлээ.', body: [
+        'Утасны дэлгэцэнд харагдахгүй зарим хэсгийг шаардлагагүй үед зурахгүй болгож, жижиг давтагддаг хөдөлгөөнүүдийг багасгалаа.',
+        'Ингэснээр гар утсаар доош гүйлгэх үеийн гацалт багассан. Багуудын ELO, тоглогчдын KD, roster болон тоглолтын үр дүн өөрчлөгдөөгүй.',
+        'Цаашид гар утасны хурд, тогтвортой ажиллагааг сайжруулах ажлыг үргэлжлүүлнэ.',
+        'Сайттай холбоотой асуудал гарвал MSR админтай Discord-оор холбогдоорой: https://discord.com/users/1128188613230874727'
+      ] },
       { id: 20261103, g: 'MSR NEWS', t: '11-р сарын 3', c: 1, h: 'MSR VIP CLAN — Үнэ, давуу тал, ELO дүрэм', lead: 'VIP CLAN 30 хоногийн эрх: эхний сар 5,000₮, цаашид 10,000₮. VIP дуусвал 300-аас дээш ELO өсөхгүй, хожигдвол хасагдана.',
         body: [
           'MSR VIP CLAN нь Mongolian Standoff Ranks системд бүртгэлтэй багуудад зориулсан нэмэлт эрх юм.',
