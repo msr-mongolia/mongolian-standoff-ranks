@@ -5068,7 +5068,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   }
   // Keep verified match ELO in the actual MSR Ranking, not a separate table.
   function applyVerifiedTeamEloToRank(){
-    var adjustments=[{tag:'DXIII',points:79,change:29,w:1,l:0},{tag:'TLnrs',points:24,change:-26,w:0,l:1},{tag:'1NFYx',points:78,change:28,w:1,l:0},{tag:'8MNA',points:24,change:-26,w:0,l:1},{tag:'DRDRX',points:76,change:26,w:1,l:0},{tag:'6LC',points:25,change:-25,w:0,l:1}];
+    var adjustments=[{tag:'DXIII',points:79,change:29,w:1,l:0},{tag:'TLnrs',points:24,change:-26,w:0,l:1},{tag:'1NFYx',points:74,change:24,w:1,l:0},{tag:'8MNA',points:27,change:-23,w:0,l:1},{tag:'DRDRX',points:72,change:22,w:1,l:0},{tag:'6LC',points:29,change:-21,w:0,l:1}];
     adjustments.forEach(function(item){
       var match=Object.keys(T).find(function(code){
         var team=T[code]||{};
