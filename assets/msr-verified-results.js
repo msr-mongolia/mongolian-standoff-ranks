@@ -223,7 +223,9 @@ function verifiedResultsDetail(){
   const scoreLabel=document.createElement('span');scoreLabel.textContent=match.a+' '+a+' – '+b+' '+match.b;summary.appendChild(scoreLabel);
   details.appendChild(summary);
   const matchingMap=[...document.querySelectorAll('.msr-rel-map-photo,.msr-map-pool-photo')].find(el=>el.textContent.toLowerCase().includes(map.toLowerCase()));
-  if(matchingMap){const bg=getComputedStyle(matchingMap).backgroundImage;if(bg&&bg!=='none')summary.style.backgroundImage='linear-gradient(0deg,rgba(6,12,23,.86),rgba(6,12,23,.14)), '+bg;}
+  const mapArt=window.MSR_MAPART?.[map];
+  if(mapArt){summary.style.backgroundImage='linear-gradient(0deg,rgba(6,12,23,.88),rgba(6,12,23,.12)), '+mapArt;}
+  else if(matchingMap){const bg=getComputedStyle(matchingMap).backgroundImage;if(bg&&bg!=='none')summary.style.backgroundImage='linear-gradient(0deg,rgba(6,12,23,.86),rgba(6,12,23,.14)), '+bg;}
   const grid=document.createElement('div');grid.className='msr-finished-stats';
   [match.a,match.b].forEach(team=>{
    const group=document.createElement('div');const h=document.createElement('h3');h.textContent=team;group.appendChild(h);
