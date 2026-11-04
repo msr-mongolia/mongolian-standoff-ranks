@@ -4575,7 +4575,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     if(!bg)return;
     node.querySelectorAll('.prof-grid > .box').forEach(function(panel){
       var header=panel.querySelector(':scope > .panel-h');
-      if(!header || !/^map pool$/i.test((header.querySelector('h2')||{}).textContent||''))return;
+      if(!header || !/^(map pool|lineup)$/i.test((header.querySelector('h2')||{}).textContent||''))return;
       panel.classList.add('msr-clan-panel-header-back1');
       header.style.setProperty('background-image',bg,'important');
       header.style.setProperty('background-size','cover','important');
