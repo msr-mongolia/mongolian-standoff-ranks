@@ -5032,8 +5032,25 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var match={id:matchId,a:item.a,b:item.b,ev:'MSL Major S2',st:'Group '+(i===1?'E':'stage')+' · Bo3',state:'done',day:'Today',date:TODAY,bo:3,maps:item.maps};
       ALLM.push(match);MBY[match.id]=match;
     });
-    RANK.sort(function (a,b) { return b[1]-a[1]; });
+    applyVerifiedTeamEloToRank();
   }
+  // Keep verified match ELO in the actual MSR Ranking, not a separate table.
+  function applyVerifiedTeamEloToRank(){
+    var adjustments=[{tag:'DXIII',points:79,change:29,w:1,l:0},{tag:'TLnrs',points:24,change:-26,w:0,l:1}];
+    adjustments.forEach(function(item){
+      var match=Object.keys(T).find(function(code){
+        var team=T[code]||{};
+        return String(team.tag||'').toLowerCase()===item.tag.toLowerCase()||
+          String(team.n||'').toLowerCase()===(item.tag==='TLnrs'?'team lunaris':'dxiii');
+      });
+      if(!match)return;
+      var row=RANK.find(function(x){return x[0]===match;});
+      if(!row){row=[match,50,0,0,0,''];RANK.push(row);}
+      row[1]=item.points;row[2]=item.change;row[3]=item.w;row[4]=item.l;row[5]=item.w?'w':'l';
+    });
+    RANK.sort(function(a,b){return Number(b[1]||0)-Number(a[1]||0);});
+  }
+  applyVerifiedTeamEloToRank();
   async function loadDiscordTeams() {
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
@@ -5512,7 +5529,7 @@ function verifiedTeamProfiles(){
 }
 function verifiedRanking(){
  const hash=decodeURIComponent(location.hash||'').toLowerCase();
- if(!/^#(ranking|players|stats|team)(\/|$)/.test(hash))return;
+ if(!/^#(players|stats)(\/|$)/.test(hash)){document.getElementById('msr-verified-live-standings')?.remove();return;}
  const app=document.getElementById('app');if(!app)return;
  let panel=app.querySelector('#msr-verified-live-standings');
  if(!panel){panel=document.createElement('section');panel.id='msr-verified-live-standings';panel.style.cssText='margin:18px auto;padding:16px;max-width:1100px;border:1px solid #34445c;border-radius:12px;background:#101827;color:#e7edf8';app.prepend(panel);}
