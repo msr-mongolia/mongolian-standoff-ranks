@@ -5287,7 +5287,7 @@ window.MSR_SCREENSHOT_MATCHES=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"Dune","aS
 'use strict';
 const results=[{group:'C',a:'WarKz',b:'4zi',winner:'WarKz',score:'2–1',maps:[['Rust',13,11],['Province',7,13],['Sandstone',13,10]]},{group:'',a:'KngZz',b:'mpct',winner:'KngZz',score:'2–0',maps:[['Dune',13,2],['Rust',13,7]]}];
 const screenshotMatches=(window.MSR_SCREENSHOT_MATCHES||[]);
-screenshotMatches.forEach(m=>{const wins=m.maps.filter(x=>x.aScore>x.bScore).length;const losses=m.maps.length-wins;results.push({group:'',a:m.a,b:m.b,winner:wins>losses?m.a:m.b,score:wins+'–'+losses,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:m.maps});});
+screenshotMatches.forEach(m=>{const group=(m.a==='6LC'&&m.b==='DL340')||(m.a==='DL340'&&m.b==='6LC')?'E':'';const wins=m.maps.filter(x=>x.aScore>x.bScore).length;const losses=m.maps.length-wins;results.push({group,a:m.a,b:m.b,winner:wins>losses?m.a:m.b,score:wins+'–'+losses,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:m.maps});});
 const verifiedStats={
 Rust:{WarKz:[['wu °',23,14,7],['softsyko',20,17,3],['УЙЛАНХАЙТ',19,19,2],['Petisha',14,21,1],['BatiLo',13,17,2]],'4zi':[['Venn',29,16,3],['art_shisu',25,19,3],['RASEL',13,18,1],['FasouXI.666',10,19,3],['lOwzs777',11,19,4]]},
 Province:{WarKz:[['wu °',24,15,2],['softsyko',14,16,3],['УЙЛАНХАЙТ',14,17,6],['Petisha',12,18,4],['BatiLo',6,15,1]],'4zi':[['art_shisu',27,12,3],['RASEL',13,15,3],['FasouXI.666',16,16,2],['Venn',13,13,2],['lOwzs777',12,14,4]]},
