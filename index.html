@@ -2207,6 +2207,7 @@ background-color:#121923!important
 #app .msr-knight-video-panel>.msr-knight-video-shade{position:absolute!important;inset:0!important;z-index:1!important;background:linear-gradient(90deg,rgba(4,10,23,.78),rgba(4,10,23,.32));pointer-events:none}
 #app .msr-knight-video-panel .msr-team-stat,#app .msr-knight-video-panel .msr-stat-tile{background:rgba(4,10,23,.48)!important}
 </style>
+<style id="msr-risk-mongol-sticker">.msr-risk-mongol-sticker{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;background:radial-gradient(circle at 42% 35%,#202124 0%,#07090c 70%)!important;border:3px solid #d9aa43!important;box-shadow:inset 0 0 0 3px #352a13,0 0 16px rgba(219,164,48,.35)!important}.msr-risk-mongol-sticker .msr-risk-vertical-script{writing-mode:vertical-lr!important;text-orientation:mixed!important;direction:ltr!important;font-family:'Mongolian Baiti','Noto Sans Mongolian','Mongolian White',serif!important;font-size:30px!important;line-height:1.15!important;font-weight:700!important;color:#f4ce6b!important;text-shadow:1px 1px 0 #845719,0 0 7px #e5a735!important;white-space:nowrap!important;position:relative!important;z-index:5!important}.msr-risk-mongol-sticker .msr-clan-avatar-item{display:none!important}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -4265,7 +4266,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       h('a', { class: 'back', href: '#players', svg: ICON.back + '<span>Players</span>' }),
       h('div', { class: 'hl-head' + (team === 'TLNRS' ? ' msr-lunaris-back1-player' : team === 'ETXEN' ? ' msr-etxen-back1-player' : isOmvTeam(team) ? ' msr-omv-back1-player' : '') },
         h('div', { class: 'hl-card' },
-          h('div', { class: 'hl-top' }, h('span', { class: 'bigav sg hl' + tc(p), 'aria-hidden': 'true' }, sig(p.nick, 120)), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
+          h('div', { class: 'hl-top' }, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120)), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
           h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', 'Mongolia'), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
         statCard),
       flt, host);
