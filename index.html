@@ -5515,10 +5515,10 @@ function verifiedPlayerStats(){
  const rawNick=norm(match[1]), visibleNick=norm(header.querySelector('.hl-top h1')?.textContent||'');
  const teamLabel=norm(header.querySelector('.hl-list')?.textContent||'');
  const teamArg=norm(match[2]||'');
- const team=teamArg==='4zi'||teamArg==='toexistwithpurpose'||teamLabel.includes('toexistwithpurpose')?'4zi':
-   teamArg==='warkz'||teamArg==='warriorkingzz'||teamLabel.includes('warriorkingzz')?'WarKz':
-   teamArg==='kngzz'||teamArg==='kingzz'||teamLabel.includes('kingzz')?'KngZz':
-   teamArg==='mpct'||teamArg==='imp4ct'||teamLabel.includes('imp4ct')?'mpct':teamArg==='dxiii'||teamLabel.includes('dxiii')?'DXIII':teamArg==='tlnrs'||teamArg==='teamlunaris'||teamLabel.includes('lunaris')?'TLnrs':null;
+ const aliasesByTeam={'6lcpurple':'SIXP','sixp':'SIXP','infyx':'1NFYx','1nfyx':'1NFYx','manai':'8MNA','8mna':'8MNA','lunaris':'TLnrs','teamlunaris':'TLnrs','tlnrs':'TLnrs','warkz':'WarKz','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','4zi':'4zi','kingzz':'KngZz','kngzz':'KngZz','impact':'mpct','mpct':'mpct'};
+ const knownTeams=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
+ const canonical=v=>aliasesByTeam[norm(v)]||knownTeams.find(t=>norm(t)===norm(v))||null;
+ const team=canonical(teamArg)||knownTeams.find(t=>norm(teamLabel).includes(norm(t)))||Object.entries(aliasesByTeam).find(([alias])=>teamLabel.includes(alias))?.[1]||null;
  if(!team)return;
  const aliases=team==='4zi'?{'hiro':'venn'}:team==='KngZz'?{'tengri':'tengrigodl','tseka':'tseka'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
  const name=aliases[rawNick]||aliases[visibleNick]||rawNick;
@@ -5543,7 +5543,9 @@ function verifiedPlayerStats(){
 function verifiedTeamProfiles(){
  const profile=document.querySelector('.prof');if(!profile)return;
  const title=norm(profile.querySelector('h1')?.textContent||'');
- const code=title.includes('warriorkingzz')||title.includes('warkz')?'WarKz':title.includes('toexistwithpurpose')||title.includes('4zi')?'4zi':title.includes('kingzz')?'KngZz':title.includes('impact')||title.includes('mpct')?'mpct':[['1NFYx','1nfy'],['8MNA','8mna'],['DRDRX','drdrx'],['6LC','6lc'],['sclat','sclat'],['ACCA','acca'],['AIM4R','aim4r'],['RESKK','reskk'],['DXIII','dxiii'],['TLnrs','lunaris']].find(x=>title.includes(x[1]))?.[0]||null;
+ const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct'};
+ const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
+ const code=known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||null;
  if(!code)return;
  const won=results.some(r=>r.winner===code),all={};
  verifiedPlayerRows(code).forEach(row=>{
