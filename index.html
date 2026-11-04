@@ -5617,7 +5617,7 @@ async function loadMsrClanMedia(){
  const config=window.MSR_CONFIG;
  if(!config?.SUPABASE_URL||!config?.SUPABASE_ANON_KEY)return;
  try{
-  const response=await fetch(config.SUPABASE_URL+'/rest/v1/msr_discord_teams?select=id,name,tag,logo_url&limit=1000',{headers:{apikey:config.SUPABASE_ANON_KEY,Authorization:'Bearer '+config.SUPABASE_ANON_KEY}});
+  const response=await fetch(config.SUPABASE_URL+'/rest/v1/msr_discord_teams?select=*&limit=1000',{headers:{apikey:config.SUPABASE_ANON_KEY,Authorization:'Bearer '+config.SUPABASE_ANON_KEY}});
   if(!response.ok)return;
   const data=await response.json();if(!Array.isArray(data))return;
   msrClanMedia=data;
@@ -5679,6 +5679,9 @@ function updateFinishedClanMedia(side){
    img.onerror=()=>{img.hidden=true;if(summaryImg)summaryImg.hidden=true;};
   }
  }
+ // Use each clan's own stored BACK1, never another team's logo.
+ const mediaBack1=[clan?.back1_url,clan?.back1,clan?.background_url,clan?.banner_url,clan?.profile_background_url,clan?.profile_banner_url,clan?.background,clan?.banner].find(v=>typeof v==='string'&&/^(https?:\\/\\/|assets\\/)/i.test(v));
+ if(mediaBack1)setBack1(mediaBack1);
  const back1Assets={omv:'assets/omv_back1.svg',etxen:'assets/etxen_back1.png',tlnrs:'assets/lunaris_back1.png'};
  const back1Asset=back1Assets[normKey(clan?.tag||side.dataset.team)];
  if(back1Asset)setBack1(back1Asset);
