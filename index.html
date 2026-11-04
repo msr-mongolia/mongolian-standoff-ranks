@@ -2447,13 +2447,13 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     });
   });
   // Confirmed MSL S2 map statistics; match only existing registered players.
-  (function(){
+  function applyVerifiedPlayerStats(){
     var records=[["WarKz","wu °",23,14,7,24],["WarKz","softsyko",20,17,3,24],["WarKz","УЙЛАНХАЙТ",19,19,2,24],["WarKz","Petisha",14,21,1,24],["WarKz","BatiLo",13,17,2,24],["4zi","Venn",29,16,3,24],["4zi","art_shisu",25,19,3,24],["4zi","RASEL",13,18,1,24],["4zi","FasouXI.666",10,19,3,24],["4zi","lOwzs777",11,19,4,24],["WarKz","wu °",24,15,2,20],["WarKz","softsyko",14,16,3,20],["WarKz","УЙЛАНХАЙТ",14,17,6,20],["WarKz","Petisha",12,18,4,20],["WarKz","BatiLo",6,15,1,20],["4zi","art_shisu",27,12,3,20],["4zi","RASEL",13,15,3,20],["4zi","FasouXI.666",16,16,2,20],["4zi","Venn",13,13,2,20],["4zi","lOwzs777",12,14,4,20],["WarKz","БАТИЛО Prime",22,12,4,23],["WarKz","softsyko",23,17,3,23],["WarKz","wu °",19,17,4,23],["WarKz","Petisha",13,18,3,23],["WarKz","УЙЛАНХАЙТ",8,18,3,23],["4zi","Careley",22,16,3,23],["4zi","RASEL",20,17,3,23],["4zi","art_shisu",14,16,5,23],["4zi","Venn",14,18,0,23],["4zi","FasouXI.666",11,18,3,23]];
     var normVerified=function(s){return String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
     var sums={};
     records.forEach(function(r){var key=r[0]+'|'+normVerified(r[1]);var x=sums[key]||(sums[key]={k:0,d:0,a:0,maps:0,rounds:0});x.k+=r[2];x.d+=r[3];x.a+=r[4];x.maps++;x.rounds+=r[5];});
-    PLAYERS.forEach(function(p){var t=T[p.team]||{};var team=normVerified(t.n).includes('toexistwithpurpose')?'4zi':normVerified(t.n).includes('warriorkingzz')?'WarKz':null;if(!team)return;var nick=normVerified(p.nick);if(team==='4zi'&&nick==='hiro')nick='venn';var x=sums[team+'|'+nick];if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=Math.max(0,Math.min(3,(.55*x.k+.18*x.a-.25*x.d)/x.rounds+.625));p.verifiedMSR=true;});
-  })();
+    PLAYERS.forEach(function(p){var t=T[p.team]||{};var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4zi'||name.includes('toexistwithpurpose')?'4zi':tag==='warkz'||name.includes('warriorkingzz')?'WarKz':null;if(!team)return;var nick=normVerified(p.nick);if(team==='4zi'&&nick==='hiro')nick='venn';var x=sums[team+'|'+nick];if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=Math.max(0,Math.min(3,(.55*x.k+.18*x.a-.25*x.d)/x.rounds+.625));p.verifiedMSR=true;});
+  }
   // MSR custom player rating (not official HLTV rating).
   // Under 5 maps: provisional. At 10+ maps: fully eligible.
   // Shrink small samples and weight results against stronger teams.
@@ -2477,6 +2477,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     return (1 + (raw - 1) * sample) * opponentFactor;
   }
   function sortPlayerRanking() {
+    applyVerifiedPlayerStats();
     PLAYERS.sort(function (a, b) {
       var eligibleA = (Number(a.maps) || 0) >= 5 ? 1 : 0;
       var eligibleB = (Number(b.maps) || 0) >= 5 ? 1 : 0;
@@ -3642,7 +3643,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   PLAYERS.forEach(function (p) {
     var g = agg(PROWS[p.nick] || []);
     if (g.n) { p.maps = g.n; p.kills = g.k; p.deaths = g.d; p.kd = +g.kd.toFixed(2); }
-    p.rating = g.n ? g.rating : 0; p.assists = g.a || 0; p.adr = g.adr || 0; p.kast = g.kast || 0;
+    if (!p.verifiedMSR) { p.rating = g.n ? g.rating : 0; p.assists = g.a || 0; p.adr = g.adr || 0; p.kast = g.kast || 0; }
   });
   sortPlayerRanking();
 
