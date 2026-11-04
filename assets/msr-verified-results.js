@@ -86,10 +86,7 @@ function verifiedPlayerStats(){
   if(label==='Rating')tile.title='MSR-calculated rating from verified kills, deaths, assists and rounds';
   if(label==='ADR')tile.title='Estimated ADR from kills, assists and rounds; not recorded damage';
  });
- let note=header.querySelector('.msr-verified-player-stats');
- if(!note){note=document.createElement('div');note.className='msr-verified-player-stats';header.after(note);}
- const content='MSL S2 · '+rows.length+' maps · '+rounds+' rounds · '+k+' kills · '+d+' deaths · '+a+' assists · R/A '+(a?(rounds/a).toFixed(2):'—')+' · Estimated ADR and MSR Rating. KAST unavailable.';
- if(note.textContent!==content)note.textContent=content;
+ document.querySelectorAll('.msr-verified-player-stats').forEach(el=>el.remove());
 }
 function verifiedTeamProfiles(){
  const profile=document.querySelector('.prof');if(!profile)return;
