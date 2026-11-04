@@ -5588,7 +5588,7 @@ async function loadMsrClanMedia(){
  const config=window.MSR_CONFIG;
  if(!config?.SUPABASE_URL||!config?.SUPABASE_ANON_KEY)return;
  try{
-  const response=await fetch(config.SUPABASE_URL+'/rest/v1/msr_discord_teams?select=name,tag,logo_url&limit=1000',{headers:{apikey:config.SUPABASE_ANON_KEY,Authorization:'Bearer '+config.SUPABASE_ANON_KEY}});
+  const response=await fetch(config.SUPABASE_URL+'/rest/v1/msr_discord_teams?select=id,name,tag,logo_url&limit=1000',{headers:{apikey:config.SUPABASE_ANON_KEY,Authorization:'Bearer '+config.SUPABASE_ANON_KEY}});
   if(!response.ok)return;
   const data=await response.json();if(!Array.isArray(data))return;
   msrClanMedia=data;
@@ -5596,7 +5596,7 @@ async function loadMsrClanMedia(){
  }catch(error){console.warn('MSR clan media unavailable',error);}
 }
 function updateFinishedClanMedia(side){
- const key=norm(side.dataset.team),aliases={reskk:['reskk','asterisk'],sixp:['sixp','sixlencepurple'],aim4r:['aim4r']},keys=aliases[key]||[key],clan=key==='6lc'?msrClanMedia.find(t=>norm(t.name)==='sixlence'):msrClanMedia.find(t=>keys.includes(norm(t.tag))||keys.includes(norm(t.name)));
+ const key=norm(side.dataset.team),aliases={reskk:['reskk','asterisk','asteriskreskk'],sixp:['sixp','sixlencepurple'],aim4r:['aim4r']},keys=aliases[key]||[key],clan=key==='reskk'?msrClanMedia.find(t=>t.id==='ds_31ec2a56babe5861dc79f583')||msrClanMedia.find(t=>keys.includes(norm(t.tag))||keys.includes(norm(t.name))):key==='6lc'?msrClanMedia.find(t=>norm(t.name)==='sixlence'):msrClanMedia.find(t=>keys.includes(norm(t.tag))||keys.includes(norm(t.name)));
  const back1Assets={omv:'assets/omv_back1.svg',etxen:'assets/etxen_back1.png',tlnrs:'assets/lunaris_back1.png'};
  const back1Asset=back1Assets[norm(clan?.tag||side.dataset.team)];
  if(back1Asset){side.dataset.hasBack1='true';side.style.backgroundImage='linear-gradient(90deg,rgba(8,14,27,.88),rgba(8,14,27,.46)),url("'+back1Asset+'")';side.style.backgroundSize='cover';}
