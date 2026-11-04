@@ -11,7 +11,7 @@ const additionalMatchStats={
  Dune:{KngZz:[['SarNar',14,5,2],['r1sk',14,3,4],['yeji',17,10,1],['Tse Ka',14,10,5],['tengriGODL',14,11,3]],mpct:[['Ryze',14,14,2],['Zenix',11,14,1],['Bekul',7,15,3],['Tmk',4,15,2],['Baitsai god',3,15,0]]},
  Rust:{KngZz:[['tengriGODL',18,11,1],['Tse Ka',20,15,4],['yeji',15,9,2],['r1sk',13,10,4],['SarNar',15,12,3]],mpct:[['Baitsai god',14,17,4],['Tmk',8,16,3],['Ryze',12,16,4],['Bekul',12,17,2],['Zenix',10,16,0]]}
 };
-const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1}};
+const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1},KngZz:{before:50,after:85,change:35,w:1,l:0},mpct:{before:50,after:15,change:-35,w:0,l:1}};
 // Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
 const verifiedRounds={Rust:24,Province:20,Sandstone:23};
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
