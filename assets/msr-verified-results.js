@@ -2,8 +2,44 @@
 (function(){
 'use strict';
 const results=[{group:'C',a:'WarKz',b:'4zi',winner:'WarKz',score:'2–1',maps:[['Rust',13,11],['Province',7,13],['Sandstone',13,10]]}];
+const verifiedStats={
+Rust:{WarKz:[['wu °',23,14,7],['softsyko',20,17,3],['УЙЛАНХАЙТ',19,19,2],['Petisha',14,21,1],['BatiLo',13,17,2]],'4zi':[['Venn',29,16,3],['art_shisu',25,19,3],['RASEL',13,18,1],['FasouXI.666',10,19,3],['lOwzs777',11,19,4]]},
+Province:{WarKz:[['wu °',24,15,2],['softsyko',14,16,3],['УЙЛАНХАЙТ',14,17,6],['Petisha',12,18,4],['BatiLo',6,15,1]],'4zi':[['art_shisu',27,12,3],['RASEL',13,15,3],['FasouXI.666',16,16,2],['Venn',13,13,2],['lOwzs777',12,14,4]]},
+Sandstone:{WarKz:[['БАТИЛО Prime',22,12,4],['softsyko',23,17,3],['wu °',19,17,4],['Petisha',13,18,3],['УЙЛАНХАЙТ',8,18,3]],'4zi':[['Careley',22,16,3],['RASEL',20,17,3],['art_shisu',14,16,5],['Venn',14,18,0],['FasouXI.666',11,18,3]]}
+};
+const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1}};
+function verifiedGroupExtras(){
+ const group=document.querySelector('.msr-rr-card .msr-zone-title h2');
+ document.querySelectorAll('.msr-rr-card').forEach(section=>{
+  if(!/GROUP C/i.test(section.querySelector('.msr-zone-title h2')?.textContent||''))return;
+  if(section.querySelector('.msr-verified-standings'))return;
+  const panel=document.createElement('div');panel.className='msr-verified-standings';
+  panel.innerHTML='<strong>GROUP C · CONFIRMED RESULTS</strong><div>WarKz · MP 1 · W 1 · L 0 · RD +1 · PTS 3 · ELO 66 (+16)</div><div>4zi · MP 1 · W 0 · L 1 · RD −1 · PTS 0 · ELO 32 (−18)</div><small>Other Group C matches are pending. Points: 3 per match win. ELO calculated from MSR v2 match formula; initial 50.</small>';
+  section.querySelector('.msr-zone-note')?.after(panel);
+ });
+}
+function verifiedPlayerStats(){
+ const match=decodeURIComponent(location.hash||'').match(/^#player\/([^/]+)(?:\/([^/]+))?/);
+ if(!match)return;
+ const nick=norm(match[1]),team=norm(match[2]||'');
+ if(team && !['warkz','4zi'].includes(team))return;
+ const all=[];
+ Object.keys(verifiedStats).forEach(map=>Object.keys(verifiedStats[map]).forEach(code=>verifiedStats[map][code].forEach(row=>{if(norm(row[0])===nick)all.push({map,code,k:row[1],d:row[2],a:row[3]});})));
+ if(!all.length)return;
+ const host=document.querySelector('.hl-head');if(!host||host.querySelector('.msr-verified-player-stats'))return;
+ const k=all.reduce((v,x)=>v+x.k,0),d=all.reduce((v,x)=>v+x.d,0),a=all.reduce((v,x)=>v+x.a,0);
+ const el=document.createElement('div');el.className='msr-verified-player-stats';
+ el.innerHTML='<strong>MSL S2 · VERIFIED STATS</strong><div>Maps: '+all.length+' · Kills: '+k+' · Deaths: '+d+' · Assists: '+a+' · K/D: '+(k/Math.max(1,d)).toFixed(2)+'</div><small>Based on screenshots; ADR and KAST unavailable.</small>';
+ host.appendChild(el);
+}
+function verifiedRanking(){
+ const table=document.querySelector('.t tbody');if(!table||!location.hash.match(/ranking/i)||document.querySelector('.msr-verified-ranking-note'))return;
+ const box=document.createElement('div');box.className='msr-verified-ranking-note';
+ box.textContent='Verified MSL S2 ELO: WarKz 66 (+16, 1W–0L) · 4zi 32 (−18, 0W–1L). These teams are not yet integrated into the main ranking roster.';
+ table.closest('.box')?.before(box);
+}
 const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-function apply(){
+function apply(){verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
   const group=(section.querySelector('.msr-zone-title h2')?.textContent||'').match(/GROUP\s+([A-F])/i)?.[1];
   results.filter(r=>r.group===group).forEach(r=>{
@@ -20,6 +56,6 @@ function apply(){
   });
  });
 }
-const style=document.createElement('style');style.textContent='.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
+const style=document.createElement('style');style.textContent='.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();
 })();
