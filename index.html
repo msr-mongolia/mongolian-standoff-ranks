@@ -4936,6 +4936,8 @@ window.MSR_SCREENSHOT_MATCHES=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"Dune","aS
         RANK.push([code, Number.isFinite(row.points) ? row.points : 50, 0, 0, 0, '']);
         byName[key(row.name)] = code;
       }
+      // Canonical RESKK identity, even when Discord sync submits an empty tag.
+      if(row.id==='ds_31ec2a56babe5861dc79f583'){T[code].n='Asterisk (RESKK)';T[code].tag='RESKK';}
       if(row.id==='ds_cc59eccdc299850d94095877'){T[code].n='ACCACIN';T[code].tag='ACCA';T[code].img='assets/acca_profile.jpg';T[code].c='#ed334d';}
       T[code].vipStartedAt = row.vip_started_at || T[code].vipStartedAt || null;
       T[code].vipExpiresAt = row.vip_expires_at || null;
