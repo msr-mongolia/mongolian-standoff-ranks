@@ -5745,6 +5745,20 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
   statPanel.replaceChildren();
   const selected=tab.all?maps:[tab];
   const grid=document.createElement('div');grid.className='msr-finished-stats';statPanel.appendChild(grid);
+  // Find the single highest-rated player across both teams for the selected maps.
+  const candidates=[];
+  [match.a,match.b].forEach(team=>{
+   const byNick=new Map();
+   selected.forEach(m=>getPlayers(m,team).forEach(([nick,k,d,a])=>{
+    const key=String(nick).normalize('NFKC').toLowerCase();
+    const p=byNick.get(key)||{nick,k:0,d:0,a:0,rounds:0};
+    p.k+=Number(k)||0;p.d+=Number(d)||0;p.a+=Number(a)||0;
+    p.rounds+=Number(m.a)+Number(m.b);byNick.set(key,p);
+   }));
+   byNick.forEach((p,key)=>candidates.push({...p,team,key,rating:Number(msrRating(p.k,p.d,p.a,p.rounds)||0)}));
+  });
+  candidates.sort((a,b)=>b.rating-a.rating||b.k-a.k||a.d-b.d);
+  const mvp=candidates[0];
   [match.a,match.b].forEach(team=>{
    const totals=new Map();
    selected.forEach(m=>getPlayers(m,team).forEach(([nick,k,d,assists])=>{
@@ -5764,7 +5778,10 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
     const row=document.createElement('tr');
     [p.nick,p.k,p.d,p.a,(p.k/Math.max(1,p.d)).toFixed(2),msrRating(p.k,p.d,p.a,p.rounds)||'—'].forEach((v,idx)=>{
      const td=document.createElement('td');
-     if(idx===0){const link=document.createElement('a');link.href='#player/'+encodeURIComponent(p.nick)+'/'+encodeURIComponent(team);link.textContent=p.nick;td.appendChild(link);}
+     if(idx===0){const link=document.createElement('a');link.href='#player/'+encodeURIComponent(p.nick)+'/'+encodeURIComponent(team);link.textContent=p.nick;td.appendChild(link);
+      if(mvp&&mvp.team===team&&mvp.key===String(p.nick).normalize('NFKC').toLowerCase()){
+       const tag=document.createElement('strong');tag.textContent=' MVP';tag.className='mvp';td.appendChild(tag);
+      }}
      else{td.textContent=v;if(idx===5)td.className='msr-hltv-rating';}
      row.appendChild(td);
     });body.appendChild(row);
