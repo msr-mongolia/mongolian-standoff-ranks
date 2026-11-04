@@ -90,16 +90,18 @@ function verifiedTeamProfiles(){
   const aliases={'hiro':'venn','petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
   rows.forEach(row=>{
    if(row.classList.contains('msr-verified-participant')||/\s·\s*match\s*$/i.test(row.cells[0]?.textContent||'')){row.remove();return;}
-   const nick=norm(row.cells[0]?.textContent||'');
+   const nick=norm(row.cells[0]?.querySelector('a.tl b')?.textContent||row.cells[0]?.querySelector('a.tl')?.textContent||row.cells[0]?.textContent||'');
    const key=Object.prototype.hasOwnProperty.call(all,nick)?nick:norm(aliases[nick]||'');
    const x=all[key];
    if(!x)return;
    const set=(i,v)=>{if(row.cells[i]&&row.cells[i].textContent!==v)row.cells[i].textContent=v;};
    set(1,String(x.maps));set(2,(x.k/Math.max(1,x.d)).toFixed(2));
-   row.title='All verified maps · '+x.k+' kills / '+x.d+' deaths / '+x.a+' assists';
-   let totals=row.querySelector('.msr-total-kills');
-   if(!totals){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:nowrap';row.cells[2]?.appendChild(totals);}
-   if(totals)totals.textContent=x.k+' K / '+x.d+' D / '+x.a+' A';
+   const tooltip='All verified maps · '+x.k+' kills / '+x.d+' deaths / '+x.a+' assists';
+   if(row.title!==tooltip)row.title=tooltip;
+   let totals=row.cells[0]?.querySelector('.msr-total-kills');
+   if(!totals&&row.cells[0]){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:nowrap';row.cells[0].appendChild(totals);}
+   const totalLabel=x.k+' K / '+x.d+' D / '+x.a+' A';
+   if(totals&&totals.textContent!==totalLabel)totals.textContent=totalLabel;
    // Do not invent ADR, KAST or rating from kills/deaths alone.
    [3,4,5].forEach(i=>set(i,'—'));
   });
