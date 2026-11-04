@@ -5618,7 +5618,7 @@ function verifiedResultsDetail(){
  const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.textContent=match.a+'  '+match.score+'  '+match.b+' · BO3 · View match details';matchPanel.appendChild(summary);
  const content=document.createElement('div');content.className='msr-match-expand-content';matchPanel.appendChild(content);
  const finishedDisplayName=(tag)=>tag==='SIXP'?'6LC Purple':tag;
- const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+finishedDisplayName(match.a)+' '+match.score+' '+match.b;content.appendChild(title);
+ const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+finishedDisplayName(match.a)+' '+match.score+' '+finishedDisplayName(match.b);content.appendChild(title);
  const subtitle=document.createElement('p');const em=eloMatches[matchIndex];subtitle.textContent='Verified map scores and player K/D/A · '+match.maps.map(m=>m[0]+' '+m[1]+'–'+m[2]).join(' · ')+' · RD '+(em.roundDiff>=0?'+':'')+em.roundDiff+' · '+em.mapCount+' maps · ELO '+finishedDisplayName(match.a)+' '+(em.aChange>=0?'+':'')+em.aChange+' / '+finishedDisplayName(match.b)+' '+(em.bChange>=0?'+':'')+em.bChange;content.appendChild(subtitle);
  const card=document.createElement('div');card.className='msr-finished-teams';
  [[match.a,'WIN · '+match.score.split('–')[0]],[match.b,'LOSS · '+match.score.split('–')[1]]].forEach(([name,status])=>{
@@ -5647,7 +5647,7 @@ function verifiedResultsDetail(){
   const details=document.createElement('details');details.className='msr-finished-map';details.open=false;
   const summary=document.createElement('summary');summary.className='msr-finished-map-tile';
   const mapTitle=document.createElement('b');mapTitle.textContent=map;summary.appendChild(mapTitle);
-  const scoreLabel=document.createElement('span');scoreLabel.textContent=match.a+' '+a+' – '+b+' '+match.b;summary.appendChild(scoreLabel);
+  const scoreLabel=document.createElement('span');scoreLabel.textContent=finishedDisplayName(match.a)+' '+a+' – '+b+' '+finishedDisplayName(match.b);summary.appendChild(scoreLabel);
   details.appendChild(summary);
   const matchingMap=[...document.querySelectorAll('.msr-rel-map-photo,.msr-map-pool-photo')].find(el=>el.textContent.toLowerCase().includes(map.toLowerCase()));
   const mapArt=window.MSR_MAPART?.[map];
@@ -5655,7 +5655,7 @@ function verifiedResultsDetail(){
   else if(matchingMap){const bg=getComputedStyle(matchingMap).backgroundImage;if(bg&&bg!=='none')summary.style.backgroundImage='linear-gradient(0deg,rgba(6,12,23,.86),rgba(6,12,23,.14)), '+bg;}
   const grid=document.createElement('div');grid.className='msr-finished-stats';
   [match.a,match.b].forEach(team=>{
-   const group=document.createElement('div');const h=document.createElement('h3');h.textContent=team;group.appendChild(h);
+   const group=document.createElement('div');const h=document.createElement('h3');h.textContent=finishedDisplayName(team);group.appendChild(h);
    const table=document.createElement('table');const head=document.createElement('thead');const tr=document.createElement('tr');
    ['Player','Kills','Deaths','Assists','K/D'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.appendChild(th);});head.appendChild(tr);table.appendChild(head);
    const body=document.createElement('tbody');
