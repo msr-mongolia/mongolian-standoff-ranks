@@ -4911,6 +4911,16 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         row=Object.assign({},row,{roster:drRoster,player_ids:drIds});
       }
 
+      // NAME CHANGE PFP: game ID 99959144 -> REVI (DXIII).
+      if (String(row.tag || '').trim().toUpperCase()==='DXIII' || /^(?:dxiii|dxvil13)$/i.test(String(row.name||'').trim())) {
+        var renameIds=Object.assign({},row.player_ids||{});
+        var originalRenameIds=Object.assign({},renameIds);
+        row.roster=row.roster.map(function(nick){
+          if(String(originalRenameIds[nick]||'')!=='99959144')return nick;
+          delete renameIds[nick];renameIds.REVI='99959144';return 'REVI';
+        });
+        row.player_ids=renameIds;
+      }
       var code = byName[key(row.name)];
       // CioR White is a separate registered team; never merge it into CioR (COR).
       if (row.id === 'ds_1777105f96769efea0121a7e') code = 'CIORWHITE';
