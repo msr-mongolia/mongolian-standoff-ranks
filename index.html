@@ -5461,7 +5461,15 @@ eloMatches.forEach(m=>{verifiedElo[m.a]={before:m.aBefore,after:m.aAfter,change:
 // Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
 const verifiedRounds={Rust:24,Province:20,Sandstone:23};
 const matchRounds={KngZz:{Dune:15,Rust:20},mpct:{Dune:15,Rust:20}};
-function verifiedPlayerRows(team){const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick,map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
+function resolveMsrTeam(value){
+ const key=norm(value);
+ const alias={'6lcpurple':'SIXP','sixlencepurple':'SIXP','infyx':'1NFYx','manai':'8MNA','teamlunaris':'TLnrs','lunaris':'TLnrs'};
+ const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]))];
+ const fromRecords=msrClanMedia.find(t=>[t.tag,t.name,t.id].some(v=>norm(v)===key));
+ const target=fromRecords?.tag||alias[key]||value;
+ return known.find(t=>norm(t)===norm(target))||known.find(t=>norm(t)===key)||target;
+}
+function verifiedPlayerRows(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick,map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
 // MSR custom rating (not an official Standoff 2 rating). 1.00 represents
 // approximately one kill per round, 0.7 deaths per round and 0.2 assists per round.
@@ -5518,7 +5526,7 @@ function verifiedPlayerStats(){
  const aliasesByTeam={'6lcpurple':'SIXP','sixp':'SIXP','infyx':'1NFYx','1nfyx':'1NFYx','manai':'8MNA','8mna':'8MNA','lunaris':'TLnrs','teamlunaris':'TLnrs','tlnrs':'TLnrs','warkz':'WarKz','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','4zi':'4zi','kingzz':'KngZz','kngzz':'KngZz','impact':'mpct','mpct':'mpct'};
  const knownTeams=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
  const canonical=v=>aliasesByTeam[norm(v)]||knownTeams.find(t=>norm(t)===norm(v))||null;
- const team=canonical(teamArg)||knownTeams.find(t=>norm(teamLabel).includes(norm(t)))||Object.entries(aliasesByTeam).find(([alias])=>teamLabel.includes(alias))?.[1]||null;
+ const team=resolveMsrTeam(canonical(teamArg)||knownTeams.find(t=>norm(teamLabel).includes(norm(t)))||Object.entries(aliasesByTeam).find(([alias])=>teamLabel.includes(alias))?.[1]||null);
  if(!team)return;
  const aliases=team==='4zi'?{'hiro':'venn'}:team==='KngZz'?{'tengri':'tengrigodl','tseka':'tseka'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
  const name=aliases[rawNick]||aliases[visibleNick]||rawNick;
@@ -5545,7 +5553,8 @@ function verifiedTeamProfiles(){
  const title=norm(profile.querySelector('h1')?.textContent||'');
  const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct'};
  const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
- const code=known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||null;
+ const profileTeam=msrClanMedia.find(t=>[t.name,t.tag].some(v=>norm(v)===title));
+ const code=resolveMsrTeam(profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  if(!code)return;
  const won=results.some(r=>r.winner===code),all={};
  verifiedPlayerRows(code).forEach(row=>{
