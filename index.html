@@ -4893,6 +4893,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
       if(row.id==='ds_cc59eccdc299850d94095877')T[code].img='assets/acca_profile.jpg';
       if (/^(?:wonderart|woart)$/i.test(row.name.trim())) { T[code].img = 'assets/woart-logo.svg'; T[code].c = '#B56CFF'; }
+      // XvrN profile1: only the team avatar, never the BACK1 or panel backgrounds.
+      if (/^xiverion divine$/i.test(String(row.name || '').trim()) && /^xvrn$/i.test(String(row.tag || '').trim())) T[code].img = 'assets/xvrn_profile1.jpg?v=1';
       Object.keys(row.player_ids || {}).forEach(function(nick) {
         var id = String(row.player_ids[nick]);
         if (/^\d{5,12}$/.test(id)) GAME_IDS[code + '|' + key(nick)] = id;
