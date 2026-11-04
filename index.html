@@ -3928,87 +3928,11 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 
   /* ================= Results ================= */
   var RF = { days: 'all', ev: 'all', map: 'all', team: 'all', bo: 'all', page: 0 }, PAGE = 20;
+  // Finished match results are rendered by verifiedResultsDetail() below.
+  // Do not mount the obsolete empty legacy Results list or its filter controls.
   V.results = function () {
-    var box = h('div', null), cnt = h('span', { class: 'rs' });
-    function draw() {
-      box.textContent = '';
-      var dd = RF.days === 'all' ? 1e9 : +RF.days;
-      var list = doneList().filter(function (m) {
-        return ago(m.date) <= dd && (RF.ev === 'all' || m.ev === RF.ev) && (RF.team === 'all' || m.a === RF.team || m.b === RF.team) && (RF.bo === 'all' || m.bo === +RF.bo)
-          && (RF.map === 'all' || m.maps.some(function (x) { return x[0] === RF.map; }));
-      });
-      var pages = Math.max(1, Math.ceil(list.length / PAGE)); RF.page = Math.min(RF.page, pages - 1);
-      var from = RF.page * PAGE, part = list.slice(from, from + PAGE);
-      cnt.textContent = list.length ? 'Showing ' + (from + 1) + '–' + (from + part.length) + ' of ' + list.length + ' results' : '0 results';
-      byDate(part).forEach(function (g) {
-        Array.from(new Set(g[1].map(function(m){return m.ev||'Tournament';}))).forEach(function(eventName){
-        var matches=g[1].filter(function(m){return (m.ev||'Tournament')===eventName;});
-        var event=EVENTS.find(function(e){return e.n===eventName||e.id===eventName;});
-        var badge=h(event?'a':'span',{class:'msr-result-event-badge',href:event?'#event/'+encodeURIComponent(event.id):null,title:eventName},
-          event&&event.img?h('img',{src:event.img,alt:'',loading:'lazy',decoding:'async'}):h('span',{'aria-hidden':'true',svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8"/></svg>'}),
-          h('span',null,event?event.n:eventName));
-        var heading=h('div',{class:'grp-h msr-result-date-heading'},h('span',{class:'msr-result-date'},g[0]),badge), rows=h('div',{class:'box results-match-group'+(event&&event.img?' msr-result-event-background':'')});
-        if(event&&event.img)rows.style.setProperty('--msr-result-event-image','url("'+String(event.img).replace(/"/g,'%22')+'")');
-        matches.forEach(function(m,i){var row=matchRow(m);if(i>=3)row.classList.add('results-extra-match');rows.appendChild(row);});
-        box.appendChild(heading);box.appendChild(rows);
-        if(matches.length>3){
-          rows.classList.add('results-match-collapsed');
-          var expand=h('button',{type:'button',class:'results-match-expand','aria-expanded':'false'},
-            h('span',null,'Show '+(matches.length-3)+' more matches'),h('span',{class:'results-match-chevron','aria-hidden':'true'},'⌄'));
-          expand.addEventListener('click',function(){
-            var opened=rows.classList.toggle('results-match-expanded');
-            expand.setAttribute('aria-expanded',String(opened));
-            expand.firstChild.textContent=opened?'Show less':'Show '+(matches.length-3)+' more matches';
-          });
-          box.appendChild(expand);
-        }
-        });
-      });
-      if (!list.length) box.appendChild(h('div', { class: 'empty' }, 'No results match these filters.'));
-      if (pages > 1) {
-        var prev = h('button', { type: 'button', class: 'pbtn', disabled: RF.page === 0 ? 'disabled' : null }, '← Newer'), next = h('button', { type: 'button', class: 'pbtn', disabled: RF.page >= pages - 1 ? 'disabled' : null }, 'Older →');
-        prev.addEventListener('click', function () { RF.page--; draw(); window.scrollTo(0, 0); }); next.addEventListener('click', function () { RF.page++; draw(); window.scrollTo(0, 0); });
-        box.appendChild(h('div', { class: 'pgr' }, prev, h('span', null, 'Page ' + (RF.page + 1) + ' / ' + pages), next));
-      }
-    }
-    function set(k) { return function (v) { RF[k] = v; RF.page = 0; draw(); }; }
-    var flt = h('div', { class: 'flt' }, sel('Date', DATEOPT, RF.days, set('days')), sel('Event', EVOPT, RF.ev, set('ev')), sel('Map', MAPOPT, RF.map, set('map')), (function () {
-      var wrap = h('div', { class: 'results-team-search' });
-      var label = h('label', null, 'Team');
-      var search = h('input', { type: 'search', placeholder: 'Search team...', autocomplete: 'off', 'aria-label': 'Search results by team', style: 'width:100%;min-width:0' });
-      var suggestions = h('div', { class: 'team-search-options', style: 'display:none' });
-      function options() {
-        suggestions.textContent = '';
-        var q = search.value.trim().toLocaleLowerCase();
-        var opts = TEAMOPT.filter(function (x) { return x[0] !== 'all' && String(x[1]).toLocaleLowerCase().indexOf(q) !== -1; }).slice(0, 25);
-        if (!q) { suggestions.style.display = 'none'; return; }
-        suggestions.style.display = 'block';
-        var all = h('button', { type: 'button', class: 'team-search-option' }, 'All teams');
-        all.addEventListener('click', function () { search.value = ''; suggestions.style.display = 'none'; set('team')('all'); });
-        suggestions.appendChild(all);
-        opts.forEach(function (x) {
-          var btn = h('button', { type: 'button', class: 'team-search-option' }, x[1]);
-          btn.addEventListener('click', function () { search.value = x[1]; suggestions.style.display = 'none'; set('team')(x[0]); });
-          suggestions.appendChild(btn);
-        });
-      }
-      search.addEventListener('input', function () { if (!search.value.trim()) set('team')('all'); options(); });
-      search.addEventListener('focus', options);
-      search.addEventListener('keydown', function (e) { if (e.key === 'Escape') suggestions.style.display = 'none'; });
-      wrap.appendChild(label); wrap.appendChild(search); wrap.appendChild(suggestions);
-      return wrap;
-    })(),
-      sel('Format', [['all', 'Any format'], ['1', 'Best of 1'], ['3', 'Best of 3']], RF.bo, set('bo')), cnt);
-    draw();
-    var toggle=h('button',{type:'button',class:'results-filter-toggle','aria-expanded':'false','aria-controls':'results-filter-fields'},
-      h('span',null,'Filters'),h('span',{class:'results-filter-arrow','aria-hidden':'true'},'⌄'));
-    flt.id='results-filter-fields';
-    flt.classList.add('results-filter-collapsed');
-    toggle.addEventListener('click',function(){
-      var opened=flt.classList.toggle('results-filter-expanded');
-      toggle.setAttribute('aria-expanded',String(opened));
-    });
-    return h('div', null, pageHead('Results', 'Every finished match, newest first. Filter by date, event, map, team or format.'), goldBanner(), h('div',{class:'results-filter-shell'},toggle,flt), box);
+    return h('div',{class:'msr-results-hltv-root'},
+      pageHead('Results','Finished matches · Select a match to see All Maps, MVP and player stats.'));
   };
 
   /* ================= Match page ================= */
