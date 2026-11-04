@@ -5333,6 +5333,12 @@ const screenshotMatches=[{a:'DXIII',b:'TLnrs',maps:[
 {map:'Sandstone',aScore:13,bScore:6,a:[['Revi',15,10,3],['Anukk',16,11,3],['iQx.',19,10,2],['Hexor',16,15,6],['X AIS2',16,12,3]],b:[['RandomStu',16,16,3],['Batashi',12,16,0],['Visilefox',12,17,1],['DlwImra',8,18,4],['TENNY',9,17,1]]},
 {map:'Rust',aScore:13,bScore:1,a:[['Hexor',11,6,9],['X AIS2',15,4,0],['iQx.',13,6,1],['Anukk',12,5,2],['Revi',8,6,3]],b:[['Visilefox',10,13,1],['Batashi',4,14,2],['DlwImra',4,14,0],['TENNY',2,13,0],["Winter's",2,8,0]]}
 ]}];
+screenshotMatches.forEach(m=>{
+ const aWins=m.maps.filter(x=>x.aScore>x.bScore).length;
+ const bWins=m.maps.filter(x=>x.bScore>x.aScore).length;
+ if(m.maps.length<2||Math.max(aWins,bWins)<2)return;
+ results.push({group:'',a:m.a,b:m.b,winner:aWins>bWins?m.a:m.b,score:aWins+'–'+bWins,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:m.maps});
+});
 const verifiedStats={};
 const additionalMatchStats={};
 // MSR ELO v3: expected outcome by opponent pre-match ELO, round difference, map count and result.
