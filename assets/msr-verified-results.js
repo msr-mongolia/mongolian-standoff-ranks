@@ -11,6 +11,9 @@ const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50
 // Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
 const verifiedRounds={Rust:24,Province:20,Sandstone:23};
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
+// MSR custom rating (not an official Standoff 2 rating). 1.00 represents
+// approximately one kill per round, 0.7 deaths per round and 0.2 assists per round.
+const msrRating=(k,d,a,rounds)=>rounds?Math.max(0,Math.min(3,(0.55*k+0.18*a-0.25*d)/rounds+0.625)).toFixed(2):null;
 function verifiedMainStandings(){
  const summary=document.querySelector('.msr-rr-summary');
  if(!summary||summary.querySelector('.msr-rr-summary-head em')?.textContent?.trim()!=='C')return;
@@ -108,10 +111,11 @@ function verifiedTeamProfiles(){
    const totalLabel=x.k+' K · '+x.d+' D · '+x.a+' A · '+x.rounds+' R · R/A '+roundsPerAssist;
    if(totals&&totals.textContent!==totalLabel)totals.textContent=totalLabel;
    set(3,String(estimatedAdr(x.k,x.a,x.rounds)??'—'));
-   [4,5].forEach(i=>set(i,'—'));
+   set(4,'—'); // KAST requires round-by-round participation data.
+   set(5,String(msrRating(x.k,x.d,x.a,x.rounds)??'—'));
   });
   if(!lineup.querySelector('.msr-team-kda-note')){
-   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR estimated from kills, assists and rounds; KAST and Rating not supplied.';lineup.appendChild(note);
+   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR estimated from kills, assists and rounds; KAST not supplied; Rating is MSR-calculated.';lineup.appendChild(note);
   }
   if(!lineup.querySelector('.msr-team-verified-players')){
    const details=document.createElement('details');details.className='msr-team-verified-players';
