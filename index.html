@@ -1947,6 +1947,18 @@ background-color:#121923!important
 }
 
 </style>
+<style id="msr-xvrn-video-visibility-fix">
+/* XvrN BACK1: video must be visible through stats and roster surfaces, as on KGTSS. */
+#app.msr-clan-profile .msr-xvrn-video-panel{position:relative!important;isolation:isolate!important;overflow:hidden!important;background-image:none!important}
+#app.msr-clan-profile .msr-xvrn-video-panel>.msr-xvrn-back1-video{display:block!important;visibility:visible!important;opacity:1!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:1!important;filter:brightness(.62)!important;pointer-events:none!important}
+#app.msr-clan-profile .msr-xvrn-video-panel>*:not(.msr-xvrn-back1-video){position:relative;z-index:2}
+#app.msr-clan-profile .msr-xvrn-video-panel>.msr-team-gold-sticker{position:absolute!important;z-index:4!important}
+#app.msr-clan-profile .msr-team-stat.msr-xvrn-video-panel,
+#app.msr-clan-profile .msr-team-stats.msr-xvrn-video-panel,
+#app.msr-clan-profile .prof-grid .box.msr-xvrn-video-panel{background:rgba(8,12,23,.35)!important;background-image:none!important}
+#app.msr-clan-profile .msr-xvrn-video-panel::before,
+#app.msr-clan-profile .msr-xvrn-video-panel::after{z-index:0!important;pointer-events:none!important}
+</style>
 <style id="msr-xvrn-back1-all-panels">
 #app .msr-xvrn-video-panel{position:relative!important;isolation:isolate!important;overflow:hidden!important;background-color:#11101c!important}
 #app .msr-xvrn-video-panel>.msr-xvrn-back1-video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;z-index:0!important;pointer-events:none!important;transform:none!important;filter:brightness(.55)!important}
@@ -4493,7 +4505,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   }
 
   function applyXvrnVideoBack1(node){
-    var panels=Array.from(node.querySelectorAll('.prof.msr-xvrn-profile,.msr-team-stats,.msr-team-stat,.prof-grid > .box,.hl-top,.hl-card:has(.hl-grid)'));
+    var panels=Array.from(node.querySelectorAll('.prof.msr-xvrn-profile,.msr-team-stats,.msr-team-stat,.prof-grid > .box,.hl-top,.hl-card:has(.hl-grid),.prof-grid .box,.msr-team-stats .msr-team-stat'));
     if(!panels.length)return;
     var src='assets/ScreenRecording_11-04-2026%2015-07-06_1%20%283%29.mov';
     panels.forEach(function(panel){
