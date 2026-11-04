@@ -5578,6 +5578,23 @@ function verifiedResultsDetail(){
 function apply(){verifiedResultsDetail();verifiedTeamProfiles();verifiedMainStandings();verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
   const group=(section.querySelector('.msr-zone-title h2')?.textContent||'').match(/GROUP\s+([A-F])/i)?.[1];
+  // Group E must show the completed 6LC–DL340 game even if its scheduled card
+  // was omitted from the original round-robin fixture list.
+  if(group==='E'){
+   const match=results.find(r=>r.group==='E'&&r.a==='6LC'&&r.b==='DL340');
+   if(match&&!section.querySelector('[data-msr-finished-group-e="6lc-dl340"]')){
+    const panel=document.createElement('div');
+    panel.dataset.msrFinishedGroupE='6lc-dl340';
+    panel.className='msr-verified-standings msr-verified-result';
+    panel.style.cssText='margin:16px 0;padding:16px;border:1px solid #4b9e75;border-radius:12px;background:rgba(12,35,30,.86)';
+    const title=document.createElement('strong');title.textContent='GROUP E · FINISHED MATCH';panel.appendChild(title);
+    const score=document.createElement('div');score.style.cssText='font-size:19px;font-weight:800;margin:12px 0';score.textContent='6LC  2 – 0  DL340';panel.appendChild(score);
+    const status=document.createElement('div');status.textContent='6LC WIN · DL340 LOSS · Round difference +9 / −9';panel.appendChild(status);
+    match.maps.forEach(m=>{const line=document.createElement('div');line.style.marginTop='7px';line.textContent=m[0]+' · 6LC '+m[1]+'–'+m[2]+' DL340';panel.appendChild(line);});
+    const schedule=section.querySelector('.msr-rr-schedule');
+    if(schedule)schedule.prepend(panel);else section.appendChild(panel);
+   }
+  }
   results.filter(r=>r.group===group).forEach(r=>{
    section.querySelectorAll('.msr-rr-match').forEach(card=>{
     const names=[...card.querySelectorAll('.msr-rr-clan-tag')].map(x=>norm(x.textContent));
