@@ -8,6 +8,29 @@ Province:{WarKz:[['wu °',24,15,2],['softsyko',14,16,3],['УЙЛАНХАЙТ',14
 Sandstone:{WarKz:[['БАТИЛО Prime',22,12,4],['softsyko',23,17,3],['wu °',19,17,4],['Petisha',13,18,3],['УЙЛАНХАЙТ',8,18,3]],'4zi':[['Careley',22,16,3],['RASEL',20,17,3],['art_shisu',14,16,5],['Venn',14,18,0],['FasouXI.666',11,18,3]]}
 };
 const verifiedElo={WarKz:{before:50,after:66,change:16,w:1,l:0},'4zi':{before:50,after:32,change:-18,w:0,l:1}};
+function verifiedMainStandings(){
+ const summary=document.querySelector('.msr-rr-summary');if(!summary)return;
+ const group=summary.querySelector('.msr-rr-summary-head em')?.textContent?.trim();
+ if(group!=='C')return;
+ const body=summary.querySelector('.msr-rr-table tbody');if(!body)return;
+ const rows=[...body.querySelectorAll('tr')];
+ let changed=false;
+ rows.forEach(row=>{
+  const name=norm(row.querySelector('.msr-rr-standing-team')?.textContent||row.cells[1]?.textContent||'');
+  const isWar=name==='warriorkingzz'||name==='warkz';
+  const isFour=name==='toexistwithpurpose'||name==='4zi';
+  if(!isWar&&!isFour)return;
+  const values=isWar?[1,1,0,1,3]:[1,0,1,-1,0];
+  for(let i=0;i<5;i++){const cell=row.cells[i+2];if(cell)cell.textContent=String(values[i]);}
+  row.classList.add(isWar?'msr-standings-win':'msr-standings-loss');
+  row.dataset.msrStandingScore=isWar?'3':'0';
+  changed=true;
+ });
+ if(changed){
+  rows.sort((a,b)=>Number(b.dataset.msrStandingScore||0)-Number(a.dataset.msrStandingScore||0));
+  rows.forEach((row,i)=>{body.appendChild(row);if(row.cells[0])row.cells[0].textContent=String(i+1);});
+ }
+}
 function verifiedGroupExtras(){
  const group=document.querySelector('.msr-rr-card .msr-zone-title h2');
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
@@ -39,7 +62,7 @@ function verifiedPlayerStats(){
 function verifiedRanking(){ /* Main ranking is now sourced from Supabase team points. */ }
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
-function apply(){verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
+function apply(){verifiedMainStandings();verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
   const group=(section.querySelector('.msr-zone-title h2')?.textContent||'').match(/GROUP\s+([A-F])/i)?.[1];
   results.filter(r=>r.group===group).forEach(r=>{
@@ -56,6 +79,6 @@ function apply(){verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
   });
  });
 }
-const style=document.createElement('style');style.textContent='.msr-verified-rank-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:9px 12px;border:1px solid #345f49;border-radius:8px}.msr-verified-rank-line strong{font-size:18px;color:#e5f7e9}.msr-verified-rank-line span{margin-left:auto;color:#9fe7b4}.msr-verified-ranking-note small{display:block;margin-top:10px;color:#9eb5a9}.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
+const style=document.createElement('style');style.textContent='.msr-standings-win{background:rgba(33,148,82,.15)!important}.msr-standings-win td:nth-child(4){color:#6ff0a0!important;font-weight:800}.msr-standings-loss{background:rgba(167,52,63,.10)!important}.msr-standings-loss td:nth-child(5){color:#ff9a9a!important;font-weight:800}.msr-verified-rank-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:9px 12px;border:1px solid #345f49;border-radius:8px}.msr-verified-rank-line strong{font-size:18px;color:#e5f7e9}.msr-verified-rank-line span{margin-left:auto;color:#9fe7b4}.msr-verified-ranking-note small{display:block;margin-top:10px;color:#9eb5a9}.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();
 })();
