@@ -163,6 +163,28 @@ function verifiedTeamProfiles(){
 function verifiedRanking(){ /* Main ranking is now sourced from Supabase team points. */ }
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
+// Shared clan media directory: automatically resolve logos for every finished-match team.
+let msrClanMedia=[];
+async function loadMsrClanMedia(){
+ const config=window.MSR_CONFIG;
+ if(!config?.SUPABASE_URL||!config?.SUPABASE_ANON_KEY)return;
+ try{
+  const response=await fetch(config.SUPABASE_URL+'/rest/v1/msr_discord_teams?select=name,tag,logo_url&limit=1000',{headers:{apikey:config.SUPABASE_ANON_KEY,Authorization:'Bearer '+config.SUPABASE_ANON_KEY}});
+  if(!response.ok)return;
+  const data=await response.json();if(!Array.isArray(data))return;
+  msrClanMedia=data;
+  document.querySelectorAll('.msr-finished-side').forEach(updateFinishedClanMedia);
+ }catch(error){console.warn('MSR clan media unavailable',error);}
+}
+function updateFinishedClanMedia(side){
+ const key=norm(side.dataset.team),clan=msrClanMedia.find(t=>norm(t.tag)===key||norm(t.name)===key);
+ const img=side.querySelector('.msr-finished-logo');
+ if(img&&clan?.logo_url&&/^https:\\/\\//i.test(clan.logo_url)){if(img.src!==clan.logo_url)img.src=clan.logo_url;img.hidden=false;}
+ const names=[side.dataset.team,clan?.name,clan?.tag].filter(Boolean).map(norm);
+ const source=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')].find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&names.includes(norm(v))));
+ const back1=source?.dataset.back1||source?.dataset.teamBack1||source?.dataset.clanBack1;
+ if(back1&&/^(https?:\\/\\/|assets\\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
+}
 function verifiedResultsDetail(){
  if(!location.hash.startsWith('#results'))return;
  const app=document.getElementById('app');if(!app||app.querySelector('.msr-finished-detail'))return;
@@ -191,7 +213,7 @@ function verifiedResultsDetail(){
   const matching=candidates.find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&norm(v)===norm(name)));
   const back1=matching?.dataset.back1||matching?.dataset.teamBack1||matching?.dataset.clanBack1;
   if(back1&&/^(https?:\\/\\/|assets\\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
-  const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);
+  const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);updateFinishedClanMedia(side);
  });section.appendChild(card);
  match.maps.forEach(([map,a,b])=>{
   const details=document.createElement('details');details.className='msr-finished-map';details.open=map===match.maps[0][0];
@@ -229,5 +251,5 @@ function apply(){verifiedResultsDetail();verifiedTeamProfiles();verifiedMainStan
  });
 }
 const style=document.createElement('style');style.textContent='.msr-team-kda-note,.msr-team-verified-players,.msr-verified-match-summary{padding:10px 14px;margin:8px 0;color:#b8ead2;background:rgba(19,75,49,.22);border:1px solid #2b7552;border-radius:8px;font-size:12px}.msr-team-verified-players div{padding:4px 0}.msr-standings-win{background:rgba(33,148,82,.15)!important}.msr-standings-win td:nth-child(4){color:#6ff0a0!important;font-weight:800}.msr-standings-loss{background:rgba(167,52,63,.10)!important}.msr-standings-loss td:nth-child(5){color:#ff9a9a!important;font-weight:800}.msr-verified-rank-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:9px 12px;border:1px solid #345f49;border-radius:8px}.msr-verified-rank-line strong{font-size:18px;color:#e5f7e9}.msr-verified-rank-line span{margin-left:auto;color:#9fe7b4}.msr-verified-ranking-note small{display:block;margin-top:10px;color:#9eb5a9}.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}.msr-finished-detail{box-sizing:border-box;position:relative;left:50%;transform:translateX(-50%);width:calc(100vw - 64px);max-width:1200px;min-width:0;grid-column:1/-1;flex:0 0 auto;align-self:stretch;margin:20px 0;padding:18px;border:1px solid #34445c;border-radius:12px;background:#101827;color:#e7edf8}.msr-finished-detail h2{font-size:20px;margin:0 0 8px}.msr-finished-detail>p{color:#aab9cd;font-size:13px}.msr-finished-teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.msr-finished-side{padding:22px 16px;border-radius:9px;background-color:#192439;background-size:cover;background-position:center;display:flex;justify-content:space-between;gap:10px}.msr-finished-map{border:1px solid #34445c;border-radius:8px;margin:10px 0;overflow:hidden}.msr-finished-map summary{cursor:pointer;padding:13px;font-weight:750;background:#182336}.msr-finished-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px;overflow:auto}.msr-finished-stats>div{min-width:0}.msr-finished-stats table{width:100%;font-size:12px;border-collapse:collapse}.msr-finished-stats th,.msr-finished-stats td{padding:7px;border-bottom:1px solid #304056;text-align:left}.msr-finished-stats h3{font-size:14px;margin:4px 0 8px}@media(max-width:720px){.msr-finished-detail{width:calc(100vw - 24px);padding:12px}.msr-finished-stats{grid-template-columns:1fr}.msr-finished-side{flex-direction:column}}';document.head.appendChild(style);
-let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();
+let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();loadMsrClanMedia();
 })();
