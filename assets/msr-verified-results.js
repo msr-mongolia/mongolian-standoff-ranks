@@ -133,15 +133,7 @@ function verifiedTeamProfiles(){
    set(4,'—'); // KAST requires round-by-round participation data.
    set(5,String(msrRating(x.k,x.d,x.a,x.rounds)??'—'));
   });
-  if(!lineup.querySelector('.msr-team-kda-note')){
-   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR estimated from kills, assists and rounds; KAST not supplied; Rating is MSR-calculated.';lineup.appendChild(note);
-  }
-  if(!lineup.querySelector('.msr-team-verified-players')){
-   const details=document.createElement('details');details.className='msr-team-verified-players';
-   const summary=document.createElement('summary');summary.textContent='Full match roster · K/D and assists';details.appendChild(summary);
-   Object.values(all).sort((a,b)=>b.k-a.k).forEach(x=>{const line=document.createElement('div');line.textContent=x.nick+' · '+x.maps+' maps · '+x.k+' K / '+x.d+' D / '+x.a+' A · K/D '+(x.k/Math.max(1,x.d)).toFixed(2);details.appendChild(line);});
-   lineup.appendChild(details);
-  }
+  lineup.querySelectorAll('.msr-team-kda-note, .msr-team-verified-players').forEach(el=>el.remove());
  }
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(pool){
