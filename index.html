@@ -4989,6 +4989,23 @@ window.MSR_SCREENSHOT_MATCHES=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"Dune","aS
     // Keep rankings consistent after async Discord roster changes. Exclude inactive roster entries.
     PLAYERS.forEach(function (p) { p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
     sortPlayerRanking();
+    // Publish screenshot-verified matches in the actual Results list, not only the extra detail panel.
+    // Resolve live Supabase clan codes so the rows open the correct team profiles.
+    function confirmedTeamCode(tag, namePart) {
+      return Object.keys(T).find(function(c){return String(T[c].tag||'').toUpperCase()===tag && String(T[c].n||'').toLowerCase().includes(namePart);}) ||
+        Object.keys(T).find(function(c){return String(T[c].n||'').toLowerCase().includes(namePart);}) || null;
+    }
+    var verifiedResultsToPublish=[
+      {key:'aim4r-reskk',a:confirmedTeamCode('AIM4R',''),b:confirmedTeamCode('RESKK','asterisk'),maps:[['Sandstone',15,12,'done'],['Dune',13,2,'done']]},
+      {key:'6lc-dl340',a:confirmedTeamCode('6LC','six lence'),b:confirmedTeamCode('DL340',''),maps:[['Dune',13,10,'done'],['Province',13,7,'done']]}
+    ];
+    verifiedResultsToPublish.forEach(function(item,i){
+      if(!item.a||!item.b||item.a===item.b)return;
+      var matchId=990100+i;
+      if(ALLM.some(function(m){return m.id===matchId || (m.state==='done' && ((m.a===item.a&&m.b===item.b)||(m.a===item.b&&m.b===item.a)) && m.maps.length===item.maps.length && m.maps.every(function(map,j){return map[0]===item.maps[j][0];}));}))return;
+      var match={id:matchId,a:item.a,b:item.b,ev:'MSL Major S2',st:'Group '+(i===1?'E':'stage')+' · Bo3',state:'done',day:'Today',date:TODAY,bo:3,maps:item.maps};
+      ALLM.push(match);MBY[match.id]=match;
+    });
     RANK.sort(function (a,b) { return b[1]-a[1]; });
   }
   async function loadDiscordTeams() {
