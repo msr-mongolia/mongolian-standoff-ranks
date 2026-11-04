@@ -5507,7 +5507,7 @@ async function loadMsrClanMedia(){
  }catch(error){console.warn('MSR clan media unavailable',error);}
 }
 function updateFinishedClanMedia(side){
- const key=norm(side.dataset.team),clan=msrClanMedia.find(t=>norm(t.tag)===key||norm(t.name)===key);
+ const key=norm(side.dataset.team),clan=key==='6lc'?msrClanMedia.find(t=>norm(t.name)==='sixlence'):msrClanMedia.find(t=>norm(t.tag)===key||norm(t.name)===key);
  const back1Assets={omv:'assets/omv_back1.svg',etxen:'assets/etxen_back1.png',tlnrs:'assets/lunaris_back1.png'};
  const back1Asset=back1Assets[norm(clan?.tag||side.dataset.team)];
  if(back1Asset){side.dataset.hasBack1='true';side.style.backgroundImage='linear-gradient(90deg,rgba(8,14,27,.88),rgba(8,14,27,.46)),url("'+back1Asset+'")';side.style.backgroundSize='cover';}
