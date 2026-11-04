@@ -5701,8 +5701,8 @@ function verifiedResultsDetail(){
 summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b'),event);matchPanel.appendChild(summary);
  const content=document.createElement('div');content.className='msr-match-expand-content';matchPanel.appendChild(content);
  const finishedDisplayName=(tag)=>tag==='SIXP'?'6LC Purple':tag;
- const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+finishedDisplayName(match.a)+' '+match.score+' '+finishedDisplayName(match.b);content.appendChild(title);
- const subtitle=document.createElement('p');const em=eloMatches[matchIndex];subtitle.textContent='Verified map scores and player K/D/A · '+match.maps.map(m=>m[0]+' '+m[1]+'–'+m[2]).join(' · ')+' · RD '+(em.roundDiff>=0?'+':'')+em.roundDiff+' · '+em.mapCount+' maps · ELO '+finishedDisplayName(match.a)+' '+(em.aChange>=0?'+':'')+em.aChange+' / '+finishedDisplayName(match.b)+' '+(em.bChange>=0?'+':'')+em.bChange;content.appendChild(subtitle);
+ const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+finishedDisplayName(match.a)+' '+match.score+' '+finishedDisplayName(match.b);
+ const subtitle=document.createElement('p');const em=eloMatches[matchIndex];subtitle.textContent='Verified map scores and player K/D/A · '+match.maps.map(m=>m[0]+' '+m[1]+'–'+m[2]).join(' · ')+' · RD '+(em.roundDiff>=0?'+':'')+em.roundDiff+' · '+em.mapCount+' maps · ELO '+finishedDisplayName(match.a)+' '+(em.aChange>=0?'+':'')+em.aChange+' / '+finishedDisplayName(match.b)+' '+(em.bChange>=0?'+':'')+em.bChange;
  const card=document.createElement('div');card.className='msr-finished-teams';
  [[match.a,'WIN · '+match.score.split('–')[0]],[match.b,'LOSS · '+match.score.split('–')[1]]].forEach(([name,status])=>{
   const side=document.createElement('div');side.className='msr-finished-side';
