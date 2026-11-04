@@ -1947,6 +1947,14 @@ background-color:#121923!important
 }
 
 </style>
+<style id="msr-xvrn-pink-theme">
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats,
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats-heading,
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stat{border-color:#F47AB9!important}
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stat{background:linear-gradient(135deg,#12131f 42%,#81365e 100%)!important}
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stat-icon,
+#app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats-heading svg{color:#FF8CC7!important}
+</style>
 <style id="msr-xvrn-gold-sticker">#app .prof.msr-xvrn-profile{position:relative;padding-right:135px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:110px;height:90px;border:0;padding:0;background:transparent;cursor:zoom-in;filter:drop-shadow(0 3px 6px #0009);z-index:4}@media(max-width:650px){#app .prof.msr-xvrn-profile{padding-right:85px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{width:72px;height:62px;right:6px}}</style>
 <style id="msr-team-gold-sticker">
 #app .prof.msr-lunaris-clean{padding-right:125px!important}
@@ -4488,6 +4496,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         // Dark clan branding needs a readable accent on the dark profile surface.
         var accentRGB=/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(accent);
         if(accentRGB)accent=brightSignatureColor(parseInt(accentRGB[1],16),parseInt(accentRGB[2],16),parseInt(accentRGB[3],16));
+        if(/^xiverion divine$/i.test(clan.n||'')) accent='#F47AB9';
         app.style.setProperty('--clan-accent',accent);
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
