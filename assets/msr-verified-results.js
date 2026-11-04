@@ -215,9 +215,15 @@ function verifiedResultsDetail(){
   if(back1&&/^(https?:\/\/|assets\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
   const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);updateFinishedClanMedia(side);
  });section.appendChild(card);
+ const mapCards=document.createElement('div');mapCards.className='msr-finished-map-cards';section.appendChild(mapCards);
  match.maps.forEach(([map,a,b])=>{
-  const details=document.createElement('details');details.className='msr-finished-map';details.open=map===match.maps[0][0];
-  const summary=document.createElement('summary');summary.textContent=map+' · '+match.a+' '+a+'–'+b+' '+match.b;details.appendChild(summary);
+  const details=document.createElement('details');details.className='msr-finished-map';details.open=false;
+  const summary=document.createElement('summary');summary.className='msr-finished-map-tile';
+  const mapTitle=document.createElement('b');mapTitle.textContent=map;summary.appendChild(mapTitle);
+  const scoreLabel=document.createElement('span');scoreLabel.textContent=match.a+' '+a+' – '+b+' '+match.b;summary.appendChild(scoreLabel);
+  details.appendChild(summary);
+  const matchingMap=[...document.querySelectorAll('.msr-rel-map-photo,.msr-map-pool-photo')].find(el=>el.textContent.toLowerCase().includes(map.toLowerCase()));
+  if(matchingMap){const bg=getComputedStyle(matchingMap).backgroundImage;if(bg&&bg!=='none')summary.style.backgroundImage='linear-gradient(0deg,rgba(6,12,23,.86),rgba(6,12,23,.14)), '+bg;}
   const grid=document.createElement('div');grid.className='msr-finished-stats';
   [match.a,match.b].forEach(team=>{
    const group=document.createElement('div');const h=document.createElement('h3');h.textContent=team;group.appendChild(h);
@@ -226,7 +232,7 @@ function verifiedResultsDetail(){
    const body=document.createElement('tbody');
    ((matchIndex===0?verifiedStats:additionalMatchStats)[map][team]||[]).forEach(([nick,k,d,assists])=>{const row=document.createElement('tr');[nick,k,d,assists,(k/Math.max(1,d)).toFixed(2)].forEach(v=>{const td=document.createElement('td');td.textContent=v;row.appendChild(td);});body.appendChild(row);});
    table.appendChild(body);group.appendChild(table);grid.appendChild(group);
-  });details.appendChild(grid);section.appendChild(details);
+  });details.appendChild(grid);mapCards.appendChild(details);
  });
  });
  // Mount once after all match cards are built, independent of the filter markup.
@@ -256,5 +262,6 @@ const style=document.createElement('style');style.textContent='.msr-team-kda-not
 const compactLogoStyle=document.createElement('style');
 compactLogoStyle.textContent='#app .msr-finished-detail .msr-finished-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:100%;overflow:hidden}#app .msr-finished-detail .msr-finished-side{min-width:0;min-height:74px;max-height:100px;overflow:hidden;align-items:center;padding:12px 14px}#app .msr-finished-detail .msr-finished-identity{display:flex;align-items:center;gap:10px;min-width:0;flex:1}#app .msr-finished-detail .msr-finished-logo{display:block!important;width:46px!important;height:46px!important;min-width:46px!important;max-width:46px!important;max-height:46px!important;object-fit:contain!important;flex:0 0 46px!important;border-radius:6px}#app .msr-finished-detail .msr-finished-logo[hidden]{display:none!important}#app .msr-finished-detail .msr-finished-identity strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-finished-detail .msr-finished-side>span{flex:none;font-size:12px}@media(max-width:600px){#app .msr-finished-detail .msr-finished-teams{grid-template-columns:1fr}#app .msr-finished-detail .msr-finished-side{min-height:64px;max-height:82px;flex-direction:row}#app .msr-finished-detail .msr-finished-logo{width:38px!important;height:38px!important;min-width:38px!important;max-width:38px!important;max-height:38px!important;flex-basis:38px!important}}';
 document.head.appendChild(compactLogoStyle);
+const mapCardStyle=document.createElement('style');mapCardStyle.textContent='#app .msr-finished-map-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0 26px}#app .msr-finished-map-cards .msr-finished-map{min-width:0;margin:0;border-radius:12px;overflow:hidden}#app .msr-finished-map-cards .msr-finished-map summary.msr-finished-map-tile{height:135px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;padding:16px 8px!important;background-color:#1b293d;background-position:center;background-size:cover;list-style:none;text-align:center;cursor:pointer}#app .msr-finished-map-cards .msr-finished-map summary::-webkit-details-marker{display:none}#app .msr-finished-map-cards .msr-finished-map summary b{font-size:clamp(15px,2vw,21px);color:#fff;text-shadow:0 2px 5px #000}#app .msr-finished-map-cards .msr-finished-map summary span{font-size:clamp(11px,1.3vw,15px);color:#fff;text-shadow:0 2px 5px #000}#app .msr-finished-map-cards .msr-finished-map[open]{grid-column:span 3}#app .msr-finished-map-cards .msr-finished-map[open] summary{height:135px}@media(max-width:650px){#app .msr-finished-map-cards{gap:7px}#app .msr-finished-map-cards .msr-finished-map summary.msr-finished-map-tile{height:100px;padding:8px 3px!important}#app .msr-finished-map-cards .msr-finished-map summary span{font-size:10px}}';document.head.appendChild(mapCardStyle);
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();loadMsrClanMedia();
 })();
