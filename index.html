@@ -4590,11 +4590,8 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       bg=source?getComputedStyle(source).backgroundImage:'none';
       if((!bg||bg==='none')&&prof)bg=getComputedStyle(prof).backgroundImage;
       if((!bg||bg==='none')&&stats)bg=getComputedStyle(stats).backgroundImage;
-      // Every clan gets a unique visual even when it has no dedicated BACK1.
-      if((!bg||bg==='none'||(!src&&!/url\(/i.test(bg)))&&clan.img){
-        var crest=String(clan.img).replace(/["\\]/g,'');
-        if(/^(?:assets\/|https?:\/|data:image\/)/i.test(crest))bg='linear-gradient(90deg,rgba(9,12,22,.82),rgba(9,12,22,.60)),url("'+crest+'")';
-      }
+      // Do not enlarge the clan avatar/logo into a BACK1 banner.
+      // Without a real BACK1 asset, retain the panel's normal dark background.
     }
     node.querySelectorAll('.prof-grid > .box').forEach(function(panel){
       var header=panel.querySelector(':scope > .panel-h');
@@ -5239,7 +5236,9 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <!-- XvrN sticker: remove baked-in neutral white/gray checkerboard using chroma as alpha. -->
 <svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden" xmlns="http://www.w3.org/2000/svg"><defs><filter id="msr-xvrn-sticker-chroma" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2.5 0 -2.5 0 0"/></filter></defs></svg>
-<style id="msr-xvrn-sticker-transparent">#app .prof.msr-xvrn-profile .msr-team-gold-sticker img{filter:url(#msr-xvrn-sticker-chroma)!important;background:transparent!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{background:transparent!important}</style>
+<style id="msr-xvrn-sticker-transparent">#app .prof.msr-xvrn-profile .msr-team-gold-sticker img{filter:url(#msr-xvrn-sticker-chroma)!important;background:transparent!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{background:transparent!important}#app .msr-clan-panel-header-back1 .panel-h{overflow:hidden;background-repeat:no-repeat;background-position:center;background-size:cover}
+#app .msr-clan-panel-header-back1 .panel-h img:not(.msr-clan-panel-header-video){max-width:72px;max-height:72px;object-fit:contain}
+</style>
 <script defer src="assets/msr-verified-results.js?v=20261104-results-detail-5"></script>
 </body>
 </html>
