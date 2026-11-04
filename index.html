@@ -5669,9 +5669,61 @@ function verifiedResultsDetail(){
  if(filters?.parentElement)filters.parentElement.insertBefore(section,filters);
  else heading.parentElement?.after(section);
 }
+
+// Populate active group standings from verified finished BO3s only.
+// Match IDs remain internal; standings update when group tabs rerender.
+function updateVerifiedGroupStandings(){
+ const root=document.querySelector('#app .msr-rr-summary');
+ if(!root||root.hidden)return;
+ const table=root.querySelector('.msr-rr-standings tbody');
+ if(!table)return;
+ const normKey=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const aliases={sixp:'sixlencepurple',drdrx:'drdrx',dxiii:'dxvil13',tlnrs:'teamlunaris',kngzz:'kingzz',mpct:'impact',kgtss:'knightss',r6:'teamresolve',aim4r:'aim4r',reskk:'asterisk'};
+ const rows=[...table.querySelectorAll('tr')];
+ const teamKey=row=>{
+  const link=row.querySelector('td:nth-child(2) a');
+  const href=link?.getAttribute('href')||'';
+  const match=href.match(/(?:team|clan)[^#]*?([a-z0-9]+)$/i);
+  const name=normKey(row.querySelector('td:nth-child(2)')?.textContent);
+  const img=link?.querySelector('img');
+  return {name,href:href.toLowerCase(),code:match?.[1]?.toLowerCase()||'',img};
+ };
+ const entries=rows.map(teamKey);
+ function findIndex(id){
+  const k=normKey(id),alias=aliases[k]||k;
+  return entries.findIndex(e=>e.name===alias||e.name===k||e.code===k||e.href.endsWith('/'+k)||e.href.endsWith('='+k)||e.href.endsWith('#'+k)||(k==='sixp'&&e.name==='sixlencepurple'));
+ }
+ const stats=rows.map(()=>({mp:0,w:0,l:0,rd:0,pts:0}));
+ screenshotMatches.forEach(m=>{
+  if(m.maps.length<2)return;
+  const ai=findIndex(m.a),bi=findIndex(m.b);
+  if(ai<0||bi<0||ai===bi)return; // Never count cross-group matches.
+  const aw=m.maps.filter(x=>x.aScore>x.bScore).length,bw=m.maps.filter(x=>x.bScore>x.aScore).length;
+  if(Math.max(aw,bw)<2||aw===bw)return;
+  const rd=m.maps.reduce((n,x)=>n+x.aScore-x.bScore,0);
+  const a=stats[ai],b=stats[bi];a.mp++;b.mp++;a.rd+=rd;b.rd-=rd;
+  if(aw>bw){a.w++;a.pts+=3;b.l++;}else{b.w++;b.pts+=3;a.l++;}
+ });
+ rows.forEach((row,i)=>{
+  const cells=row.querySelectorAll('td');if(cells.length<7)return;
+  const v=stats[i],values=[v.mp,v.w,v.l,v.rd,v.pts];
+  [2,3,4,5,6].forEach((col,j)=>{const el=col===6?(cells[col].querySelector('strong')||cells[col]):cells[col];const next=String(values[j]);if(el.textContent!==next)el.textContent=next;});
+ });
+}
+let groupStandingsQueued=false;
+function scheduleVerifiedGroupStandings(){
+ if(groupStandingsQueued)return;groupStandingsQueued=true;
+ requestAnimationFrame(()=>{groupStandingsQueued=false;updateVerifiedGroupStandings();});
+}
+const standingsObserver=new MutationObserver(mutations=>{
+ if(mutations.some(m=>m.type==='childList'&&[...m.addedNodes].some(n=>n.nodeType===1&&(n.matches?.('.msr-rr-summary,.msr-rr-standings,tbody,tr')||n.querySelector?.('.msr-rr-summary,.msr-rr-standings,tbody,tr')))))scheduleVerifiedGroupStandings();
+});
+standingsObserver.observe(document.getElementById('app')||document.body,{subtree:true,childList:true});
+document.addEventListener('click',e=>{if(e.target.closest('button,[role=tab]'))scheduleVerifiedGroupStandings();});
 function apply(){
  // Finished BO3 records belong in Results, not the upcoming Match schedule.
  verifiedResultsDetail();
+ scheduleVerifiedGroupStandings();
  verifiedPlayerStats();
  verifiedTeamProfiles();
  verifiedRanking();
