@@ -5691,7 +5691,7 @@ function updateFinishedClanMedia(side){
   }
  }
  // Use each clan's own stored BACK1, never another team's logo.
- const mediaBack1=[clan?.back1_url,clan?.back1,clan?.background_url,clan?.banner_url,clan?.profile_background_url,clan?.profile_banner_url,clan?.background,clan?.banner].find(v=>typeof v==='string'&&/^(https?:\\/\\/|assets\\/)/i.test(v));
+ const mediaBack1=[clan?.back1_url,clan?.back1,clan?.background_url,clan?.banner_url,clan?.profile_background_url,clan?.profile_banner_url,clan?.background,clan?.banner].find(v=>typeof v==='string'&&/^(https?:\/\/|assets\/)/i.test(v));
  if(mediaBack1)setBack1(mediaBack1);
  const back1Assets={omv:'assets/omv_back1.svg',etxen:'assets/etxen_back1.png',tlnrs:'assets/lunaris_back1.png'};
  const back1Asset=back1Assets[normKey(clan?.tag||side.dataset.team)];
