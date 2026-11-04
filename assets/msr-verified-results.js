@@ -38,7 +38,7 @@ function verifiedRanking(){
  box.textContent='Verified MSL S2 ELO: WarKz 66 (+16, 1W–0L) · 4zi 32 (−18, 0W–1L). These teams are not yet integrated into the main ranking roster.';
  table.closest('.box')?.before(box);
 }
-const norm=s=>String(s||'').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'');
+const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
 function apply(){verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
   const group=(section.querySelector('.msr-zone-title h2')?.textContent||'').match(/GROUP\s+([A-F])/i)?.[1];
