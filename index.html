@@ -2246,6 +2246,7 @@ background-color:#121923!important
 </style>
 <style id="msr-results-clan-logo-fix">#app .msr-finished-identity{display:flex!important;align-items:center!important;gap:12px!important;min-width:0}#app .msr-finished-logo:not([hidden]){display:block!important;visibility:visible!important;width:48px!important;height:48px!important;min-width:48px!important;object-fit:contain!important;flex-shrink:0}#app .msr-finished-side{min-height:74px!important}</style>
 <style id="msr-hltv-summary-logos">#app .msr-hltv-summary-team{display:flex;flex:1;align-items:center;gap:10px;min-width:0}#app .msr-hltv-summary-a{justify-content:flex-end}#app .msr-hltv-summary-b{justify-content:flex-start}#app .msr-hltv-summary-logo:not([hidden]){display:block;width:38px;height:38px;min-width:38px;object-fit:contain}#app .msr-hltv-summary-team strong{flex:0 1 auto!important;white-space:normal}#app .msr-hltv-summary-a strong{text-align:right}#app .msr-hltv-summary-b strong{text-align:left}@media(max-width:650px){#app .msr-hltv-summary-logo:not([hidden]){width:26px;height:26px;min-width:26px}#app .msr-hltv-summary-team{gap:4px}}</style>
+<style id="msr-hltv-back1-panels">#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:66px;padding:8px 14px;border-radius:3px;background-repeat:no-repeat}#app .msr-hltv-summary-team[data-has-back1="true"] strong{color:#fff;text-shadow:0 2px 5px #000,0 0 8px #000}#app .msr-hltv-summary-team[data-has-back1="true"] img{filter:drop-shadow(0 2px 4px #000)}@media(max-width:650px){#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:46px;padding:5px}}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -5640,6 +5641,20 @@ function updateFinishedClanMedia(side){
   msrClanMedia.find(t=>t.id==='ds_31ec2a56babe5861dc79f583')||
   msrClanMedia.find(t=>keys.includes(normKey(t.tag))||keys.includes(normKey(t.name))):
   msrClanMedia.find(t=>keys.includes(normKey(t.tag))||keys.includes(normKey(t.name)));
+ const summarySide=side.closest('.msr-match-expand')?.querySelector('.msr-hltv-summary-'+([...side.parentElement.children].indexOf(side)===0?'a':'b'));
+ const setBack1=(url)=>{
+  if(!url||!/^(https?:\/\/|assets\/)/i.test(url))return;
+  const safe=url.replace(/["\\]/g,'');
+  side.dataset.hasBack1='true';
+  side.style.backgroundImage='linear-gradient(90deg,rgba(8,14,27,.84),rgba(8,14,27,.50)),url("'+safe+'")';
+  side.style.backgroundSize='cover';
+  if(summarySide){
+   summarySide.style.backgroundImage='linear-gradient(90deg,rgba(21,31,43,.80),rgba(21,31,43,.66)),url("'+safe+'")';
+   summarySide.style.backgroundSize='cover';
+   summarySide.style.backgroundPosition='center';
+   summarySide.dataset.hasBack1='true';
+  }
+ };
  const img=side.querySelector('.msr-finished-logo');
  if(img){
   let url=clan?.logo_url;
@@ -5663,11 +5678,11 @@ function updateFinishedClanMedia(side){
  }
  const back1Assets={omv:'assets/omv_back1.svg',etxen:'assets/etxen_back1.png',tlnrs:'assets/lunaris_back1.png'};
  const back1Asset=back1Assets[normKey(clan?.tag||side.dataset.team)];
- if(back1Asset){side.dataset.hasBack1='true';side.style.backgroundImage='linear-gradient(90deg,rgba(8,14,27,.88),rgba(8,14,27,.46)),url("'+back1Asset+'")';side.style.backgroundSize='cover';}
+ if(back1Asset)setBack1(back1Asset);
  const names=[side.dataset.team,clan?.name,clan?.tag].filter(Boolean).map(normKey);
  const source=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')].find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&names.includes(normKey(v))));
  const back1=source?.dataset.back1||source?.dataset.teamBack1||source?.dataset.clanBack1;
- if(back1&&/^(https?:\/\/|assets\/)/i.test(back1)){side.dataset.hasBack1='true';side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';}
+ if(back1)setBack1(back1);
 }
 function verifiedResultsDetail(){
  if(!/^#results(?:\/|$)/i.test(location.hash))return;
