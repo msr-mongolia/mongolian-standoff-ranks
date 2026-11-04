@@ -182,7 +182,7 @@ function updateFinishedClanMedia(side){
  const back1Asset=back1Assets[norm(clan?.tag||side.dataset.team)];
  if(back1Asset){side.dataset.hasBack1='true';side.style.backgroundImage='linear-gradient(90deg,rgba(8,14,27,.88),rgba(8,14,27,.46)),url("'+back1Asset+'")';side.style.backgroundSize='cover';}
  const img=side.querySelector('.msr-finished-logo');
- if(img&&clan?.logo_url&&/^https:\/\//i.test(clan.logo_url)){if(img.src!==clan.logo_url)img.src=clan.logo_url;img.hidden=false;if(!side.dataset.hasBack1){side.style.backgroundImage='linear-gradient(90deg,rgba(15,24,43,.98),rgba(15,24,43,.80)),url("'+clan.logo_url.replace(/"/g,'%22')+'")';side.style.backgroundSize='cover,auto 135%';side.style.backgroundRepeat='no-repeat';side.style.backgroundPosition='center,right 12% center';}}
+ if(img&&clan?.logo_url&&/^https:\/\//i.test(clan.logo_url)){if(img.src!==clan.logo_url)img.src=clan.logo_url;img.hidden=false;if(!side.dataset.hasBack1){side.style.backgroundImage='linear-gradient(90deg,rgba(15,24,43,.98),rgba(15,24,43,.80)),url("'+clan.logo_url.replace(/"/g,'%22')+'")';side.style.backgroundSize='cover,cover';side.style.backgroundRepeat='no-repeat';side.style.backgroundPosition='center,center';}}
  const names=[side.dataset.team,clan?.name,clan?.tag].filter(Boolean).map(norm);
  const source=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')].find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&names.includes(norm(v))));
  const back1=source?.dataset.back1||source?.dataset.teamBack1||source?.dataset.clanBack1;
