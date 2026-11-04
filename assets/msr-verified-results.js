@@ -160,7 +160,7 @@ function verifiedRanking(){ /* Main ranking is now sourced from Supabase team po
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
 function verifiedResultsDetail(){
- if(!/^#results(?:\\b|\\/|$)/.test(location.hash))return;
+ if(!location.hash.startsWith('#results'))return;
  const app=document.getElementById('app');if(!app||app.querySelector('.msr-finished-detail'))return;
  const heading=[...app.querySelectorAll('h1')].find(e=>e.textContent.trim()==='Results');if(!heading)return;
  const section=document.createElement('section');section.className='msr-finished-detail';
