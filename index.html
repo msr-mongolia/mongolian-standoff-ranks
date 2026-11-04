@@ -1947,6 +1947,15 @@ background-color:#121923!important
 }
 
 </style>
+<style id="msr-back1-header-only-override">
+/* BACK1 belongs to the Lineup / Map pool header only, never the table body. */
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-header-back1{background:#11151e!important;background-image:none!important}
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-header-back1>.panel-h{background-size:cover!important;background-position:center!important}
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-header-back1>.scrollx,
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-header-back1 table{background:#11151e!important;background-image:none!important}
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-header-back1 tbody tr{background:rgba(12,16,25,.96)!important}
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-header-back1 tbody tr:nth-child(even){background:rgba(25,30,40,.96)!important}
+</style>
 <style id="msr-all-clans-lineup-map-back1">
 /* Every team uses its own clan artwork behind Lineup and Map Pool.
    Video BACK1 clans keep their existing video backgrounds. */
@@ -4529,7 +4538,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
   function applyXvrnVideoBack1(node){
     // Mirror KGTSS: one moving background per main panel, not separate videos per stat tile.
-    var panels=Array.from(node.querySelectorAll('.prof,.msr-team-stats,.hl-top,.hl-card:has(.hl-grid),.prof-grid > .box'));
+    var panels=Array.from(node.querySelectorAll('.prof,.msr-team-stats,.hl-top,.hl-card:has(.hl-grid)'));
     var src='assets/ScreenRecording_11-04-2026%2015-07-06_1%20%283%29.mov';
     panels.forEach(function(panel){
       if(panel.querySelector(':scope > .msr-knight-back1-video'))return;
@@ -4565,9 +4574,12 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       clan.img?'linear-gradient(90deg,rgba(9,12,22,.78),rgba(9,12,22,.62)),url("'+String(clan.img).replace(/["\\]/g,'')+'")':'';
     if(!bg)return;
     node.querySelectorAll('.prof-grid > .box').forEach(function(panel){
-      if(panel.classList.contains('msr-knight-video-panel'))return;
-      panel.classList.add('msr-clan-panel-back1');
-      panel.style.setProperty('--msr-panel-back1-image',bg);
+      var header=panel.querySelector(':scope > .panel-h');
+      if(!header)return;
+      panel.classList.add('msr-clan-panel-header-back1');
+      header.style.setProperty('background-image',bg,'important');
+      header.style.setProperty('background-size','cover','important');
+      header.style.setProperty('background-position','center','important');
     });
   }
 
