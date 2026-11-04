@@ -2569,6 +2569,9 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   function sortPlayerRanking() {
     applyVerifiedPlayerStats();
     PLAYERS.sort(function (a, b) {
+      var aPlayed=a.verifiedMSR&&Number(a.maps)>0?1:0;
+      var bPlayed=b.verifiedMSR&&Number(b.maps)>0?1:0;
+      if(aPlayed!==bPlayed)return bPlayed-aPlayed;
       // Rank by verified performance first; map sample is a tiebreaker, not a hard exclusion.
       return playerRankScore(b) - playerRankScore(a) ||
         (Number(b.maps) || 0) - (Number(a.maps) || 0);
