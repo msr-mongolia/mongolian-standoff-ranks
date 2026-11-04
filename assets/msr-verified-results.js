@@ -85,12 +85,30 @@ function verifiedTeamProfiles(){
  const lineup=boxes.find(x=>/Lineup/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(lineup){
   const rows=[...lineup.querySelectorAll('tbody tr')];
+  const aliases={'hiro':'venn','hi ro':'venn','petish':'petisha','petishа':'petisha','batilo':'батилопрime','bati lo':'батилопрime','makk':'батилопрime'};
+  const matched=new Set();
+  const updateCells=(row,x)=>{
+   if(!row||!x)return;
+   if(row.cells[1])row.cells[1].textContent=String(x.maps);
+   if(row.cells[2])row.cells[2].textContent=(x.k/Math.max(1,x.d)).toFixed(2);
+   // Damage, KAST and rating cannot be derived from kill/death screenshots.
+   [3,4,5].forEach(i=>{if(row.cells[i])row.cells[i].textContent='—';});
+  };
   rows.forEach(row=>{
-   const nick=norm(row.cells[0]?.textContent||''),x=all[nick];
+   const nick=norm(row.cells[0]?.textContent||'');
+   const key=all[nick]?nick:norm(aliases[nick]||'');
+   const x=all[key];
    if(!x)return;
-   const set=(i,v)=>{if(row.cells[i]&&row.cells[i].textContent.trim()!==String(v))row.cells[i].textContent=String(v);};
-   set(1,x.maps);set(2,(x.k/Math.max(1,x.d)).toFixed(2));
-   // ADR, KAST, Rating are unavailable from the supplied screenshots.
+   matched.add(key);updateCells(row,x);
+  });
+  // The current roster can differ from the players in the verified match.
+  // Display those match participants rather than silently dropping their K/D.
+  const tbody=lineup.querySelector('tbody');
+  if(tbody)Object.keys(all).filter(key=>!matched.has(key)).forEach(key=>{
+   const x=all[key],tr=document.createElement('tr');
+   tr.className='msr-verified-participant';
+   [x.nick+' · match',String(x.maps),(x.k/Math.max(1,x.d)).toFixed(2),'—','—','—'].forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.appendChild(td);});
+   tbody.appendChild(tr);
   });
   if(!lineup.querySelector('.msr-team-kda-note')){
    const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR, KAST and Rating not supplied.';lineup.appendChild(note);
