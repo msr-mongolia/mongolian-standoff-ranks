@@ -3575,6 +3575,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   DEMO.soon.forEach(function (m) { M.push(m); });
   SWISS.rounds = DEMO.swiss.rounds; SWISS.q30 = DEMO.swiss.q30; SWISS.e03 = DEMO.swiss.e03; SWISS.q31 = DEMO.swiss.q31; SWISS.e13 = DEMO.swiss.e13;
   RANK.splice(0, RANK.length); DEMO.rank.forEach(function (r) { RANK.push([r[0],50,0,0,0,'']); });
+  applyVerifiedTeamEloToRank();
   (function () {
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
@@ -5062,6 +5063,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var rows = await response.json();
       if (!Array.isArray(rows)) return;
       mergeDiscordTeams(rows);
+      applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.svg';T[code].c='#ff344c';}});
       try{
         var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
