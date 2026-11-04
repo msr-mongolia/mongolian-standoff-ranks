@@ -2930,7 +2930,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
           h('div',{class:'msr-rr-standings'},
             h('h3',null,'GROUP E STANDINGS'),
             h('div',{class:'msr-rr-table-scroll'},h('table',{class:'msr-rr-table'},
-              h('thead',null,h('tr',null,['#','TEAM','MP','W','L','RD','PTS'].map(function(x){return h('th',null,x);}))),
+              h('thead',null,h('tr',null,['#','TEAM','MP','W','L','PTS'].map(function(x){return h('th',null,x);}))),
               h('tbody',null,[
                 ['INFYX','1nfinityX'],[null,'METAS'],[null,'DRDRX'],['SNT','Starfire Nirvana Team'],['SIXP','SIX LENCE PURPLE'],['MANAI','MANAI'],['OMEN','OMEN ESPORTS']
               ].map(function(item,i){
@@ -2939,7 +2939,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
                 if(!key) key=Object.keys(T).find(function(k){return norm(T[k].n)===norm(name);});
                 return h('tr',null,h('td',null,String(i+1)),
                   h('td',null,key&&T[key]?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,T[key].n)):h('span',null,name)),
-                  [0,0,0,0].map(function(v){return h('td',null,String(v));}),
+                  [0,0,0].map(function(v){return h('td',null,String(v));}),
                   h('td',null,h('strong',{class:'msr-rr-pts'},'0')));
               }))))),
           h('div',{class:'msr-rr-rules'},
@@ -3036,7 +3036,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         entries.forEach(function(item,i){
           var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
           var key=msrRelTeamKey(item[0])||msrRelTeamKey(item[1]);
-          tbody.appendChild(h('tr',null,h('td',null,String(i+1)),h('td',null,key?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,item[0]+(item[1]==='RESKK'?' [RESKK]':''))):h('span',null,item[0])),[0,0,0,0].map(function(v){return h('td',null,String(v));}),h('td',null,h('strong',{class:'msr-rr-pts'},'0'))));
+          tbody.appendChild(h('tr',null,h('td',null,String(i+1)),h('td',null,key?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,item[0]+(item[1]==='RESKK'?' [RESKK]':''))):h('span',null,item[0])),[0,0,0].map(function(v){return h('td',null,String(v));}),h('td',null,h('strong',{class:'msr-rr-pts'},'0'))));
         });
         var facts=summary.querySelectorAll('.msr-rr-facts b'),total=count===8?28:21;
         [count,7,total,count-1].forEach(function(v,i){facts[i].textContent=String(v);});
@@ -5703,10 +5703,10 @@ function updateVerifiedGroupStandings(){
   if(aw>bw){a.w++;a.pts+=3;b.l++;}else{b.w++;b.pts+=3;a.l++;}
  });
  rows.forEach((row,i)=>{
-  const cells=row.querySelectorAll('td');if(cells.length<7)return;
+  const cells=row.querySelectorAll('td');if(cells.length<6)return;
   const v=stats[i];
-  [v.mp,v.w,v.l,v.rd,v.pts].forEach((value,j)=>{
-   const col=j+2,el=col===6?(cells[col].querySelector('strong')||cells[col]):cells[col];
+  [v.mp,v.w,v.l,v.pts].forEach((value,j)=>{
+   const col=j+2,el=col===5?(cells[col].querySelector('strong')||cells[col]):cells[col];
    if(el.textContent!==String(value))el.textContent=String(value);
   });
  });
