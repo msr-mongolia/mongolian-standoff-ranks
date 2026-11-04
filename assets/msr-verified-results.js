@@ -36,20 +36,7 @@ function verifiedPlayerStats(){
  el.innerHTML='<strong>MSL S2 · VERIFIED STATS</strong><div>Maps: '+all.length+' · Kills: '+k+' · Deaths: '+d+' · Assists: '+a+' · K/D: '+(k/Math.max(1,d)).toFixed(2)+'</div><small>Based on screenshots; ADR and KAST unavailable.</small>';
  host.appendChild(el);
 }
-function verifiedRanking(){
- const list=document.querySelector('.ap-list');if(!list||document.querySelector('.msr-verified-ranking-note'))return;
- const box=document.createElement('section');box.className='msr-verified-ranking-note';
- const title=document.createElement('strong');title.textContent='MSL S2 · VERIFIED ELO (Group C)';box.appendChild(title);
- [['WarKz',66,'+16','1W – 0L'],['4Zi',32,'−18','0W – 1L']].forEach(item=>{
-  const line=document.createElement('div');line.className='msr-verified-rank-line';
-  const name=document.createElement('b');name.textContent=item[0];
-  const points=document.createElement('strong');points.textContent=item[1]+' ELO';
-  const change=document.createElement('span');change.textContent=item[2]+' · '+item[3];
-  line.append(name,points,change);box.appendChild(line);
- });
- const note=document.createElement('small');note.textContent='Verified match: WarKz 2–1 4Zi. Provisional ELO, calculated from initial 50. Teams will join the main ranking after their roster records are linked.';box.appendChild(note);
- list.before(box);
-}
+function verifiedRanking(){ /* Main ranking is now sourced from Supabase team points. */ }
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
 function apply(){verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
