@@ -3623,6 +3623,18 @@ window.MSR_SCREENSHOT_MATCHES=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"Dune","aS
   });
 
   var HIST = DEMO.hist;
+  // Verified finished games are part of the native Results data from first render.
+  // Supabase sync may later resolve their canonical team codes; keep one match per ID.
+  var confirmedInitial=[
+    {id:990100,a:'AIM4R',b:'RESKK',ev:'MSL Major S2',st:'Group stage · Bo3',state:'done',day:'Today',date:TODAY,bo:3,maps:[['Sandstone',15,12,'done'],['Dune',13,2,'done']]},
+    {id:990101,a:'6LC',b:'DL340',ev:'MSL Major S2',st:'Group E · Bo3',state:'done',day:'Today',date:TODAY,bo:3,maps:[['Dune',13,10,'done'],['Province',13,7,'done']]}
+  ];
+  confirmedInitial.forEach(function(m){
+    function findCode(tag,name){return Object.keys(T).find(function(code){return String(T[code].tag||'').toUpperCase()===tag && (!name||String(T[code].n||'').toLowerCase().includes(name));})||Object.keys(T).find(function(code){return String(T[code].n||'').toLowerCase().includes(name||tag.toLowerCase());});}
+    m.a=findCode(m.a,m.a==='6LC'?'six lence':'')||m.a;
+    m.b=findCode(m.b,m.b==='RESKK'?'asterisk':'')||m.b;
+    if(T[m.a]&&T[m.b]&&!M.some(function(x){return x.id===m.id;}))M.push(m);
+  });
   var ALLM = M.concat(HIST), MBY = {};
   ALLM.forEach(function (m) { MBY[m.id] = m; });
 
