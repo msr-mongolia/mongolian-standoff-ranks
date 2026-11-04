@@ -179,11 +179,11 @@ async function loadMsrClanMedia(){
 function updateFinishedClanMedia(side){
  const key=norm(side.dataset.team),clan=msrClanMedia.find(t=>norm(t.tag)===key||norm(t.name)===key);
  const img=side.querySelector('.msr-finished-logo');
- if(img&&clan?.logo_url&&/^https:\\/\\//i.test(clan.logo_url)){if(img.src!==clan.logo_url)img.src=clan.logo_url;img.hidden=false;}
+ if(img&&clan?.logo_url&&/^https:\/\//i.test(clan.logo_url)){if(img.src!==clan.logo_url)img.src=clan.logo_url;img.hidden=false;}
  const names=[side.dataset.team,clan?.name,clan?.tag].filter(Boolean).map(norm);
  const source=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')].find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&names.includes(norm(v))));
  const back1=source?.dataset.back1||source?.dataset.teamBack1||source?.dataset.clanBack1;
- if(back1&&/^(https?:\\/\\/|assets\\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
+ if(back1&&/^(https?:\/\/|assets\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
 }
 function verifiedResultsDetail(){
  if(!location.hash.startsWith('#results'))return;
