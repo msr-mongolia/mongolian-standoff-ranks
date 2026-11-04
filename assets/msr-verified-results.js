@@ -89,15 +89,15 @@ function verifiedTeamProfiles(){
   // Never append extra match participants: mutation observers re-run this function.
   const aliases={'hiro':'venn','petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
   rows.forEach(row=>{
-   if(row.classList.contains('msr-verified-participant')){row.remove();return;}
+   if(row.classList.contains('msr-verified-participant')||/\s·\s*match\s*$/i.test(row.cells[0]?.textContent||'')){row.remove();return;}
    const nick=norm(row.cells[0]?.textContent||'');
    const key=Object.prototype.hasOwnProperty.call(all,nick)?nick:norm(aliases[nick]||'');
    const x=all[key];
    if(!x)return;
-   if(row.cells[1])row.cells[1].textContent=String(x.maps);
-   if(row.cells[2])row.cells[2].textContent=(x.k/Math.max(1,x.d)).toFixed(2);
+   const set=(i,v)=>{if(row.cells[i]&&row.cells[i].textContent!==v)row.cells[i].textContent=v;};
+   set(1,String(x.maps));set(2,(x.k/Math.max(1,x.d)).toFixed(2));
    // Do not invent ADR, KAST or rating from kills/deaths alone.
-   [3,4,5].forEach(i=>{if(row.cells[i])row.cells[i].textContent='—';});
+   [3,4,5].forEach(i=>set(i,'—'));
   });
   if(!lineup.querySelector('.msr-team-kda-note')){
    const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='MSL S2 · 3 maps verified · K/D from screenshots. ADR, KAST and Rating not supplied.';lineup.appendChild(note);
