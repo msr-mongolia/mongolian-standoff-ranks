@@ -4655,6 +4655,16 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         }), player_ids: whiteIds });
       }
       if (row.id === 'ds_458bacb8c3562ea7529ea5bb') row = Object.assign({}, row, { tag: 'WarKz' });
+      // Staff-confirmed NAME CHANGE PFP: game ID 255941851 is Bad, not the old device-suffixed nickname.
+      if (row.id === 'ds_752d2420bea0465ec064967f' || String(row.tag||'').toUpperCase()==='DRDRX') {
+        var drIds=Object.assign({},row.player_ids||{});
+        var drRoster=row.roster.map(function(nick){
+          if(String(drIds[nick]||'')!=='255941851')return nick;
+          delete drIds[nick];drIds.Bad='255941851';return 'Bad';
+        });
+        row=Object.assign({},row,{roster:drRoster,player_ids:drIds});
+      }
+
       var code = byName[key(row.name)];
       // CioR White is a separate registered team; never merge it into CioR (COR).
       if (row.id === 'ds_1777105f96769efea0121a7e') code = 'CIORWHITE';
