@@ -1947,6 +1947,19 @@ background-color:#121923!important
 }
 
 </style>
+<style id="msr-all-clans-lineup-map-back1">
+/* Every team uses its own clan artwork behind Lineup and Map Pool.
+   Video BACK1 clans keep their existing video backgrounds. */
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-back1{
+  background-image:linear-gradient(90deg,rgba(9,12,22,.78),rgba(9,12,22,.62)),var(--msr-panel-back1)!important;
+  background-size:cover!important;background-position:center!important;
+  background-repeat:no-repeat!important;
+}
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-back1>.scrollx,
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-back1 table{
+  background:rgba(8,11,20,.24)!important;
+}
+</style>
 <style id="msr-xvrn-kgtss-parity">
 /* Same panel-level video layering as KGTSS; retain XvrN pink trim. */
 #app.msr-clan-profile .msr-xvrn-kgtss-back1{position:relative!important;isolation:isolate!important;overflow:hidden!important;background:#10101b!important}
@@ -4535,6 +4548,18 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
     });
   }
 
+  function applyAllClanPanelBack1(node,clan){
+    if(!clan || !clan.img)return;
+    var isVideo=/^(?:xiverion divine|knightss|2990 white)$/i.test(clan.n||'');
+    if(isVideo)return; // Preserve existing moving BACK1 panels.
+    var src=String(clan.img);
+    if(!/^(?:assets\/|https:\/\/|data:image\/)/i.test(src))return;
+    node.querySelectorAll('.prof-grid > .box').forEach(function(panel){
+      panel.classList.add('msr-clan-panel-back1');
+      panel.style.setProperty('--msr-panel-back1','url("'+src.replace(/["\\]/g,'')+'")');
+    });
+  }
+
   function paint(name, node) {
     if (name !== 'news' && !node.querySelector('.back')) {
       node.insertBefore(h('div', { class: 'ap-top' }, h('button', { type: 'button', class: 'ap-bk', 'aria-label': 'Back', svg: APIC.prev, onclick: goBack })), node.firstChild);
@@ -4563,6 +4588,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
         if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
         if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
         if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
+        if(name==='team')applyAllClanPanelBack1(node,clan);
         if(banner && clan.img && !['ETXEN','TLNRS'].includes(String(clan.tag || '').toUpperCase()) && !/^(ETXEN|TEAM LUNARIS)\b/i.test(clan.n || '')){
           banner.appendChild(h('img',{class:'msr-clan-background-logo','data-clan':clanCode,src:clan.img,alt:'','aria-hidden':'true',decoding:'async'}));
         }
