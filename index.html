@@ -4586,7 +4586,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       var header=panel.querySelector(':scope > .panel-h');
       if(!header||!/^(map pool|lineup)$/i.test((header.querySelector('h2')||{}).textContent||''))return;
       panel.classList.add('msr-clan-panel-header-back1');
-      if(video){
+      if(video && !header.querySelector(':scope > .msr-clan-panel-header-video')){
         var v=video.cloneNode(false);
         v.className='msr-clan-panel-header-video';v.muted=true;v.defaultMuted=true;
         v.autoplay=true;v.loop=true;v.playsInline=true;
@@ -4605,7 +4605,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       node.insertBefore(h('div', { class: 'ap-top' }, h('button', { type: 'button', class: 'ap-bk', 'aria-label': 'Back', svg: APIC.prev, onclick: goBack })), node.firstChild);
     }
     app.textContent = ''; app.appendChild(node);
-    if(name==='team' && node.dataset.msrBack1Team && T[node.dataset.msrBack1Team])applyAllClanPanelBack1(node,T[node.dataset.msrBack1Team]);
+
     syncPlayerClanAvatars(app);
     app.classList.remove('msr-clan-profile');
     app.style.removeProperty('--clan-accent');
@@ -4636,6 +4636,18 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
       }
     }
 
+    if(name==='team' && node.dataset.msrBack1Team && T[node.dataset.msrBack1Team]){
+      var back1Clan=T[node.dataset.msrBack1Team];
+      applyAllClanPanelBack1(node,back1Clan);
+      var back1Code=String(back1Clan.tag||'').toUpperCase();
+      var back1Asset=back1Code==='KGTSS'||/^knightss$/i.test(back1Clan.n||'')?'assets/kgtss_back1_video.json?v=smooth-loop-1':
+        back1Code==='W2990'||/^2990\\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':null;
+      if(back1Asset && msrClanVideoPromises[back1Asset]){
+        msrClanVideoPromises[back1Asset].then(function(){
+          if(node.isConnected)applyAllClanPanelBack1(node,back1Clan);
+        });
+      }
+    }
     app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
     var navName = { article: 'news', team: 'ranking', player: 'players', event: 'events', match: 'matches' }[name] || name;
     [].slice.call(document.querySelectorAll('nav.main a, .snav a')).forEach(function (a) {
