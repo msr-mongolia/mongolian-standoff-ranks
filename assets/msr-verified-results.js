@@ -37,11 +37,20 @@ function verifiedPlayerStats(){
  host.appendChild(el);
 }
 function verifiedRanking(){
- const table=document.querySelector('.t tbody');if(!table||!location.hash.match(/ranking/i)||document.querySelector('.msr-verified-ranking-note'))return;
- const box=document.createElement('div');box.className='msr-verified-ranking-note';
- box.textContent='Verified MSL S2 ELO: WarKz 66 (+16, 1W–0L) · 4zi 32 (−18, 0W–1L). These teams are not yet integrated into the main ranking roster.';
- table.closest('.box')?.before(box);
+ const list=document.querySelector('.ap-list');if(!list||document.querySelector('.msr-verified-ranking-note'))return;
+ const box=document.createElement('section');box.className='msr-verified-ranking-note';
+ const title=document.createElement('strong');title.textContent='MSL S2 · VERIFIED ELO (Group C)';box.appendChild(title);
+ [['WarKz',66,'+16','1W – 0L'],['4Zi',32,'−18','0W – 1L']].forEach(item=>{
+  const line=document.createElement('div');line.className='msr-verified-rank-line';
+  const name=document.createElement('b');name.textContent=item[0];
+  const points=document.createElement('strong');points.textContent=item[1]+' ELO';
+  const change=document.createElement('span');change.textContent=item[2]+' · '+item[3];
+  line.append(name,points,change);box.appendChild(line);
+ });
+ const note=document.createElement('small');note.textContent='Verified match: WarKz 2–1 4Zi. Provisional ELO, calculated from initial 50. Teams will join the main ranking after their roster records are linked.';box.appendChild(note);
+ list.before(box);
 }
+
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
 function apply(){verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
  document.querySelectorAll('.msr-rr-card').forEach(section=>{
@@ -60,6 +69,6 @@ function apply(){verifiedGroupExtras();verifiedPlayerStats();verifiedRanking();
   });
  });
 }
-const style=document.createElement('style');style.textContent='.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
+const style=document.createElement('style');style.textContent='.msr-verified-rank-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:9px 12px;border:1px solid #345f49;border-radius:8px}.msr-verified-rank-line strong{font-size:18px;color:#e5f7e9}.msr-verified-rank-line span{margin-left:auto;color:#9fe7b4}.msr-verified-ranking-note small{display:block;margin-top:10px;color:#9eb5a9}.msr-verified-standings,.msr-verified-player-stats,.msr-verified-ranking-note{margin:12px 0;padding:14px;border:1px solid #3eac72;border-radius:10px;background:#0b1d18;color:#e6f8ec}.msr-verified-standings div,.msr-verified-player-stats div{margin-top:8px}.msr-verified-standings small,.msr-verified-player-stats small{display:block;margin-top:8px;color:#9eb5a9}.msr-verified-result{border-color:#32c979!important}.msr-verified-result .msr-rr-status{background:#133d29!important;color:#79f0aa!important}.msr-verified-result .msr-match-winner{outline:1px solid #35d27b;border-radius:8px}.msr-verified-result .msr-match-loser{opacity:.65}.msr-verified-result .msr-rr-versus{color:#79f0aa!important;font-weight:900!important}';document.head.appendChild(style);
 let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply();});});obs.observe(document.getElementById('app')||document.body,{childList:true,subtree:true});apply();
 })();
