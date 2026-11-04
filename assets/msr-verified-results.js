@@ -137,7 +137,7 @@ function verifiedTeamProfiles(){
    set(4,'—'); // KAST requires round-by-round participation data.
    set(5,String(msrRating(x.k,x.d,x.a,x.rounds)??'—'));
   });
-  lineup.querySelectorAll('.msr-team-kda-note, .msr-team-verified-players').forEach(el=>el.remove());
+  lineup.querySelectorAll('.msr-finished-identity{display:flex;align-items:center;gap:12px;min-width:0}.msr-finished-logo{width:42px;height:42px;object-fit:contain;border-radius:7px;flex:none}.msr-finished-logo[hidden]{display:none}.msr-team-kda-note, .msr-team-verified-players').forEach(el=>el.remove());
  }
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(pool){
@@ -179,7 +179,18 @@ function verifiedResultsDetail(){
   const source=document.querySelector('[data-team="'+name+'"][data-back1], [data-clan="'+name+'"][data-back1]');
   const url=source?.getAttribute('data-back1');
   if(url&&(url.startsWith('assets/')||url.startsWith('https://')||url.startsWith('http://')))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.75),rgba(6,12,23,.42)),url("'+url.replace(/"/g,'%22')+'")';
-  const nameEl=document.createElement('strong');nameEl.textContent=name;side.appendChild(nameEl);
+  const nameWrap=document.createElement('div');nameWrap.className='msr-finished-identity';
+  const logo=document.createElement('img');logo.className='msr-finished-logo';logo.alt=name+' clan logo';logo.loading='lazy';logo.hidden=true;
+  logo.onerror=()=>{logo.hidden=true;};nameWrap.appendChild(logo);
+  const nameEl=document.createElement('strong');nameEl.textContent=name;nameWrap.appendChild(nameEl);side.appendChild(nameWrap);
+  // Logos are stored in the existing public team-logos bucket; keep the correct clan mapping.
+  const clanLogos={'warkz':'https://gqepygqtgosvpfirahgd.supabase.co/storage/v1/object/public/team-logos/ds_458bacb8c3562ea7529ea5bb.jpg','4zi':'https://gqepygqtgosvpfirahgd.supabase.co/storage/v1/object/public/team-logos/ds_61daaa17e019d824782900de.jpg'};
+  const logoUrl=clanLogos[name.toLowerCase()];if(logoUrl){logo.src=logoUrl;logo.hidden=false;}
+  // Resolve BACK1 from the actual team's exposed metadata if available; do not substitute another clan's image.
+  const candidates=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')];
+  const matching=candidates.find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&norm(v)===norm(name)));
+  const back1=matching?.dataset.back1||matching?.dataset.teamBack1||matching?.dataset.clanBack1;
+  if(back1&&/^(https?:\\/\\/|assets\\/)/i.test(back1))side.style.backgroundImage='linear-gradient(90deg,rgba(6,12,23,.82),rgba(6,12,23,.45)),url("'+back1.replace(/"/g,'%22')+'")';
   const score=document.createElement('span');score.textContent=status;side.appendChild(score);card.appendChild(side);
  });section.appendChild(card);
  match.maps.forEach(([map,a,b])=>{
