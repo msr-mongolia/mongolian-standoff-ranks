@@ -4458,7 +4458,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[{"a":"1NFYx","b":"8MNA","maps":[{"map":"
         }
         box.appendChild(mslPanel);
       }
-      var list = ALLM.filter(function (m) { return m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
+      var list = ALLM.filter(function (m) { return m.state !== 'done' && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
       list.forEach(function (m) { if (!seen[m.ev]) { seen[m.ev] = []; groups.push([m.ev, seen[m.ev]]); } seen[m.ev].push(m); });
       groups.forEach(function (g, gi) {
