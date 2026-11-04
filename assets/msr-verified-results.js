@@ -104,7 +104,8 @@ function verifiedTeamProfiles(){
    let totals=row.cells[0]?.querySelector('.msr-total-kills');
    if(!totals&&row.cells[0]){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:nowrap';row.cells[0].appendChild(totals);}
    const pct=(v)=>x.rounds?(100*v/x.rounds).toFixed(1)+'%':'—';
-   const totalLabel=x.k+' K / '+x.d+' D / '+x.a+' A · Kill '+pct(x.k)+' · Assist '+pct(x.a)+' · K+A '+pct(x.k+x.a)+' ('+x.rounds+' rounds)';
+   const roundsPerAssist=x.a?(x.rounds/x.a).toFixed(2):'—';
+   const totalLabel=x.k+' K / '+x.d+' D / '+x.a+' A · Kill '+pct(x.k)+' · Rounds/Assist '+roundsPerAssist+' ('+x.rounds+' rounds)';
    if(totals&&totals.textContent!==totalLabel)totals.textContent=totalLabel;
    set(3,String(estimatedAdr(x.k,x.a,x.rounds)??'—'));
    [4,5].forEach(i=>set(i,'—'));
