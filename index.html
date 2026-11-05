@@ -2580,6 +2580,8 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     PLAYERS.forEach(function (p, i) { p.rank = p.team && T[p.team] ? ++activeRank : 0; p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
   }
   sortPlayerRanking();
+  // Registered roster names only; screenshot-only temporary entries are excluded.
+  window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(PLAYERS.filter(p=>!p.screenshotOnly).map(p=>String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'')))];
 
   /* ================= small builders ================= */
   function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; return h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); }
@@ -5802,6 +5804,12 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
     [p.nick,p.k,p.d,p.a,(p.k/Math.max(1,p.d)).toFixed(2),msrRating(p.k,p.d,p.a,p.rounds)||'—'].forEach((v,idx)=>{
      const td=document.createElement('td');
      if(idx===0){const link=document.createElement('a');link.href='#player/'+encodeURIComponent(p.nick)+'/'+encodeURIComponent(team);link.textContent=p.nick;td.appendChild(link);
+      const registeredNames=window.MSR_REGISTERED_PLAYER_NAMES||[];
+      const cleanName=String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'');
+      if(registeredNames.length&&!registeredNames.includes(cleanName)){
+       link.style.color='#ff5555';link.style.fontWeight='700';
+       link.title='Player name not found in registered site roster';
+      }
       if(mvp&&mvp.team===team&&mvp.key===String(p.nick).normalize('NFKC').toLowerCase()){
        const tag=document.createElement('strong');tag.textContent=' MVP';tag.className='mvp';td.appendChild(tag);
       }}
