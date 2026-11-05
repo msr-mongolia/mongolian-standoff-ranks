@@ -5933,7 +5933,7 @@ function updateVerifiedGroupStandings(){
  const table=root.querySelector('.msr-rr-standings tbody');
  if(!table)return;
  const rawLabel=(document.querySelector('#app [data-active-group]')?.getAttribute('data-active-group')||root.querySelector('.msr-rr-standings h3')?.textContent||root.querySelector('.msr-rr-summary-head em')?.textContent||'').trim().toUpperCase();
- const label=rawLabel.match(/(?:GROUP\\s*)?([A-F])(?:\\s*STANDINGS)?/)?.[1]||rawLabel;
+ const label=rawLabel.match(/GROUP\s+([A-F])\s+STANDINGS/)?.[1]||(/^[A-F]$/.test(rawLabel)?rawLabel:null);
  const groupCodes={
   A:['uclt','IMTLL','ACCA','SCLAT','0TR','OMV','AIM4R','RESKK'],
   B:['2990','EknZ','CioR','B2Di','EVKZ','MSDTP','NNRDS','Humn7'],
