@@ -4387,6 +4387,12 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       host.textContent = ''; sb.textContent = '';
       var rows = filterRows(PROWS[nick] || [], F), g = agg(rows);
       var recent = rows.slice().sort(function (a, b) { return b.date - a.date || b.m.id - a.m.id || b.mi - a.mi; });
+      if (!rows.length && p.verifiedMSR && Number(p.maps)>0 && F.days==='all' && F.ev==='all' && F.map==='all') {
+        var rds=Number(p.rounds)||0;
+        [['Rating',(Number(p.rating)||0).toFixed(2)],['K/D',(Number(p.kd)||0).toFixed(2)],['ADR','—'],['KAST','—'],['Kills / round',rds?(Number(p.kills)/rds).toFixed(2):'—'],['Deaths / round',rds?(Number(p.deaths)/rds).toFixed(2):'—'],['Maps played',String(p.maps)]].forEach(function(c){sb.appendChild(statTile(c[0],c[1],c[0]==='Rating'));});
+        host.appendChild(h('div',{class:'empty'},'Verified match totals are available; individual map history is not linked yet.'));
+        return;
+      }
       if (!rows.length) { host.appendChild(h('div', { class: 'empty' }, 'No maps recorded for these filters.')); [['Rating','0'],['K/D','0.00'],['ADR','0.0'],['KAST','0%'],['Kills / round','0.00'],['Deaths / round','0.00'],['Maps played','0']].forEach(function(c){sb.appendChild(statTile(c[0],c[1],c[0]==='Rating'));}); return; }
       var cards = [['Rating', g.rating.toFixed(2), 1], ['K/D', g.kd.toFixed(2)], ['ADR', g.adr.toFixed(1)], ['KAST', g.kast.toFixed(1) + '%'], ['Kills / round', g.kpr.toFixed(2)], ['Deaths / round', g.dpr.toFixed(2)], ['Maps played', rows.length]];
       cards.forEach(function(c){sb.appendChild(statTile(c[0],c[1],c[2]));});
