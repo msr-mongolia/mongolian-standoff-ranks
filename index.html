@@ -5952,8 +5952,8 @@ function updateFinishedClanMedia(side){
  // No BACK1 of its own (and no video one): use the team's logo as the row background instead.
  if(summarySide&&!videoUrl&&summarySide.dataset.hasBack1!=='true'&&img&&!img.hidden&&img.src){
   const logoBg=img.src.replace(/["\\\s]/g,'');
-  summarySide.style.backgroundImage='linear-gradient(90deg,rgba(21,31,43,.86),rgba(21,31,43,.72)),url("'+logoBg+'")';
-  summarySide.style.backgroundSize='auto 170%,auto 170%';
+  summarySide.style.backgroundImage='linear-gradient(90deg,rgba(21,31,43,.70),rgba(21,31,43,.55)),url("'+logoBg+'")';
+  summarySide.style.backgroundSize='cover,100% 100%';
   summarySide.style.backgroundPosition='center,center';
   summarySide.style.backgroundRepeat='no-repeat';
   summarySide.dataset.hasBack1='true';
