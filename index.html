@@ -5642,11 +5642,12 @@ function verifiedTeamProfiles(){
   if(note.textContent!==noteText)note.textContent=noteText;
  }
  const form=document.querySelector('.form.left');
- if(form&&form.dataset.msrVerifiedForm!=='1'){form.dataset.msrVerifiedForm='1';form.replaceChildren();const el=document.createElement('i');el.className=won?'w':'l';el.textContent=won?'W':'L';form.appendChild(el);}
- if(stats&&!stats.querySelector('.msr-verified-match-summary')){
-  const info=document.createElement('div');info.className='msr-verified-match-summary';
-  info.textContent='Verified matches: '+teamMatches.length+' · Wins: '+wins+' · Losses: '+(teamMatches.length-wins);
-  stats.appendChild(info);
+ if(form&&teamMatches.length){const latest=teamMatches[teamMatches.length-1];const latestWin=latest.winner===code;const status=latestWin?'W':'L';if(form.dataset.msrVerifiedForm!==status){form.dataset.msrVerifiedForm=status;form.replaceChildren();const el=document.createElement('i');el.className=latestWin?'w':'l';el.textContent=status;form.appendChild(el);}}
+ if(stats){
+  let info=stats.querySelector('.msr-verified-match-summary');
+  if(!info){info=document.createElement('div');info.className='msr-verified-match-summary';stats.appendChild(info);}
+  const summary='Verified matches: '+teamMatches.length+' · Wins: '+wins+' · Losses: '+(teamMatches.length-wins);
+  if(info.textContent!==summary)info.textContent=summary;
  }
 }
 function verifiedRanking(){document.getElementById('msr-verified-live-standings')?.remove();}
