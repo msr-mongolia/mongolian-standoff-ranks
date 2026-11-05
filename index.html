@@ -3769,6 +3769,25 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   var PROWS = {};
   // Preserve recorded match rows; do not erase imported player statistics.
   PMROWS.forEach(function (r) { (PROWS[r.nick] = PROWS[r.nick] || []).push(r); });
+  // Verified screenshot rows: 6LC vs DL340, preserving each map for player profile filters.
+  // Damage and KAST were not present in the screenshots: keep them zero, never fabricate them.
+  (function(){
+    var maps=[
+      {map:'Dune',R:23,teams:{'6LC':[['VorK1ng',33,15,4],['Ryo',25,13,3],['Mitsk',14,14,3],['Coldshi',11,17,3],['Nikko',9,18,6]],'DL340':[['Zenith.',21,19,3],['Genius',16,18,6],['209',14,18,6],['Cavendish.',13,21,4],['luxxus',11,17,0]]}},
+      {map:'Province',R:20,teams:{'6LC':[['VorK1ng',27,14,4],['Coldshi',17,15,2],['Mitsk',17,13,4],['Ryo',11,17,5],['Nikko',9,16,4]],'DL340':[['209',15,17,4],['Cavendish.',14,17,6],['luxxus',18,16,2],['Genius',14,16,4],['Zenith.',12,17,1]]}}
+    ];
+    maps.forEach(function(m){
+      Object.keys(m.teams).forEach(function(tag){
+        var codes=Object.keys(T).filter(function(code){return String((T[code]||{}).tag||'').toUpperCase()===tag;});
+        if(codes.length!==1)return;
+        m.teams[tag].forEach(function(p){
+          var row={nick:p[0],team:codes[0],map:m.map,R:m.R,k:p[1],d:p[2],a:p[3],adr:0,kast:0,rating:Math.max(0,Math.min(3,(.55*p[1]+.18*p[3]-.25*p[2])/m.R+.625))};
+          var list=PROWS[p[0]]||(PROWS[p[0]]=[]);
+          if(!list.some(function(x){return x.team===row.team&&x.map===row.map;}))list.push(row);
+        });
+      });
+    });
+  })();
   PLAYERS.forEach(function (p) {
     var g = agg(PROWS[p.nick] || []);
     if (g.n) { p.maps = g.n; p.kills = g.k; p.deaths = g.d; p.kd = +g.kd.toFixed(2); }
