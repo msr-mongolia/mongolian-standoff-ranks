@@ -5877,6 +5877,7 @@ function updateVerifiedGroupStandings(){
  const canonical=v=>aliases[key(v)]||key(v);
  const rows=[...table.querySelectorAll('tr')];
  const byTeam=new Map(codes.map(code=>[canonical(code),{mp:0,w:0,l:0,rd:0,pts:0}]));
+ const touched=new Set();
  const rowFor=code=>rows.find(row=>{
   const cell=row.querySelectorAll('td')[1];if(!cell)return false;
   const link=cell.querySelector('a[href^="#team/"]');
@@ -5891,11 +5892,13 @@ function updateVerifiedGroupStandings(){
   const aw=m.maps.filter(x=>x.aScore>x.bScore).length;
   const bw=m.maps.filter(x=>x.bScore>x.aScore).length;
   if(m.maps.length<2||Math.max(aw,bw)<2||aw===bw)return;
+  touched.add(canonical(m.a));touched.add(canonical(m.b));
   const rd=m.maps.reduce((n,x)=>n+x.aScore-x.bScore,0);
   a.mp++;b.mp++;a.rd+=rd;b.rd-=rd;
   if(aw>bw){a.w++;a.pts+=3;b.l++;}else{b.w++;b.pts+=3;a.l++;}
  });
  for(const code of codes){
+  if(!touched.has(canonical(code)))continue;
   const row=rowFor(code),v=byTeam.get(canonical(code));if(!row||!v)continue;
   const cells=row.querySelectorAll('td');if(cells.length<6)continue;
   [[2,v.mp],[3,v.w],[4,v.l],[5,v.pts]].forEach(([col,value])=>{
