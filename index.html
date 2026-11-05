@@ -5781,7 +5781,29 @@ async function loadMsrClanMedia(){
   const data=await response.json();if(!Array.isArray(data))return;
   msrClanMedia=data;
   document.querySelectorAll('.msr-finished-side').forEach(updateFinishedClanMedia);
+  syncMsrResultCrests();
  }catch(error){console.warn('MSR clan media unavailable',error);}
+}
+function syncMsrResultCrests(){
+ // Use the registered clan's logo for Results rows, not a missing T[code].img.
+ const normKey=v=>String(v||'').normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'');
+ const aliases={omv:'omnisover',otr:'clanonetruereign',evkz:'everlasted',msdtp:'chingiswarriors'};
+ document.querySelectorAll('#app .mrow').forEach(row=>{
+  row.querySelectorAll('.t').forEach(side=>{
+   const label=side.querySelector('span:not(.crest)')?.textContent||'';
+   const key=normKey(label);
+   const clan=msrClanMedia.find(t=>normKey(t.name)===key)||
+     msrClanMedia.find(t=>normKey(t.tag)===key)||
+     msrClanMedia.find(t=>Object.entries(aliases).some(([tag,name])=>name===key&&normKey(t.tag)===tag));
+   const url=clan?.logo_url;
+   const crest=side.querySelector('.crest');
+   if(!crest||!url||!/^https:\/\//i.test(url))return;
+   crest.style.backgroundImage='url("'+url.replace(/["\\]/g,'')+'")';
+   crest.style.backgroundPosition='center';
+   crest.style.backgroundSize='cover';
+   crest.textContent='';
+  });
+ });
 }
 function updateFinishedClanMedia(side){
  const normKey=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
