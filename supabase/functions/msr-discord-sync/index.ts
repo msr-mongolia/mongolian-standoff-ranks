@@ -6,9 +6,10 @@ const norm=(s:string)=>s.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/
 function parse(content:string){
  const lines=content.replace(/[*\x60]/g,'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
  const clean=(s:string)=>s.replace(/^[\s✔✓✅️🇲🇳🇨🇳<>\-]+/gu,'').replace(/^[\s#•\-–—:：『』【】<>👑]+|[\s『』【】]+$/gu,'').trim();
+ const lead=(s:string)=>clean(clean(s).replace(/^(?:\[\s*[xX✔✓]?\s*\]|["'“”«»])\s*/u,''));
  const namePattern=/^(?:(?:clan|team)\s*name|name|team|багийн\s*нэр|баг|bagiin\s*ner|bagiin\s*name)\s*[:：=\/\-]\s*(.*)$/i;
  let name='';
- for(let i=0;i<lines.length;i++){const m=clean(lines[i]).match(namePattern);if(m){name=clean(m[1]||lines[i+1]||'');break;}}
+ for(let i=0;i<lines.length;i++){const m=lead(lines[i]).match(namePattern);if(m){name=clean(m[1]||lines[i+1]||'');break;}}
  if(!name && lines[0] && !/\d{5,}|https?:|captain|roster|main|sub|бүртгэл|registration/i.test(lines[0])) name=clean(lines[0]);
  const tag=lines.map(s=>clean(s).match(/^(?:(?:clan|team|bagiin|багийн)\s*)?(?:tag|таг)\s*[:：=\/\-]\s*(.+)$/i)).find(Boolean)?.[1]?.replace(/[『』\[\]]/g,'').trim()||'';
  if(!name||name.length>100||!norm(name))return null;
@@ -127,7 +128,7 @@ Deno.serve(async(req)=>{
     // Preserve newer roster corrections until the Discord post is edited again.
     if(prev && Date.parse(prev.source_timestamp)>Date.parse(timestamp))continue;
     if(prev && prev.source_message_id!==m.id && Date.parse(prev.source_timestamp)>=Date.parse(timestamp))continue;
-    if(prev && prev.logo_url && JSON.stringify(prev.roster)===JSON.stringify(team.roster) && prev.name===team.name && prev.tag===team.tag && Object.keys(prev.player_ids||{}).length && Date.parse(prev.source_timestamp) >= Date.parse(timestamp)) continue;
+    if(prev && prev.logo_url && JSON.stringify(prev.roster)===JSON.stringify(team.roster) && prev.name===team.name && (team.tag||prev.tag)===prev.tag && Object.keys(prev.player_ids||{}).length && Date.parse(prev.source_timestamp) >= Date.parse(timestamp)) continue;
     const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(team.name_key)))).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,24);
     const id=prev?.id||'ds_'+hash;
     const attachments=[...(source.attachments||[]),...(m.attachments||[])];const embeds=[...(source.embeds||[]),...(m.embeds||[])];
@@ -137,7 +138,7 @@ Deno.serve(async(req)=>{
       image=await logo(imageLinks.map(url=>({url})),id).catch(()=>null);
       console.log('wonderart_logo_diagnostic',JSON.stringify({attachments:attachments.map(a=>({type:a.content_type,size:a.size,filename:a.filename,host: (()=>{try{return new URL(a.url).hostname}catch{return ''}})()})),embeds:embeds.length,imageLinks:imageLinks.length,snapshot:!!snapshot,uploaded:!!image}));
     }
-    const row={...team,source_message_id:m.id,source_timestamp:timestamp,updated_at:new Date().toISOString(),...(image?{logo_url:image}:{})};
+    const row={...team,tag:team.tag||prev?.tag||'',source_message_id:m.id,source_timestamp:timestamp,updated_at:new Date().toISOString(),...(image?{logo_url:image}:{})};
     if(prev)await db('msr_discord_teams?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(row),headers:{Prefer:'return=minimal'}});
     else await db('msr_discord_teams',{method:'POST',body:JSON.stringify({id,...row}),headers:{Prefer:'return=minimal'}});
     map.set(team.name_key,{id,...row});imported++;
