@@ -5156,7 +5156,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       return Object.keys(T).find(function(c){return String(T[c].tag||'').toUpperCase()===tag && String(T[c].n||'').toLowerCase().includes(namePart);}) ||
         Object.keys(T).find(function(c){return String(T[c].n||'').toLowerCase().includes(namePart);}) || null;
     }
-    var verifiedResultsToPublish=[];
+    var verifiedResultsToPublish=[{a:confirmedTeamCode('OMV','omnis')||'OMV',b:confirmedTeamCode('0TR','one true reign')||'0TR',maps:[['Province',14,17,'done'],['Rust',9,13,'done']]}];
         verifiedResultsToPublish.forEach(function(item,i){
       if(!item.a||!item.b||item.a===item.b)return;
       var matchId=990100+i;
