@@ -2599,12 +2599,10 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   sortPlayerRanking();
   // Registered roster names only; screenshot-only temporary entries are excluded.
   window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(PLAYERS.filter(p=>!p.screenshotOnly).map(p=>String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')))];
-  // Only registered players, with clan tag and verified game ID where available.
+  // Build roster after game IDs initialize; referencing GAME_IDS here crashed the app.
   window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(p=>!p.screenshotOnly).map(p=>({
-    nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,
-    gameId:String(GAME_IDS[p.team+'|'+String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'')]||'')
+    nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,gameId:''
   }));
-
 
   /* ================= small builders ================= */
   function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; return h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); }
