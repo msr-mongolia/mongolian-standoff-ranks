@@ -5966,9 +5966,24 @@ function verifiedResultsDetail(){
  const heading=[...app.querySelectorAll('h1,h2')].find(e=>/results/i.test(e.textContent.trim()))||app.querySelector('h1,h2')||app;
  const section=document.createElement('section');section.className='msr-finished-detail msr-click-to-expand';
  const intro=document.createElement('p');intro.className='msr-results-intro';intro.textContent='Finished matches · Tap a match to see maps, player stats and ELO';section.appendChild(intro);
+ const msrMatchSchedule=(ta,tb)=>{
+  const G={"A":["uclt","IMTLL","ACCA","SCLAT","OTR","OMV","AIM4R","RESKK"],"B":["2990","EknZ","CioR","EVKZ","MSDTP","NNRDS","Humn7"],"C":["KngZz","Mpct","7ADD","ETXEN","UxrN","Rvurz","4zi","WarKz"],"D":["0kz","CioR","DXIII","TLnrs","DL340","6LC","R4GE7","XvrN"],"E":["INFYX","METAS","DRDRX","SNT","SIXP","MANAI","OMEN"],"F":["2990 Purple","R6","KGTSS","WOART","-aN0T","6vmp6","EKS"]};
+  const R8=[[[0,1],[2,3],[4,5],[6,7]],[[0,3],[1,5],[2,7],[4,6]],[[0,5],[3,7],[1,6],[2,4]],[[0,7],[5,6],[3,4],[1,2]],[[0,6],[7,4],[5,2],[3,1]],[[0,4],[6,2],[7,1],[5,3]],[[0,2],[4,1],[6,3],[7,5]]];
+  const RF=[[[2,1],[4,3],[6,5]],[[0,1],[2,5],[4,6]],[[0,3],[1,5],[2,4]],[[0,5],[3,6],[1,4]],[[0,6],[5,4],[3,2]],[[0,4],[6,2],[3,1]],[[0,2],[6,1],[5,3]]];
+  const al={'1nfyx':'infyx','8mna':'manai','sixp':'6lc','0tr':'otr','2990red':'2990','2990white':'2990'};
+  const nk=t=>{const k=String(t||'').toLowerCase().replace(/[^a-z0-9]/g,'');return al[k]||k;};
+  const a=nk(ta),b=nk(tb);
+  for(const g of Object.keys(G)){
+   const keys=G[g].map(nk);const i=keys.indexOf(a),j=keys.indexOf(b);
+   if(i<0||j<0||i===j)continue;
+   const rounds=g==='F'?RF:R8;
+   for(let d=0;d<rounds.length;d++)if(rounds[d].some(x=>(x[0]===i&&x[1]===j)||(x[0]===j&&x[1]===i)))return {group:g,day:d+1,date:d+4};
+  }
+  return null;
+ };
  results.forEach((match,matchIndex)=>{
  const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);
- const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');event.textContent='MSL S2 · BO3';const summaryLogo=(team,position)=>{
+ const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=msrMatchSchedule(match.a,match.b);event.textContent=(sched?'GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL S2 · ')+'BO3';if(sched)event.title='Group '+sched.group+' · Day '+sched.day+' (scheduled date: Nov '+sched.date+')';const summaryLogo=(team,position)=>{
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
  const logo=document.createElement('img');logo.className='msr-hltv-summary-logo';logo.alt=team+' logo';logo.hidden=true;
  const title=document.createElement('strong');title.textContent=team==='SIXP'?'6LC Purple':team;
