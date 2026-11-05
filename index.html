@@ -5238,6 +5238,11 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         return String(team.tag||'').toLowerCase()===item.tag.toLowerCase()||
           (item.tag==='TLnrs'&&String(team.n||'').toLowerCase()==='team lunaris')||(item.tag==='DXIII'&&String(team.n||'').toLowerCase()==='dxiii');
       });
+      // Never resolve an ambiguous clan TAG to an unrelated team.
+      if(!match){
+        var verifiedName=({'2990':'2990 RED','EknZ':'EliteKingZz','NNRDS':'NeonRiderSS','SIXP':'SIX LENCE PURPLE','6LC':'Six Lence','OTR':'Clan-One True Reign'})[item.tag];
+        if(verifiedName)match=Object.keys(T).find(function(code){return String(T[code].n||'').toLowerCase()===verifiedName.toLowerCase();});
+      }
       if(!match)return;
       var row=RANK.find(function(x){return x[0]===match;});
       if(!row){row=[match,50,0,0,0,''];RANK.push(row);}
