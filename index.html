@@ -3091,7 +3091,22 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         entries.forEach(function(item,i){
           var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
           var key=msrRelTeamKey(item[0])||msrRelTeamKey(item[1]);
-          tbody.appendChild(h('tr',null,h('td',null,String(i+1)),h('td',null,key?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,item[0]+(item[1]==='RESKK'?' [RESKK]':''))):h('span',null,item[0])),[0,0,0].map(function(v){return h('td',null,String(v));}),h('td',null,h('strong',{class:'msr-rr-pts'},'0'))));
+          var teamCode=norm(item[1]),aliases={otr:'0tr',infyx:'1nfyx',sixp:'6lcpurple'};
+          var normCode=function(v){var n=norm(v);return aliases[n]||n;};
+          var groupMatches=(window.MSR_SCREENSHOT_MATCHES||[]).filter(function(m){
+            return entries.some(function(t){return normCode(t[1])===normCode(m.a);})&&entries.some(function(t){return normCode(t[1])===normCode(m.b);});
+          });
+          var played=0,wins=0,losses=0;
+          groupMatches.forEach(function(m){
+            var aw=m.maps.filter(function(x){return x.aScore>x.bScore;}).length;
+            var bw=m.maps.filter(function(x){return x.bScore>x.aScore;}).length;
+            if(m.maps.length<2||aw===bw||Math.max(aw,bw)<2)return;
+            var isA=normCode(m.a)===normCode(teamCode),isB=normCode(m.b)===normCode(teamCode);
+            if(!isA&&!isB)return;
+            played++;
+            if((isA&&aw>bw)||(isB&&bw>aw))wins++;else losses++;
+          });
+          tbody.appendChild(h('tr',null,h('td',null,String(i+1)),h('td',null,key?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,item[0]+(item[1]==='RESKK'?' [RESKK]':''))):h('span',null,item[0])),[played,wins,losses].map(function(v){return h('td',null,String(v));}),h('td',null,h('strong',{class:'msr-rr-pts'},String(wins*3)))));
         });
         var facts=summary.querySelectorAll('.msr-rr-facts b'),total=count===8?28:21;
         [count,7,total,count-1].forEach(function(v,i){facts[i].textContent=String(v);});
