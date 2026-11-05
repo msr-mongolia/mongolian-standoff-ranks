@@ -84,7 +84,90 @@
           11
         ]
       ],
-      "winner": "ETXEN"
+      "winner": "ETXEN",
+      "canonicalTeams": [
+        "ETXEN MgL",
+        "Ascendd"
+      ],
+      "siteProfileEvidence": {
+        "etxen": {
+          "rank": 22,
+          "points": 50,
+          "matches": 0
+        },
+        "ascendd": {
+          "rank": 27,
+          "points": 50,
+          "matches": 0
+        }
+      },
+      "provincePlayers": {
+        "etxen": [
+          [
+            "Tetsu.",
+            20,
+            3,
+            18
+          ],
+          [
+            "Xyronメ",
+            19,
+            1,
+            15
+          ],
+          [
+            "Xesv",
+            21,
+            5,
+            20
+          ],
+          [
+            "kamuri.",
+            17,
+            4,
+            17
+          ],
+          [
+            "arc",
+            13,
+            1,
+            19
+          ]
+        ],
+        "ascendd": [
+          [
+            "PIKAsad",
+            23,
+            1,
+            14
+          ],
+          [
+            "Genius 帝",
+            18,
+            1,
+            17
+          ],
+          [
+            "tselmegforever",
+            22,
+            2,
+            20
+          ],
+          [
+            "xannunu",
+            12,
+            5,
+            20
+          ],
+          [
+            "Xx",
+            11,
+            2,
+            19
+          ]
+        ]
+      },
+      "note": "Province screenshot repeated; do not double count. Profile screenshots confirm canonical team names, but do not establish Game IDs or live ledger updates."
     }
   ]
 }
