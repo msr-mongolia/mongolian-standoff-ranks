@@ -6195,6 +6195,8 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
  const filters=app.querySelector('.results-filter-shell,.flt');
  if(filters?.parentElement)filters.parentElement.insertBefore(section,filters);
  else heading.parentElement?.after(section);
+ // The old filter bar and its empty-list message are not used any more: finished matches are listed above by day.
+ {const shell=app.querySelector('.results-filter-shell');if(shell){shell.style.setProperty('display','none','important');const nx=shell.nextElementSibling;if(nx&&/No results match/i.test(nx.textContent||''))nx.style.setProperty('display','none','important');}}
 }
 
 // Populate active group standings from verified finished BO3s only.
