@@ -22,9 +22,19 @@ function parse(content:string){
    .split(/\s*[-–—]?\s*\bdev(?:ice)?\s*[-:：]?/i)[0]
    .split(/\b(?:iphone|ipad|ip\s*\d|ios|honor|redmi|samsung|poco|rog|realme|lenovo|tecno|infinix|red\s*magic)/i)[0]
    .replace(/^(?:ign)\s*[-:：]?\s*/i,'').replace(/[亗乂]/gu,'').replace(/\s+\d{1,2}\s*(?:pro|max|plus|pm)\b.*$/i,'')
-   .replace(/\b[A-Z0-9]{8,}\b/g,s=>/\d/.test(s)&&/[A-Z]/.test(s)?'':s)
+   .replace(/\b[A-Z0-9]{8,}\b/g,(s,_o,all)=>/\d/.test(s)&&/[A-Z]/.test(s)&&String(all).trim()!==s?'':s)
    .replace(/[\s–—:/~-]*\bID\s*[:：-]?\s*$/i,'')
    .replace(/[\s–—:/~\-\[\]]+$/g,'').replace(/^[\s–—:/~\-\[\]>＞›»]+/g,'').trim();
+ }
+ // Final tidy-up of a parsed nickname: list artifacts, device names, role labels.
+ const NICK_FIX:Record<string,string>={'5 1330':'1330','7 Vibes?':'Vibes','8 Ign-ApriL':'ApriL'};
+ function finalNick(n:string){
+  if(Object.prototype.hasOwnProperty.call(NICK_FIX,n))return NICK_FIX[n];
+  let v=n.replace(/^ign\s*[:：-]\s*/i,'').replace(/^ign(?=[A-Z0-9])/,'');
+  v=v.replace(/\s*\(\s*(?:leader|captain|cap)\s*\)\s*$/i,'');
+  v=v.replace(/\s+(?:one\s*plus|oneplus)\b.*$/i,'');
+  if(/\(\s*$/.test(v))v=v.replace(/\s*[:：][^:()]*\(\s*$/,'').replace(/[\s\-–]*\(\s*$/,'');
+  return v.replace(/[\s–—:/~\-\[\]]+$/g,'').trim()||n;
  }
  for(let i=0;i<lines.length;i++){
   const line=lines[i];
@@ -34,7 +44,7 @@ function parse(content:string){
   const brackets=line.match(/\[([^\]]{1,40})\]\s*\[\d{5,12}\]/);
   if(brackets)prefix=brackets[1];
   else if(/^\s*(?:[-#•~]\s*)?ID\s*[:：-]?\s*[—–-]?\s*$/i.test(prefix)) prefix=lines[i-1]||'';
-  const nick=nickname(prefix);
+  const nick=finalNick(nickname(prefix));
   if(!nick||nick.length>40||/https?:|clan|captain|roster|^main$|^sub$|name\s*:/i.test(nick)||/\d{5,}/.test(nick))continue;
   if(!roster.includes(nick))roster.push(nick); player_ids[nick]=match[0];
  }
