@@ -3725,6 +3725,10 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   // Supabase sync may later resolve their canonical team codes; keep one match per ID.
   // Previous screenshot results cleared for the new season baseline.
   var ALLM = M.concat(HIST), MBY = {};
+  // Verified OMV vs One True Reign result: insert before first Results render, independent of Supabase sync.
+  if (!ALLM.some(function(m){return m.state==='done' && ((m.a==='OMV'&&m.b==='0TR')||(m.a==='0TR'&&m.b==='OMV')) && m.maps.some(function(x){return x[0]==='Province';});})) {
+    ALLM.push({id:990100,a:'OMV',b:'0TR',ev:'MSL Major S2',st:'Group A · Bo3',state:'done',day:'Today',date:TODAY,bo:3,maps:[['Province',14,17,'done'],['Rust',9,13,'done']]});
+  }
   ALLM.forEach(function (m) { MBY[m.id] = m; });
 
   var PBY = {};
@@ -5156,7 +5160,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       return Object.keys(T).find(function(c){return String(T[c].tag||'').toUpperCase()===tag && String(T[c].n||'').toLowerCase().includes(namePart);}) ||
         Object.keys(T).find(function(c){return String(T[c].n||'').toLowerCase().includes(namePart);}) || null;
     }
-    var verifiedResultsToPublish=[{a:confirmedTeamCode('OMV','omnis')||'OMV',b:confirmedTeamCode('0TR','one true reign')||'0TR',maps:[['Province',14,17,'done'],['Rust',9,13,'done']]}];
+    var verifiedResultsToPublish=[]; // Native Results populated at initial load.
         verifiedResultsToPublish.forEach(function(item,i){
       if(!item.a||!item.b||item.a===item.b)return;
       var matchId=990100+i;
