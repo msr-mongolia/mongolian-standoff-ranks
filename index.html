@@ -6178,7 +6178,6 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
    const now=new Date(),todayD=now.getMonth()===10?now.getDate():0;
    let sel=0,center=dates[dates.length-1];
    const strip=document.createElement('div');strip.className='ap-days msr-res-days';
-   const allBtn=document.createElement('button');allBtn.type='button';allBtn.className='msr-res-all';
    const draw=()=>{
     strip.textContent='';
     const mk=(txt,fn,cls,label)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=txt;if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b;};
@@ -6188,16 +6187,14 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
      const b=document.createElement('button');b.type='button';b.className='ap-day'+(n===sel?' on':'');
      const bb=document.createElement('b');bb.textContent=('0'+dd.getDate()).slice(-2);const sp=document.createElement('span');sp.textContent=n===todayD?'Today':wd;
      if(!dates.includes(n))b.style.opacity='.45';
-     b.append(bb,sp);b.addEventListener('click',()=>{sel=n;center=n;draw();});strip.appendChild(b);
+     b.append(bb,sp);b.addEventListener('click',()=>{sel=(sel===n)?0:n;center=n;draw();});strip.appendChild(b);
     });
     strip.appendChild(mk('›',()=>{center=Math.min(10,center+1);draw();},'ap-arrow','Later'));
-    allBtn.textContent=sel?'Show all days':'All days ✓';allBtn.classList.toggle('on',!sel);
     let shown=0;section.querySelectorAll('.msr-match-expand').forEach(e=>{const ok=!sel||+e.dataset.day===sel;e.style.display=ok?'':'none';if(ok)shown++;});
     let empty=section.querySelector('.msr-res-empty');if(!empty){empty=document.createElement('p');empty.className='msr-results-intro msr-res-empty';empty.textContent='No finished matches on this day.';section.appendChild(empty);}
     empty.style.display=shown?'none':'';
    };
-   allBtn.addEventListener('click',()=>{sel=0;draw();});
-   section.insertBefore(allBtn,section.querySelector('.msr-match-expand'));section.insertBefore(strip,allBtn);
+   section.insertBefore(strip,section.querySelector('.msr-match-expand'));
    draw();
   }
  }
