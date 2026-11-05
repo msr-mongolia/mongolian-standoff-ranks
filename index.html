@@ -5282,7 +5282,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.svg';T[code].c='#ff344c';}});
       try{
         var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
-        if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows;}
+        if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
       }catch(_relError){}
 
       if (/^(ranking|team|players|player|stats|event|events|matches)(\/|$)/.test(H)) route();
