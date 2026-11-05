@@ -5992,7 +5992,7 @@ function verifiedResultsDetail(){
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
  const logo=document.createElement('img');logo.className='msr-hltv-summary-logo';logo.alt=team+' logo';logo.hidden=true;
  const title=document.createElement('strong');title.textContent=team==='SIXP'?'6LC Purple':team;
- const won=match.winner===team;wrap.classList.add(won?'msr-team-won':'msr-team-lost');const stamp=document.createElement('em');stamp.className='msr-stamp '+(won?'msr-stamp-win':'msr-stamp-loss');stamp.textContent=won?'WIN':'LOSS';
+ const won=match.winner===team;wrap.classList.add(won?'msr-team-won':'msr-team-lost');const stamp=document.createElement('em');stamp.className='msr-stamp '+(won?'msr-stamp-win':'msr-stamp-loss');stamp.textContent=won?'WIN':(((match.auto||{}).a||0)+((match.auto||{}).b||0)?'AUTO':'LOSS');
  wrap.append(logo,title,stamp);return wrap;
 };
 summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b'),event);matchPanel.appendChild(summary);
@@ -6030,7 +6030,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
    const t=document.createElement('div');t.className='mt msr-finished-side msr-mh-team';t.dataset.team=name;
    const lg=document.createElement('img');lg.className='msr-finished-logo';lg.alt=name+' logo';lg.hidden=true;lg.onerror=()=>{lg.hidden=true;};
    const nm=document.createElement('b');nm.textContent=finishedDisplayName(name);
-   const badge=document.createElement('em');badge.className='msr-stamp '+(won?'msr-stamp-win':'msr-stamp-loss');badge.textContent=won?'WIN':'LOSS';
+   const badge=document.createElement('em');badge.className='msr-stamp '+(won?'msr-stamp-win':'msr-stamp-loss');badge.textContent=won?'WIN':(((match.auto||{}).a||0)+((match.auto||{}).b||0)?'AUTO':'LOSS');
    const eloT=document.createElement('span');eloT.textContent='ELO '+after+' ('+(change>=0?'+':'')+change+')';
    t.append(lg,nm,badge,eloT);t.style.cursor='pointer';t.addEventListener('click',e=>{e.stopPropagation();location.hash=teamHash(name);});return t;
   };
