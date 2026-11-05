@@ -2975,7 +2975,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       return code ? h('a', { class: 'msr-zone-team', href: teamHref(code) }, crest(code, 'md'), h('span', null, T[code].n))
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
-    var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
+    var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
@@ -3888,7 +3888,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 
   function msrRelTeamKey(name){
     var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},n=norm(name);
-    var fixed={ '6lcpurple':'SIXP','8mna':'MANAI','1nfyx':'INFYX' };
+    var fixed={ '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','8mna':'MANAI','1nfyx':'INFYX' };
     if(fixed[n]&&T[fixed[n]])return fixed[n];
     var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk'};
     var wanted=norm(aliases[n]||name),keys=Object.keys(T);
@@ -5168,10 +5168,11 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     // Publish screenshot-verified matches in the actual Results list, not only the extra detail panel.
     // Resolve live Supabase clan codes so the rows open the correct team profiles.
     function confirmedTeamCode(tag, namePart) {
+      if(tag==='OTR'||tag==='0TR')return Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));})||null;
       return Object.keys(T).find(function(c){return String(T[c].tag||'').toUpperCase()===tag && String(T[c].n||'').toLowerCase().includes(namePart);}) ||
         Object.keys(T).find(function(c){return String(T[c].n||'').toLowerCase().includes(namePart);}) || null;
     }
-    var verifiedResultsToPublish=[{a:confirmedTeamCode('OMV','omnis over'),b:confirmedTeamCode('0TR','one true reign'),maps:[['Province',14,17],['Rust',9,13]]}];
+    var verifiedResultsToPublish=[{a:confirmedTeamCode('OMV','omnis over'),b:confirmedTeamCode('OTR','one true reign'),maps:[['Province',14,17],['Rust',9,13]]}];
         verifiedResultsToPublish.forEach(function(item,i){
       if(!item.a||!item.b||item.a===item.b)return;
       var matchId=990100+i;
@@ -5183,7 +5184,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   }
   // Keep verified match ELO in the actual MSR Ranking, not a separate table.
   function applyVerifiedTeamEloToRank(){
-    var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"0TR","points":71,"change":21,"w":1,"l":0}];
+    var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
     (window.MSR_SCREENSHOT_MATCHES||[]).filter(function(m){
       return (m.a==='NNRDS'&&m.b==='Humn7')||(m.a==='2990'&&m.b==='EknZ');
@@ -5199,10 +5200,12 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         adjustments.push({tag:tag,points:after,change:after-before,w:x[2]?1:0,l:x[2]?0:1});
       });
     });
+    Object.keys(T).forEach(function(code){if(/one true reign/i.test(String(T[code].n||'')))T[code].tag='OTR';});
     adjustments.forEach(function(item){
       var match=Object.keys(T).find(function(code){
         var team=T[code]||{};
         if(item.tag==='SIXP')return code==='SIXP';
+        if(item.tag==='OTR')return /one true reign/i.test(String(team.n||''));
         return String(team.tag||'').toLowerCase()===item.tag.toLowerCase()||
           (item.tag==='TLnrs'&&String(team.n||'').toLowerCase()==='team lunaris')||(item.tag==='DXIII'&&String(team.n||'').toLowerCase()==='dxiii');
       });
@@ -5965,7 +5968,7 @@ function updateVerifiedGroupStandings(){
  const rawLabel=(document.querySelector('#app [data-active-group]')?.getAttribute('data-active-group')||root.querySelector('.msr-rr-standings h3')?.textContent||root.querySelector('.msr-rr-summary-head em')?.textContent||'').trim().toUpperCase();
  const label=rawLabel.match(/GROUP\s+([A-F])\s+STANDINGS/)?.[1]||(/^[A-F]$/.test(rawLabel)?rawLabel:null);
  const groupCodes={
-  A:['uclt','IMTLL','ACCA','SCLAT','0TR','OMV','AIM4R','RESKK'],
+  A:['uclt','IMTLL','ACCA','SCLAT','OTR','OMV','AIM4R','RESKK'],
   B:['2990','EknZ','CioR','B2Di','EVKZ','MSDTP','NNRDS','Humn7'],
   C:['KngZz','Mpct','7ADD','ETXEN','UxrN','Rvurz','4zi','WarKz'],
   D:['0kz','CioR','DXIII','TLnrs','DL340','6LC','R4GE7','XvrN'],
@@ -5974,7 +5977,7 @@ function updateVerifiedGroupStandings(){
  };
  const codes=groupCodes[label];if(!codes)return;
  const key=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
- const aliases={"otr":"0tr","ontruereign":"0tr","clanonetruereign":"0tr","omnisover":"omv","ulseratifcolitis":"uclt","immortaldynasy":"imtll","immortaldynasty":"imtll","accacin":"acca","scarlet":"sclat","asteriskreskk":"reskk","asterisk":"reskk","teamresolve":"r6","knightss":"kgtss","1nfyx":"infyx","1nfinityx":"infyx","6lcpurple":"sixp","sixlencepurple":"sixp","manai":"8mna","teamlunaris":"tlnrs","lunaris":"tlnrs","impact":"mpct","warriorkingzz":"warkz","omegaforcez":"0kz","civilizationofruin":"cior","sixlence":"6lc","differentlevel":"dl340","diffrentlevel":"dl340","diffirentlevel":"dl340","differntlevel":"dl340","dxvil13":"dxiii","neonriderss":"nnrds","human4z":"humn7","human7":"humn7","elitekingzz":"eknz","2990red":"2990"};
+ const aliases={"0tr":"otr","ontruereign":"otr","clanonetruereign":"otr","omnisover":"omv","ulseratifcolitis":"uclt","immortaldynasy":"imtll","immortaldynasty":"imtll","accacin":"acca","scarlet":"sclat","asteriskreskk":"reskk","asterisk":"reskk","teamresolve":"r6","knightss":"kgtss","1nfyx":"infyx","1nfinityx":"infyx","6lcpurple":"sixp","sixlencepurple":"sixp","manai":"8mna","teamlunaris":"tlnrs","lunaris":"tlnrs","impact":"mpct","warriorkingzz":"warkz","omegaforcez":"0kz","civilizationofruin":"cior","sixlence":"6lc","differentlevel":"dl340","diffrentlevel":"dl340","diffirentlevel":"dl340","differntlevel":"dl340","dxvil13":"dxiii","neonriderss":"nnrds","human4z":"humn7","human7":"humn7","elitekingzz":"eknz","2990red":"2990"};
  const canonical=v=>aliases[key(v)]||key(v);
  const rows=[...table.querySelectorAll('tr')];
  const byTeam=new Map(codes.map(code=>[canonical(code),{mp:0,w:0,l:0,rd:0,pts:0}]));
