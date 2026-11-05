@@ -5807,9 +5807,10 @@ async function loadMsrClanMedia(){
   syncMsrResultCrests();
  }catch(error){console.warn('MSR clan media unavailable',error);}
 }
+loadMsrClanMedia();
 function syncMsrResultCrests(){
  // Use the registered clan's logo for Results rows, not a missing T[code].img.
- const normKey=v=>String(v||'').normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'');
+ const normKey=v=>String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
  const aliases={omv:'omnisover',otr:'clanonetruereign',evkz:'everlasted',msdtp:'chingiswarriors'};
  document.querySelectorAll('#app .mrow').forEach(row=>{
   row.querySelectorAll('.t').forEach(side=>{
@@ -5841,13 +5842,34 @@ function updateFinishedClanMedia(side){
   kgtss:['kgtss','knightss'],
   r6:['r6','teamresolve'],
   aim4r:['aim4r'],
-  '6lc':['6lc','sixlence']
+  '6lc':['6lc','sixlence'],
+  imtll:['imtll','immortaldynasy','immortaldynasty'],
+  otr:['otr','0tr','clanonetruereign','onetruereign'],
+  evkz:['evkz','everlasted'],
+  msdtp:['msdtp','chingiswarriors'],
+  omv:['omv','omnisover'],
+  nnrds:['nnrds','neonriderss'],
+  humn7:['humn7','human4z'],
+  eknz:['eknz','elitekingzz'],
+  uclt:['uclt','ulseratifcolitis'],
+  acca:['acca','accacin'],
+  sclat:['sclat','scarlet'],
+  '0kz':['0kz','omegaforcez'],
+  dl340:['dl340','diffirentlevel'],
+  rvurz:['rvurz','reveursinc'],
+  mpct:['mpct','imp4ct'],
+  uxrn:['uxrn','unioquisteesports'],
+  kngzz:['kngzz','kingzz'],
+  warkz:['warkz','warriorkingzz'],
+  '4zi':['4zi','toexistwithpurpose']
  };
  const keys=aliasMap[key]||[key];
- const clan=key==='reskk'?
+ const clan=key==='2990'?
+  msrClanMedia.find(t=>normKey(t.name)==='2990red'):
+  key==='reskk'?
   msrClanMedia.find(t=>t.id==='ds_31ec2a56babe5861dc79f583')||
-  msrClanMedia.find(t=>keys.includes(normKey(t.tag))||keys.includes(normKey(t.name))):
-  msrClanMedia.find(t=>keys.includes(normKey(t.tag))||keys.includes(normKey(t.name)));
+  msrClanMedia.find(t=>keys.includes(normKey(t.name)))||msrClanMedia.find(t=>keys.includes(normKey(t.tag))):
+  msrClanMedia.find(t=>keys.includes(normKey(t.name)))||msrClanMedia.find(t=>keys.includes(normKey(t.tag)));
  const summarySide=side.closest('.msr-match-expand')?.querySelector('.msr-hltv-summary-'+([...side.parentElement.children].indexOf(side)===0?'a':'b'));
  const setBack1=(url)=>{
   if(!url||!/^(https?:\/\/|assets\/)/i.test(url))return;
