@@ -5597,10 +5597,10 @@ const verifiedRounds={Rust:24,Province:20,Sandstone:23};
 const matchRounds={KngZz:{Dune:15,Rust:20},mpct:{Dune:15,Rust:20}};
 function resolveMsrTeam(value){
  const key=norm(value);
- const alias={'6lcpurple':'SIXP','sixlencepurple':'SIXP','infyx':'1NFYx','manai':'8MNA','teamlunaris':'TLnrs','lunaris':'TLnrs'};
+ const alias={'6lcpurple':'SIXP','sixlencepurple':'SIXP','infyx':'1NFYx','manai':'8MNA','teamlunaris':'TLnrs','lunaris':'TLnrs','everlasted':'EVKZ','evkz':'EVKZ','etxenmgl':'ETXEN','ascendd':'7ADD','omnisover':'OMV'};
  const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]))];
  const fromRecords=msrClanMedia.find(t=>[t.tag,t.name,t.id].some(v=>norm(v)===key));
- const target=fromRecords?.tag||alias[key]||value;
+ const target=alias[key]||alias[norm(fromRecords?.name)]||alias[norm(fromRecords?.tag)]||fromRecords?.tag||value;
  return known.find(t=>norm(t)===norm(target))||known.find(t=>norm(t)===key)||target;
 }
 function verifiedPlayerRows(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick,map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
