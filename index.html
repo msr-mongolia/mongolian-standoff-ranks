@@ -5169,6 +5169,21 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   // Keep verified match ELO in the actual MSR Ranking, not a separate table.
   function applyVerifiedTeamEloToRank(){
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"0TR","points":71,"change":21,"w":1,"l":0}];
+    // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
+    (window.MSR_SCREENSHOT_MATCHES||[]).filter(function(m){
+      return (m.a==='NNRDS'&&m.b==='Humn7')||(m.a==='2990'&&m.b==='EknZ');
+    }).forEach(function(m){
+      var count=m.maps.length,aw=m.maps.filter(x=>x.aScore>x.bScore).length,bw=count-aw;
+      if(!count||aw===bw)return;
+      var diff=m.maps.reduce((n,x)=>n+x.aScore-x.bScore,0);
+      var mult=1+0.08*Math.max(0,count-2);
+      var da=Math.max(-40,Math.min(35,Math.round((32*((aw>bw?1:0)-0.5)+1.4*diff/count)*mult)));
+      var db=Math.max(-40,Math.min(35,Math.round((32*((bw>aw?1:0)-0.5)-1.1*diff/count)*mult)));
+      [[m.a,da,aw>bw],[m.b,db,bw>aw]].forEach(function(x){
+        var tag=x[0],before=50,after=Math.max(0,Math.min(300,before+x[1]));
+        adjustments.push({tag:tag,points:after,change:after-before,w:x[2]?1:0,l:x[2]?0:1});
+      });
+    });
     adjustments.forEach(function(item){
       var match=Object.keys(T).find(function(code){
         var team=T[code]||{};
@@ -5944,7 +5959,7 @@ function updateVerifiedGroupStandings(){
  };
  const codes=groupCodes[label];if(!codes)return;
  const key=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
- const aliases={"otr":"0tr","ontruereign":"0tr","clanonetruereign":"0tr","omnisover":"omv","ulseratifcolitis":"uclt","immortaldynasy":"imtll","immortaldynasty":"imtll","accacin":"acca","scarlet":"sclat","asteriskreskk":"reskk","asterisk":"reskk","teamresolve":"r6","knightss":"kgtss","1nfyx":"infyx","1nfinityx":"infyx","6lcpurple":"sixp","sixlencepurple":"sixp","manai":"8mna","teamlunaris":"tlnrs","lunaris":"tlnrs","impact":"mpct","warriorkingzz":"warkz","omegaforcez":"0kz","civilizationofruin":"cior","sixlence":"6lc","differentlevel":"dl340","diffrentlevel":"dl340","diffirentlevel":"dl340","differntlevel":"dl340","dxvil13":"dxiii"};
+ const aliases={"otr":"0tr","ontruereign":"0tr","clanonetruereign":"0tr","omnisover":"omv","ulseratifcolitis":"uclt","immortaldynasy":"imtll","immortaldynasty":"imtll","accacin":"acca","scarlet":"sclat","asteriskreskk":"reskk","asterisk":"reskk","teamresolve":"r6","knightss":"kgtss","1nfyx":"infyx","1nfinityx":"infyx","6lcpurple":"sixp","sixlencepurple":"sixp","manai":"8mna","teamlunaris":"tlnrs","lunaris":"tlnrs","impact":"mpct","warriorkingzz":"warkz","omegaforcez":"0kz","civilizationofruin":"cior","sixlence":"6lc","differentlevel":"dl340","diffrentlevel":"dl340","diffirentlevel":"dl340","differntlevel":"dl340","dxvil13":"dxiii","neonriderss":"nnrds","human4z":"humn7","human7":"humn7","elitekingzz":"eknz","2990red":"2990"};
  const canonical=v=>aliases[key(v)]||key(v);
  const rows=[...table.querySelectorAll('tr')];
  const byTeam=new Map(codes.map(code=>[canonical(code),{mp:0,w:0,l:0,rd:0,pts:0}]));
