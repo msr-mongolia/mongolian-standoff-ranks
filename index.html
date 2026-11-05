@@ -6407,8 +6407,11 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
   days[0].parentNode.parentNode.insertBefore(bar,days[0].parentNode);
   show(cur);
  }
- function run(){document.querySelectorAll('.msr-rr-card').forEach(setup);}
- new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ var q=false;
+ function run(){q=false;var c=document.querySelectorAll('.msr-rr-card:not([data-daytabs])');for(var i=0;i<c.length;i++)setup(c[i]);}
+ function sched(){if(q)return;q=true;requestAnimationFrame(run);}
+ var host=document.getElementById('app')||document.body;
+ new MutationObserver(function(m){for(var i=0;i<m.length;i++){var n=m[i].addedNodes;for(var j=0;j<n.length;j++){var e=n[j];if(e.nodeType===1&&(e.matches&&e.matches('.msr-rr-card,.msr-zones,.msr-zone-grid')||e.querySelector&&e.querySelector('.msr-rr-card'))){sched();return;}}}}).observe(host,{childList:true,subtree:true});
  run();
 })();
 </script>
