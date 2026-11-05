@@ -5944,7 +5944,7 @@ function updateVerifiedGroupStandings(){
  };
  const codes=groupCodes[label];if(!codes)return;
  const key=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
- const aliases={'otr':'0tr','ontruereign':'0tr','omnisover':'omv','1nfyx':'infyx','1nfinityx':'infyx','6lcpurple':'sixp','sixlencepurple':'sixp','manai':'8mna','teamlunaris':'tlnrs','lunaris':'tlnrs','impact':'mpct','warriorkingzz':'warkz','omegaforcez':'0kz','civilizationofruin':'cior','sixlence':'6lc','differentlevel':'dl340','diffrentlevel':'dl340','diffirentlevel':'dl340','differntlevel':'dl340','dxvil13':'dxiii'};
+ const aliases={"otr":"0tr","ontruereign":"0tr","clanonetruereign":"0tr","omnisover":"omv","ulseratifcolitis":"uclt","immortaldynasy":"imtll","immortaldynasty":"imtll","accacin":"acca","scarlet":"sclat","asteriskreskk":"reskk","asterisk":"reskk","teamresolve":"r6","knightss":"kgtss","1nfyx":"infyx","1nfinityx":"infyx","6lcpurple":"sixp","sixlencepurple":"sixp","manai":"8mna","teamlunaris":"tlnrs","lunaris":"tlnrs","impact":"mpct","warriorkingzz":"warkz","omegaforcez":"0kz","civilizationofruin":"cior","sixlence":"6lc","differentlevel":"dl340","diffrentlevel":"dl340","diffirentlevel":"dl340","differntlevel":"dl340","dxvil13":"dxiii"};
  const canonical=v=>aliases[key(v)]||key(v);
  const rows=[...table.querySelectorAll('tr')];
  const byTeam=new Map(codes.map(code=>[canonical(code),{mp:0,w:0,l:0,rd:0,pts:0}]));
