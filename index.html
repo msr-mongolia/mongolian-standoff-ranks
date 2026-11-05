@@ -5452,23 +5452,32 @@ const verifiedStats={};
 const additionalMatchStats={};
 // MSR ELO v3: expected outcome by opponent pre-match ELO, round difference, map count and result.
 // All six confirmed matches began at 50 ELO. The per-match delta is capped to +35/-40.
-const eloMatches=results.map(match=>{
- const diff=match.maps.reduce((n,m)=>n+m[1]-m[2],0),count=match.maps.length;
- const aWins=match.maps.filter(m=>m[1]>m[2]).length,bWins=count-aWins;
- const aWon=aWins>bWins,ra=50,rb=50;
- const expected=1/(1+Math.pow(10,(rb-ra)/150));
- const delta=Math.round((32*((aWon?1:0)-expected)+1.4*diff/count)*(1+0.08*Math.max(0,count-2)));
- const aChange=Math.max(-40,Math.min(35,delta));
- // Independent loser adjustment: loss severity uses rounds lost per map and opponent strength.
- const loserDiff=-diff;
- const loserExpected=1-expected;
- const loserWon=!aWon;
- const loserDelta=Math.round((32*((loserWon?1:0)-loserExpected)+1.1*loserDiff/count)*(1+0.08*Math.max(0,count-2)));
- const bChange=Math.max(-40,Math.min(35,loserDelta));
- return {a:match.a,b:match.b,roundDiff:diff,mapCount:count,aWins,bWins,aBefore:ra,bBefore:rb,aChange,bChange,aAfter:ra+aChange,bAfter:rb+bChange};
-});
 const verifiedElo={};
-eloMatches.forEach(m=>{verifiedElo[m.a]={before:m.aBefore,after:m.aAfter,change:m.aChange,w:m.aWins>m.bWins?1:0,l:m.aWins<m.bWins?1:0};verifiedElo[m.b]={before:m.bBefore,after:m.bAfter,change:m.bChange,w:m.bWins>m.aWins?1:0,l:m.bWins<m.aWins?1:0};});
+const runningElo=new Map();
+const eloMatches=results.map(match=>{
+ const count=match.maps.length;
+ const diff=match.maps.reduce((n,m)=>n+m[1]-m[2],0);
+ const aWins=match.maps.filter(m=>m[1]>m[2]).length;
+ const bWins=match.maps.filter(m=>m[2]>m[1]).length;
+ if(!count||aWins===bWins)return null;
+ const ra=runningElo.get(match.a)??50,rb=runningElo.get(match.b)??50;
+ const expected=1/(1+Math.pow(10,(rb-ra)/150));
+ const multiplier=1+0.08*Math.max(0,count-2);
+ const aDelta=Math.round((32*((aWins>bWins?1:0)-expected)+1.4*diff/count)*multiplier);
+ const bDelta=Math.round((32*((bWins>aWins?1:0)-(1-expected))-1.1*diff/count)*multiplier);
+ const aChange=Math.max(-40,Math.min(35,aDelta));
+ const bChange=Math.max(-40,Math.min(35,bDelta));
+ // The free tier stops at 300. VIP entitlement must be checked server-side
+ // before awarding points above 300; never infer VIP from screenshots.
+ const aAfter=Math.max(0,Math.min(300,ra+aChange));
+ const bAfter=Math.max(0,Math.min(300,rb+bChange));
+ runningElo.set(match.a,aAfter);runningElo.set(match.b,bAfter);
+ for(const [team,before,after,w,l] of [[match.a,ra,aAfter,aWins>bWins?1:0,aWins<bWins?1:0],[match.b,rb,bAfter,bWins>aWins?1:0,bWins<aWins?1:0]]){
+  const previous=verifiedElo[team]||{before:50,after:50,change:0,w:0,l:0};
+  verifiedElo[team]={before:previous.before,after,change:after-previous.before,w:previous.w+w,l:previous.l+l};
+ }
+ return {a:match.a,b:match.b,roundDiff:diff,mapCount:count,aWins,bWins,aBefore:ra,bBefore:rb,aChange:aAfter-ra,bChange:bAfter-rb,aAfter,bAfter};
+}).filter(Boolean);
 // Historical MSR proxy without demo randomness; this is estimated ADR, not measured damage.
 const verifiedRounds={Rust:24,Province:20,Sandstone:23};
 const matchRounds={KngZz:{Dune:15,Rust:20},mpct:{Dune:15,Rust:20}};
@@ -5567,7 +5576,9 @@ function verifiedTeamProfiles(){
  const profileTeam=msrClanMedia.find(t=>[t.name,t.tag].some(v=>norm(v)===title));
  const code=resolveMsrTeam(profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  if(!code)return;
- const won=results.some(r=>r.winner===code),all={};
+ const teamMatches=results.filter(r=>r.a===code||r.b===code);
+ const wins=teamMatches.filter(r=>r.winner===code).length;
+ const won=wins>0,all={};
  verifiedPlayerRows(code).forEach(row=>{
   const key=norm(row.nick),x=all[key]||(all[key]={nick:row.nick,k:0,d:0,a:0,maps:0,rounds:0});
   x.k+=row.k;x.d+=row.d;x.a+=row.a;x.maps++;x.rounds+=row.rounds;
@@ -5576,7 +5587,7 @@ function verifiedTeamProfiles(){
  if(stats){
   const tiles=[...stats.querySelectorAll('.msr-team-stat-grid > *')];
   const update=(label,value)=>{const tile=tiles.find(x=>norm(x.textContent).startsWith(norm(label)));if(!tile)return;const valueEl=tile.querySelector('.v')||[...tile.querySelectorAll('*')].find(x=>x.children.length===0&&/^0$|^—$|^0%$/.test(x.textContent.trim()));if(valueEl&&valueEl.textContent!==value)valueEl.textContent=value;};
-  update('Matches','1');update('Win rate',won?'100%':'0%');
+  update('Matches',String(teamMatches.length));update('Win rate',teamMatches.length?(100*wins/teamMatches.length).toFixed(0)+'%':'—');
   const k=Object.values(all).reduce((n,x)=>n+x.k,0),d=Object.values(all).reduce((n,x)=>n+x.d,0);
   update('K/D',(k/Math.max(1,d)).toFixed(2));
  }
@@ -5611,22 +5622,30 @@ function verifiedTeamProfiles(){
  }
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(pool){
+  const mapStats=new Map();
+  teamMatches.forEach(match=>match.maps.forEach(([name,a,b])=>{
+   const key=norm(name),entry=mapStats.get(key)||{name,played:0,wins:0};
+   entry.played++;
+   if((match.a===code?a>b:b>a))entry.wins++;
+   mapStats.set(key,entry);
+  }));
   [...pool.querySelectorAll('tbody tr')].forEach(row=>{
-   const map=row.cells[0]?.textContent.trim(),teamMatch=results.find(r=>r.a===code||r.b===code),m=teamMatch?.maps.find(x=>norm(x[0])===norm(map));
-   if(!m)return;
-   const win=teamMatch.a===code?m[1]>m[2]:m[2]>m[1];
-   if(row.cells[1]&&row.cells[1].textContent.trim()!=='1')row.cells[1].textContent='1';
-   if(row.cells[2]&&row.cells[2].textContent.trim()!==(win?'100%':'0%'))row.cells[2].textContent=win?'100%':'0%';
+   const entry=mapStats.get(norm(row.cells[0]?.textContent.trim()));
+   if(!entry)return;
+   const winRate=(100*entry.wins/entry.played).toFixed(0)+'%';
+   if(row.cells[1]&&row.cells[1].textContent.trim()!==String(entry.played))row.cells[1].textContent=String(entry.played);
+   if(row.cells[2]&&row.cells[2].textContent.trim()!==winRate)row.cells[2].textContent=winRate;
   });
-  if(!pool.querySelector('.msr-team-kda-note')){
-   const note=document.createElement('div');note.className='msr-team-kda-note';note.textContent='Verified maps: '+(results.find(r=>r.a===code||r.b===code)?.maps.map(m=>m[0]).join(', ')||'—')+'. Pick/ban and CT/T rates are not confirmed.';pool.appendChild(note);
-  }
+  let note=pool.querySelector('.msr-team-kda-note');
+  if(!note){note=document.createElement('div');note.className='msr-team-kda-note';pool.appendChild(note);}
+  const noteText='Verified maps: '+([...mapStats.values()].map(x=>x.name+' ('+x.played+')').join(', ')||'—')+'. Pick/ban and CT/T rates are not confirmed.';
+  if(note.textContent!==noteText)note.textContent=noteText;
  }
  const form=document.querySelector('.form.left');
  if(form&&form.dataset.msrVerifiedForm!=='1'){form.dataset.msrVerifiedForm='1';form.replaceChildren();const el=document.createElement('i');el.className=won?'w':'l';el.textContent=won?'W':'L';form.appendChild(el);}
  if(stats&&!stats.querySelector('.msr-verified-match-summary')){
   const info=document.createElement('div');info.className='msr-verified-match-summary';
-  info.textContent='MSL S2 · '+(won?'WIN 2–1 vs 4Zi':'LOSS 1–2 vs WarKz')+' · Rust 13–11 · Province 7–13 · Sandstone 13–10';
+  info.textContent='Verified matches: '+teamMatches.length+' · Wins: '+wins+' · Losses: '+(teamMatches.length-wins);
   stats.appendChild(info);
  }
 }
