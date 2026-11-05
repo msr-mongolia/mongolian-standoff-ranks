@@ -5084,6 +5084,12 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var code = byName[key(row.name)];
       // CioR White is a separate registered team; never merge it into CioR (COR).
       if (row.id === 'ds_1777105f96769efea0121a7e') code = 'CIORWHITE';
+      // Name Another Level (aNOT) and the static Another Level are one team.
+      if (row.id === 'ds_34794a02bac83461450702bc') {
+        code = 'ANLVL';
+        var anSeen = new Set(), anRoster = (ROSTER.ANLVL || []).concat(row.roster || []).filter(function (n) { var k = key(n); if (anSeen.has(k)) return false; anSeen.add(k); return true; });
+        row.roster = anRoster;
+      }
       code = code || row.id.toUpperCase();
       // Correct Manai's submitted list numbers without changing the players' game IDs.
       if (code === 'MANAI') {
@@ -5260,7 +5266,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       'SCLAT':'Scarlet','ACCA':'AccaciN','UCLT':'Ulseratif Colitis',
       'OMV':'Omnis Over','OTR':'Clan-One True Reign',
       'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
-      '2990':'2990 RED','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Name Another Level','6vmp6':'Pure','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
+      '2990':'2990 RED','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'Pure','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
     };
     adjustments.forEach(function(item){
       var exact=exactTeamNames[item.tag];
