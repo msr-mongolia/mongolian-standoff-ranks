@@ -3013,6 +3013,13 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
           if(label==='F')rrRounds=[[[2,1],[4,3],[6,5]],[[0,1],[2,5],[4,6]],[[0,3],[1,5],[2,4]],[[0,5],[3,6],[1,4]],[[0,6],[5,4],[3,2]],[[0,4],[6,2],[3,1]],[[0,2],[6,1],[5,3]]];
           var groupTeams = groupData[label];
           var byeIndices = [0,3,6,2,1,5,4];
+          // A 7-team group (e.g. B after a team was removed) uses the 8-team table
+          // with the missing slot as the bye; never read a team that does not exist.
+          var byeNames = null;
+          if(label!=='F'&&groupTeams.length<8){
+            byeNames=rrRounds.map(function(day){var p=day.filter(function(x){return !groupTeams[x[0]]||!groupTeams[x[1]];})[0];return p?(groupTeams[p[0]]||groupTeams[p[1]]||[''])[0]:'';});
+            rrRounds=rrRounds.map(function(day){return day.filter(function(x){return groupTeams[x[0]]&&groupTeams[x[1]];});});
+          }
           function groupTeam(item) {
             var norm = function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
             var key = msrRelTeamKey(item[0])||msrRelTeamKey(item[1]);
@@ -3022,7 +3029,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
           }
           return h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group '+label+' round robin schedule'},
             h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'ROUND ROBIN · '+groupTeams.length+' TEAMS')),
-            h('p',{class:'msr-zone-note'},label==='F'?'November 4–10 · 7 days · 21 matches · One bye per day':'November 4–10 · 7 days · 28 matches · Each team plays 7 matches'),
+            h('p',{class:'msr-zone-note'},(label==='F'||byeNames)?'November 4–10 · 7 days · 21 matches · One bye per day':'November 4–10 · 7 days · 28 matches · Each team plays 7 matches'),
             h('div',{class:'msr-rr-schedule'},rrRounds.map(function(day,di){
               return h('section',{class:'msr-rr-day'},
                 h('div',{class:'msr-rr-day-head'},h('strong',null,'DAY '+(di+1)),h('small',null,'NOV '+(di+4)+' · '+day.length+' MATCHES')),
@@ -3030,9 +3037,9 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
                   return h('div',{class:'msr-rr-match','data-match':label+'-D'+(di+1)+'-M'+(mi+1)},
                     groupTeam(groupTeams[pair[0]]),h('span',{class:'msr-rr-versus'},'VS'),
                     groupTeam(groupTeams[pair[1]]),h('span',{class:'msr-rr-status'},'UPCOMING'),msrRelInfo(groupTeams[pair[0]],groupTeams[pair[1]],di));
-                })),label==='F'?h('p',{class:'msr-zone-note'},'BYE · '+groupTeams[byeIndices[di]][0]):null);
+                })),label==='F'?h('p',{class:'msr-zone-note'},'BYE · '+groupTeams[byeIndices[di]][0]):(byeNames&&byeNames[di]?h('p',{class:'msr-zone-note'},'BYE · '+byeNames[di]):null));
             })),
-            h('div',{class:'msr-rr-foot'},label==='F'?'Schedule supplied by tournament staff. Results pending.':'Each team plays the other seven teams once. Results pending.'));
+            h('div',{class:'msr-rr-foot'},label==='F'?'Schedule supplied by tournament staff. Results pending.':(byeNames?'Each team plays the other six teams once. Results pending.':'Each team plays the other seven teams once. Results pending.')));
         }
         if (zi === 4) {
           var groupETeams = ['1nfinityX','METAS','DRDRX','Starfire Nirvana Team','SIX LENCE PURPLE','MANAI','OMEN ESPORTS'];
