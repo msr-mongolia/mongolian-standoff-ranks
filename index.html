@@ -3131,7 +3131,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       if (tournament && tournament.img) card.style.setProperty('--msr-zone-logo', 'url("' + String(tournament.img).replace(/"/g, '%22') + '")');
       var firstMatches = Array.from(card.querySelectorAll('.msr-zone-match'));
       card.id = 'msr-zone-panel-' + label; card.setAttribute('role', 'tabpanel'); card.setAttribute('aria-labelledby', 'msr-zone-tab-' + label);
-      var button = h('button', { type: 'button', id: 'msr-zone-tab-' + label, role: 'tab', 'aria-controls': card.id, 'aria-selected': String(zi === 0), onclick: function () { selectZone(zi); } }, 'ZONE ' + label, h('small', null, (zi === 4 || zi === 5) ? '7 teams' : '8 teams'));
+      var button = h('button', { type: 'button', id: 'msr-zone-tab-' + label, role: 'tab', 'aria-controls': card.id, 'aria-selected': String(zi === 0), onclick: function () { selectZone(zi); } }, 'ZONE ' + label, h('small', null, ((groupData[label]||[]).length||((zi === 4 || zi === 5) ? 7 : 8)) + ' teams'));
       button.addEventListener('keydown', function (e) {
         var next = e.key === 'ArrowRight' ? (zi + 1) % 6 : e.key === 'ArrowLeft' ? (zi + 5) % 6 : e.key === 'Home' ? 0 : e.key === 'End' ? 5 : -1;
         if (next >= 0) { e.preventDefault(); selectZone(next); tabbar.children[next].focus(); }
@@ -6100,6 +6100,12 @@ function updateVerifiedGroupStandings(){
   const rdIndex=headers.findIndex(h=>/^(rd|round diff|round difference|раундын зөрүү)$/i.test(h.textContent.trim()));
   if(rdIndex>=0&&cells[rdIndex]&&cells[rdIndex].textContent.trim()!==String(v.rd))cells[rdIndex].textContent=String(v.rd);
  }
+ // Highest points first. Ties: round difference, then wins, then original group order.
+ rows.forEach((row,i)=>{if(row.dataset.ord==null)row.dataset.ord=String(i);});
+ const stat=row=>{const c=row.querySelectorAll('td');return c.length<6?null:{pts:Number(c[5].textContent)||0,w:Number(c[3].textContent)||0,rd:(codes.map(code=>rowFor(code)===row?byTeam.get(canonical(code)).rd:null).find(x=>x!=null))||0};};
+ const sorted=rows.slice().sort((x,y)=>{const a=stat(x),b=stat(y);if(!a||!b)return 0;return b.pts-a.pts||b.rd-a.rd||b.w-a.w||Number(x.dataset.ord)-Number(y.dataset.ord);});
+ if(sorted.some((row,i)=>row!==rows[i]))sorted.forEach(row=>row.parentElement.appendChild(row));
+ sorted.forEach((row,i)=>{const n=row.querySelector('td');if(n&&n.textContent!==String(i+1))n.textContent=String(i+1);});
 }
 
 let groupStandingsQueued=false;
