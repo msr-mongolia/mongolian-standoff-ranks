@@ -4563,12 +4563,16 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       cards.forEach(function (c, k) { var on = k === open; c.el.classList.toggle('open', on); c.btn.setAttribute('aria-expanded', on ? 'true' : 'false'); });
       queueFit();
     }
+    // Place movement: compare today's order with the order before each team's latest result (points − latest change).
+    if(!document.getElementById('msr-rank-move-style')){var mvStyle=document.createElement('style');mvStyle.id='msr-rank-move-style';mvStyle.textContent='#app .ap-rk .mv{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;line-height:1.15;min-width:58px;text-align:right}#app .ap-rk .mv .msr-mv-pos{font-size:18px;font-weight:700;letter-spacing:.2px;white-space:nowrap}#app .ap-rk .mv .msr-mv-pts{font-size:12px;font-weight:600;white-space:nowrap;opacity:.95}@media(max-width:760px){#app .ap-rk .mv{min-width:50px}#app .ap-rk .mv .msr-mv-pos{font-size:16px}#app .ap-rk .mv .msr-mv-pts{font-size:11px}}';document.head.appendChild(mvStyle);}
+    var basePos={};RANK.map(function(r,i){return {c:r[0],p:Number(r[1]||0)-Number(r[2]||0),i:i};}).sort(function(x,y){return y.p-x.p||x.i-y.i;}).forEach(function(x,k){basePos[x.c]=k+1;});
     var list = h('div', { class: 'ap-list' }, RANK.map(function (r, i) {
-      var code = r[0], mv = r[2] > 0 ? ['up', '+' + r[2]] : r[2] < 0 ? ['dn', '−' + Math.abs(r[2])] : ['eq', '0'];
+      var code = r[0], moved = (basePos[code]||i+1) - (i+1), ptsChg = Number(r[2]||0);
+      var mv = [moved > 0 ? 'up' : moved < 0 ? 'dn' : 'eq', moved > 0 ? '▲ ' + moved : moved < 0 ? '▼ ' + Math.abs(moved) : '—', ptsChg > 0 ? '+' + ptsChg + ' pts' : ptsChg < 0 ? '−' + Math.abs(ptsChg) + ' pts' : '0 pts'];
       var btn = h('button', { type: 'button', class: 'ap-rk' + (String(T[code].tag || '').toUpperCase() === 'ETXEN' || /^ETXEN\b/i.test(T[code].n || '') ? ' msr-etxen-clean' : ''), 'aria-expanded': i === open ? 'true' : 'false' },
         h('span', { class: 'no' }, i + 1), crest(code, 'md'),
         h('span', { class: 'nm' }, h('b', null, T[code].n, (T[code].vipExpiresAt && Date.parse(T[code].vipExpiresAt) > Date.now()) ? h('span', { class:'msr-rank-vip-inline '+(msrVipPlus(code)?'msr-vip-plus':'msr-vip-standard'), title:'VIP CLAN · '+new Date(T[code].vipExpiresAt).toLocaleDateString('mn-MN') }, msrVipPlus(code)?'👑 VIP+':'👑 VIP') : null, isFav(code) ? h('i', { class: 'fv', svg: starSvg(true).replace('width="22" height="22"', 'width="14" height="14"') }) : null), h('small', null, fmt(r[1]) + ' points')),
-        h('span', { class: 'mv ' + mv[0] }, mv[1]));
+        h('span', { class: 'mv ' + (moved ? mv[0] : (ptsChg > 0 ? 'up' : ptsChg < 0 ? 'dn' : 'eq')) }, h('span', { class: 'msr-mv-pos' }, mv[1]), h('span', { class: 'msr-mv-pts' }, mv[2])));
       var body = h('div', { class: 'ap-body' + (String(T[code].tag || '').toUpperCase() === 'ETXEN' || /^ETXEN\b/i.test(T[code].n || '') ? ' msr-etxen-clean' : '') }, h('div', { class: 'ap-pls' }, captainFirstRoster(code).map(function (n) { return plAv(n, code); })), h('div', { class: 'ap-acts' }, h('a', { class: 'ap-btn', href: teamHref(code) }, 'Go to teampage'), (function () {
         var sb = h('button', { type: 'button', class: 'ap-star', 'aria-label': 'Follow ' + T[code].n, 'aria-pressed': isFav(code) ? 'true' : 'false', svg: starSvg(isFav(code)) });
         sb.addEventListener('click', function () {
