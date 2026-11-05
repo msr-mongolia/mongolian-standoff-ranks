@@ -6319,9 +6319,33 @@ setInterval(function(){
  const active=document.querySelector('#app .msr-rr-summary');
  if(active && !active.hidden) updateVerifiedGroupStandings();
 },2000);
+function groupResultStamps(){
+ const al={'1nfyx':'infyx','8mna':'manai','sixp':'6lc','0tr':'otr','2990red':'2990','2990white':'2990','ciorwhite':'cior'};
+ const nk=t=>{const k=String(t||'').toLowerCase().replace(/[^a-z0-9]/g,'');return al[k]||k;};
+ document.querySelectorAll('.msr-rr-match:not([data-res-done])').forEach(card=>{
+  const tags=[...card.querySelectorAll('.msr-rr-clan-tag')].map(e=>e.textContent);
+  if(tags.length<2)return;
+  const k1=nk(tags[0]),k2=nk(tags[1]);
+  const r=results.find(x=>(nk(x.a)===k1&&nk(x.b)===k2)||(nk(x.a)===k2&&nk(x.b)===k1));
+  if(!r)return;
+  card.setAttribute('data-res-done','1');
+  const sp=String(r.score).split('–'),firstIsA=nk(r.a)===k1;
+  const s1=firstIsA?sp[0]:sp[1],s2=firstIsA?sp[1]:sp[0];
+  const hasAuto=((r.auto||{}).a||0)+((r.auto||{}).b||0)>0;
+  [...card.querySelectorAll('.msr-rr-team')].slice(0,2).forEach((t,i)=>{
+   const won=nk(r.winner)===(i===0?k1:k2);
+   const em=document.createElement('em');em.className='msr-rr-stamp '+(won?'win':(hasAuto?'auto':'loss'));em.textContent=won?'WIN':(hasAuto?'AUTO':'LOSS');
+   (t.querySelector('.msr-rr-identity')||t).appendChild(em);
+   t.classList.add(won?'msr-rr-won':'msr-rr-lost');
+  });
+  const st=card.querySelector('.msr-rr-status');
+  if(st){st.textContent='FINISHED · '+s1+' : '+s2;st.classList.add('msr-rr-status-done');}
+ });
+}
 function apply(){
  // Finished BO3 records belong in Results, not the upcoming Match schedule.
  verifiedResultsDetail();
+ groupResultStamps();
  scheduleVerifiedGroupStandings();
  verifiedPlayerStats();
  verifiedTeamProfiles();
@@ -6342,6 +6366,14 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 <style id="msr-lineup-mobile-rating">@media(max-width:640px){#app .prof-grid table.t[style*="min-width:420px"]{min-width:0!important;width:100%!important}#app .prof-grid table.t[style*="min-width:420px"] th,#app .prof-grid table.t[style*="min-width:420px"] td{padding:10px 6px!important}#app .prof-grid table.t[style*="min-width:420px"] th:first-child,#app .prof-grid table.t[style*="min-width:420px"] td:first-child{padding-left:10px!important}#app .prof-grid table.t[style*="min-width:420px"] th:last-child,#app .prof-grid table.t[style*="min-width:420px"] td:last-child{padding-right:10px!important}#app .prof-grid table.t[style*="min-width:420px"] th:nth-child(5),#app .prof-grid table.t[style*="min-width:420px"] td:nth-child(5){display:none}#app .prof-grid table.t[style*="min-width:420px"] .msr-total-kills{max-width:120px!important}}</style>
 <style id="msr-results-video-back1">.msr-hltv-summary-team:has(.msr-results-back1-video){position:relative;overflow:hidden;isolation:isolate}.msr-results-back1-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;z-index:-1;pointer-events:none}</style>
 <style id="msr-sixlc-style-results">.msr-click-to-expand .msr-results-intro{color:#a9bcd4;font-size:13px}.msr-match-expand{border:1px solid #334862;border-radius:15px;background:#111d30;margin:12px 0;overflow:hidden}.msr-match-expand-head{cursor:pointer;list-style:none;padding:21px 22px;font-size:clamp(15px,2.5vw,21px);font-weight:800;background:linear-gradient(110deg,#162d42,#142036);color:#f1f7ff}.msr-match-expand-head::-webkit-details-marker{display:none}.msr-match-expand-head:after{content:'⌄';float:right;color:#8ac9eb}.msr-match-expand[open]>.msr-match-expand-head:after{content:'⌃'}.msr-match-expand-content{padding:16px}.msr-match-expand-content .msr-finished-teams{margin-top:14px}@media(max-width:650px){.msr-match-expand-head{padding:16px 12px}.msr-match-expand-content{padding:10px}}</style>
+<style id="msr-rr-stamp-css">
+#app .msr-rr-stamp{display:inline-block;align-self:flex-start;margin-top:3px;padding:1px 7px;border:1.5px solid;border-radius:5px;font:900 10px/1.4 inherit;letter-spacing:.12em;font-style:normal;transform:rotate(-4deg)}
+#app .msr-rr-stamp.win{color:#3ddc84;border-color:#3ddc84;background:rgba(61,220,132,.12)}
+#app .msr-rr-stamp.loss{color:#ff5468;border-color:#ff5468;background:rgba(255,84,104,.12)}
+#app .msr-rr-stamp.auto{color:#ffc933;border-color:#ffc933;background:rgba(255,201,51,.12)}
+#app .msr-rr-lost{opacity:.72}
+#app .msr-rr-status.msr-rr-status-done{background:#173324;color:#7ee3a3}
+</style>
 <style id="msr-day-tabs-css">
 .msr-day-tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0 10px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
 .msr-day-tab{flex:0 0 auto;min-width:64px;padding:7px 10px;border:1px solid color-mix(in srgb,var(--group-accent,#ffb627) 45%,transparent);border-radius:9px;background:rgba(3,9,16,.7);color:#cfd6df;font:800 12px/1.2 inherit;letter-spacing:.06em;text-align:center;cursor:pointer}
