@@ -5871,30 +5871,41 @@ function updateVerifiedGroupStandings(){
   F:['2990 Purple','R6','KGTSS','WOART','-aN0T','6vmp6','EKS']
  };
  const codes=groupCodes[label];if(!codes)return;
+ const key=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const aliases={'1nfyx':'infyx','6lcpurple':'sixp','sixlencepurple':'sixp','teamlunaris':'tlnrs','lunaris':'tlnrs','impact':'mpct','warriorkingzz':'warkz'};
+ const canonical=v=>aliases[key(v)]||key(v);
  const rows=[...table.querySelectorAll('tr')];
- const norm=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
- const stats=rows.map(()=>({mp:0,w:0,l:0,rd:0,pts:0}));
- const indexFor=id=>codes.findIndex(code=>norm(code)===norm(id));
- // Only verified BO3s between two members of the SAME group count.
+ const byTeam=new Map(codes.map(code=>[canonical(code),{mp:0,w:0,l:0,rd:0,pts:0}]));
+ const rowFor=code=>rows.find(row=>{
+  const cell=row.querySelectorAll('td')[1];if(!cell)return false;
+  const text=canonical(cell.textContent);
+  return text===canonical(code)||text.includes(canonical(code));
+ });
+ // Update only matches with both teams explicitly in this group.
  screenshotMatches.forEach(m=>{
-  const ai=indexFor(m.a),bi=indexFor(m.b);
-  if(ai<0||bi<0||ai===bi||ai>=rows.length||bi>=rows.length||m.maps.length<2)return;
+  const a=byTeam.get(canonical(m.a)),b=byTeam.get(canonical(m.b));
+  if(!a||!b||a===b||!rowFor(m.a)||!rowFor(m.b))return;
   const aw=m.maps.filter(x=>x.aScore>x.bScore).length;
   const bw=m.maps.filter(x=>x.bScore>x.aScore).length;
-  if(Math.max(aw,bw)<2||aw===bw)return;
+  if(m.maps.length<2||Math.max(aw,bw)<2||aw===bw)return;
   const rd=m.maps.reduce((n,x)=>n+x.aScore-x.bScore,0);
-  const a=stats[ai],b=stats[bi];a.mp++;b.mp++;a.rd+=rd;b.rd-=rd;
+  a.mp++;b.mp++;a.rd+=rd;b.rd-=rd;
   if(aw>bw){a.w++;a.pts+=3;b.l++;}else{b.w++;b.pts+=3;a.l++;}
  });
- rows.forEach((row,i)=>{
-  const cells=row.querySelectorAll('td');if(cells.length<6)return;
-  const v=stats[i];
-  [v.mp,v.w,v.l,v.pts].forEach((value,j)=>{
-   const col=j+2,el=col===5?(cells[col].querySelector('strong')||cells[col]):cells[col];
-   if(el.textContent!==String(value))el.textContent=String(value);
+ for(const code of codes){
+  const row=rowFor(code),v=byTeam.get(canonical(code));if(!row||!v)continue;
+  const cells=row.querySelectorAll('td');if(cells.length<6)continue;
+  [[2,v.mp],[3,v.w],[4,v.l],[5,v.pts]].forEach(([col,value])=>{
+   const el=col===5?(cells[col].querySelector('strong')||cells[col]):cells[col];
+   if(el&&el.textContent.trim()!==String(value))el.textContent=String(value);
   });
- });
+  // Round difference is shown only where the table has a dedicated RD column.
+  const headers=[...row.closest('table')?.querySelectorAll('thead th')||[]];
+  const rdIndex=headers.findIndex(h=>/^(rd|round diff|round difference|раундын зөрүү)$/i.test(h.textContent.trim()));
+  if(rdIndex>=0&&cells[rdIndex]&&cells[rdIndex].textContent.trim()!==String(v.rd))cells[rdIndex].textContent=String(v.rd);
+ }
 }
+
 let groupStandingsQueued=false;
 function scheduleVerifiedGroupStandings(){
  if(groupStandingsQueued)return;groupStandingsQueued=true;
