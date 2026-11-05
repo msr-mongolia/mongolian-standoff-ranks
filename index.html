@@ -5746,7 +5746,12 @@ function verifiedTeamProfiles(){
  const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct','everlasted':'EVKZ','chingiswarriors':'MSDTP','omnisover':'OMV','clanonetruereign':'OTR','ascendd':'7ADD','etxenmgl':'ETXEN'};
  const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
  const profileTeam=msrClanMedia.find(t=>[t.name,t.tag].some(v=>norm(v)===title));
- const code=resolveMsrTeam(profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
+ // 2990 white / RED / Purple share the DB tag "2990": pick the ledger tag by clan name.
+ if(/^2990/.test(title)){
+  if(title.includes('white'))return;
+ }
+ const sharedTag=/^2990/.test(title)?(title.includes('purple')?'2990 Purple':'2990'):null;
+ const code=resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  if(!code)return;
  const teamMatches=results.filter(r=>r.a===code||r.b===code);
  // Screenshot series already carries verified map results. Use it when the
