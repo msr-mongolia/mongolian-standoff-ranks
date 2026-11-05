@@ -3,7 +3,7 @@
    Never add an unverified screenshot or invent missing ADR/KAST. */
 window.MSR_MATCH_LEDGER = window.MSR_MATCH_LEDGER || [];
 window.MSR_MATCH_ENGINE = (function(){
-  const normalize=s=>String(s||'').normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'');
+  const normalize=s=>String(s||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
   function validate(m){
     if(!m||!m.id||!m.a||!m.b||normalize(m.a)===normalize(m.b)||!Array.isArray(m.maps)||!m.maps.length)return false;
     return m.maps.every(x=>x&&x.map&&Number.isInteger(x.aScore)&&Number.isInteger(x.bScore)&&x.aScore>=0&&x.bScore>=0&&
