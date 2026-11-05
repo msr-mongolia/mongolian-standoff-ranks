@@ -2245,6 +2245,7 @@ background-color:#121923!important
 @media(max-width:650px){#app .msr-match-expand-head{gap:7px!important;font-size:12px!important;flex-wrap:wrap}#app .msr-match-expand-head small{width:100%;text-align:center}#app .msr-finished-stats th,#app .msr-finished-stats td{padding:6px 4px;font-size:11px}}
 </style>
 <style id="msr-results-clan-logo-fix">#app .msr-finished-identity{display:flex!important;align-items:center!important;gap:12px!important;min-width:0}#app .msr-finished-logo:not([hidden]){display:block!important;visibility:visible!important;width:48px!important;height:48px!important;min-width:48px!important;object-fit:contain!important;flex-shrink:0}#app .msr-finished-side{min-height:74px!important}</style>
+<style id="msr-result-stamps">#app .msr-hltv-result-score{color:#e8e8e8}#app .msr-hltv-result-score .msr-vs{font-size:.55em;font-weight:700;color:#9aa;text-transform:uppercase;letter-spacing:.05em}#app .msr-s-win{color:#60dc63}#app .msr-s-loss{color:#ff4d4d}#app .msr-team-lost>strong{color:#ff6b6b}#app .msr-stamp{font-style:normal;font-weight:900;font-size:11px;letter-spacing:.12em;padding:2px 6px;border:2px solid;border-radius:4px;transform:rotate(-8deg);flex:none;line-height:1}#app .msr-stamp-win{color:#60dc63;border-color:#60dc63;background:rgba(96,220,99,.1)}#app .msr-stamp-loss{color:#ff4d4d;border-color:#ff4d4d;background:rgba(255,77,77,.1)}@media(max-width:640px){#app .msr-stamp{font-size:9px;padding:1px 4px}}</style>
 <style id="msr-hltv-summary-logos">#app .msr-hltv-summary-team{display:flex;flex:1;align-items:center;gap:10px;min-width:0}#app .msr-hltv-summary-a{justify-content:flex-end}#app .msr-hltv-summary-b{justify-content:flex-start}#app .msr-hltv-summary-logo:not([hidden]){display:block;width:38px;height:38px;min-width:38px;object-fit:contain}#app .msr-hltv-summary-team strong{flex:0 1 auto!important;white-space:normal}#app .msr-hltv-summary-a strong{text-align:right}#app .msr-hltv-summary-b strong{text-align:left}@media(max-width:650px){#app .msr-hltv-summary-logo:not([hidden]){width:26px;height:26px;min-width:26px}#app .msr-hltv-summary-team{gap:4px}}</style>
 <style id="msr-hltv-back1-panels">#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:66px;padding:8px 14px;border-radius:3px;background-repeat:no-repeat}#app .msr-hltv-summary-team[data-has-back1="true"] strong{color:#fff;text-shadow:0 2px 5px #000,0 0 8px #000}#app .msr-hltv-summary-team[data-has-back1="true"] img{filter:drop-shadow(0 2px 4px #000)}@media(max-width:650px){#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:46px;padding:5px}}</style>
 <style id="msr-results-remove-duplicate-team-panels">#app .msr-match-expand-content > .msr-finished-teams{display:none!important}</style>
@@ -5137,7 +5138,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       T[code].vipExpiresAt = row.vip_expires_at || null;
       var rankingRow = RANK.find(function (r) { return r[0] === code; });
       if (rankingRow && Number.isFinite(row.points) && row.points >= 0) rankingRow[1] = row.points;
-      if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url;
+      if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = row.logo_url + (row.source_timestamp ? '?v=' + encodeURIComponent(row.source_timestamp) : '');
       if(row.id==='ds_cc59eccdc299850d94095877')T[code].img='assets/acca_profile.jpg';
       if (/^(?:wonderart|woart)$/i.test(row.name.trim())) { T[code].img = 'assets/woart-logo.svg'; T[code].c = '#B56CFF'; }
       // XvrN profile1: only the team avatar, never the BACK1 or panel backgrounds.
@@ -5838,7 +5839,7 @@ function syncMsrResultCrests(){
    const clan=msrClanMedia.find(t=>normKey(t.name)===key)||
      msrClanMedia.find(t=>normKey(t.tag)===key)||
      msrClanMedia.find(t=>Object.entries(aliases).some(([tag,name])=>name===key&&normKey(t.tag)===tag));
-   const url=clan?.logo_url;
+   const url=clan?.logo_url?clan.logo_url+(clan.source_timestamp&&clan.logo_url.indexOf('?')<0?'?v='+encodeURIComponent(clan.source_timestamp):''):clan?.logo_url;
    const crest=side.querySelector('.crest');
    if(!crest||!url||!/^https:\/\//i.test(url))return;
    crest.style.backgroundImage='url("'+url.replace(/["\\]/g,'')+'")';
@@ -5906,6 +5907,7 @@ function updateFinishedClanMedia(side){
  const img=side.querySelector('.msr-finished-logo');
  if(img){
   let url=clan?.logo_url;
+  if(url&&clan.source_timestamp&&url.indexOf('?')<0)url+='?v='+encodeURIComponent(clan.source_timestamp);
   if(!url){
    const matching=[...document.querySelectorAll('#app img')].find(el=>
     el!==img&&el.src&&!el.src.includes('placeholder')&&
@@ -5956,11 +5958,12 @@ function verifiedResultsDetail(){
  const intro=document.createElement('p');intro.className='msr-results-intro';intro.textContent='Finished matches · Tap a match to see maps, player stats and ELO';section.appendChild(intro);
  results.forEach((match,matchIndex)=>{
  const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);
- const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';topScore.textContent=match.score;const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');event.textContent='MSL S2 · BO3';const summaryLogo=(team,position)=>{
+ const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');event.textContent='MSL S2 · BO3';const summaryLogo=(team,position)=>{
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
  const logo=document.createElement('img');logo.className='msr-hltv-summary-logo';logo.alt=team+' logo';logo.hidden=true;
  const title=document.createElement('strong');title.textContent=team==='SIXP'?'6LC Purple':team;
- wrap.append(logo,title);return wrap;
+ const won=match.winner===team;wrap.classList.add(won?'msr-team-won':'msr-team-lost');const stamp=document.createElement('em');stamp.className='msr-stamp '+(won?'msr-stamp-win':'msr-stamp-loss');stamp.textContent=won?'WIN':'LOSS';
+ wrap.append(logo,title,stamp);return wrap;
 };
 summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b'),event);matchPanel.appendChild(summary);
  const content=document.createElement('div');content.className='msr-match-expand-content';matchPanel.appendChild(content);
