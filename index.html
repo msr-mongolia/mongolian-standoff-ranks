@@ -5932,7 +5932,7 @@ function updateVerifiedGroupStandings(){
  if(!root||root.hidden)return;
  const table=root.querySelector('.msr-rr-standings tbody');
  if(!table)return;
- const rawLabel=root.querySelector('.msr-rr-summary-head em')?.textContent?.trim()?.toUpperCase()||'';
+ const rawLabel=(document.querySelector('#app [data-active-group]')?.getAttribute('data-active-group')||root.querySelector('.msr-rr-standings h3')?.textContent||root.querySelector('.msr-rr-summary-head em')?.textContent||'').trim().toUpperCase();
  const label=rawLabel.match(/(?:GROUP\\s*)?([A-F])(?:\\s*STANDINGS)?/)?.[1]||rawLabel;
  const groupCodes={
   A:['uclt','IMTLL','ACCA','SCLAT','0TR','OMV','AIM4R','RESKK'],
@@ -5954,7 +5954,7 @@ function updateVerifiedGroupStandings(){
   const link=cell.querySelector('a[href^="#team/"]');
   const linked=link?canonical(decodeURIComponent(link.getAttribute('href').slice(6))):'';
   const text=canonical(cell.textContent);
-  return linked===canonical(code)||text===canonical(code)||text.includes(canonical(code))||canonical(code)===canonical((window.MSR_GROUP_TEAM_ALIASES||{})[linked]);
+  return linked===canonical(code)||text===canonical(code)||text.includes(canonical(code))||canonical(code)===canonical((window.MSR_GROUP_TEAM_ALIASES||{})[linked])||({omv:['omnisover'], '0tr':['ontruereign','clanonetruereign']}[canonical(code)]||[]).some(alias=>text.includes(alias));
  });
  // Update only matches with both teams explicitly in this group.
  screenshotMatches.forEach(m=>{
