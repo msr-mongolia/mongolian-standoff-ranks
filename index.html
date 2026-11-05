@@ -5162,7 +5162,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         var team=T[code]||{};
         if(item.tag==='SIXP')return code==='SIXP';
         return String(team.tag||'').toLowerCase()===item.tag.toLowerCase()||
-          String(team.n||'').toLowerCase()===(item.tag==='TLnrs'?'team lunaris':'dxiii');
+          (item.tag==='TLnrs'&&String(team.n||'').toLowerCase()==='team lunaris')||(item.tag==='DXIII'&&String(team.n||'').toLowerCase()==='dxiii');
       });
       if(!match)return;
       var row=RANK.find(function(x){return x[0]===match;});
