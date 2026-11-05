@@ -6342,6 +6342,44 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 <style id="msr-lineup-mobile-rating">@media(max-width:640px){#app .prof-grid table.t[style*="min-width:420px"]{min-width:0!important;width:100%!important}#app .prof-grid table.t[style*="min-width:420px"] th,#app .prof-grid table.t[style*="min-width:420px"] td{padding:10px 6px!important}#app .prof-grid table.t[style*="min-width:420px"] th:first-child,#app .prof-grid table.t[style*="min-width:420px"] td:first-child{padding-left:10px!important}#app .prof-grid table.t[style*="min-width:420px"] th:last-child,#app .prof-grid table.t[style*="min-width:420px"] td:last-child{padding-right:10px!important}#app .prof-grid table.t[style*="min-width:420px"] th:nth-child(5),#app .prof-grid table.t[style*="min-width:420px"] td:nth-child(5){display:none}#app .prof-grid table.t[style*="min-width:420px"] .msr-total-kills{max-width:120px!important}}</style>
 <style id="msr-results-video-back1">.msr-hltv-summary-team:has(.msr-results-back1-video){position:relative;overflow:hidden;isolation:isolate}.msr-results-back1-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;z-index:-1;pointer-events:none}</style>
 <style id="msr-sixlc-style-results">.msr-click-to-expand .msr-results-intro{color:#a9bcd4;font-size:13px}.msr-match-expand{border:1px solid #334862;border-radius:15px;background:#111d30;margin:12px 0;overflow:hidden}.msr-match-expand-head{cursor:pointer;list-style:none;padding:21px 22px;font-size:clamp(15px,2.5vw,21px);font-weight:800;background:linear-gradient(110deg,#162d42,#142036);color:#f1f7ff}.msr-match-expand-head::-webkit-details-marker{display:none}.msr-match-expand-head:after{content:'⌄';float:right;color:#8ac9eb}.msr-match-expand[open]>.msr-match-expand-head:after{content:'⌃'}.msr-match-expand-content{padding:16px}.msr-match-expand-content .msr-finished-teams{margin-top:14px}@media(max-width:650px){.msr-match-expand-head{padding:16px 12px}.msr-match-expand-content{padding:10px}}</style>
+<style id="msr-day-tabs-css">
+.msr-day-tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0 10px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.msr-day-tab{flex:0 0 auto;min-width:64px;padding:7px 10px;border:1px solid color-mix(in srgb,var(--group-accent,#ffb627) 45%,transparent);border-radius:9px;background:rgba(3,9,16,.7);color:#cfd6df;font:800 12px/1.2 inherit;letter-spacing:.06em;text-align:center;cursor:pointer}
+.msr-day-tab small{display:block;font-size:9px;font-weight:700;color:#8fa0b0;letter-spacing:.08em;margin-top:2px}
+.msr-day-tab.on{background:var(--group-soft,rgba(255,182,39,.18));border-color:var(--group-accent,#ffb627);color:#fff}
+.msr-day-tab.on small{color:var(--group-accent,#ffb627)}
+#app .msr-rr-card .msr-rr-day[hidden]{display:none!important}
+</style>
+<script>
+(function(){
+ function setup(card){
+  if(card.getAttribute('data-daytabs'))return;
+  var days=[].slice.call(card.querySelectorAll('.msr-rr-schedule>.msr-rr-day'));
+  if(days.length<2)return;
+  card.setAttribute('data-daytabs','1');
+  var bar=document.createElement('div');bar.className='msr-day-tabs';
+  var today=Math.floor((Date.now()+8*3600000)/86400000)-Math.floor(Date.UTC(2026,10,4)/86400000)+1;
+  var cur=Math.min(days.length,Math.max(1,today));
+  function show(n){
+   cur=n;
+   days.forEach(function(d,i){d.hidden=(i+1)!==n;});
+   [].forEach.call(bar.children,function(b,i){b.classList.toggle('on',(i+1)===n);});
+  }
+  days.forEach(function(d,i){
+   var b=document.createElement('button');b.type='button';b.className='msr-day-tab';
+   var small=d.querySelector('.msr-rr-day-head small');
+   b.innerHTML='DAY '+(i+1)+'<small>NOV '+(i+4)+'</small>';
+   b.addEventListener('click',function(){show(i+1);});
+   bar.appendChild(b);
+  });
+  days[0].parentNode.parentNode.insertBefore(bar,days[0].parentNode);
+  show(cur);
+ }
+ function run(){document.querySelectorAll('.msr-rr-card').forEach(setup);}
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ run();
+})();
+</script>
 </body>
 </html>
 
