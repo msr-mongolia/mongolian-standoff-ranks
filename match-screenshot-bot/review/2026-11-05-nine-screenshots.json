@@ -1,0 +1,90 @@
+{
+  "schema": "msr-screenshot-review-v1",
+  "source": "9 user-submitted screenshots 2026-11-05",
+  "status": "pending-team-id-game-id-and-duplicate-check",
+  "note": "Not a published match ledger; do not apply ELO or player stats until unique team and player IDs and match duplicates are checked.",
+  "series": [
+    {
+      "teams": [
+        "4Zi",
+        "WarKz"
+      ],
+      "maps": [
+        [
+          "Rust",
+          11,
+          13
+        ],
+        [
+          "Province",
+          13,
+          7
+        ],
+        [
+          "Sandstone",
+          10,
+          13
+        ]
+      ],
+      "winner": "WarKz"
+    },
+    {
+      "teams": [
+        "KngZz",
+        "mpct"
+      ],
+      "maps": [
+        [
+          "Dune",
+          13,
+          2
+        ],
+        [
+          "Rust",
+          13,
+          7
+        ]
+      ],
+      "winner": "KngZz"
+    },
+    {
+      "teams": [
+        "UxrN",
+        "rvurz"
+      ],
+      "maps": [
+        [
+          "Rust",
+          7,
+          13
+        ],
+        [
+          "Hanami",
+          5,
+          13
+        ]
+      ],
+      "winner": "rvurz",
+      "note": "Urus appears with K7 prefix; roster identity pending"
+    },
+    {
+      "teams": [
+        "ETXEN",
+        "7ADD"
+      ],
+      "maps": [
+        [
+          "Rust",
+          15,
+          13
+        ],
+        [
+          "Province",
+          13,
+          11
+        ]
+      ],
+      "winner": "ETXEN"
+    }
+  ]
+}
