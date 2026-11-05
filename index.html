@@ -2514,23 +2514,25 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     );
     confirmed.forEach(function(x){sums[x[0]+'|'+normVerified(x[1])]={k:x[2],d:x[3],a:x[4],maps:x[5],rounds:x[6]};});
     PLAYERS.forEach(function(p){var t=T[p.team]||{};var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4zi'||name.includes('toexistwithpurpose')?'4zi':tag==='warkz'||name.includes('warriorkingzz')?'WarKz':tag==='kngzz'||name==='kingzz'?'KngZz':tag==='mpct'||name==='imp4ct'?'mpct':tag==='1nfyx'||name.includes('infinity')?'1NFYx':tag==='8mna'?'8MNA':tag==='drdrx'?'DRDRX':tag==='6lc'||name.includes('sixlence')?'6LC':tag==='dl340'?'DL340':tag==='sclat'?'sclat':tag==='acca'||name==='accacin'?'ACCA':tag==='aim4r'?'AIM4R':tag==='reskk'?'RESKK':tag==='1nfyx'||name.includes('infinity')?'1NFYx':tag==='8mna'?'8MNA':tag==='drdrx'?'DRDRX':tag==='6lc'||name.includes('sixlence')?'6LC':tag==='dxiii'||name==='dxvil13'?'DXIII':tag==='tlnrs'||name==='teamlunaris'?'TLnrs':null;if(!team)return;var nick=normVerified(p.nick);if(team==='DXIII'&&String((GAME_IDS[p.team+'|'+nick]||''))==='99959144')nick='revi';if(team==='4zi'&&nick==='hiro')nick='venn';if(team==='KngZz'&&nick==='tengri')nick='tengrigodl';if(team==='8MNA'&&nick==='verkuzzz')nick='verkuzzz';var x=sums[team+'|'+nick];
-    if(!x&&(team==='DXIII'||team==='TLnrs')){
-      // Resolve screenshot spelling against the registered roster, within the SAME team only.
-      // Never merge ambiguous near-matches or two different player IDs.
-      var editDistance=function(a,b){
+    if(!x){
+      // Match OCR spelling to ONE existing player in the SAME roster only.
+      // Never combine two player profiles or guess between equally close names.
+      var distance=function(a,b){
         var prev=Array.from({length:b.length+1},function(_,i){return i;});
-        for(var i=1;i<=a.length;i++){var next=[i];for(var j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=next;}
+        for(var i=1;i<=a.length;i++){var next=[i];for(var j=1;j<=b.length;j++){next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));}prev=next;}
         return prev[b.length];
       };
-      var options=confirmed.filter(function(item){return item[0]===team;}).map(function(item){
-        return {key:normVerified(item[1]),distance:editDistance(nick,normVerified(item[1]))};
-      }).sort(function(a,b){return a.distance-b.distance;});
-      if(options.length&&options[0].distance<=1&&(!options[1]||options[0].distance<options[1].distance)){
-        var candidate=options[0].key;
-        var collisions=PLAYERS.filter(function(other){
-          return other!==p&&other.team===p.team&&normVerified(other.nick)===candidate;
+      var options=Object.keys(sums).filter(function(key){return key.indexOf(team+'|')===0;}).map(function(key){
+        var candidate=key.slice(team.length+1),d=distance(nick,candidate);
+        return {key:key,nick:candidate,d:d};
+      }).filter(function(v){return nick.length>=4&&v.nick.length>=4&&v.d<=Math.min(2,Math.floor(Math.max(nick.length,v.nick.length)/4));}).sort(function(a,b){return a.d-b.d;});
+      if(options.length&&(!options[1]||options[0].d<options[1].d)){
+        var selected=options[0],others=PLAYERS.filter(function(other){return other!==p&&other.team===p.team;});
+        var collision=others.some(function(other){
+          var otherNick=normVerified(other.nick);
+          return otherNick===selected.nick||distance(otherNick,selected.nick)<=selected.d;
         });
-        if(!collisions.length)x=sums[team+'|'+candidate];
+        if(!collision)x=sums[selected.key];
       }
     }
     if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=Math.max(0,Math.min(3,(.55*x.k+.18*x.a-.25*x.d)/x.rounds+.625));p.verifiedMSR=true;});
