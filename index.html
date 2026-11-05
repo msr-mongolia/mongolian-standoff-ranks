@@ -3739,6 +3739,8 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     var key = m.id + ':' + i;
     if (key in DET) return DET[key];
     var x = m.maps[i];
+    // Never fabricate player statistics or round history for screenshot-verified matches.
+    if (m.id === 990100) return (DET[key] = null);
     if (!x || x[1] == null) return (DET[key] = null);
     var rnd = seeded('d' + key), sa = x[1], sb = x[2], R = sa + sb, done = x[3] === 'done';
     var aCT = rnd() < 0.5, h1 = Math.min(12, R), lo = Math.max(0, h1 - sb), hi = Math.min(sa, h1);
@@ -5177,6 +5179,8 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var match=Object.keys(T).find(function(code){
         var team=T[code]||{};
         if(item.tag==='SIXP')return code==='SIXP';
+        if(item.tag==='0TR')return code==='0TR'||String(team.n||'').toLowerCase()==='one true reign';
+        if(item.tag==='OMV')return code==='OMV'||String(team.n||'').toLowerCase()==='omnis over';
         return String(team.tag||'').toLowerCase()===item.tag.toLowerCase()||
           (item.tag==='TLnrs'&&String(team.n||'').toLowerCase()==='team lunaris')||(item.tag==='DXIII'&&String(team.n||'').toLowerCase()==='dxiii');
       });
