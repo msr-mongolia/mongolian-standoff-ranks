@@ -5630,7 +5630,40 @@ function verifiedTeamProfiles(){
   stats.appendChild(info);
  }
 }
-function verifiedRanking(){document.getElementById('msr-verified-live-standings')?.remove();}
+function verifiedRanking(){
+ if(!/^#ranking(?:\\/|$)/i.test(location.hash))return;
+ const table=document.querySelector('#app table.t');
+ if(!table)return;
+ const body=table.tBodies[0];if(!body)return;
+ const alias={infyx:'1NFYx',manai:'8MNA',sixl:'6LC',sixp:'SIXP',tlnrs:'TLnrs'};
+ const clean=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const score={};
+ const ensure=t=>score[clean(t)]||(score[clean(t)]={elo:50,change:0,w:0,l:0,form:[]});
+ results.forEach((m,i)=>{
+  const e=eloMatches[i],a=ensure(m.a),b=ensure(m.b);
+  a.elo+=e.aChange;a.change+=e.aChange;b.elo+=e.bChange;b.change+=e.bChange;
+  const aw=e.aWins>e.bWins;
+  if(aw){a.w++;b.l++;a.form.push('W');b.form.push('L');}
+  else{b.w++;a.l++;b.form.push('W');a.form.push('L');}
+ });
+ const entries=[...body.rows].map(row=>{
+  const href=row.querySelector('a[href^="#team/"]')?.getAttribute('href')||'';
+  const code=decodeURIComponent(href.split('/').pop()||'');
+  const id=clean(alias[clean(code)]||code);
+  const record=score[id];
+  if(record){
+   const cells=row.cells;
+   if(cells[2]){const el=cells[2].querySelector('.pts')||cells[2];el.textContent=String(record.elo);}
+   if(cells[3]){const el=cells[3].querySelector('.mv')||cells[3];el.textContent=(record.change>0?'+':'')+record.change;}
+   if(cells[4])cells[4].textContent=record.w+'–'+record.l;
+   if(cells[5])cells[5].textContent=Math.round(100*record.w/Math.max(1,record.w+record.l))+'%';
+   if(cells[6])cells[6].textContent=record.form.slice(-5).join(' ');
+  }
+  return {row,points:record?.elo??50,code};
+ });
+ entries.sort((a,b)=>b.points-a.points);
+ entries.forEach((item,i)=>{item.row.cells[0].textContent=String(i+1);body.appendChild(item.row);});
+}
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
 // Shared clan media directory: automatically resolve logos for every finished-match team.
