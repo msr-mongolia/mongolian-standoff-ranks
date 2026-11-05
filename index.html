@@ -3888,7 +3888,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 
   function msrRelTeamKey(name){
     var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},n=norm(name);
-    var fixed={ '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','8mna':'MANAI','1nfyx':'INFYX' };
+    var fixed={ '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','sixlencepurple':'SIXP','sixlence':'SIXL','8mna':'MANAI','1nfyx':'INFYX' };
     if(fixed[n]&&T[fixed[n]])return fixed[n];
     var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk'};
     var wanted=norm(aliases[n]||name),keys=Object.keys(T);
@@ -5182,6 +5182,29 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     });
     applyVerifiedTeamEloToRank();
   }
+  // Staff-confirmed screenshot TAGs. Match by team name, never by a shared clan TAG alone.
+  function applyConfirmedScreenshotTags(){
+    var rules=[
+      [/^elitekingzz$/i,'EknZ'],
+      [/^neonriderss$/i,'NNRDS'],
+      [/one true reign/i,'OTR'],
+      [/^six lence$/i,'6LC'],
+      [/^six lence purple$/i,'6LC'],
+      [/^omega forcez$/i,'0kz'],
+      [/^civilization of ruin$/i,'CioR'],
+      [/^manai$/i,'8MNA'],
+      [/^1nfinityx$/i,'1NFYx'],
+      [/^team lunaris$/i,'TLnrs']
+    ];
+    Object.keys(T).forEach(function(code){
+      var team=T[code],name=String(team.n||'').trim();
+      for(var i=0;i<rules.length;i++)if(rules[i][0].test(name)){
+        if(team.tag!==rules[i][1])team.tag=rules[i][1];
+        break;
+      }
+    });
+  }
+  applyConfirmedScreenshotTags();
   // Keep verified match ELO in the actual MSR Ranking, not a separate table.
   function applyVerifiedTeamEloToRank(){
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
@@ -5201,8 +5224,14 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       });
     });
     Object.keys(T).forEach(function(code){if(/one true reign/i.test(String(T[code].n||'')))T[code].tag='OTR';});
+    applyConfirmedScreenshotTags();
     adjustments.forEach(function(item){
       var match=Object.keys(T).find(function(code){
+        var name=String((T[code]||{}).n||'').toLowerCase();
+        if(item.tag==='6LC')return code==='SIXL';
+        if(item.tag==='2990')return /2990 red/i.test(name);
+        if(item.tag==='EknZ')return /^elitekingzz$/i.test(name);
+        if(item.tag==='NNRDS')return /^neonriderss$/i.test(name);
         var team=T[code]||{};
         if(item.tag==='SIXP')return code==='SIXP';
         if(item.tag==='OTR')return /one true reign/i.test(String(team.n||''));
@@ -5228,6 +5257,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var rows = await response.json();
       if (!Array.isArray(rows)) return;
       mergeDiscordTeams(rows);
+      applyConfirmedScreenshotTags();
       sortPlayerRanking();
       applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.svg';T[code].c='#ff344c';}});
