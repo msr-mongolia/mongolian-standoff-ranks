@@ -5930,6 +5930,19 @@ function updateFinishedClanMedia(side){
  const back1Assets={omv:'assets/omv_back1.svg',etxen:'assets/etxen_back1.png',tlnrs:'assets/lunaris_back1.png'};
  const back1Asset=back1Assets[normKey(clan?.tag||side.dataset.team)];
  if(back1Asset)setBack1(back1Asset);
+ // Clans whose BACK1 is a looping video (stored as base64 mp4 JSON) get it behind their Results row too.
+ const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json'};
+ const videoUrl=videoAssets[normKey(clan?.tag||side.dataset.team)]||videoAssets[normKey(clan?.name)];
+ if(videoUrl&&summarySide&&!summarySide.querySelector('.msr-results-back1-video')){
+  window.__msrResVid=window.__msrResVid||{};
+  const loaded=window.__msrResVid[videoUrl]||(window.__msrResVid[videoUrl]=fetch(videoUrl).then(r=>{if(!r.ok)throw Error('unavailable');return r.json();}).then(a=>URL.createObjectURL(new Blob([Uint8Array.from(atob(a.base64),c=>c.charCodeAt(0))],{type:'video/mp4'}))).catch(()=>{window.__msrResVid[videoUrl]=null;return null;}));
+  loaded.then(src=>{
+   if(!src||!summarySide.isConnected||summarySide.querySelector('.msr-results-back1-video'))return;
+   const v=document.createElement('video');v.className='msr-results-back1-video';v.muted=true;v.defaultMuted=true;v.autoplay=true;v.loop=true;v.playsInline=true;
+   v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');v.tabIndex=-1;v.src=src;
+   summarySide.prepend(v);summarySide.dataset.hasBack1='true';v.play().catch(()=>{});
+  });
+ }
  const names=[side.dataset.team,clan?.name,clan?.tag].filter(Boolean).map(normKey);
  const source=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')].find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&names.includes(normKey(v))));
  const back1=source?.dataset.back1||source?.dataset.teamBack1||source?.dataset.clanBack1;
@@ -6189,6 +6202,7 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 </script>
 <style id="msr-finished-logo-size-emergency">#app .msr-finished-detail .msr-finished-teams{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;overflow:hidden!important}#app .msr-finished-detail .msr-finished-side{min-width:0!important;max-height:92px!important;overflow:hidden!important;align-items:center!important}#app .msr-finished-detail img.msr-finished-logo{width:46px!important;height:46px!important;max-width:46px!important;max-height:46px!important;min-width:46px!important;object-fit:contain!important;flex:0 0 46px!important}#app .msr-finished-detail img.msr-finished-logo[hidden]{display:none!important}@media(max-width:600px){#app .msr-finished-detail .msr-finished-teams{grid-template-columns:1fr!important}#app .msr-finished-detail img.msr-finished-logo{width:38px!important;height:38px!important;max-width:38px!important;max-height:38px!important;min-width:38px!important;flex-basis:38px!important}}</style>
 <style id="msr-lineup-mobile-rating">@media(max-width:640px){#app .prof-grid table.t[style*="min-width:420px"]{min-width:0!important;width:100%!important}#app .prof-grid table.t[style*="min-width:420px"] th,#app .prof-grid table.t[style*="min-width:420px"] td{padding:10px 6px!important}#app .prof-grid table.t[style*="min-width:420px"] th:first-child,#app .prof-grid table.t[style*="min-width:420px"] td:first-child{padding-left:10px!important}#app .prof-grid table.t[style*="min-width:420px"] th:last-child,#app .prof-grid table.t[style*="min-width:420px"] td:last-child{padding-right:10px!important}#app .prof-grid table.t[style*="min-width:420px"] th:nth-child(5),#app .prof-grid table.t[style*="min-width:420px"] td:nth-child(5){display:none}#app .prof-grid table.t[style*="min-width:420px"] .msr-total-kills{max-width:120px!important}}</style>
+<style id="msr-results-video-back1">.msr-hltv-summary-team:has(.msr-results-back1-video){position:relative;overflow:hidden;isolation:isolate}.msr-results-back1-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;z-index:-1;pointer-events:none}</style>
 <style id="msr-sixlc-style-results">.msr-click-to-expand .msr-results-intro{color:#a9bcd4;font-size:13px}.msr-match-expand{border:1px solid #334862;border-radius:15px;background:#111d30;margin:12px 0;overflow:hidden}.msr-match-expand-head{cursor:pointer;list-style:none;padding:21px 22px;font-size:clamp(15px,2.5vw,21px);font-weight:800;background:linear-gradient(110deg,#162d42,#142036);color:#f1f7ff}.msr-match-expand-head::-webkit-details-marker{display:none}.msr-match-expand-head:after{content:'⌄';float:right;color:#8ac9eb}.msr-match-expand[open]>.msr-match-expand-head:after{content:'⌃'}.msr-match-expand-content{padding:16px}.msr-match-expand-content .msr-finished-teams{margin-top:14px}@media(max-width:650px){.msr-match-expand-head{padding:16px 12px}.msr-match-expand-content{padding:10px}}</style>
 </body>
 </html>
