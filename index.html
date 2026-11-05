@@ -5688,13 +5688,21 @@ function verifiedPlayerStats(){
 function verifiedTeamProfiles(){
  const profile=document.querySelector('.prof');if(!profile)return;
  const title=norm(profile.querySelector('h1')?.textContent||'');
- const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct'};
+ const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct','everlasted':'EVKZ','chingiswarriors':'MSDTP','omnisover':'OMV','clanonetruereign':'OTR','ascendd':'7ADD','etxenmgl':'ETXEN'};
  const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
  const profileTeam=msrClanMedia.find(t=>[t.name,t.tag].some(v=>norm(v)===title));
  const code=resolveMsrTeam(profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  if(!code)return;
  const teamMatches=results.filter(r=>r.a===code||r.b===code);
- const wins=teamMatches.filter(r=>r.winner===code).length;
+ // Screenshot series already carries verified map results. Use it when the
+ // legacy Results array has not been hydrated; never count maps as matches.
+ const screenshotSeries=screenshotMatches.filter(m=>m.a===code||m.b===code).map(m=>{
+  const aw=m.maps.filter(x=>x.aScore>x.bScore).length,bw=m.maps.length-aw;
+  return {a:m.a,b:m.b,winner:aw>bw?m.a:bw>aw?m.b:null,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore])};
+ });
+ const completeMatches=teamMatches.length?teamMatches:screenshotSeries.filter(m=>m.winner);
+
+ const wins=completeMatches.filter(r=>r.winner===code).length;
  const won=wins>0,all={};
  verifiedPlayerRows(code).forEach(row=>{
   const key=norm(row.nick),x=all[key]||(all[key]={nick:row.nick,k:0,d:0,a:0,maps:0,rounds:0});
@@ -5704,7 +5712,7 @@ function verifiedTeamProfiles(){
  if(stats){
   const tiles=[...stats.querySelectorAll('.msr-team-stat-grid > *')];
   const update=(label,value)=>{const tile=tiles.find(x=>norm(x.textContent).startsWith(norm(label)));if(!tile)return;const valueEl=tile.querySelector('.v')||[...tile.querySelectorAll('*')].find(x=>x.children.length===0&&/^0$|^—$|^0%$/.test(x.textContent.trim()));if(valueEl&&valueEl.textContent!==value)valueEl.textContent=value;};
-  update('Matches',String(teamMatches.length));update('Win rate',teamMatches.length?(100*wins/teamMatches.length).toFixed(0)+'%':'—');
+  update('Matches',String(completeMatches.length));update('Win rate',completeMatches.length?(100*wins/completeMatches.length).toFixed(0)+'%':'—');
   const k=Object.values(all).reduce((n,x)=>n+x.k,0),d=Object.values(all).reduce((n,x)=>n+x.d,0);
   update('K/D',(k/Math.max(1,d)).toFixed(2));
  }
@@ -5740,7 +5748,7 @@ function verifiedTeamProfiles(){
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(pool){
   const mapStats=new Map();
-  teamMatches.forEach(match=>match.maps.forEach(([name,a,b])=>{
+  completeMatches.forEach(match=>match.maps.forEach(([name,a,b])=>{
    const key=norm(name),entry=mapStats.get(key)||{name,played:0,wins:0};
    entry.played++;
    if((match.a===code?a>b:b>a))entry.wins++;
@@ -5759,11 +5767,11 @@ function verifiedTeamProfiles(){
   if(note.textContent!==noteText)note.textContent=noteText;
  }
  const form=document.querySelector('.form.left');
- if(form&&teamMatches.length){const latest=teamMatches[teamMatches.length-1];const latestWin=latest.winner===code;const status=latestWin?'W':'L';if(form.dataset.msrVerifiedForm!==status){form.dataset.msrVerifiedForm=status;form.replaceChildren();const el=document.createElement('i');el.className=latestWin?'w':'l';el.textContent=status;form.appendChild(el);}}
+ if(form&&completeMatches.length){const latest=teamMatches[completeMatches.length-1];const latestWin=latest.winner===code;const status=latestWin?'W':'L';if(form.dataset.msrVerifiedForm!==status){form.dataset.msrVerifiedForm=status;form.replaceChildren();const el=document.createElement('i');el.className=latestWin?'w':'l';el.textContent=status;form.appendChild(el);}}
  if(stats){
   let info=stats.querySelector('.msr-verified-match-summary');
   if(!info){info=document.createElement('div');info.className='msr-verified-match-summary';stats.appendChild(info);}
-  const summary='Verified matches: '+teamMatches.length+' · Wins: '+wins+' · Losses: '+(teamMatches.length-wins);
+  const summary='Verified matches: '+completeMatches.length+' · Wins: '+wins+' · Losses: '+(completeMatches.length-wins);
   if(info.textContent!==summary)info.textContent=summary;
  }
 }
