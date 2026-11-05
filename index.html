@@ -2245,6 +2245,7 @@ background-color:#121923!important
 @media(max-width:650px){#app .msr-match-expand-head{gap:7px!important;font-size:12px!important;flex-wrap:wrap}#app .msr-match-expand-head small{width:100%;text-align:center}#app .msr-finished-stats th,#app .msr-finished-stats td{padding:6px 4px;font-size:11px}}
 </style>
 <style id="msr-results-clan-logo-fix">#app .msr-finished-identity{display:flex!important;align-items:center!important;gap:12px!important;min-width:0}#app .msr-finished-logo:not([hidden]){display:block!important;visibility:visible!important;width:48px!important;height:48px!important;min-width:48px!important;object-fit:contain!important;flex-shrink:0}#app .msr-finished-side{min-height:74px!important}</style>
+<style id="msr-results-days">#app .msr-res-days{max-width:820px;margin:8px auto 4px}#app .msr-res-all{display:block;margin:0 auto 12px;background:none;border:1px solid #3a4a63;color:#9fb0c9;border-radius:14px;padding:4px 14px;font:inherit;font-size:12px;cursor:pointer}#app .msr-res-all.on{color:#fff;border-color:#8fa7d1}</style>
 <style id="msr-result-stamps">#app .msr-hltv-result-score{color:#e8e8e8}#app .msr-hltv-result-score .msr-vs{font-size:.55em;font-weight:700;color:#9aa;text-transform:uppercase;letter-spacing:.05em}#app .msr-s-win{color:#60dc63}#app .msr-s-loss{color:#ff4d4d}#app .msr-team-lost>strong{color:#ff6b6b}#app .msr-stamp{font-style:normal;font-weight:900;font-size:11px;letter-spacing:.12em;padding:2px 6px;border:2px solid;border-radius:4px;transform:rotate(-8deg);flex:none;line-height:1}#app .msr-stamp-win{color:#60dc63;border-color:#60dc63;background:rgba(96,220,99,.1)}#app .msr-stamp-loss{color:#ff4d4d;border-color:#ff4d4d;background:rgba(255,77,77,.1)}@media(max-width:640px){#app .msr-stamp{font-size:9px;padding:1px 4px}}</style>
 <style id="msr-hltv-summary-logos">#app .msr-hltv-summary-team{display:flex;flex:1;align-items:center;gap:10px;min-width:0}#app .msr-hltv-summary-a{justify-content:flex-end}#app .msr-hltv-summary-b{justify-content:flex-start}#app .msr-hltv-summary-logo:not([hidden]){display:block;width:38px;height:38px;min-width:38px;object-fit:contain}#app .msr-hltv-summary-team strong{flex:0 1 auto!important;white-space:normal}#app .msr-hltv-summary-a strong{text-align:right}#app .msr-hltv-summary-b strong{text-align:left}@media(max-width:650px){#app .msr-hltv-summary-logo:not([hidden]){width:26px;height:26px;min-width:26px}#app .msr-hltv-summary-team{gap:4px}}</style>
 <style id="msr-hltv-back1-panels">#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:66px;padding:8px 14px;border-radius:3px;background-repeat:no-repeat}#app .msr-hltv-summary-team[data-has-back1="true"] strong{color:#fff;text-shadow:0 2px 5px #000,0 0 8px #000}#app .msr-hltv-summary-team[data-has-back1="true"] img{filter:drop-shadow(0 2px 4px #000)}@media(max-width:650px){#app .msr-hltv-summary-team[data-has-back1="true"]{min-height:46px;padding:5px}}</style>
@@ -5982,7 +5983,7 @@ function verifiedResultsDetail(){
   return null;
  };
  results.forEach((match,matchIndex)=>{
- const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);
+ const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);const _sd=msrMatchSchedule(match.a,match.b);matchPanel.dataset.day=_sd?String(_sd.date):'';
  const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=msrMatchSchedule(match.a,match.b);event.textContent=(sched?'GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL S2 · ')+'BO3';if(sched)event.title='Group '+sched.group+' · Day '+sched.day+' (scheduled date: Nov '+sched.date+')';const summaryLogo=(team,position)=>{
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
  const logo=document.createElement('img');logo.className='msr-hltv-summary-logo';logo.alt=team+' logo';logo.hidden=true;
@@ -6120,6 +6121,36 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
  tabBar.setAttribute('role','tablist');
  showStats(tabs[0],buttons[0]);
  });
+ // Day strip (same look as the Matches page): pick a day to see that day's results, or show all.
+ {
+  const dates=[...new Set([...section.querySelectorAll('.msr-match-expand')].map(e=>+e.dataset.day).filter(Boolean))].sort((a,b)=>a-b);
+  if(dates.length){
+   const now=new Date(),todayD=now.getMonth()===10?now.getDate():0;
+   let sel=0,center=dates[dates.length-1];
+   const strip=document.createElement('div');strip.className='ap-days msr-res-days';
+   const allBtn=document.createElement('button');allBtn.type='button';allBtn.className='msr-res-all';
+   const draw=()=>{
+    strip.textContent='';
+    const mk=(txt,fn,cls,label)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=txt;if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b;};
+    strip.appendChild(mk('‹',()=>{center=Math.max(4,center-1);draw();},'ap-arrow','Earlier'));
+    [-2,-1,0,1,2].map(k=>center+k).forEach(n=>{
+     const dd=new Date(2026,10,n),wd=['SUN','MON','TUE','WED','THU','FRI','SAT'][dd.getDay()];
+     const b=document.createElement('button');b.type='button';b.className='ap-day'+(n===sel?' on':'');
+     const bb=document.createElement('b');bb.textContent=('0'+dd.getDate()).slice(-2);const sp=document.createElement('span');sp.textContent=n===todayD?'Today':wd;
+     if(!dates.includes(n))b.style.opacity='.45';
+     b.append(bb,sp);b.addEventListener('click',()=>{sel=n;center=n;draw();});strip.appendChild(b);
+    });
+    strip.appendChild(mk('›',()=>{center=Math.min(10,center+1);draw();},'ap-arrow','Later'));
+    allBtn.textContent=sel?'Show all days':'All days ✓';allBtn.classList.toggle('on',!sel);
+    let shown=0;section.querySelectorAll('.msr-match-expand').forEach(e=>{const ok=!sel||+e.dataset.day===sel;e.style.display=ok?'':'none';if(ok)shown++;});
+    let empty=section.querySelector('.msr-res-empty');if(!empty){empty=document.createElement('p');empty.className='msr-results-intro msr-res-empty';empty.textContent='No finished matches on this day.';section.appendChild(empty);}
+    empty.style.display=shown?'none':'';
+   };
+   allBtn.addEventListener('click',()=>{sel=0;draw();});
+   section.insertBefore(allBtn,section.querySelector('.msr-match-expand'));section.insertBefore(strip,allBtn);
+   draw();
+  }
+ }
  // Mount once after all match cards are built, independent of the filter markup.
  const filters=app.querySelector('.results-filter-shell,.flt');
  if(filters?.parentElement)filters.parentElement.insertBefore(section,filters);
