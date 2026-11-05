@@ -5768,6 +5768,15 @@ function verifiedTeamProfiles(){
    set(4,'—'); // KAST requires round-by-round participation data.
    set(5,String(msrRating(x.k,x.d,x.a,x.rounds)??'—'));
   });
+  // Best performers first: rating, then K/D, then maps played, then original roster order.
+  const lineupBody=lineup.querySelector('tbody');
+  if(lineupBody){
+   const current=[...lineupBody.querySelectorAll('tr')];
+   current.forEach((row,i)=>{if(row.dataset.ord==null)row.dataset.ord=String(i);});
+   const num=(row,i)=>{const n=parseFloat((row.cells[i]?.textContent||'').trim());return Number.isFinite(n)?n:-1;};
+   const ordered=current.slice().sort((x,y)=>num(y,5)-num(x,5)||num(y,2)-num(x,2)||num(y,1)-num(x,1)||Number(x.dataset.ord)-Number(y.dataset.ord));
+   if(ordered.some((row,i)=>row!==current[i]))ordered.forEach(row=>lineupBody.appendChild(row));
+  }
   lineup.querySelectorAll('.msr-team-kda-note, .msr-team-verified-players').forEach(el=>el.remove());
  }
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
