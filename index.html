@@ -2599,6 +2599,12 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   sortPlayerRanking();
   // Registered roster names only; screenshot-only temporary entries are excluded.
   window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(PLAYERS.filter(p=>!p.screenshotOnly).map(p=>String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')))];
+  // Only registered players, with clan tag and verified game ID where available.
+  window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(p=>!p.screenshotOnly).map(p=>({
+    nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,
+    gameId:String(GAME_IDS[p.team+'|'+String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\\p{L}\\p{N}]/gu,'')]||'')
+  }));
+
 
   /* ================= small builders ================= */
   function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; return h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); }
@@ -5873,17 +5879,28 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
        .replace(/[^\\p{L}\\p{N}]/gu,'');
       const name=clean(p.nick);
       const distance=(a,b)=>{let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let next=[i];for(let j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=next;}return prev[b.length];};
-      const known=registeredNames.map(n=>({original:n,normalized:clean(n)})).filter(x=>x.normalized);
-      const exact=known.some(x=>x.normalized===name);
+      const romanize=v=>String(v||'').toLowerCase().split('').map(ch=>({
+       'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'j','з':'z','и':'i','й':'i','к':'k','л':'l','м':'m','н':'n','о':'o','ө':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ү':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'sh','ы':'y','э':'e','ю':'yu','я':'ya','ь':'','ъ':''
+      })[ch]??ch).join('').replace(/[^a-z0-9]/g,'');
+      const roster=window.MSR_REGISTERED_PLAYER_ROSTER||[];
+      const normTeam=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+      const teamAliases={'0kz':['0kz','okz','omegaforcez'],'cior':['cior','civilizationofruin'],'6lc':['6lc','sixlence'],'dl340':['dl340']};
+      const group=normTeam(team);
+      const aliases=teamAliases[group]||[group];
+      const local=roster.filter(x=>aliases.includes(normTeam(x.tag))||aliases.includes(normTeam(x.team)));
+      const pool=local.length?local:roster;
+      const known=pool.map(x=>({original:x.nick,normalized:clean(x.nick),latin:romanize(x.nick),team:x.tag,gameId:x.gameId}));
+      const exact=known.some(x=>x.normalized===name||x.latin===romanize(p.nick));
       if(!exact){
-       const possible=known.filter(x=>name.length>=3&&x.normalized.length>=3).map(x=>({...x,d:distance(name,x.normalized)}))
-        .filter(x=>x.d<=Math.min(3,Math.max(1,Math.ceil(Math.max(name.length,x.normalized.length)*.35)))||
-          (Math.min(name.length,x.normalized.length)>=4&&(name.includes(x.normalized)||x.normalized.includes(name))))
+       const inputLatin=romanize(p.nick);
+       const possible=known.map(x=>({...x,d:Math.min(distance(name,x.normalized),distance(inputLatin,x.latin))}))
+        .filter(x=>x.d<=Math.min(2,Math.max(1,Math.floor(Math.max(inputLatin.length,x.latin.length)/4)))||
+          (Math.min(inputLatin.length,x.latin.length)>=4&&(inputLatin.includes(x.latin)||x.latin.includes(inputLatin))))
         .sort((a,b)=>a.d-b.d);
        const near=possible.length>0;
        link.style.setProperty('color',near?'#ffd166':'#ff5555','important');
        link.style.fontWeight='700';
-       link.title=near?'Possible registered name: '+possible[0].original+' (not automatically merged)':'No close registered name';
+       link.title=near?'Possible name: '+possible[0].original+' · '+possible[0].team+(possible[0].gameId?' · ID '+possible[0].gameId:'')+' (verify before merging)':'No close registered name';
       }
       if(mvp&&mvp.team===team&&mvp.key===String(p.nick).normalize('NFKC').toLowerCase()){
        const tag=document.createElement('strong');tag.textContent=' MVP';tag.className='mvp';td.appendChild(tag);
