@@ -5864,18 +5864,26 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
      const td=document.createElement('td');
      if(idx===0){const link=document.createElement('a');link.href='#player/'+encodeURIComponent(p.nick)+'/'+encodeURIComponent(team);link.textContent=p.nick;td.appendChild(link);
       const registeredNames=window.MSR_REGISTERED_PLAYER_NAMES||[];
-      const cleanName=String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
-      if(registeredNames.length&&!registeredNames.includes(cleanName)){
-       // Yellow means a plausible spelling variant; red means no safe candidate.
-       // A near-match is a visual hint, NOT an automatic identity merge.
-       const editDistance=(a,b)=>{let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let next=[i];for(let j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=next;}return prev[b.length];};
-       const possible=registeredNames.filter(n=>typeof n==='string'&&n.length>=3&&cleanName.length>=3)
-        .map(n=>({name:n,d:editDistance(cleanName,n)}))
-        .filter(x=>x.d<=Math.min(2,Math.floor(Math.max(cleanName.length,x.name.length)/4)))
+      // Compare visually equivalent Cyrillic/Latin characters and small OCR typos.
+      const clean=v=>String(v||'').normalize('NFKC').toLowerCase()
+       .replace(/[аɑ]/g,'a').replace(/[её]/g,'e').replace(/[оο]/g,'o')
+       .replace(/[рρ]/g,'p').replace(/[сϲ]/g,'c').replace(/[хχ]/g,'x')
+       .replace(/[уү]/g,'y').replace(/[ії]/g,'i').replace(/[кκ]/g,'k')
+       .replace(/[м]/g,'m').replace(/[тτ]/g,'t').replace(/[в]/g,'b')
+       .replace(/[^\\p{L}\\p{N}]/gu,'');
+      const name=clean(p.nick);
+      const distance=(a,b)=>{let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let next=[i];for(let j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=next;}return prev[b.length];};
+      const known=registeredNames.map(n=>({original:n,normalized:clean(n)})).filter(x=>x.normalized);
+      const exact=known.some(x=>x.normalized===name);
+      if(!exact){
+       const possible=known.filter(x=>name.length>=3&&x.normalized.length>=3).map(x=>({...x,d:distance(name,x.normalized)}))
+        .filter(x=>x.d<=Math.min(3,Math.max(1,Math.ceil(Math.max(name.length,x.normalized.length)*.35)))||
+          (Math.min(name.length,x.normalized.length)>=4&&(name.includes(x.normalized)||x.normalized.includes(name))))
         .sort((a,b)=>a.d-b.d);
-       const near=possible.length&&(!possible[1]||possible[0].d<possible[1].d);
-       link.style.color=near?'#ffd166':'#ff5555';link.style.fontWeight='700';
-       link.title=near?'Possible registered player name: '+possible[0].name+' (verify team/ID)':'Player name not found in registered site roster';
+       const near=possible.length>0;
+       link.style.setProperty('color',near?'#ffd166':'#ff5555','important');
+       link.style.fontWeight='700';
+       link.title=near?'Possible registered name: '+possible[0].original+' (not automatically merged)':'No close registered name';
       }
       if(mvp&&mvp.team===team&&mvp.key===String(p.nick).normalize('NFKC').toLowerCase()){
        const tag=document.createElement('strong');tag.textContent=' MVP';tag.className='mvp';td.appendChild(tag);
