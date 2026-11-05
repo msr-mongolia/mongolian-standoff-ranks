@@ -24,7 +24,7 @@ function parse(content:string){
    .replace(/^(?:ign)\s*[-:：]?\s*/i,'').replace(/[亗乂]/gu,'').replace(/\s+\d{1,2}\s*(?:pro|max|plus|pm)\b.*$/i,'')
    .replace(/\b[A-Z0-9]{8,}\b/g,s=>/\d/.test(s)&&/[A-Z]/.test(s)?'':s)
    .replace(/[\s–—:/~-]*\bID\s*[:：-]?\s*$/i,'')
-   .replace(/[\s–—:/~\-\[\]]+$/g,'').replace(/^[\s–—:/~\-\[\]]+/g,'').trim();
+   .replace(/[\s–—:/~\-\[\]]+$/g,'').replace(/^[\s–—:/~\-\[\]>＞›»]+/g,'').trim();
  }
  for(let i=0;i<lines.length;i++){
   const line=lines[i];

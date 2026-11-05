@@ -37,7 +37,7 @@ export function buildPlayerStatUpdates({recognizedPlayers=[],roster=[],matchId,r
  for(const row of classified) {
   if(!row.playerId){skipped.push({name:row.nick||row.name||'',id:String(row.standoffId||''),status:row.status,reason:row.reason});continue;}
   if(seen.has(String(row.playerId))){skipped.push({playerId:row.playerId,status:'red',reason:'Duplicate player in screenshot'});continue;}
-  if(!Number.isInteger(row.kills)||!Number.isInteger(row.deaths)||!Number.isInteger(row.assists)||row.kills<0||row.deaths<0||row.assists<0)){
+  if(!Number.isInteger(row.kills)||!Number.isInteger(row.deaths)||!Number.isInteger(row.assists)||row.kills<0||row.deaths<0||row.assists<0){
    skipped.push({playerId:row.playerId,status:'red',reason:'K/D/A missing or uncertain'});continue;
   }
   seen.add(String(row.playerId));
