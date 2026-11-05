@@ -5657,7 +5657,7 @@ function verifiedPlayerStats(){
  const rawNick=norm(match[1]), visibleNick=norm(header.querySelector('.hl-top h1')?.textContent||'');
  const teamLabel=norm(header.querySelector('.hl-list')?.textContent||'');
  const teamArg=norm(match[2]||'');
- const aliasesByTeam={'0kz':'0kz','okz':'0kz','omegaforcez':'0kz','cior':'CioR','civilizationofruin':'CioR','6lc':'6LC','dl340':'DL340','6lcpurple':'SIXP','sixp':'SIXP','infyx':'1NFYx','1nfyx':'1NFYx','manai':'8MNA','8mna':'8MNA','lunaris':'TLnrs','teamlunaris':'TLnrs','tlnrs':'TLnrs','warkz':'WarKz','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','4zi':'4zi','kingzz':'KngZz','kngzz':'KngZz','impact':'mpct','mpct':'mpct'};
+ const aliasesByTeam={'0kz':'0kz','okz':'0kz','omegaforcez':'0kz','cior':'CioR','civilizationofruin':'CioR','6lc':'6LC','dl340':'DL340','6lcpurple':'SIXP','sixp':'SIXP','infyx':'1NFYx','1nfyx':'1NFYx','manai':'8MNA','8mna':'8MNA','lunaris':'TLnrs','teamlunaris':'TLnrs','tlnrs':'TLnrs','warkz':'WarKz','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','4zi':'4zi','kingzz':'KngZz','kngzz':'KngZz','impact':'mpct','mpct':'mpct','everlasted':'EVKZ','evkz':'EVKZ','chingiswarriors':'MSDTP','msdtp':'MSDTP','etxenmgl':'ETXEN','etxen':'ETXEN','ascendd':'7ADD','7add':'7ADD'};
  const knownTeams=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
  const canonical=v=>aliasesByTeam[norm(v)]||knownTeams.find(t=>norm(t)===norm(v))||null;
  const team=resolveMsrTeam(canonical(teamArg)||knownTeams.find(t=>norm(teamLabel).includes(norm(t)))||Object.entries(aliasesByTeam).find(([alias])=>teamLabel.includes(alias))?.[1]||null);
@@ -5729,7 +5729,7 @@ function verifiedTeamProfiles(){
    const key=Object.prototype.hasOwnProperty.call(all,nick)?nick:norm(aliases[nick]||'');
    const x=all[key];
    if(!x)return;
-   const set=(i,v)=>{if(row.cells[i]&&row.cells[i].textContent!==v)row.cells[i].textContent=v;};
+   const set=(i,v)=>{if(!row.cells[i])return;const target=row.cells[i].querySelector('.v')||row.cells[i];if(target.children.length&&target===row.cells[i])return;if(target.textContent!==v)target.textContent=v;};
    set(1,String(x.maps));set(2,(x.k/Math.max(1,x.d)).toFixed(2));
    const tooltip='All verified maps · '+x.k+' kills / '+x.d+' deaths / '+x.a+' assists';
    if(row.title!==tooltip)row.title=tooltip;
