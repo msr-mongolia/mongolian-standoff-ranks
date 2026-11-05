@@ -25,6 +25,14 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+      - name: Cancel stuck Pages deployments
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for sha in $(git log -12 --format=%H); do
+            gh api -X POST "repos/${{ github.repository }}/pages/deployments/$sha/cancel" >/dev/null 2>&1 && echo "cancelled $sha" || true
+          done
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
