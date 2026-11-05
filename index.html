@@ -3002,7 +3002,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       return code ? h('a', { class: 'msr-zone-team', href: teamHref(code) }, crest(code, 'md'), h('span', null, T[code].n))
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
-    var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
+    var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR White"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
@@ -3141,7 +3141,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
             played++;
             if((isA&&aw>bw)||(isB&&bw>aw))wins++;else losses++;
           });
-          tbody.appendChild(h('tr',null,h('td',null,String(i+1)),h('td',null,key?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,item[0]+(item[1]==='RESKK'?' [RESKK]':''))):h('span',null,item[0])),[played,wins,losses].map(function(v){return h('td',null,String(v));}),h('td',null,h('strong',{class:'msr-rr-pts'},String(wins*3)))));
+          tbody.appendChild(h('tr',{'data-code':item[1]},h('td',null,String(i+1)),h('td',null,key?h('a',{href:teamHref(key),class:'msr-rr-standing-team'},crest(key,'md'),h('span',null,item[0]+(item[1]==='RESKK'?' [RESKK]':''))):h('span',null,item[0])),[played,wins,losses].map(function(v){return h('td',null,String(v));}),h('td',null,h('strong',{class:'msr-rr-pts'},String(wins*3)))));
         });
         var facts=summary.querySelectorAll('.msr-rr-facts b'),total=count===8?28:21;
         [count,7,total,count-1].forEach(function(v,i){facts[i].textContent=String(v);});
@@ -6252,7 +6252,7 @@ function updateVerifiedGroupStandings(){
  const label=rawLabel.match(/GROUP\s+([A-F])\s+STANDINGS/)?.[1]||(/^[A-F]$/.test(rawLabel)?rawLabel:null);
  const groupCodes={
   A:['uclt','IMTLL','ACCA','SCLAT','OTR','OMV','AIM4R','RESKK'],
-  B:['2990','EknZ','CioR','EVKZ','MSDTP','NNRDS','Humn7'],
+  B:['2990','EknZ','CioR White','EVKZ','MSDTP','NNRDS','Humn7'],
   C:['KngZz','Mpct','7ADD','ETXEN','UxrN','Rvurz','4zi','WarKz'],
   D:['0kz','CioR','DXIII','TLnrs','DL340','6LC','R4GE7','XvrN'],
   E:['INFYX','METAS','DRDRX','SNT','SIXP','8MNA','OMEN'],
@@ -6260,12 +6260,13 @@ function updateVerifiedGroupStandings(){
  };
  const codes=groupCodes[label];if(!codes)return;
  const key=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
- const aliases={"0tr":"otr","ontruereign":"otr","clanonetruereign":"otr","omnisover":"omv","ulseratifcolitis":"uclt","immortaldynasy":"imtll","immortaldynasty":"imtll","accacin":"acca","scarlet":"sclat","asteriskreskk":"reskk","asterisk":"reskk","teamresolve":"r6","knightss":"kgtss","1nfyx":"infyx","1nfinityx":"infyx","6lcpurple":"sixp","sixlencepurple":"sixp","manai":"8mna","teamlunaris":"tlnrs","lunaris":"tlnrs","impact":"mpct","warriorkingzz":"warkz","omegaforcez":"0kz","civilizationofruin":"cior","sixlence":"6lc","differentlevel":"dl340","diffrentlevel":"dl340","diffirentlevel":"dl340","differntlevel":"dl340","dxvil13":"dxiii","neonriderss":"nnrds","human4z":"humn7","human7":"humn7","elitekingzz":"eknz","2990red":"2990"};
+ const aliases={"onetruereign":"otr","0tr":"otr","ontruereign":"otr","clanonetruereign":"otr","omnisover":"omv","ulseratifcolitis":"uclt","immortaldynasy":"imtll","immortaldynasty":"imtll","accacin":"acca","scarlet":"sclat","asteriskreskk":"reskk","asterisk":"reskk","teamresolve":"r6","knightss":"kgtss","1nfyx":"infyx","1nfinityx":"infyx","6lcpurple":"sixp","sixlencepurple":"sixp","manai":"8mna","teamlunaris":"tlnrs","lunaris":"tlnrs","impact":"mpct","warriorkingzz":"warkz","omegaforcez":"0kz","civilizationofruin":"cior","sixlence":"6lc","differentlevel":"dl340","diffrentlevel":"dl340","diffirentlevel":"dl340","differntlevel":"dl340","dxvil13":"dxiii","neonriderss":"nnrds","human4z":"humn7","human7":"humn7","elitekingzz":"eknz","2990red":"2990"};
  const canonical=v=>aliases[key(v)]||key(v);
  const rows=[...table.querySelectorAll('tr')];
  const byTeam=new Map(codes.map(code=>[canonical(code),{mp:0,w:0,l:0,rd:0,pts:0}]));
  const touched=new Set();
- const rowFor=code=>rows.find(row=>{
+ const rowFor=code=>rows.find(row=>row.dataset.code&&canonical(row.dataset.code)===canonical(code))||rows.find(row=>{
+  if(row.dataset.code)return false;
   const cell=row.querySelectorAll('td')[1];if(!cell)return false;
   const link=cell.querySelector('a[href^="#team/"]');
   const linked=link?canonical(decodeURIComponent(link.getAttribute('href').slice(6))):'';
