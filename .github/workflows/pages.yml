@@ -32,8 +32,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for sha in $(git log -12 --format=%H); do
-            gh api -X POST "repos/${{ github.repository }}/pages/deployments/$sha/cancel" >/dev/null 2>&1 && echo "cancelled $sha" || true
+          R="${{ github.repository }}"
+          for sha in d8dcac58a17caa15fb0da42c2ee8c1375062d740 $(git log -12 --format=%H); do
+            echo "== cancel $sha"; gh api -X POST "repos/$R/pages/deployments/$sha/cancel" 2>&1 | head -c 300 || true; echo
+          done
+          echo "== deployments"; gh api "repos/$R/deployments?environment=github-pages&per_page=6" --jq '.[]|[.id,.sha[0:7]]|@tsv' 2>&1 | head -10
+          for id in $(gh api "repos/$R/deployments?environment=github-pages&per_page=6" --jq '.[].id' 2>/dev/null); do
+            echo "status $id: $(gh api "repos/$R/deployments/$id/statuses" --jq '.[0].state' 2>&1)"
           done
       - name: Deploy
         id: deployment
