@@ -5866,8 +5866,16 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
       const registeredNames=window.MSR_REGISTERED_PLAYER_NAMES||[];
       const cleanName=String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
       if(registeredNames.length&&!registeredNames.includes(cleanName)){
-       link.style.color='#ff5555';link.style.fontWeight='700';
-       link.title='Player name not found in registered site roster';
+       // Yellow means a plausible spelling variant; red means no safe candidate.
+       // A near-match is a visual hint, NOT an automatic identity merge.
+       const editDistance=(a,b)=>{let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let next=[i];for(let j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=next;}return prev[b.length];};
+       const possible=registeredNames.filter(n=>typeof n==='string'&&n.length>=3&&cleanName.length>=3)
+        .map(n=>({name:n,d:editDistance(cleanName,n)}))
+        .filter(x=>x.d<=Math.min(2,Math.floor(Math.max(cleanName.length,x.name.length)/4)))
+        .sort((a,b)=>a.d-b.d);
+       const near=possible.length&&(!possible[1]||possible[0].d<possible[1].d);
+       link.style.color=near?'#ffd166':'#ff5555';link.style.fontWeight='700';
+       link.title=near?'Possible registered player name: '+possible[0].name+' (verify team/ID)':'Player name not found in registered site roster';
       }
       if(mvp&&mvp.team===team&&mvp.key===String(p.nick).normalize('NFKC').toLowerCase()){
        const tag=document.createElement('strong');tag.textContent=' MVP';tag.className='mvp';td.appendChild(tag);
