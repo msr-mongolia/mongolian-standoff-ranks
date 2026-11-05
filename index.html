@@ -5225,24 +5225,28 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     });
     Object.keys(T).forEach(function(code){if(/one true reign/i.test(String(T[code].n||'')))T[code].tag='OTR';});
     applyConfirmedScreenshotTags();
+    // Exact registered team identity is authoritative. A clan TAG can belong
+    // to multiple independent teams and must never be used alone.
+    var exactTeamNames={
+      'DXIII':'Dxvil13','TLnrs':'Team Lunaris','1NFYx':'1nfinityX',
+      '8MNA':'Manai','DRDRX':'DRDRX','SIXP':'SIX LENCE PURPLE',
+      'AIM4R':'AIM4R','RESKK':'Asterisk (RESKK)','KGTSS':'KnightSS',
+      'R6':'Team Resolve','6LC':'Six Lence','DL340':'DIFFIRENT LEVEL',
+      'CioR':'Civilization of ruin','0kz':'Omega ForceZ',
+      'SCLAT':'Scarlet','ACCA':'AccaciN','UCLT':'Ulseratif Colitis',
+      'OMV':'Omnis Over','OTR':'Clan-One True Reign',
+      'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
+      '2990':'2990 RED','EknZ':'EliteKingZz'
+    };
     adjustments.forEach(function(item){
-      var match=Object.keys(T).find(function(code){
-        var name=String((T[code]||{}).n||'').toLowerCase();
-        if(item.tag==='6LC')return code==='SIXL';
-        if(item.tag==='2990')return /2990 red/i.test(name);
-        if(item.tag==='EknZ')return /^elitekingzz$/i.test(name);
-        if(item.tag==='NNRDS')return /^neonriderss$/i.test(name);
-        var team=T[code]||{};
-        if(item.tag==='SIXP')return code==='SIXP';
-        if(item.tag==='OTR')return /one true reign/i.test(String(team.n||''));
-        return String(team.tag||'').toLowerCase()===item.tag.toLowerCase()||
-          (item.tag==='TLnrs'&&String(team.n||'').toLowerCase()==='team lunaris')||(item.tag==='DXIII'&&String(team.n||'').toLowerCase()==='dxiii');
+      var exact=exactTeamNames[item.tag];
+      var match=exact&&Object.keys(T).find(function(code){
+        return String(T[code].n||'').trim().toLowerCase()===exact.toLowerCase();
       });
-      // Never resolve an ambiguous clan TAG to an unrelated team.
-      if(!match){
-        var verifiedName=({'2990':'2990 RED','EknZ':'EliteKingZz','NNRDS':'NeonRiderSS','SIXP':'SIX LENCE PURPLE','6LC':'Six Lence','OTR':'Clan-One True Reign'})[item.tag];
-        if(verifiedName)match=Object.keys(T).find(function(code){return String(T[code].n||'').toLowerCase()===verifiedName.toLowerCase();});
-      }
+      // Legacy static entries may have aliases, but never use ambiguous
+      // clan tags to select the first arbitrary team.
+      if(!match&&item.tag==='SIXP'&&T.SIXP)match='SIXP';
+      if(!match&&item.tag==='6LC'&&T.SIXL)match='SIXL';
       if(!match)return;
       var row=RANK.find(function(x){return x[0]===match;});
       if(!row){row=[match,50,0,0,0,''];RANK.push(row);}
