@@ -5995,6 +5995,12 @@ standingsObserver.observe(document.getElementById('app')||document.body,{subtree
 document.addEventListener('click',e=>{if(e.target.closest('button,[role=tab]'))scheduleVerifiedGroupStandings();});
 window.addEventListener('hashchange',()=>{scheduleVerifiedGroupStandings();setTimeout(scheduleVerifiedGroupStandings,100);});
 setTimeout(scheduleVerifiedGroupStandings,100);
+// Reconcile the active standings after async group rendering and navigation.
+// The updater is idempotent: it only changes cells when verified values differ.
+setInterval(function(){
+ const active=document.querySelector('#app .msr-rr-summary');
+ if(active && !active.hidden) updateVerifiedGroupStandings();
+},2000);
 function apply(){
  // Finished BO3 records belong in Results, not the upcoming Match schedule.
  verifiedResultsDetail();
