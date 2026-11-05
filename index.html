@@ -5973,8 +5973,8 @@ function verifiedResultsDetail(){
   const G={"A":["uclt","IMTLL","ACCA","SCLAT","OTR","OMV","AIM4R","RESKK"],"B":["2990","EknZ","CioR","EVKZ","MSDTP","NNRDS","Humn7"],"C":["KngZz","Mpct","7ADD","ETXEN","UxrN","Rvurz","4zi","WarKz"],"D":["0kz","CioR","DXIII","TLnrs","DL340","6LC","R4GE7","XvrN"],"E":["INFYX","METAS","DRDRX","SNT","SIXP","MANAI","OMEN"],"F":["2990 Purple","R6","KGTSS","WOART","-aN0T","6vmp6","EKS"]};
   const R8=[[[0,1],[2,3],[4,5],[6,7]],[[0,3],[1,5],[2,7],[4,6]],[[0,5],[3,7],[1,6],[2,4]],[[0,7],[5,6],[3,4],[1,2]],[[0,6],[7,4],[5,2],[3,1]],[[0,4],[6,2],[7,1],[5,3]],[[0,2],[4,1],[6,3],[7,5]]];
   const RF=[[[2,1],[4,3],[6,5]],[[0,1],[2,5],[4,6]],[[0,3],[1,5],[2,4]],[[0,5],[3,6],[1,4]],[[0,6],[5,4],[3,2]],[[0,4],[6,2],[3,1]],[[0,2],[6,1],[5,3]]];
-  // Actual played date (Nov): every screenshot received so far is from Nov 4. Add 'tagA|tagB':day here for later days.
-  const PLAYED={};
+  // Actual played date (Nov): every screenshot received so far is from Nov 4. Add lowercase 'taga|tagb':day here for later days.
+  const PLAYED={'4zi|uxrn':5};
   const al={'1nfyx':'infyx','8mna':'manai','sixp':'6lc','0tr':'otr','2990red':'2990','2990white':'2990'};
   const nk=t=>{const k=String(t||'').toLowerCase().replace(/[^a-z0-9]/g,'');return al[k]||k;};
   const a=nk(ta),b=nk(tb);
