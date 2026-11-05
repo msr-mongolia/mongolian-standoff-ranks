@@ -5579,7 +5579,7 @@ function verifiedPlayerStats(){
  const rawNick=norm(match[1]), visibleNick=norm(header.querySelector('.hl-top h1')?.textContent||'');
  const teamLabel=norm(header.querySelector('.hl-list')?.textContent||'');
  const teamArg=norm(match[2]||'');
- const aliasesByTeam={'6lcpurple':'SIXP','sixp':'SIXP','infyx':'1NFYx','1nfyx':'1NFYx','manai':'8MNA','8mna':'8MNA','lunaris':'TLnrs','teamlunaris':'TLnrs','tlnrs':'TLnrs','warkz':'WarKz','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','4zi':'4zi','kingzz':'KngZz','kngzz':'KngZz','impact':'mpct','mpct':'mpct'};
+ const aliasesByTeam={'0kz':'0kz','okz':'0kz','omegaforcez':'0kz','cior':'CioR','civilizationofruin':'CioR','6lc':'6LC','dl340':'DL340','6lcpurple':'SIXP','sixp':'SIXP','infyx':'1NFYx','1nfyx':'1NFYx','manai':'8MNA','8mna':'8MNA','lunaris':'TLnrs','teamlunaris':'TLnrs','tlnrs':'TLnrs','warkz':'WarKz','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','4zi':'4zi','kingzz':'KngZz','kngzz':'KngZz','impact':'mpct','mpct':'mpct'};
  const knownTeams=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
  const canonical=v=>aliasesByTeam[norm(v)]||knownTeams.find(t=>norm(t)===norm(v))||null;
  const team=resolveMsrTeam(canonical(teamArg)||knownTeams.find(t=>norm(teamLabel).includes(norm(t)))||Object.entries(aliasesByTeam).find(([alias])=>teamLabel.includes(alias))?.[1]||null);
@@ -5587,7 +5587,10 @@ function verifiedPlayerStats(){
  const aliases=team==='4zi'?{'hiro':'venn'}:team==='KngZz'?{'tengri':'tengrigodl','tseka':'tseka'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
  const name=aliases[rawNick]||aliases[visibleNick]||rawNick;
  const rows=[];
- verifiedPlayerRows(team).forEach(item=>{if(norm(item.nick)===norm(name)||norm(item.nick)===visibleNick)rows.push(item);});
+ verifiedPlayerRows(team).forEach(item=>{{
+   const same=norm(item.nick)===norm(name)||norm(item.nick)===visibleNick;
+   if(same)rows.push(item);
+ }});
  if(!rows.length)return;
  const k=rows.reduce((n,x)=>n+x.k,0),d=rows.reduce((n,x)=>n+x.d,0),a=rows.reduce((n,x)=>n+x.a,0);
  const rounds=rows.reduce((n,x)=>n+x.rounds,0);
