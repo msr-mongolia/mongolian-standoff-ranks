@@ -6466,7 +6466,7 @@ function updateVerifiedGroupStandings(){
  const sorted=rows.slice().sort((x,y)=>{const a=stat(x),b=stat(y);if(!a||!b)return 0;return b.pts-a.pts||b.rd-a.rd||b.w-a.w||Number(x.dataset.ord)-Number(y.dataset.ord);});
  if(sorted.some((row,i)=>row!==rows[i]))sorted.forEach(row=>row.parentElement.appendChild(row));
  sorted.forEach((row,i)=>{const n=row.querySelector('td');if(n&&n.textContent!==String(i+1))n.textContent=String(i+1);});
- // Pending-day label: earliest scheduled day (Nov 4 + day index) whose match is not yet played.
+ // Bye-day label: the day (Nov 4 + day index) on which a team has its bye.
  try{
   const R8=[[[0,1],[2,3],[4,5],[6,7]],[[0,3],[1,5],[2,7],[4,6]],[[0,5],[3,7],[1,6],[2,4]],[[0,7],[5,6],[3,4],[1,2]],[[0,6],[7,4],[5,2],[3,1]],[[0,4],[6,2],[7,1],[5,3]],[[0,2],[4,1],[6,3],[7,5]]];
   const RE=[[[1,3],[5,0],[4,2]],[[6,3],[1,2],[5,4]],[[6,0],[3,2],[1,5]],[[6,2],[0,4],[3,5]],[[6,4],[2,5],[0,1]],[[6,5],[4,1],[0,3]],[[6,1],[4,3],[2,0]]];
@@ -6474,26 +6474,20 @@ function updateVerifiedGroupStandings(){
   const rounds=label==='F'?RF:label==='E'?RE:R8;
   const slots=label==='B'?codes.slice(0,3).concat(['B2Di'],codes.slice(3)):codes;
   const sk=slots.map(canonical);
-  const played=new Set();
-  screenshotMatches.forEach(m=>{
-   const au=m.auto||{a:0,b:0};
-   const aw=m.maps.filter(x=>x.aScore>x.bScore).length+(au.a||0),bw=m.maps.filter(x=>x.bScore>x.aScore).length+(au.b||0);
-   if(Math.max(aw,bw)>=2&&aw!==bw){played.add(canonical(m.a)+'|'+canonical(m.b));played.add(canonical(m.b)+'|'+canonical(m.a));}
+  const bye=new Map();
+  rounds.forEach((day,di)=>{
+   const busy=new Set();
+   day.forEach(([i,j])=>{if(sk[i]!=='b2di'&&sk[j]!=='b2di'){busy.add(i);busy.add(j);}});
+   sk.forEach((k,i)=>{if(k!=='b2di'&&!busy.has(i)&&!bye.has(k))bye.set(k,di+4);});
   });
-  const pend=new Map();
-  rounds.forEach((day,di)=>day.forEach(([i,j])=>{
-   if(sk[i]==null||sk[j]==null||sk[i]==='b2di'||sk[j]==='b2di')return;
-   if(played.has(sk[i]+'|'+sk[j]))return;
-   [sk[i],sk[j]].forEach(k=>{if(!pend.has(k))pend.set(k,di+4);});
-  }));
   codes.forEach(code=>{
    const row=rowFor(code);if(!row)return;
    const cell=row.querySelectorAll('td')[1];if(!cell)return;
    let tag=cell.querySelector('.msr-pend-day');
-   const d=pend.get(canonical(code));
+   const d=bye.get(canonical(code));
    if(d==null){if(tag)tag.remove();return;}
    if(!tag){tag=document.createElement('small');tag.className='msr-pend-day';(cell.querySelector('a.msr-rr-standing-team')||cell).appendChild(tag);}
-   const txt='Nov '+d;
+   const txt='BYE · Nov '+d;
    if(tag.textContent!==txt)tag.textContent=txt;
   });
   if(!document.getElementById('msr-pend-day-css')){
