@@ -74,23 +74,40 @@ async function logo(attachments:any[],id:string,embeds:any[]=[]){
 
 function parseRel(content:string){
  const lines=content.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
- if(lines.filter(s=>/\bvs\b/i.test(s)).length!==1)return null;
- const versus=lines[0]?.match(/^(.+?)\s+vs\s+(.+?)(?:\s+(\d{1,2}:\d{2}))?$/i);
+ const vsLines=lines.filter(s=>/\bvs\b/i.test(s));
+ if(vsLines.length!==1)return null;
+ const versus=vsLines[0].match(/^(.+?)\s+vs\s+(.+?)(?:\s+(\d{1,2}:\d{2}))?$/i);
  if(!versus)return null;
- const map=(s:string)=>{const n=s.toLowerCase().replace(/[^a-z]/g,'');return ({dune:'Dune',rust:'Rust',breeze:'Breeze',hanami:'Hanami',prison:'Prison',sakura:'Sakura',prov:'Province',provice:'Province',province:'Province',sandstone:'Sandstone'} as Record<string,string>)[n]||null;};
+ const aliases:Record<string,string>={dune:'Dune',rust:'Rust',breeze:'Breeze',breez:'Breeze',hanami:'Hanami',prison:'Prison',sakura:'Sakura',prov:'Province',provice:'Province',province:'Province',sandstone:'Sandstone',sand:'Sandstone'};
+ const map=(s:string)=>aliases[s.toLowerCase().replace(/[^a-z]/g,'')]||null;
+ const findMap=(line:string)=>{for(const t of line.toLowerCase().split(/[^a-z]+/)){if(aliases[t])return {token:t,name:aliases[t]};}return null;};
  const clean=(s:string)=>s.replace(/^\d+[.]\s*/,'').replace(/[-:\s]*pick[-:\s]*/ig,'').replace(/^[-:\s]+|[-:\s]+$/g,'');
- const picks:any[]=[];let decider=null,time=versus[3]||null;
- for(const line of lines.slice(1)){
-  const tm=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2}|\d{1,2})$/i);if(tm){time=tm[1];continue;}
+ const picks:any[]=[],legacy:any[]=[];let decider:string|null=null,bare:string|null=null,time=versus[3]||null;
+ const vi=lines.indexOf(vsLines[0]);
+ for(const line of lines.slice(vi+1)){
+  if(/^[-=_~\s]+$/.test(line))continue;
+  const tm=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2}|\d{1,2})$/i)||line.match(/^(?:time|tsag)\s*:?\s*(\d{1,2})(?::(\d{2}))?:?\s*$/i);
+  if(tm){const raw=tm[2]?tm[1]+':'+tm[2]:tm[1];time=raw.includes(':')?raw:raw+':00';continue;}
   const evening=line.match(/^oroini\s+(\d{1,2})\s*tsgaas$/i);if(evening){const hour=Number(evening[1]);if(hour>=1&&hour<=11)time=String(hour+12)+':00';continue;}
-  const dm=line.match(/^(?:decider|dec)\s*[-:]?\s*(.+)$/i)||line.match(/^(.+?)\s+(?:decider|dec)$/i);if(dm){decider=map(dm[1]);continue;}
+  if(/\bban\b/i.test(line))continue;
+  const found=findMap(line);
+  const dm=line.match(/^(?:decider|dec)\b[\s\w]*?[-:]?\s*(.+)$/i)||line.match(/^(.+?)\s+(?:decider|dec)$/i);
+  if(/\bdec(?:ider)?\b/i.test(line)&&found){decider=found.name;continue;}
+  if(dm&&map(dm[1])){decider=map(dm[1]);continue;}
+  if(/pick/i.test(line)&&found){
+   const team=clean(line.replace(new RegExp('\\b'+found.token+'\\w*','i'),' ').replace(/pick/ig,' ').replace(/\s+/g,' '));
+   if(team){picks.push({team,map:found.name});continue;}
+  }
   const pm=line.match(/^(.+?)\s*(?:[-:]\s*|\s+)([a-z]+)$/i);
-  if(pm&&map(pm[2])){picks.push({team:clean(pm[1]),map:map(pm[2])});continue;}
+  if(pm&&map(pm[2])){legacy.push({team:clean(pm[1]),map:map(pm[2])});continue;}
   const reverse=line.match(/^([a-z]+)\s*[-: ]\s*(.+)$/i);
-  if(reverse&&map(reverse[1]))picks.push({team:clean(reverse[2]),map:map(reverse[1])});
+  if(reverse&&map(reverse[1])){legacy.push({team:clean(reverse[2]),map:map(reverse[1])});continue;}
+  if(map(line)&&!decider){bare=map(line);continue;}
  }
- if(picks.length!==2||!decider)return null;
- return {team_a:versus[1].trim().slice(0,100),team_b:versus[2].trim().slice(0,100),time_label:time,picks,decider};
+ const finalPicks=picks.length?picks:legacy;
+ if(!decider&&bare&&finalPicks.length===2)decider=bare;
+ if(finalPicks.length!==2||!decider)return null;
+ return {team_a:versus[1].trim().slice(0,100),team_b:versus[2].trim().slice(0,100),time_label:time,picks:finalPicks,decider};
 }
 
 async function syncRel(bot:string){
