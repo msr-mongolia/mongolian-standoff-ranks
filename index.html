@@ -4573,13 +4573,17 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       res.maps.forEach(function(m,i){cards.push(mmCard('Map '+(i+1),m.map));});
     }else{cards=[mmCard('Pick 1','TBA'),mmCard('Pick 2','TBA'),mmCard('Decider','TBA')];}
     function lineup(k){
-      var list=PLAYERS.filter(function(p){return p.team===k;}).sort(function(a,b){return Number(b.nick===teamCaptain(k))-Number(a.nick===teamCaptain(k))||b.rating-a.rating;});
+      // Top 5: best ratings among players with a real sample (at least half of the team's most-played player); fill from the rest if fewer than 5.
+      var all=PLAYERS.filter(function(p){return p.team===k;}),mx=all.reduce(function(m,p){return Math.max(m,p.maps||0);},0);
+      var core=all.filter(function(p){return (p.maps||0)>0&&(p.maps||0)>=Math.ceil(mx/2);}).sort(function(a,b){return b.rating-a.rating;});
+      var rest=all.filter(function(p){return core.indexOf(p)<0;}).sort(function(a,b){return (b.maps||0)-(a.maps||0)||b.rating-a.rating;});
+      var list=core.concat(rest).slice(0,5);
       return h('section',{class:'msr-mm-sec'},
         h('h2',null,T[k].n+(res?' Lineup':' Expected Lineup')),
         h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){
           var nick=String(p.nick||'').replace(/^\s*ign\s*:\s*/i,'').trim();
           return h('a',{class:'msr-mm-pl',href:playerHref(p.nick,p.team)},
-            h('span',{class:'bigav sg'+tc(p),'aria-hidden':'true'},nick.slice(0,1).toUpperCase()),
+            h('span',{class:'bigav sg'+tc(p),'aria-hidden':'true'},sig(p.nick,52)),
             h('b',null,nick),h('small',null,p.maps?rt(p.rating):'—'));
         }):h('div',{class:'empty'},'Roster not available.')));
     }
