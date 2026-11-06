@@ -3996,7 +3996,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     rows.forEach(function (r) { o.R += r.R; o.k += r.k; o.d += r.d; o.a += r.a; o.dmg += r.adr * r.R; o.kastR += r.kast * r.R; });
     if (o.R) {
       o.kpr = o.k / o.R; o.dpr = o.d / o.R; o.apr = o.a / o.R; o.adr = o.dmg / o.R; o.kast = o.kastR / o.R; o.kd = o.k / Math.max(1, o.d);
-      o.impact = 2.13 * o.kpr + 0.42 * o.apr - 0.41; o.rating = rate(o.kast, o.kpr, o.dpr, o.impact, o.adr);
+      o.impact = 2.13 * o.kpr + 0.42 * o.apr - 0.41; if (window.msrCalc) { var mc0 = window.msrCalc(o.k, o.d, o.a, o.R); o.kast = mc0.kast; o.adr = mc0.adr; o.rating = mc0.rating; } else o.rating = rate(o.kast, o.kpr, o.dpr, o.impact, o.adr);
     } else { o.kpr = o.dpr = o.apr = o.adr = o.kast = o.kd = o.impact = 0; o.rating = 0; }
     return o;
   }
@@ -4381,7 +4381,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       parts.push(h('div', { class: 'grp-h' }, 'Player stats'));
       drawStats();
       parts.push(tabHost, body);
-      parts.push(h('p', { class: 'mini' }, 'Rating is based on the public approximation of the Rating 2.0 formula: KAST, kills, deaths, impact and ADR per round.'));
+      parts.push(h('p', { class: 'mini' }, 'Rating uses the MSR HLTV 2.0-style formula; KAST and ADR are estimated from K/D/A, not measured.'));
     }
 
     var h2h = doneList().filter(function (x) { return x.id !== m.id && ((x.a === m.a && x.b === m.b) || (x.a === m.b && x.b === m.a)); });
@@ -4476,7 +4476,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
           board('Highest ADR', 'Average damage per round', top('adr'), function (g) { return g.adr.toFixed(1); }),
           board('Highest KAST', 'Kill, assist, survive or traded', top('kast'), function (g) { return g.kast.toFixed(1) + '%'; }),
           board('Best K/D ratio', 'Kills divided by deaths', top('kd'), function (g) { return g.kd.toFixed(2); })));
-        body.appendChild(h('p', { class: 'mini' }, 'Rating is based on the public approximation of the Rating 2.0 formula: KAST, kills, deaths, impact and ADR per round.'));
+        body.appendChild(h('p', { class: 'mini' }, 'Rating uses the MSR HLTV 2.0-style formula; KAST and ADR are estimated from K/D/A, not measured.'));
       } else if (SF.tab === 'players') {
         var cols = [{ l: '#' }, { k: 'nick', l: 'Player', text: 1 }, { k: 'maps', l: 'Maps', n: 1 }, { k: 'R', l: 'Rounds', n: 1 }, { l: 'K–D', n: 1 }, { k: 'diff', l: '+/−', n: 1 }, { k: 'kd', l: 'K/D', n: 1 }, { k: 'adr', l: 'ADR', n: 1 }, { k: 'kast', l: 'KAST', n: 1 }, { k: 'rating', l: 'Rating', n: 1 }];
         var list = playerAggs(f).filter(function (g) { return g.maps >= +SF.min; });
@@ -4490,7 +4490,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
                 h('td', { class: 'n' }, g.adr.toFixed(1)), h('td', { class: 'n' }, g.kast.toFixed(1) + '%'), h('td', { class: 'n' }, rt(g.rating)));
             }))))));
           if (!sorted.length) body.appendChild(h('div', { class: 'empty' }, 'No players match these filters.'));
-          body.appendChild(h('p', { class: 'mini' }, sorted.length + ' players · click a column to sort · Rating is based on the public approximation of the Rating 2.0 formula.'));
+          body.appendChild(h('p', { class: 'mini' }, sorted.length + ' players · click a column to sort · Rating uses the MSR HLTV 2.0-style formula; KAST and ADR are estimated.'));
         };
         draw2();
       } else if (SF.tab === 'teams') {
