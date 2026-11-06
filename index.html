@@ -5368,7 +5368,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
       }catch(_relError){}
 
-      if (/^(ranking|team|players|player|stats|event|events|matches)(\/|$)/.test(H)) route();
+      if (/^(ranking|team|players|player|stats|event|events|matches|live)(\/|$)/.test(H)) route();
     } catch (e) { console.warn('MSR teams sync error',e); }
   }
   document.addEventListener('DOMContentLoaded', loadDiscordTeams);
