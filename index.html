@@ -2502,6 +2502,41 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-mm-pl b{font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #app .msr-mm-pl small{color:#9aa5b4;font-size:13px}
 </style>
+<style id="msr-mslmatch2-css">
+#app .msr-mm-card{background:#242a33;border:1px solid #333a45;border-radius:12px;padding:14px}
+#app .msr-mm-empty{color:#8b95a3;font-size:15px}
+#app .msr-mm-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;background:#4a515c;margin-bottom:12px}
+#app .msr-mm-bar i{background:#f2c94c;display:block}
+#app .msr-mm-bar u{background:#8c93a0;display:block;margin-left:auto;text-decoration:none}
+#app .msr-mm-h2h{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#app .msr-mm-h2h>div{display:flex;align-items:center;justify-content:center;gap:8px;background:#2d343e;border-radius:10px;padding:10px 6px}
+#app .msr-mm-h2h b{font-size:20px}
+#app .msr-mm-h2h small{color:#8b95a3;font-size:12px}
+#app .msr-mm-h2h .mid{flex-direction:column;gap:0}
+#app .msr-mm-more{margin-top:12px;background:none;border:0;color:#a7b1be;font-size:14px;cursor:pointer;padding:6px 0}
+#app .msr-mm-h2h-list{margin-top:6px;display:grid;gap:6px}
+#app .msr-mm-h2h-row{display:grid;grid-template-columns:1fr 28px 14px 28px;gap:4px;align-items:center;color:#8b95a3;font-size:14px;padding:6px 10px;background:#2d343e;border-radius:8px}
+#app .msr-mm-h2h-row .w{color:#fff;font-weight:700}
+#app .msr-mm-h2h-row span{text-align:center}
+#app .msr-mm-tabs{display:flex;gap:4px;background:#2d343e;border-radius:10px;padding:4px;margin-bottom:12px}
+#app .msr-mm-tabs button{flex:1;border:0;border-radius:7px;background:none;color:#cfd6df;font-weight:700;font-size:15px;padding:9px 0;cursor:pointer}
+#app .msr-mm-tabs button.on{background:#2f6fd6;color:#fff}
+#app .msr-mm-ms-h{display:grid;grid-template-columns:1fr 76px 76px;gap:6px;padding:0 10px 6px;align-items:center}
+#app .msr-mm-ms-h .crest{grid-column:auto;justify-self:center}
+#app .msr-mm-ms-h .crest:first-child{grid-column:2}
+#app .msr-mm-ms-row{display:grid;grid-template-columns:1fr 76px 76px;gap:6px;align-items:center;padding:8px 10px;border-radius:8px;margin-bottom:6px;background-color:#2d343e;background-size:cover;background-position:center}
+#app .msr-mm-ms-row>b{font-size:15px}
+#app .msr-mm-ms-row .v{text-align:center;line-height:1.2}
+#app .msr-mm-ms-row .v b{display:block;font-size:15px}
+#app .msr-mm-ms-row .v small{display:block;color:#8b95a3;font-size:11px}
+#app .msr-mm-note{color:#7d8794;font-size:12px;margin:8px 2px 0}
+#app .msr-mm-form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#app .msr-mm-form-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+#app .msr-mm-form-row{display:flex;align-items:center;gap:8px;color:#e4e8ee!important;text-decoration:none!important}
+#app .msr-mm-fp{min-width:46px;text-align:center;font-weight:800;font-size:15px;border-radius:6px;padding:3px 6px;color:#fff}
+#app .msr-mm-fp.w{background:#2e9b4a}
+#app .msr-mm-fp.l{background:#c0414e}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -4474,6 +4509,20 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     }
     return null;
   }
+  // All ledger series for a team code, oldest first, oriented to that team. idx = ledger position.
+  function msrLedgerSeries(k){
+    var L=window.MSR_SCREENSHOT_MATCHES||[],out=[];
+    if(!k||!window.msrTagToCode)return out;
+    L.forEach(function(e,idx){
+      var ca=window.msrTagToCode(e.a),cb=window.msrTagToCode(e.b);
+      if(ca!==k&&cb!==k)return;
+      if(ca===cb)return;
+      var mine=ca===k,aw=(e.auto&&e.auto.a)||0,bw=(e.auto&&e.auto.b)||0;
+      var maps=(e.maps||[]).map(function(m){if(m.aScore>m.bScore)aw++;else if(m.bScore>m.aScore)bw++;return {map:m.map,mine:mine?m.aScore:m.bScore,theirs:mine?m.bScore:m.aScore};});
+      out.push({idx:idx,opp:mine?cb:ca,mine:mine?aw:bw,theirs:mine?bw:aw,maps:maps});
+    });
+    return out;
+  }
   function msrRelMatchCard(row){
     var rk=[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=msrRelResult(rk[0],rk[1]);
     function team(name,mine){
@@ -4542,8 +4591,86 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'BO3')),
         h('div',{class:'msr-mm-info'},'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards)),
-      lineup(ka),lineup(kb));
+      lineup(ka),lineup(kb),
+      msrMatchH2H(ka,kb),msrMatchMapStats(ka,kb),msrMatchForm(ka,kb));
   };
+
+  function msrCurIdx(ka,kb){
+    var L=window.MSR_SCREENSHOT_MATCHES||[];
+    for(var i=L.length-1;i>=0;i--){var ca=window.msrTagToCode(L[i].a),cb=window.msrTagToCode(L[i].b);if((ca===ka&&cb===kb)||(ca===kb&&cb===ka))return i;}
+    return -1;
+  }
+  function msrMatchH2H(ka,kb){
+    var cur=msrCurIdx(ka,kb);
+    var meets=msrLedgerSeries(ka).filter(function(x){return x.opp===kb&&x.idx!==cur;});
+    var wa=0,wb=0,mapsAll=[];
+    meets.forEach(function(x){if(x.mine>x.theirs)wa++;else if(x.theirs>x.mine)wb++;x.maps.forEach(function(m){mapsAll.push(m);});});
+    var sec=h('section',{class:'msr-mm-sec'},h('h2',null,'Head to head'));
+    if(!meets.length){sec.appendChild(h('div',{class:'msr-mm-card msr-mm-empty'},'No previous meetings between these teams.'));return sec;}
+    var tot=Math.max(1,wa+wb);
+    var list=h('div',{class:'msr-mm-h2h-list',hidden:'hidden'},mapsAll.map(function(m){
+      return h('div',{class:'msr-mm-h2h-row'},h('b',null,m.map),h('span',{class:m.mine>m.theirs?'w':''},String(m.mine)),h('span',null,'–'),h('span',{class:m.theirs>m.mine?'w':''},String(m.theirs)));
+    }));
+    var btn=h('button',{type:'button',class:'msr-mm-more'},'Show all maps ('+mapsAll.length+') \u25BE');
+    btn.addEventListener('click',function(){var open=list.hasAttribute('hidden');if(open)list.removeAttribute('hidden');else list.setAttribute('hidden','hidden');btn.textContent='Show all maps ('+mapsAll.length+') '+(open?'\u25B4':'\u25BE');});
+    sec.appendChild(h('div',{class:'msr-mm-card'},
+      h('div',{class:'msr-mm-bar'},h('i',{style:'width:'+Math.round(wa/tot*100)+'%'}),h('u',{style:'width:'+Math.round(wb/tot*100)+'%'})),
+      h('div',{class:'msr-mm-h2h'},
+        h('div',null,crest(ka,'sm'),h('b',null,String(wa)),h('small',null,'Win')),
+        h('div',{class:'mid'},h('b',null,String(mapsAll.length)),h('small',null,'Maps')),
+        h('div',null,h('b',null,String(wb)),h('small',null,'Win'),crest(kb,'sm'))),
+      btn,list));
+    return sec;
+  }
+  function msrMatchMapStats(ka,kb){
+    var cur=msrCurIdx(ka,kb),mode={v:'win'};
+    var rel=(typeof msrRelUpcoming==='function'?MSR_REL_MATCHES:[]);
+    function stat(k){
+      var o={},series=msrLedgerSeries(k).filter(function(x){return x.idx!==cur;});
+      MAPS.forEach(function(n){o[n]={played:0,won:0,picks:0};});
+      series.forEach(function(x){x.maps.forEach(function(m){var r=o[m.map];if(!r)return;r.played++;if(m.mine>m.theirs)r.won++;});});
+      var seen={},relMine=0;
+      rel.slice().sort(function(a,b){return String(b.source_timestamp).localeCompare(String(a.source_timestamp));}).forEach(function(r){
+        var x=msrRelTeamKey(r.team_a),y=msrRelTeamKey(r.team_b);if(x!==k&&y!==k)return;
+        var pair=[x,y].sort().join('|');if(seen[pair])return;seen[pair]=1;
+        (r.picks||[]).forEach(function(pk){if(msrRelTeamKey(pk.team)===k&&o[pk.map]){o[pk.map].picks++;relMine++;}});
+      });
+      return {o:o,rel:relMine};
+    }
+    var A=stat(ka),B=stat(kb);
+    var body=h('div',{class:'msr-mm-ms'});
+    var tabs=h('div',{class:'msr-mm-tabs'});
+    function pct(a,b){return b?Math.round(a/b*100)+'%':'–';}
+    function cell(S,n){
+      var r=S.o[n];
+      if(mode.v==='win')return h('span',{class:'v'},h('b',null,pct(r.won,r.played)),h('small',null,r.played+' maps'));
+      return h('span',{class:'v'},h('b',null,pct(r.picks,S.rel)),h('small',null,r.picks+' picks'));
+    }
+    function draw(){
+      tabs.textContent='';body.textContent='';
+      [['win','Win %'],['pick','Pick %']].forEach(function(t){tabs.appendChild(h('button',{type:'button',class:mode.v===t[0]?'on':'',onclick:function(){mode.v=t[0];draw();}},t[1]));});
+      body.appendChild(h('div',{class:'msr-mm-ms-h'},crest(ka,'xs'),crest(kb,'xs')));
+      MAPS.forEach(function(n){
+        var photo=MSR_MAP_PHOTOS[n.toLowerCase()];
+        body.appendChild(h('div',{class:'msr-mm-ms-row',style:photo?'background-image:linear-gradient(90deg,rgba(32,38,47,.92),rgba(32,38,47,.7)),'+photo:null},h('b',null,n),cell(A,n),cell(B,n)));
+      });
+      body.appendChild(h('div',{class:'msr-mm-note'},mode.v==='win'?'Win % from verified results, before this match.':'Pick % from veto messages posted in Discord. Ban data is not recorded.'));
+    }
+    draw();
+    return h('section',{class:'msr-mm-sec'},h('h2',null,'Map stats'),h('div',{class:'msr-mm-card'},tabs,body));
+  }
+  function msrMatchForm(ka,kb){
+    var cur=msrCurIdx(ka,kb);
+    function col(k){
+      var last=msrLedgerSeries(k).filter(function(x){return x.idx!==cur;}).slice(-3).reverse();
+      return h('div',{class:'msr-mm-form-col'},last.length?last.map(function(x){
+        var w=x.mine>x.theirs;
+        return h('a',{class:'msr-mm-form-row',href:teamHref(x.opp),title:T[x.opp]?T[x.opp].n:''},crest(k,'xs'),h('span',{class:'msr-mm-fp '+(w?'w':'l')},x.mine+'-'+x.theirs),crest(x.opp,'xs'));
+      }):h('div',{class:'msr-mm-empty'},'No results yet'));
+    }
+    return h('section',{class:'msr-mm-sec'},h('h2',null,'Form'),h('div',{class:'msr-mm-card msr-mm-form'},col(ka),col(kb)),
+      h('div',{class:'msr-mm-note'},'Last 3 verified results before this match.'));
+  }
 
   V.matches = function () {
     var box = h('div', null);
