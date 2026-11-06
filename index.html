@@ -2373,17 +2373,14 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 .ap-card{background:var(--surface)!important;border-color:var(--line)!important}
 .ap-card.open{background:var(--raised)!important}
 
-.msr-stage-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
-.msr-stage-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;opacity:.85}
-.msr-stage-card.on{border-color:var(--neon-cyan,#19E3FF);box-shadow:0 0 22px -8px rgba(25,227,255,.6);opacity:1}
-.msr-stage-no{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.14em;font-weight:800;color:var(--dim)}
-.msr-stage-card.on .msr-stage-no{color:var(--neon-cyan,#19E3FF)}
-.msr-stage-live{font-size:9.5px;padding:1px 6px;border-radius:999px;background:var(--neon-pink,#FF2BD6);color:#fff;letter-spacing:.08em}
-.msr-stage-card h3{margin:4px 0 8px;font-size:18px}
-.msr-stage-card ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted);display:grid;gap:3px}
-.msr-stage-inv{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;font-size:12.5px}
-.msr-stage-inv-t{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 4px;border:1px solid var(--line);border-radius:999px;background:var(--raised);color:var(--text);text-decoration:none}
-@media(max-width:640px){.msr-stage-strip{grid-template-columns:1fr}}
+.msr-stage-tabs{display:inline-flex;gap:6px;margin:0 0 14px;padding:4px;background:var(--sunk);border:1px solid var(--line);border-radius:999px}
+.msr-stage-tab{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:700;letter-spacing:.04em;padding:6px 16px;border-radius:999px;cursor:pointer}
+.msr-stage-tab[aria-selected="true"]{background:linear-gradient(90deg,#19E3FF,#9C6BFF);color:#07040f;box-shadow:0 0 14px -4px rgba(25,227,255,.7)}
+.msr-stage2-zones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.msr-stage2-zone{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.msr-stage2-zone b{font-size:15px}.msr-stage2-zone span{font-size:12px;color:var(--dim)}
+.msr-stage-inv{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--muted)}
+.msr-stage-inv-t{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border:1px solid var(--line);border-radius:999px;background:var(--raised);color:var(--text);text-decoration:none;font-size:13px}
 </style>
 </head>
 <body>
@@ -3148,20 +3145,16 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     }
     var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR White"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
-    var stageCard = function (no, title, lines, on, extra) {
-      return h('div', { class: 'msr-stage-card' + (on ? ' on' : '') },
-        h('div', { class: 'msr-stage-no' }, 'STAGE ' + no, on ? h('span', { class: 'msr-stage-live' }, 'NOW') : null),
-        h('h3', null, title),
-        h('ul', null, lines.map(function (x) { return h('li', null, x); })), extra || null);
-    };
-    var invitedRow = h('div', { class: 'msr-stage-inv' }, h('b', null, 'Invited: '), [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_3291095B83319C890D9700EB', 'REIGN']].map(function (x) {
+    var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'Tournament stages' },
+      [1, 2].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
+    var invitedRow = h('div', { class: 'msr-stage-inv' }, h('b', null, 'Invited'), [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_3291095B83319C890D9700EB', 'REIGN']].map(function (x) {
       var c = x[0];
       return T[c] ? h('a', { class: 'msr-stage-inv-t', href: teamHref(c) }, crest(c, 'md'), h('span', null, T[c].n)) : h('span', { class: 'msr-stage-inv-t' }, x[1]);
     }));
-    var stageStrip = h('section', { class: 'msr-stage-strip', 'aria-label': 'Tournament stages' },
-      stageCard(1, 'Group Stage', ['Round robin, each team plays every other team in its group', 'Top 5 of each group advance', '30 teams advance'], true),
-      stageCard(2, 'Swiss Stage', ['32 teams (30 qualifiers + 2 invited)', '2 Swiss zones: Zone 1 and Zone 2, 16 teams each', 'All matches Bo3 · 3 wins qualify · 3 losses eliminated', '16 teams advance'], false, invitedRow));
-    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2 · Group Stage', 'Stage 1 · Round Robin · Each team plays every other team in its group'), stageStrip,
+    var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' },
+      h('div', { class: 'msr-stage2-zones' }, ['Zone 1', 'Zone 2'].map(function (z) { return h('div', { class: 'msr-stage2-zone' }, h('b', null, z), h('span', null, '16 teams · Bo3')); })),
+      invitedRow);
+    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 Round Robin · Each team plays every other team in its group'), stageStrip,
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
           h('div',null,h('h2',null,'GROUP ',h('em',null,'E')),h('p',null,'ROUND ROBIN STAGE'))),
@@ -3349,6 +3342,17 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         h('div', { class: 'msr-swiss-outcomes' }, h('span', { class: 'qualified' }, '3 WINS · QUALIFIED'), h('span', { class: 'eliminated' }, '3 LOSSES · ELIMINATED')));
     });
     var grid = root.querySelector('.msr-zone-grid'); root.insertBefore(tabbar, grid); selectZone(0);
+    root.appendChild(stage2);
+    var stageHead = root.firstElementChild;
+    function showStage(n) {
+      [].slice.call(stageStrip.children).forEach(function (b2) { b2.setAttribute('aria-selected', String(Number(b2.getAttribute('data-stage')) === n)); });
+      [].slice.call(root.children).forEach(function (ch) {
+        if (ch === stageHead || ch === stageStrip || ch === stage2) return;
+        if (n === 1) ch.style.removeProperty('display'); else ch.style.setProperty('display', 'none', 'important');
+      });
+      stage2.style.display = n === 2 ? '' : 'none';
+    }
+    stageStrip.addEventListener('click', function (e) { var b2 = e.target.closest('.msr-stage-tab'); if (b2) showStage(Number(b2.getAttribute('data-stage'))); });
     return root;
   }
   V.event = function (arg) {
