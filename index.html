@@ -6492,13 +6492,13 @@ function updateVerifiedGroupStandings(){
    let tag=cell.querySelector('.msr-pend-day');
    const d=pend.get(canonical(code));
    if(d==null){if(tag)tag.remove();return;}
-   if(!tag){tag=document.createElement('small');tag.className='msr-pend-day';cell.appendChild(tag);}
-   const txt='Pending · Nov '+d;
+   if(!tag){tag=document.createElement('small');tag.className='msr-pend-day';(cell.querySelector('a.msr-rr-standing-team')||cell).appendChild(tag);}
+   const txt='Nov '+d;
    if(tag.textContent!==txt)tag.textContent=txt;
   });
   if(!document.getElementById('msr-pend-day-css')){
    const st=document.createElement('style');st.id='msr-pend-day-css';
-   st.textContent='.msr-pend-day{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;white-space:nowrap;color:#f5c451;background:rgba(245,196,81,.12);border:1px solid rgba(245,196,81,.35);vertical-align:middle}';
+   st.textContent='.msr-rr-standing-team{flex-wrap:nowrap!important}.msr-pend-day{display:inline-block;flex:none;margin-left:8px;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;white-space:nowrap;color:#f5c451;background:rgba(245,196,81,.12);border:1px solid rgba(245,196,81,.35);vertical-align:middle}';
    document.head.appendChild(st);
   }
  }catch(e){}
