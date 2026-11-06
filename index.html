@@ -2406,6 +2406,23 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-hltv-summary-team strong{order:3}
 #app .msr-hltv-result-score{align-self:center;margin-top:8px;flex:0 0 auto}
 }
+
+/* Smaller match cards on phones (group schedule + results) */
+@media(max-width:650px){
+#app .msr-rr-match{min-height:0!important;padding:8px 10px!important;gap:3px 4px!important}
+#app .msr-rr-team .crest,#app .msr-rr-team .crest.md,#app .msr-rr-fallback{width:32px!important;height:32px!important;flex:0 0 32px!important;border-radius:7px!important}
+#app .msr-rr-team{gap:7px!important}
+#app .msr-rr-clan-tag{font-size:15px!important;line-height:1.15!important}
+#app .msr-rr-identity small{font-size:10.5px!important;line-height:1.15!important}
+#app .msr-rr-versus{font-size:10px!important}
+#app .msr-rr-status{font-size:10px!important;padding:2px 9px!important;margin-top:2px!important}
+#app .msr-hltv-summary-team{min-height:0!important;padding:6px 8px!important;gap:3px!important}
+#app .msr-hltv-summary-logo:not([hidden]){width:32px!important;height:32px!important;min-width:32px!important}
+#app .msr-hltv-summary-team strong{font-size:13px!important}
+#app .msr-hltv-summary-team .msr-stamp{margin-top:-12px!important;font-size:9px!important;padding:1px 5px!important}
+#app .msr-hltv-result-score{font-size:24px!important;margin-top:4px!important}
+#app .msr-match-expand-head{padding:8px 8px 6px!important}
+}
 </style>
 </head>
 <body>
