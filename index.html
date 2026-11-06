@@ -2571,7 +2571,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       else if(/sixlence/.test(nameLow)&&/purple/.test(nameLow))team=ledgerLabelMap.byNorm['sixp']||ledgerLabelMap.byNorm['6lcpurple']||null;
       else team=ledgerLabels.find(function(l){var k=fix(l);return k===tagLow||k===nameLow||k===fix(p.team);})||null;
     }
-    if(!team)return;var nick=normVerified(p.nick);if(team==='DXIII'&&String((GAME_IDS[p.team+'|'+nick]||''))==='99959144')nick='revi';if(team==='4zi'&&nick==='hiro')nick='venn';if(team==='8MNA'&&nick==='verkuzzz')nick='verkuzzz';team=ledgerLabelMap.byNorm[normVerified(team)]||team;var x=sums[team+'|'+nick];
+    if(!team)return;var nick=normVerified(p.nick);if(team==='DXIII'&&String((GAME_IDS[p.team+'|'+nick]||''))==='99959144')nick='revi';if(team==='8MNA'&&nick==='verkuzzz')nick='verkuzzz';team=ledgerLabelMap.byNorm[normVerified(team)]||team;var x=sums[team+'|'+nick];
     if(!x){
       // Match OCR spelling to ONE existing player in the SAME roster only.
       // Never combine two player profiles or guess between equally close names.
@@ -5905,7 +5905,7 @@ function verifiedPlayerStats(){
  let team=null;for(const c of teamCandidates){const r=resolveMsrTeam(c);if(knownTeams.includes(r)){team=r;break;}}
  if(!team)team=resolveMsrTeam(teamCandidates[0]||null);
  if(!team)return;
- const aliases=team==='4zi'?{'hiro':'venn'}:team==='KngZz'?{'tengri':'tengrigodl','tseka':'tseka'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
+ const aliases=team==='KngZz'?{'tengri':'tengrigodl','tseka':'tseka'}:{'petish':'petisha','batilo':'батилопрime','makk':'батилопрime'};
  const name=aliases[rawNick]||aliases[visibleNick]||rawNick;
  const rows=[];
  verifiedPlayerRows(team).forEach(item=>{{
@@ -5970,7 +5970,7 @@ function verifiedTeamProfiles(){
   const rows=[...lineup.querySelectorAll('tbody tr')];
   // Only update registered players already present in the team's lineup.
   // Never append extra match participants: mutation observers re-run this function.
-  const aliases={'hiro':'venn','petish':'petisha','batilo':'батилопрime','makk':'батилопрime','tengri':'tengrigodl'};
+  const aliases={'petish':'petisha','batilo':'батилопрime','makk':'батилопрime','tengri':'tengrigodl'};
   rows.forEach(row=>{
    if(row.classList.contains('msr-verified-participant')||/\s·\s*match\s*$/i.test(row.cells[0]?.textContent||'')){row.remove();return;}
    const nick=norm(row.cells[0]?.querySelector('a.tl b')?.textContent||row.cells[0]?.querySelector('a.tl')?.textContent||row.cells[0]?.textContent||'');
