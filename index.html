@@ -2423,6 +2423,12 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-hltv-result-score{font-size:24px!important;margin-top:4px!important}
 #app .msr-match-expand-head{padding:8px 8px 6px!important}
 }
+
+/* Compact map-photo cards inside a schedule match card */
+#app .msr-rel-details .msr-rel-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%;margin-top:6px}
+#app .msr-rel-details .msr-rel-mini>div.msr-rel-map-photo{min-height:60px!important;padding:6px 8px!important;justify-content:flex-end;border-radius:8px;background-size:cover!important;background-position:center!important;border:1px solid rgba(255,255,255,.14)}
+#app .msr-rel-details .msr-rel-mini .msr-rel-map-photo small{font-size:10px!important;margin:0 0 1px!important;color:#dfe8f6}
+#app .msr-rel-details .msr-rel-mini .msr-rel-map-photo b{font-size:13px!important;line-height:1.1!important;color:#fff;text-shadow:0 1px 4px #000}
 </style>
 </head>
 <body>
@@ -4813,8 +4819,9 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var time=detail.time_label||'';
     return h('div',{class:'msr-rel-details'},
       time?h('b',null,/^\d{1,2}:\d{2}$/.test(time)?'Time · '+time:'Time · '+time+' (confirm)'):null,
-      (detail.picks||[]).map(function(p){return h('span',null,p.team+' pick · '+p.map);}),
-      h('span',null,'Decider · '+detail.decider));
+      h('div',{class:'msr-rel-match-maps msr-rel-mini'},
+        (detail.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}),
+        msrRelMapCard('Decider',detail.decider||'TBA')));
   }
 
   function msrVipPlus(code){
