@@ -2342,6 +2342,8 @@ background-color:#121923!important
   </nav>
 <nav class="mobile-dock" aria-label="Quick navigation"><div class="dock-tabs"><a href="#matches" data-r="matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M8 3v4M16 3v4"/></svg><span>Matches</span></a><a href="#news" data-r="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>News</span></a><a href="#events" data-r="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0zM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8M9 18h6"/></svg><span>Events</span></a></div><div id="mobile-burger-slot"></div></nav>
 
+<style id="msr-sponsor-slots">.msr-sp-top{max-width:1200px;margin:10px auto;padding:0 16px;display:grid;gap:10px}.msr-sp-top:empty{display:none}.msr-sp-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.msr-sp-top .msr-sponsor-card{flex-direction:row;gap:12px;padding:10px 14px}.msr-sp-1 .msr-sponsor-card{min-height:96px;border-color:#d6a53f;background:linear-gradient(120deg,#2b2315,#1c2a40)}.msr-sp-1 .msr-sponsor-card img{max-height:70px}.msr-sp-row .msr-sponsor-card{min-height:70px}.msr-sp-top img{max-width:42%;object-fit:contain}.msr-sp-1 .msr-sponsor-card span::before{content:"TITLE SPONSOR";display:block;font-size:10px;letter-spacing:1px;color:#e7bf68}@media(max-width:760px){.msr-sp-top{padding:0 12px}.msr-sp-row{grid-template-columns:1fr}}</style>
+<div class="msr-sp-top" id="msr-sponsor-top"><div class="msr-sp-1"></div><div class="msr-sp-row"></div></div>
 <section class="msr-sponsor-section" id="msr-sponsors" aria-label="MSR Sponsors">
  <div class="msr-sponsor-panel">
   <div class="msr-sponsor-heading"><div><h2>Our Sponsors</h2><p>Organizations supporting Mongolian Standoff Ranks</p></div></div>
@@ -2350,7 +2352,8 @@ background-color:#121923!important
  </div>
 </section>
 <script>
-/* Add confirmed sponsors only: {name:'Organization',url:'https://...',logo:'https://...'} */
+/* Add confirmed sponsors only: {slot:1..6,name:'Organization',url:'https://...',logo:'https://...'}
+   slot 1 = wide title banner under the header; slots 2-3 = two cards under it; slots 4-6 (or no slot) = Our Sponsors grid at the bottom. */
 window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 (function(){
  var grid=document.getElementById('msr-sponsor-grid'),empty=document.getElementById('msr-sponsor-empty');
@@ -2359,9 +2362,14 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
   if(!sp||!sp.name)return;var url=safeUrl(sp.url);if(!url)return;
   var a=document.createElement('a');a.className='msr-sponsor-card';a.href=url;a.target='_blank';a.rel='noopener noreferrer sponsored';a.setAttribute('aria-label','Visit '+sp.name);
   var logo=safeUrl(sp.logo);if(logo){var img=document.createElement('img');img.src=logo;img.alt=sp.name+' logo';img.loading='lazy';a.appendChild(img)}
-  var title=document.createElement('span');title.textContent=sp.name;a.appendChild(title);grid.appendChild(a);
+  var title=document.createElement('span');title.textContent=sp.name;a.appendChild(title);
+  var top=document.getElementById('msr-sponsor-top'),slot=Number(sp.slot);
+  if(slot===1&&top){var s1=top.querySelector('.msr-sp-1');if(!s1.children.length){s1.appendChild(a);return;}}
+  if((slot===2||slot===3)&&top){top.querySelector('.msr-sp-row').appendChild(a);return;}
+  grid.appendChild(a);
  });
- if(grid.children.length)empty.hidden=true;
+ if(grid.children.length||(document.getElementById('msr-sponsor-top')||{}).textContent)empty.hidden=true;
+ if(!grid.children.length){var sec=document.getElementById('msr-sponsors');if(sec&&(window.MSR_SPONSORS||[]).length)sec.hidden=true;}
 })();
 </script>
 <div class="shell">
