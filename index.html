@@ -5613,14 +5613,14 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var baseVPlayer = V.player;
     var nk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); };
     V.player = function (nick, teamCode) {
-      var fa0 = (window.MSR_FREE_AGENTS || []).find(function (f) { return !f.team && String(f.nick).toLowerCase() === String(nick).toLowerCase(); });
-      if (fa0 && !PLAYERS.some(function (x) { return x.nick === nick && x.team && T[x.team]; })) return h('div', null,
+      var fa0 = (window.MSR_FREE_AGENTS || []).find(function (f) { return String(f.nick).toLowerCase() === String(nick).toLowerCase(); });
+      if (fa0 && !PLAYERS.some(function (x) { return String(x.nick).toLowerCase() === String(nick).toLowerCase() && x.team && T[x.team]; })) return h('div', null,
         h('a', { class: 'back', href: '#players', svg: ICON.back + '<span>Players</span>' }),
         h('div', { class: 'hl-card', style: 'margin-top:14px' },
           h('div', { class: 'hl-top' }, h('span', { style: 'width:96px;height:96px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);font-weight:800;font-size:38px;color:var(--gold)' }, fa0.nick.charAt(0).toUpperCase()),
             h('h1', null, fa0.nick), fa0.id ? h('div', { class: 'tm' }, 'ID ' + fa0.id) : null),
           h('ul', { class: 'hl-list' }, h('li', null, h('span', null, 'Status'), h('b', null, 'Free agent')), fa0.from ? h('li', null, h('span', null, 'Previous team'), h('b', null, fa0.from)) : null, h('li', null, h('span', null, 'Country'), h('b', null, 'Mongolia')))),
-        h('p', { style: 'font-size:13px;color:var(--dim);margin-top:14px' }, 'No matches played yet.'));
+        h('p', { style: 'font-size:13px;color:var(--dim);margin-top:14px' }, fa0.team ? 'Match history is kept on the previous team page.' : 'No matches played yet.'));
       var exact = teamCode ? PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) : PBY[nick];
       if (exact) return baseVPlayer(nick, teamCode);
       var tk = nk(teamCode), codes = [];
