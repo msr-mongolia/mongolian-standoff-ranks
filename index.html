@@ -2540,6 +2540,16 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     });
   });
   // Confirmed MSL S2 map statistics; match only existing registered players.
+  // HLTV Rating 2.0 style rating. Scoreboards only give totals (K/D/A and rounds), so KAST and ADR are ESTIMATES:
+  // KAST ~ exact survived-round share + (rounds died in) * P(at least one kill/assist in a round); ADR from kills/assists.
+  window.msrCalc=function(k,d,a,R){
+    R=Number(R)||0;if(!R)return null;k=Number(k)||0;d=Math.min(Number(d)||0,R);a=Number(a)||0;
+    var kpr=k/R,dpr=d/R,apr=a/R,surv=(R-d)/R,pka=1-Math.exp(-(k+a)/R);
+    var kast=Math.min(100,100*(surv+(1-surv)*pka));
+    var adr=Math.max(30,22+80*kpr+55*apr),imp=2.13*kpr+0.42*apr-0.41;
+    var rating=0.0073*kast+0.3591*kpr-0.5329*dpr+0.2372*imp+0.0032*adr+0.1587;
+    return {kast:kast,adr:adr,rating:Math.max(0,Math.min(3,rating)),kpr:kpr,dpr:dpr};
+  };
   function applyVerifiedPlayerStats(){
     var records=[];
     (window.MSR_SCREENSHOT_MATCHES||[]).forEach(function(match){match.maps.forEach(function(m){var rounds=m.aScore+m.bScore;[['a',match.a],['b',match.b]].forEach(function(side){(m[side[0]]||[]).forEach(function(p){records.push([side[1],p[0],p[1],p[2],p[3],rounds]);});});});});
@@ -2593,7 +2603,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         if(!collision)x=sums[selected.key];
       }
     }
-    if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=Math.max(0,Math.min(3,(.55*x.k+.18*x.a-.25*x.d)/x.rounds+.625));p.verifiedMSR=true;});
+    if(!x)return;p.maps=x.maps;p.kills=x.k;p.deaths=x.d;p.assists=x.a;p.rounds=x.rounds;p.kd=x.k/Math.max(1,x.d);p.rating=window.msrCalc(x.k,x.d,x.a,x.rounds).rating;p.verifiedMSR=true;});
     // Screenshot-only players retain verified K/D/A without being silently registered in a clan roster.
     var normTeam=function(v){return normVerified(v);};
     var teamAliases={tlnrs:['tlnrs','teamlunaris'],dxiii:['dxiii','dxvil13'],reskk:['reskk','asteriskreskk'],okz:['0kz','omegaforcez'],woart:['woart','wonderart'],anot:['anot','nameanotherlevel'],fourzi:['4zi','toexistwithpurpose']};
@@ -2612,7 +2622,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var already=existing.some(function(p){return p.screenshotOnly&&normVerified(p.nick)===nick;});
       if(already)return;
       var rounds=Math.max(1,x[6]);
-      PLAYERS.push({nick:x[1],team:code,maps:x[5],kills:x[2],deaths:x[3],assists:x[4],rounds:rounds,kd:x[2]/Math.max(1,x[3]),rating:Math.max(0,Math.min(3,(.55*x[2]+.18*x[4]-.25*x[3])/rounds+.625)),verifiedMSR:true,screenshotOnly:true,rank:0,provisional:x[5]<5});
+      PLAYERS.push({nick:x[1],team:code,maps:x[5],kills:x[2],deaths:x[3],assists:x[4],rounds:rounds,kd:x[2]/Math.max(1,x[3]),rating:window.msrCalc(x[2],x[3],x[4],rounds).rating,verifiedMSR:true,screenshotOnly:true,rank:0,provisional:x[5]<5});
     });
   }
   // MSR custom player rating (not official HLTV rating).
@@ -4009,7 +4019,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         var codes=Object.keys(T).filter(function(code){return String((T[code]||{}).tag||'').toUpperCase()===tag;});
         if(codes.length!==1)return;
         m.teams[tag].forEach(function(p){
-          var row={nick:p[0],team:codes[0],map:m.map,R:m.R,k:p[1],d:p[2],a:p[3],adr:0,kast:0,rating:Math.max(0,Math.min(3,(.55*p[1]+.18*p[3]-.25*p[2])/m.R+.625))};
+          var row={nick:p[0],team:codes[0],map:m.map,R:m.R,k:p[1],d:p[2],a:p[3],adr:0,kast:0,rating:window.msrCalc(p[1],p[2],p[3],m.R).rating};
           var list=PROWS[p[0]]||(PROWS[p[0]]=[]);
           if(!list.some(function(x){return x.team===row.team&&x.map===row.map;}))list.push(row);
         });
@@ -5853,7 +5863,8 @@ function verifiedPlayerRows(team){team=resolveMsrTeam(team);const src=(team==='K
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
 // MSR custom rating (not an official Standoff 2 rating). 1.00 represents
 // approximately one kill per round, 0.7 deaths per round and 0.2 assists per round.
-const msrRating=(k,d,a,rounds)=>rounds?Math.max(0,Math.min(3,(0.55*k+0.18*a-0.25*d)/rounds+0.625)).toFixed(2):null;
+const msrRating=(k,d,a,rounds)=>rounds?window.msrCalc(k,d,a,rounds).rating.toFixed(2):null;
+const estimatedKast=(k,d,a,rounds)=>rounds?'\u2248'+Math.round(window.msrCalc(k,d,a,rounds).kast)+'%':null;
 function verifiedMainStandings(){
  const summary=document.querySelector('.msr-rr-summary');
  if(!summary||summary.querySelector('.msr-rr-summary-head em')?.textContent?.trim()!=='C')return;
@@ -5921,15 +5932,16 @@ function verifiedPlayerStats(){
  const k=rows.reduce((n,x)=>n+x.k,0),d=rows.reduce((n,x)=>n+x.d,0),a=rows.reduce((n,x)=>n+x.a,0);
  const rounds=rows.reduce((n,x)=>n+x.rounds,0);
  const values={'Rating':msrRating(k,d,a,rounds),'K/D':(k/Math.max(1,d)).toFixed(2),
-  'ADR':String(estimatedAdr(k,a,rounds)??'—'),'Kills / round':rounds?(k/rounds).toFixed(2):'—',
+  'ADR':String(estimatedAdr(k,a,rounds)??'—'),'KAST':String(estimatedKast(k,d,a,rounds)??'—'),'Kills / round':rounds?(k/rounds).toFixed(2):'—',
   'Deaths / round':rounds?(d/rounds).toFixed(2):'—','Maps played':String(rows.length)};
  const tiles=[...header.querySelectorAll('.msr-stat-tile')];
  tiles.forEach(tile=>{
   const label=tile.querySelector('.k')?.textContent.trim();
   const value=values[label],target=tile.querySelector('.v');
   if(value!=null&&target&&target.textContent!==String(value))target.textContent=String(value);
-  if(label==='Rating')tile.title='MSR-calculated rating from verified kills, deaths, assists and rounds';
+  if(label==='Rating')tile.title='HLTV Rating 2.0 style rating from verified kills, deaths, assists and rounds (KAST and ADR are estimated)';
   if(label==='ADR')tile.title='Estimated ADR from kills, assists and rounds; not recorded damage';
+  if(label==='KAST')tile.title='Estimated KAST: survived rounds are exact, kill/assist/trade rounds are estimated from totals (no round-by-round data)';
  });
  document.querySelectorAll('.msr-verified-player-stats').forEach(el=>el.remove());
 }
@@ -5993,7 +6005,7 @@ function verifiedTeamProfiles(){
    const totalLabel=x.k+' K · '+x.d+' D · '+x.a+' A · '+x.rounds+' R · R/A '+roundsPerAssist;
    if(totals&&totals.textContent!==totalLabel)totals.textContent=totalLabel;
    set(3,String(estimatedAdr(x.k,x.a,x.rounds)??'—'));
-   set(4,'—'); // KAST requires round-by-round participation data.
+   set(4,String(estimatedKast(x.k,x.d,x.a,x.rounds)??'—')); // estimate: exact survival + modelled kill/assist rounds
    set(5,String(msrRating(x.k,x.d,x.a,x.rounds)??'—'));
   });
   // Best performers first: rating, then K/D, then maps played, then original roster order.
