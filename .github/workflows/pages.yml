@@ -33,7 +33,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           R="${{ github.repository }}"
-          for sha in d8dcac58a17caa15fb0da42c2ee8c1375062d740 $(git log -12 --format=%H); do
+          for sha in d8dcac58a17caa15fb0da42c2ee8c1375062d740 $(git log -12 --format=%H | tail -n +2); do
             echo "== cancel $sha"; gh api -X POST "repos/$R/pages/deployments/$sha/cancel" 2>&1 | head -c 300 || true; echo
           done
           echo "== deployments"; gh api "repos/$R/deployments?environment=github-pages&per_page=6" --jq '.[]|[.id,.sha[0:7]]|@tsv' 2>&1 | head -10
