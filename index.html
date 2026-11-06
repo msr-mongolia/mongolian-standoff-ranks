@@ -3002,7 +3002,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       return code ? h('a', { class: 'msr-zone-team', href: teamHref(code) }, crest(code, 'md'), h('span', null, T[code].n))
         : h('span', { class: 'msr-zone-team msr-zone-pending' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Awaiting team · Slot ' + slot));
     }
-    var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR White"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
+    var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR White"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2 · Group Stage', 'Round Robin · Each team plays every other team in its group'),
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
@@ -3041,7 +3041,10 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
           // A 7-team group (e.g. B after a team was removed) uses the 8-team table
           // with the missing slot as the bye; never read a team that does not exist.
           var byeNames = null;
-          if(label!=='F'&&groupTeams.length<8){
+          if(label==='B'){
+            byeNames=rrRounds.map(function(day){var p=day.filter(function(x){return groupTeams[x[0]][1]==='B2Di'||groupTeams[x[1]][1]==='B2Di';})[0];return p?(groupTeams[p[0]][1]==='B2Di'?groupTeams[p[1]][0]:groupTeams[p[0]][0]):'';});
+            rrRounds=rrRounds.map(function(day){return day.filter(function(x){return groupTeams[x[0]][1]!=='B2Di'&&groupTeams[x[1]][1]!=='B2Di';});});
+          } else if(label!=='F'&&groupTeams.length<8){
             byeNames=rrRounds.map(function(day){var p=day.filter(function(x){return !groupTeams[x[0]]||!groupTeams[x[1]];})[0];return p?(groupTeams[p[0]]||groupTeams[p[1]]||[''])[0]:'';});
             rrRounds=rrRounds.map(function(day){return day.filter(function(x){return groupTeams[x[0]]&&groupTeams[x[1]];});});
           }
@@ -3053,7 +3056,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
               h('span',{class:'msr-rr-team msr-rr-unlinked'},h('span',{class:'msr-rr-fallback msr-rr-fallback-'+norm(item[1])},item[1]==='RESKK'?'✳':item[1].slice(0,2).toUpperCase()),h('span',{class:'msr-rr-identity'},h('b',{class:'msr-rr-clan-tag'},item[1]),h('small',null,name)));
           }
           return h('section',{class:'box msr-zone-card msr-rr-card','aria-label':'Group '+label+' round robin schedule'},
-            h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'ROUND ROBIN · '+groupTeams.length+' TEAMS')),
+            h('div',{class:'msr-zone-title'},h('h2',null,'GROUP '+label),h('span',{class:'tag soft'},'ROUND ROBIN · '+(groupTeams.length-(label==='B'?1:0))+' TEAMS')),
             h('p',{class:'msr-zone-note'},(label==='F'||byeNames)?'November 4–10 · 7 days · 21 matches · One bye per day':'November 4–10 · 7 days · 28 matches · Each team plays 7 matches'),
             h('div',{class:'msr-rr-schedule'},rrRounds.map(function(day,di){
               return h('section',{class:'msr-rr-day'},
@@ -3122,6 +3125,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         summary.querySelector('.msr-rr-summary-head em').textContent=label;
         summary.querySelector('.msr-rr-standings h3').textContent='GROUP '+label+' STANDINGS';
         var tbody=summary.querySelector('tbody');tbody.replaceChildren();
+        entries=entries.filter(function(e){return e[1]!=='B2Di';});count=entries.length;
         entries.forEach(function(item,i){
           var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
           var key=msrRelTeamKey(item[0])||msrRelTeamKey(item[1]);
@@ -3157,7 +3161,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       if (tournament && tournament.img) card.style.setProperty('--msr-zone-logo', 'url("' + String(tournament.img).replace(/"/g, '%22') + '")');
       var firstMatches = Array.from(card.querySelectorAll('.msr-zone-match'));
       card.id = 'msr-zone-panel-' + label; card.setAttribute('role', 'tabpanel'); card.setAttribute('aria-labelledby', 'msr-zone-tab-' + label);
-      var button = h('button', { type: 'button', id: 'msr-zone-tab-' + label, role: 'tab', 'aria-controls': card.id, 'aria-selected': String(zi === 0), onclick: function () { selectZone(zi); } }, 'ZONE ' + label, h('small', null, ((groupData[label]||[]).length||((zi === 4 || zi === 5) ? 7 : 8)) + ' teams'));
+      var button = h('button', { type: 'button', id: 'msr-zone-tab-' + label, role: 'tab', 'aria-controls': card.id, 'aria-selected': String(zi === 0), onclick: function () { selectZone(zi); } }, 'ZONE ' + label, h('small', null, ((groupData[label]||[]).length-(label==='B'?1:0)||((zi === 4 || zi === 5) ? 7 : 8)) + ' teams'));
       button.addEventListener('keydown', function (e) {
         var next = e.key === 'ArrowRight' ? (zi + 1) % 6 : e.key === 'ArrowLeft' ? (zi + 5) % 6 : e.key === 'Home' ? 0 : e.key === 'End' ? 5 : -1;
         if (next >= 0) { e.preventDefault(); selectZone(next); tabbar.children[next].focus(); }
@@ -3940,7 +3944,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       keys.find(function(k){return norm(T[k].tag)===n;})||null;
   }
 
-  var MSR_REL_GROUP_TEAMS={"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]],"E":[["1nfinityX","1NFYx"],["METAS","MetaS"],["DRDRX","DRDRX"],["Starfire Nirvana Team","SNT"],["SIX LENCE PURPLE","6LC purple"],["MANAI","8MNA"],["OMEN ESPORTS","OMEN"]]};
+  var MSR_REL_GROUP_TEAMS={"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]],"E":[["1nfinityX","1NFYx"],["METAS","MetaS"],["DRDRX","DRDRX"],["Starfire Nirvana Team","SNT"],["SIX LENCE PURPLE","6LC purple"],["MANAI","8MNA"],["OMEN ESPORTS","OMEN"]]};
   function msrRelGroup(row){
     var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
     function belongs(name,entries){
@@ -3987,7 +3991,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     var rounds=group==='E'?MSR_GROUP_ROUNDS_E:group==='F'?MSR_GROUP_ROUNDS_F:MSR_GROUP_ROUNDS_8;
     return (rounds[day]||[]).map(function(pair){
       var a=teams[pair[0]],b=teams[pair[1]];
-      if(!a||!b)return null;
+      if(!a||!b||a[1]==='B2Di'||b[1]==='B2Di')return null;
       var same=function(x,y){return String(x||'').toLowerCase().replace(/[^a-z0-9]/g,'')===String(y||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
       var known=msrRelUpcoming().find(function(r){
         return (same(r.team_a,a[0])||same(r.team_a,a[1]))&&(same(r.team_b,b[0])||same(r.team_b,b[1]))
