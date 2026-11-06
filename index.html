@@ -4392,7 +4392,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           ||(same(r.team_b,a[0])||same(r.team_b,a[1]))&&(same(r.team_a,b[0])||same(r.team_a,b[1]));
       });
       // REL imports do not contain a scheduled date. Never assign their time/maps to a specific day without one.
-      return {team_a:a[0],team_b:b[0],time_label:null,picks:[],decider:null,scheduled:true,has_imported_details:!!known};
+      // A pair meets only once in a round-robin group, so its imported veto details belong to this exact scheduled match.
+      return {team_a:a[0],team_b:b[0],time_label:known?(known.time_label||null):null,picks:known?(known.picks||[]):[],decider:known?(known.decider||null):null,scheduled:true,has_imported_details:!!known};
     }).filter(Boolean);
   }
   function msrRelMatchCard(row){
