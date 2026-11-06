@@ -4377,7 +4377,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 
   function openLunarisGoldSticker(){openTeamGoldSticker('TLNRS');}
   function isXvrnDivine(code){var team=T[code]||{};return /^xvrn$/i.test(String(team.tag||'').trim()) || /^xiverion\s+divine$/i.test(String(team.n||'').trim());}
-  function teamGoldStickerSrc(code){return isXvrnDivine(code)?'assets/xvrn_gold_sticker.png?v=20261104-2':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':code==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_gold_sticker.png':'assets/lunaris_gold_sticker.png';}
+  function teamGoldStickerSrc(code){return isXvrnDivine(code)?'assets/xvrn_gold_sticker.png?v=20261106-1':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':code==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_gold_sticker.png':'assets/lunaris_gold_sticker.png';}
   function isOmvTeam(code){return code==='DS_02454733FB68AAB2875350A0'||/^omnis\s+over$/i.test((T[code]||{}).n||'');}
   // Golden stickers must contain only the gold cutout with transparent alpha; never add a background.
   function openTeamGoldSticker(code){
