@@ -2448,6 +2448,29 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 .msr-rel-loss>span>b{opacity:.75}
 .msr-rel-match-vs{white-space:nowrap}
 </style>
+<style id="msr-hltv-matches-css">
+#app .msr-rel-match-list{display:block!important;background:#2a2f38!important;border-radius:14px;overflow:hidden;gap:0!important}
+#app .msr-hl-match{display:block!important;background:#2a2f38!important;border:0!important;border-top:1px solid #343b46!important;border-radius:0!important;padding:0!important;margin:0!important;box-shadow:none!important}
+#app .msr-rel-group-panel .msr-hl-match:first-of-type{border-top:0!important}
+#app .msr-hl-row{display:flex!important;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#app .msr-hl-time{width:56px;flex:none;text-align:center;line-height:1.25}
+#app .msr-hl-time b{display:block;font-size:17px;font-weight:700;color:#e4e8ee}
+#app .msr-hl-time small{display:block;font-size:13px;color:#8b95a3;margin-top:2px}
+#app .msr-hl-sep{width:1px;align-self:stretch;background:#3b424d;flex:none}
+#app .msr-hl-teams{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+#app .msr-hl-t{display:flex;align-items:center;gap:10px;min-width:0}
+#app .msr-hl-tl{display:flex;align-items:center;gap:10px;min-width:0;flex:1;color:#e4e8ee!important;text-decoration:none!important}
+#app .msr-hl-tl .crest{width:26px!important;height:26px!important;flex:none;border-radius:6px!important}
+#app .msr-hl-n{font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#app .msr-hl-t.loss .msr-hl-n,#app .msr-hl-t.loss .msr-hl-s{color:#7d8794!important;font-weight:500}
+#app .msr-hl-t.win .msr-hl-n,#app .msr-hl-t.win .msr-hl-s{color:#fff!important;font-weight:700}
+#app .msr-hl-s{font-size:17px;font-weight:700;color:#e4e8ee;min-width:18px;text-align:right}
+#app .msr-hl-chev{flex:none;color:#7d8794;font-size:16px;transition:transform .15s}
+#app .msr-hl-match.open .msr-hl-chev{transform:rotate(180deg)}
+#app .msr-hl-maps{display:none!important;padding:0 16px 14px!important;margin:0!important}
+#app .msr-hl-match.open .msr-hl-maps{display:grid!important}
+@media(max-width:420px){#app .msr-hl-row{gap:10px;padding:12px}#app .msr-hl-time{width:48px}#app .msr-hl-n,#app .msr-hl-s{font-size:16px}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -4423,20 +4446,30 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function msrRelMatchCard(row){
     var rk=[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=msrRelResult(rk[0],rk[1]);
     function team(name,mine){
-      var key=msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a);
-      return h(key?'a':'span',{class:'msr-rel-team'+(res?(won?' msr-rel-win':' msr-rel-loss'):''),href:key?teamHref(key):null},
-        key?crest(key,'md'):null,h('span',null,h('b',null,key?(T[key].tag||name):name),key?h('small',null,T[key].n):null,res?h('em',{class:'msr-rel-wl'},won?'WIN':'LOSS'):null));
+      var key=msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
+      return h('div',{class:'msr-hl-t'+(res?(won?' win':' loss'):'')},
+        key?h('a',{class:'msr-hl-tl',href:teamHref(key),title:label},crest(key,'sm'),h('span',{class:'msr-hl-n'},label)):h('span',{class:'msr-hl-tl'},crest(null,'sm'),h('span',{class:'msr-hl-n'},label)),
+        res?h('span',{class:'msr-hl-s'},String(mine?res.a:res.b)):null);
     }
-    var time=row.time_label||'';
-    return h('article',{class:'box msr-rel-match','aria-label':row.team_a+' vs '+row.team_b},
-      h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · '+(res?'FINISHED':'UPCOMING')),
-        h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):(res?'Final result':'Time · Not announced yet'))),
-      h('div',{class:'msr-rel-match-teams'},team(row.team_a,true),h('b',{class:'msr-rel-match-vs'},res?(res.a+' – '+res.b):'VS'),team(row.team_b,false)),
-      (!(row.picks||[]).length&&res&&res.maps&&res.maps.length
-        // No veto message was posted, but the verified result lists the maps that were played: show those (never guess who picked).
-        ?h('div',{class:'msr-rel-match-maps msr-rel-mini'},res.maps.map(function(m,i){return msrRelMapCard('Map '+(i+1)+' · '+m.a+'–'+m.b,m.map);}))
-        :h('div',{class:'msr-rel-match-maps msr-rel-mini'},(row.picks||[]).length?(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Pick 1','TBA'),msrRelMapCard('Pick 2','TBA')],
-        msrRelMapCard('Decider',row.decider||'TBA'))));
+    var time=row.time_label||'',hasPicks=(row.picks||[]).length>0;
+    var mapCards=(!hasPicks&&res&&res.maps&&res.maps.length)
+      // No veto message was posted, but the verified result lists the maps that were played: show those (never guess who picked).
+      ?res.maps.map(function(m,i){return msrRelMapCard('Map '+(i+1)+' · '+m.a+'–'+m.b,m.map);})
+      :(hasPicks?row.picks.map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Pick 1','TBA'),msrRelMapCard('Pick 2','TBA')]).concat([msrRelMapCard('Decider',row.decider||'TBA')]);
+    var maps=h('div',{class:'msr-rel-match-maps msr-rel-mini msr-hl-maps'},mapCards);
+    var rowEl=h('div',{class:'msr-hl-row',role:'button',tabindex:'0','aria-expanded':'false'},
+      h('div',{class:'msr-hl-time'},h('b',null,time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):(res?'Final':'TBA')),h('small',null,'Bo3')),
+      h('i',{class:'msr-hl-sep'}),
+      h('div',{class:'msr-hl-teams'},team(row.team_a,true),team(row.team_b,false)),
+      h('span',{class:'msr-hl-chev','aria-hidden':'true'},'\u25BE'));
+    var card=h('article',{class:'msr-hl-match','aria-label':row.team_a+' vs '+row.team_b},rowEl,maps);
+    function toggle(e){
+      if(e&&e.target&&e.target.closest&&e.target.closest('a'))return;
+      var open=!card.classList.contains('open');card.classList.toggle('open',open);rowEl.setAttribute('aria-expanded',String(open));
+    }
+    rowEl.addEventListener('click',toggle);
+    rowEl.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
+    return card;
   }
 
   V.matches = function () {
