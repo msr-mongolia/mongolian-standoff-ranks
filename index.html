@@ -1487,6 +1487,15 @@ html body #app .sg .sigtxt[data-hand="1"]{font-family:"Marck Script","Kaushan Sc
 html body #app .sg .sigtxt[data-hand="2"]{font-family:"Mrs Saint Delafield","Marck Script",cursive!important;transform:rotate(-9deg)!important;letter-spacing:0!important}
 html body #app .sg .sigtxt::after{left:8%!important;right:7%!important;bottom:.02em!important;height:1px!important;border-radius:100%!important;transform:rotate(-3deg)!important}
 </style>
+<style id="msr-ujin-pink-signature">
+/* Player Ujin: custom pink signature image instead of the generated script text. */
+html body #app .sg .sigtxt[data-nick="Ujin"],html body #app.msr-clan-profile .bigav.sg.hl .sigtxt[data-nick="Ujin"]{
+color:transparent!important;-webkit-text-fill-color:transparent!important;-webkit-text-stroke:0!important;text-shadow:none!important;filter:drop-shadow(0 0 2px #ff7cc0) drop-shadow(0 0 5px rgba(255,124,192,.8)) brightness(1.25)!important;
+background:url("assets/ujin_signature.png") center/contain no-repeat!important;
+width:4.1em!important;height:4.1em!important;padding:0!important;transform:rotate(-3deg)!important;overflow:visible!important;
+}
+html body #app .sg .sigtxt[data-nick="Ujin"]::after{display:none!important}
+</style>
 <style id="msr-all-team-stat-cards">
 #app .msr-team-stats{border:1px solid var(--clan-accent,#50d994);border-radius:14px;overflow:hidden;background:linear-gradient(125deg,#080e15,#101b21);margin:14px 0 18px}
 #app .msr-team-stats-heading{display:flex;align-items:center;gap:9px;padding:12px 15px;border-bottom:1px solid var(--clan-accent,#50d994)}
