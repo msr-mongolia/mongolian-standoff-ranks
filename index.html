@@ -2043,6 +2043,11 @@ background-color:#121923!important
 .msr-gold-sticker-close{position:absolute;right:8px;top:5px;background:transparent;color:#fff;border:0;font-size:30px;cursor:pointer}
 @media(max-width:650px){#app .prof.msr-lunaris-clean{padding-right:90px!important}#app .prof.msr-lunaris-clean .msr-team-gold-sticker{width:65px;height:75px;right:10px}}
 </style>
+<style id="msr-sixp-back1-video">
+/* Six Lence Purple moving background: darken the bright clip so the team text stays readable. */
+#app:has(.prof.msr-sixp-sticker) .msr-knight-back1-video{filter:brightness(.62) saturate(1.1)!important}
+#app:has(.prof.msr-sixp-sticker) .msr-knight-video-shade{background:linear-gradient(90deg,rgba(14,5,30,.72),rgba(30,8,50,.38))!important}
+</style>
 <style id="msr-sixp-gold-sticker">#app .prof.msr-sixp-sticker{position:relative;padding-right:140px!important}#app .prof.msr-sixp-sticker .msr-team-gold-sticker{position:absolute!important;right:18px;top:50%;transform:translateY(-50%);width:100px;height:94px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 6px #000a)}#app .prof.msr-sixp-sticker .msr-team-gold-sticker img{width:100%;height:100%;object-fit:contain;display:block;background:transparent}@media(max-width:650px){#app .prof.msr-sixp-sticker{padding-right:100px!important}#app .prof.msr-sixp-sticker .msr-team-gold-sticker{width:72px;height:68px;right:8px}}</style>
 <style id="msr-rvurz-gold-sticker">#app .prof.msr-rvurz-back1{position:relative;padding-right:210px!important}#app .prof.msr-rvurz-back1 .msr-team-gold-sticker{position:absolute!important;right:18px;top:50%;transform:translateY(-50%);width:180px;height:90px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 6px #000a)}@media(max-width:650px){#app .prof.msr-rvurz-back1{padding-right:120px!important}#app .prof.msr-rvurz-back1 .msr-team-gold-sticker{width:100px;height:50px;right:8px}}</style>
 <style id="msr-etxen-back1">
@@ -5051,6 +5056,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         var banner=node.querySelector('.hl-top, .prof');
         if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
         if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
+        if(isSixpPurple(clanCode))applyClanVideoBack1(node,'assets/sixp_back1_video.json');
         if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
         if(name==='team')node.dataset.msrBack1Team=clanCode;
         if(banner && clan.img && !['ETXEN','TLNRS'].includes(String(clan.tag || '').toUpperCase()) && !/^(ETXEN|TEAM LUNARIS)\b/i.test(clan.n || '')){
@@ -5064,7 +5070,8 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       applyAllClanPanelBack1(node,back1Clan);
       var back1Code=String(back1Clan.tag||'').toUpperCase();
       var back1Asset=back1Code==='KGTSS'||/^knightss$/i.test(back1Clan.n||'')?'assets/kgtss_back1_video.json?v=smooth-loop-1':
-        back1Code==='W2990'||/^2990\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':null;
+        back1Code==='W2990'||/^2990\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':
+        isSixpPurple(node.dataset.msrBack1Team)?'assets/sixp_back1_video.json':null;
       if(back1Asset && msrClanVideoPromises[back1Asset]){
         msrClanVideoPromises[back1Asset].then(function(){
           if(node.isConnected)applyAllClanPanelBack1(node,back1Clan);
