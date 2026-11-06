@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://msr-mongolia.github.io/mongolian-standoff-ranks/">
 <meta name="twitter:card" content="summary">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0D121A">
+<meta name="theme-color" content="#07040f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MSR">
@@ -2308,6 +2308,40 @@ background-color:#121923!important
 #app.msr-clan-profile .prof-grid>.box.msr-clan-panel-back1 tbody tr.mapr.msr-map-pool-photo{
  background:linear-gradient(90deg,rgba(10,16,27,.72),rgba(10,16,27,.38)),var(--mi) center/cover no-repeat!important;background-size:cover!important}
 #app .prof-grid .box tbody tr.mapr.msr-map-pool-photo td{background:transparent!important;color:#f3f6ff;text-shadow:0 1px 4px #000}
+</style>
+<style id="msr-neon-theme">
+/* ===== MSR Neon / Gaming theme (static, no animated blur) ===== */
+:root{
+  --bg:#07040f; --surface:#0f0a1d; --raised:#170f2c; --sunk:#050309;
+  --line:#2c1f55; --line-soft:#201640;
+  --text:#F1EEFF; --muted:#A79DD0; --dim:#7468A6;
+  --tracer:#19E3FF; --steel:#9C8CFF; --bar:#19E3FF;
+  --gold:#FFD23F; --win:#39FF9A;
+  --neon-pink:#FF2BD6; --neon-cyan:#19E3FF;
+}
+body{background:#050309}
+#sky{background:
+  radial-gradient(60% 45% at 12% 0%,rgba(255,43,214,.20),transparent 70%),
+  radial-gradient(55% 45% at 92% 8%,rgba(25,227,255,.18),transparent 70%),
+  linear-gradient(180deg,#07040f 0%,#0b0620 55%,#0e0828 100%)}
+#sky::before,#sky::after,#sky .st2{opacity:.35}
+#sky .au{display:none}
+#sky .st2{display:none}
+#sky{--g:rgba(25,227,255,.07)}
+#sky::after{opacity:1;animation:none;background-image:
+  linear-gradient(var(--g) 1px,transparent 1px),linear-gradient(90deg,var(--g) 1px,transparent 1px);
+  background-size:56px 56px;-webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 70%);mask-image:linear-gradient(180deg,#000 0%,transparent 70%)}
+.box,.ncard,.evc,.tile,.plc,.sw-g,.sw-info,.hl-card{border-color:var(--line);box-shadow:0 0 0 1px rgba(25,227,255,.03),0 6px 24px -14px rgba(255,43,214,.45)}
+.plc:hover,.ncard:hover,.evc:hover,.tile:hover{border-color:var(--neon-cyan)!important;box-shadow:0 0 0 1px rgba(25,227,255,.5),0 0 22px -4px rgba(25,227,255,.55)!important}
+.grp-h{border-left-color:var(--neon-pink);color:var(--muted)}
+.btn{background:linear-gradient(90deg,#19E3FF,#9C6BFF 60%,#FF2BD6);color:#07040f!important;border:0;box-shadow:0 0 18px -4px rgba(25,227,255,.7)}
+.btn:hover{box-shadow:0 0 26px -2px rgba(255,43,214,.7)}
+.snav a.on,header a.on,[data-r].on{box-shadow:inset 0 -2px 0 var(--neon-cyan),0 0 14px -6px var(--neon-cyan)}
+.snav a.on{background:#1a1238;color:#fff;box-shadow:inset 3px 0 0 var(--neon-cyan)}
+h1,h2,.hl-card h1,.msc{text-shadow:0 0 18px rgba(25,227,255,.28)}
+a.tl:hover,.tl:hover{color:var(--neon-cyan)}
+.tag.gold{background:rgba(255,210,63,.14);color:var(--gold)}
+::selection{background:rgba(255,43,214,.45)}
 </style>
 </head>
 <body>
