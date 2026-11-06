@@ -2401,7 +2401,9 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-hltv-summary-team{flex:1 1 0!important;min-width:0!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;text-align:center}
 #app .msr-hltv-summary-a strong,#app .msr-hltv-summary-b strong{text-align:center!important;white-space:normal!important;overflow-wrap:anywhere;line-height:1.15}
 #app .msr-hltv-summary-logo:not([hidden]){width:42px!important;height:42px!important;min-width:42px!important;border-radius:6px}
-#app .msr-hltv-summary-team .msr-stamp{margin:0!important}
+#app .msr-hltv-summary-team .msr-hltv-summary-logo{order:1}
+#app .msr-hltv-summary-team .msr-stamp{order:2;margin:-16px 0 0!important;position:relative;z-index:2;background:rgba(7,4,15,.82)!important;box-shadow:0 2px 8px rgba(0,0,0,.6)}
+#app .msr-hltv-summary-team strong{order:3}
 #app .msr-hltv-result-score{align-self:center;margin-top:8px;flex:0 0 auto}
 }
 </style>
