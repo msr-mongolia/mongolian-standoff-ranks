@@ -5798,8 +5798,10 @@ const eloMatches=results.map(match=>{
  const multiplier=1+0.08*Math.max(0,count-2);
  const aDelta=Math.round((32*((aWins>bWins?1:0)-expected)+1.4*diff/count)*multiplier);
  const bDelta=Math.round((32*((bWins>aWins?1:0)-(1-expected))-1.1*diff/count)*multiplier);
- const aChange=Math.max(-40,Math.min(35,aDelta));
- const bChange=Math.max(-40,Math.min(35,bDelta));
+ // Full auto win (no maps played): the winner gets a flat +10 ELO, the other team is unchanged.
+ const fullAuto=!match.maps.length;
+ const aChange=fullAuto?(aWins>bWins?10:0):Math.max(-40,Math.min(35,aDelta));
+ const bChange=fullAuto?(bWins>aWins?10:0):Math.max(-40,Math.min(35,bDelta));
  // The free tier stops at 300. VIP entitlement must be checked server-side
  // before awarding points above 300; never infer VIP from screenshots.
  const aAfter=Math.max(0,Math.min(300,ra+aChange));
