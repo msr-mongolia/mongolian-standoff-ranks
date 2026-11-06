@@ -3173,6 +3173,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     // Show the short tag; teams that share a tag (2990, 6LC) keep their full name so they stay distinguishable.
     function swTag(c) {
       var tg = String((T[c] && T[c].tag) || '').trim(), low = tg.toLowerCase();
+      var nm0 = String(T[c].n || '').toLowerCase().replace(/[^a-z0-9]/g, ''), ALT = { sixlencepurple: '6LP' };
+      if (ALT[nm0]) return ALT[nm0];
       if (!tg) return T[c].n;
       var shared = Object.keys(T).filter(function (k) { return String(T[k].tag || '').trim().toLowerCase() === low; }).length > 1;
       return shared ? T[c].n : tg;
