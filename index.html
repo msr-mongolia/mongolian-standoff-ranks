@@ -4563,16 +4563,15 @@ window.MSR_RESULTS_ONLY={'0kz|zxc':1};
         };
         draw3();
       } else {
-        var mc = [{ k: 'map', l: 'Map', text: 1 }, { k: 'played', l: 'Played', n: 1 }, { k: 'avgR', l: 'Avg. rounds', n: 1 }, { k: 'ctp', l: 'CT win %', n: 1 }, { k: 'tp', l: 'T win %', n: 1 }, { k: 'pick', l: 'Picked', n: 1 }, { k: 'ban', l: 'Removed', n: 1 }, { k: 'left', l: 'Left over', n: 1 }];
+        var mc = [{ k: 'map', l: 'Map', text: 1 }, { k: 'played', l: 'Played', n: 1 }, { k: 'avgR', l: 'Avg. rounds', n: 1 }];
         var ml = mapAggs(f);
         var draw4 = function () {
           body.textContent = '';
-          body.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:600px' }, thead(mc, SF.sm, draw4),
+          body.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:360px' }, thead(mc, SF.sm, draw4),
             h('tbody', null, sortBy(ml, SF.sm).map(function (o) {
-              return h('tr', { class: 'mapr msr-map-pool-photo', style: '--mi:' + (MAPART[o.map] || 'none') }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, o.played ? o.avgR.toFixed(1) : '—'),
-                h('td', { class: 'n' }, o.ctp != null ? o.ctp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.tp != null ? o.tp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.pick), h('td', { class: 'n' }, o.ban), h('td', { class: 'n' }, o.left));
+              return h('tr', { class: 'mapr msr-map-pool-photo', style: '--mi:' + (MAPART[o.map] || 'none') }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, o.played ? o.avgR.toFixed(1) : '—'));
             }))))));
-          body.appendChild(h('p', { class: 'mini' }, 'Played maps and rounds come from verified scoreboards. CT/T win % and veto counts are not recorded, so they show \u2014 or 0.'));
+          body.appendChild(h('p', { class: 'mini' }, 'Played maps and rounds come from verified scoreboards.'));
         };
         draw4();
       }
