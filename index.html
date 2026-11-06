@@ -2425,10 +2425,20 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 }
 
 /* Compact map-photo cards inside a schedule match card */
-#app .msr-rel-details .msr-rel-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%;margin-top:6px}
-#app .msr-rel-details .msr-rel-mini>div.msr-rel-map-photo{min-height:60px!important;padding:6px 8px!important;justify-content:flex-end;border-radius:8px;background-size:cover!important;background-position:center!important;border:1px solid rgba(255,255,255,.14)}
-#app .msr-rel-details .msr-rel-mini .msr-rel-map-photo small{font-size:10px!important;margin:0 0 1px!important;color:#dfe8f6}
-#app .msr-rel-details .msr-rel-mini .msr-rel-map-photo b{font-size:13px!important;line-height:1.1!important;color:#fff;text-shadow:0 1px 4px #000}
+#app .msr-rel-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%;margin-top:6px}
+#app .msr-rel-mini>div.msr-rel-map-photo{min-height:60px!important;padding:6px 8px!important;justify-content:flex-end;border-radius:8px;background-size:cover!important;background-position:center!important;border:1px solid rgba(255,255,255,.14)}
+#app .msr-rel-mini .msr-rel-map-photo small{font-size:10px!important;margin:0 0 1px!important;color:#dfe8f6}
+#app .msr-rel-mini .msr-rel-map-photo b{font-size:13px!important;line-height:1.1!important;color:#fff;text-shadow:0 1px 4px #000}
+
+@media(max-width:650px){
+#app .msr-rel-match{gap:6px!important;padding:10px 12px!important}
+#app .msr-rel-match .msr-rel-match-heading{gap:4px!important;margin:0!important}
+#app .msr-rel-match .msr-rel-match-time{font-size:14px!important}
+#app .msr-rel-match .msr-rel-match-teams{gap:6px!important;margin:0!important}
+#app .msr-rel-match .msr-rel-team b{font-size:15px!important}
+#app .msr-rel-match .msr-rel-team small{font-size:11px!important}
+#app .msr-rel-match .msr-rel-team .crest{width:30px!important;height:30px!important;flex:0 0 30px!important}
+}
 </style>
 </head>
 <body>
@@ -4396,8 +4406,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · UPCOMING'),
         h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):'Time · Not announced yet')),
       h('div',{class:'msr-rel-match-teams'},team(row.team_a),h('b',{class:'msr-rel-match-vs'},'VS'),team(row.team_b)),
-      h('div',{class:'msr-rel-match-maps'},(row.picks||[]).length?(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Map picks','Not announced yet')],
-        msrRelMapCard('Decider',row.decider||'Not announced yet')));
+      h('div',{class:'msr-rel-match-maps msr-rel-mini'},(row.picks||[]).length?(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Pick 1','TBA'),msrRelMapCard('Pick 2','TBA')],
+        msrRelMapCard('Decider',row.decider||'TBA')));
   }
 
   V.matches = function () {
