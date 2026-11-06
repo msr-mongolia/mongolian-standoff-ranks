@@ -4386,8 +4386,9 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 
   var MSR_REL_MATCHES=[];
   function msrRelInfo(a,b,day){
-    if(day!==0)return null;
-    var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+    var rawNorm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+    // Veto posts spell some teams differently from the registered tags.
+    var norm=function(v){var n=rawNorm(v);return ({an0t:'anot',ciorred:'cior','0men':'omen',sixlencepurple:'6lcpurple',sixp:'6lcpurple'})[n]||n;};
     var matches=function(text,item){return item.some(function(v){return norm(v)===norm(text);});};
     var detail=MSR_REL_MATCHES.find(function(row){return (matches(row.team_a,a)&&matches(row.team_b,b))||(matches(row.team_a,b)&&matches(row.team_b,a));});
     if(!detail)return null;
