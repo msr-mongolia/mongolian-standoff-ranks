@@ -733,13 +733,13 @@ body { background: #050912; }
   radial-gradient(2.2px 2.2px at 1.2% 4.2%, rgba(255,255,255,0.9), transparent 100%); }
 @keyframes twinkle { from { opacity: .25; } to { opacity: 1; } }
 #sky .au { position: absolute; left: -25%; width: 150%; mix-blend-mode: screen; will-change: transform, opacity; }
-#sky .au1 { top: -8%; height: 62%; filter: blur(34px); opacity: .55;
+#sky .au1 { top: -8%; height: 62%; opacity: .55;
   background: radial-gradient(ellipse 55% 46% at 32% 52%, rgba(61,255,176,.62), transparent 72%), radial-gradient(ellipse 42% 40% at 66% 44%, rgba(42,212,255,.5), transparent 72%);
   animation: auA 22s ease-in-out infinite alternate; }
-#sky .au2 { top: 2%; height: 52%; filter: blur(42px); opacity: .4;
+#sky .au2 { top: 2%; height: 52%; opacity: .4;
   background: radial-gradient(ellipse 50% 40% at 58% 50%, rgba(155,107,255,.55), transparent 72%), radial-gradient(ellipse 36% 34% at 20% 56%, rgba(61,255,176,.4), transparent 72%);
   animation: auB 28s ease-in-out infinite alternate; }
-#sky .au3 { top: -4%; height: 48%; filter: blur(10px); opacity: .22;
+#sky .au3 { top: -4%; height: 48%; opacity: .14;
   background: repeating-linear-gradient(90deg, transparent 0 22px, rgba(140,255,215,.5) 22px 24px, transparent 24px 52px, rgba(120,200,255,.4) 52px 53px);
   -webkit-mask-image: radial-gradient(ellipse 60% 90% at 45% 20%, #000 10%, transparent 72%); mask-image: radial-gradient(ellipse 60% 90% at 45% 20%, #000 10%, transparent 72%);
   animation: auC 17s ease-in-out infinite alternate; }
@@ -747,7 +747,7 @@ body { background: #050912; }
 @keyframes auB { from { transform: translateX(6%) scaleY(1.05); opacity: .28; } to { transform: translateX(-8%) scaleY(.88); opacity: .5; } }
 @keyframes auC { from { transform: translateX(-4%) skewX(-6deg); opacity: .12; } to { transform: translateX(5%) skewX(5deg); opacity: .3; } }
 @media (prefers-reduced-motion: reduce) { #sky::after, #sky .st2, #sky .au { animation: none; } }
-@media (max-width: 640px) { #sky .au3 { display: none; } #sky .au1, #sky .au2 { filter: blur(26px); } }
+@media (max-width: 640px) { #sky .au3 { display: none; } }
 
 /* ================= Side banners ================= */
 .skin { display: none; position: fixed; top: 48px; bottom: 0; width: min(210px, calc((100vw - 1200px) / 2 - 28px)); z-index: 35; overflow: hidden; flex-direction: column; justify-content: flex-end; align-items: center; gap: 12px; padding: 22px 12px 30px; text-align: center; color: #fff; text-decoration: none;
@@ -1632,7 +1632,7 @@ background:
 radial-gradient(ellipse at 22% 30%,var(--clan-accent) 0%,transparent 47%),
 radial-gradient(ellipse at 78% 65%,var(--clan-accent) 0%,transparent 43%),
 radial-gradient(ellipse at 40% 88%,#648caf 0%,transparent 40%)!important;
-filter:blur(26px)!important;opacity:.38!important;will-change:transform;
+opacity:.38!important;will-change:transform;
 animation:msr-clan-aurora-flow 16s ease-in-out infinite alternate!important;
 }
 #app.msr-clan-profile .hl-top::after,#app.msr-clan-profile .prof::after{
@@ -1703,7 +1703,7 @@ background:#060c12!important;
 #app.msr-clan-profile .msr-team-stat::before{
 content:"";position:absolute;inset:-95% -45%;pointer-events:none;z-index:-2;
 background:linear-gradient(115deg,#02070c 12%,#060c12 35%,var(--clan-glow,#29343b) 48%,var(--clan-accent,#e4edf7) 62%,var(--clan-glow,#29343b) 75%,#04090e 94%)!important;
-opacity:.55;filter:blur(13px);
+opacity:.55;
 animation:msr-stat-color-tide 9s ease-in-out infinite alternate;
 will-change:transform;
 }
