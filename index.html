@@ -7350,6 +7350,48 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
   }catch(e){}
 })();
 </script>
+<style id="msr-install-css">
+#msr-install{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:9998;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(18,22,34,.97);border:1px solid #3b4a78;box-shadow:0 12px 34px rgba(0,0,0,.55);color:#e8ecf4;font:600 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#msr-install img{width:40px;height:40px;border-radius:10px;flex:none}
+#msr-install .t{flex:1;min-width:0}
+#msr-install .t b{display:block;font-size:15px}
+#msr-install .t span{display:block;font-weight:500;color:#aab4c8;font-size:13px}
+#msr-install button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer}
+#msr-install .go{background:#19e3ff;color:#06121a}
+#msr-install .x{background:none;color:#8b95a3;font-size:22px;line-height:1;padding:4px 8px}
+</style>
+<script id="msr-install-hint">
+(function(){
+  try{
+    if(!/^https?:$/.test(location.protocol))return;
+    if(window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone)return;
+    var ua=navigator.userAgent||'',ios=/iphone|ipad|ipod/i.test(ua),android=/android/i.test(ua);
+    if(!ios&&!android)return;
+    try{var d=+localStorage.getItem('msr_install_dismissed')||0;if(Date.now()-d<14*864e5)return;}catch(e){}
+    var deferred=null,shown=false;
+    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;});
+    window.addEventListener('appinstalled',function(){var b=document.getElementById('msr-install');if(b)b.remove();});
+    function close(){var b=document.getElementById('msr-install');if(b)b.remove();try{localStorage.setItem('msr_install_dismissed',String(Date.now()));}catch(e){}}
+    function show(){
+      if(shown||document.getElementById('msr-install'))return;
+      if(android&&!deferred)return;
+      shown=true;
+      var box=document.createElement('div');box.id='msr-install';box.setAttribute('role','dialog');box.setAttribute('aria-label','Install MSR');
+      var img=document.createElement('img');img.src='assets/pwa/icon-192.png';img.alt='';img.onerror=function(){img.style.display='none';};
+      var t=document.createElement('div');t.className='t';
+      var b=document.createElement('b');b.textContent='Install MSR on your phone';
+      var sp=document.createElement('span');
+      sp.textContent=ios?'Tap Share, then "Add to Home Screen".':'Open MSR like an app, full screen.';
+      t.appendChild(b);t.appendChild(sp);box.appendChild(img);box.appendChild(t);
+      if(android){var go=document.createElement('button');go.className='go';go.textContent='Install';go.onclick=function(){if(!deferred)return;deferred.prompt();deferred.userChoice.finally(function(){deferred=null;close();});};box.appendChild(go);}
+      var x=document.createElement('button');x.className='x';x.setAttribute('aria-label','Close');x.textContent='\u00d7';x.onclick=close;box.appendChild(x);
+      document.body.appendChild(box);
+    }
+    setTimeout(show,9000);
+    window.addEventListener('beforeinstallprompt',function(){setTimeout(show,9000);});
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
 
