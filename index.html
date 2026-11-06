@@ -4527,7 +4527,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function playerRowsFor(nick, team) {
     ensureLedgerRows();
     var seen = {}, out = [];
-    (PROWS[nick] || []).concat(PMROWS.filter(function (r) { return r.ledger && r.nick === nick; })).forEach(function (r) {
+    var pk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, nkey = pk(nick);
+    (PROWS[nick] || []).concat(PMROWS.filter(function (r) { return r.ledger && (r.nick === nick || (nkey && pk(r.nick) === nkey)); })).forEach(function (r) {
       if (team && r.team && r.team !== team) return;
       var k = [r.team, r.map, r.k, r.d, r.a].join('|'); if (seen[k]) return; seen[k] = 1; out.push(r);
     });
