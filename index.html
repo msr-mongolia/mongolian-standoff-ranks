@@ -2440,6 +2440,14 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-rel-match .msr-rel-team .crest{width:30px!important;height:30px!important;flex:0 0 30px!important}
 }
 </style>
+<style id="msr-rel-wl-css">
+.msr-rel-team{position:relative}
+.msr-rel-wl{display:inline-block;font-style:normal;font-weight:900;font-size:10px;letter-spacing:.08em;padding:1px 7px;border-radius:999px;margin-top:3px;white-space:nowrap}
+.msr-rel-win .msr-rel-wl{background:rgba(34,230,140,.16)!important;color:#35f0a0!important;border:1px solid rgba(53,240,160,.45)}
+.msr-rel-loss .msr-rel-wl{background:rgba(255,80,110,.14)!important;color:#ff6b86!important;border:1px solid rgba(255,107,134,.4)}
+.msr-rel-loss>span>b{opacity:.75}
+.msr-rel-match-vs{white-space:nowrap}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -4397,17 +4405,32 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       return {team_a:a[0],team_b:b[0],time_label:known?(known.time_label||null):null,picks:known?(known.picks||[]):[],decider:known?(known.decider||null):null,scheduled:true,has_imported_details:!!known};
     }).filter(Boolean);
   }
+  // Series result from the verified match ledger (map wins + forfeit map wins). Returns {a,b} oriented to ka/kb, or null.
+  function msrRelResult(ka,kb){
+    var L=window.MSR_SCREENSHOT_MATCHES;
+    if(!ka||!kb||ka===kb||!L||!window.msrTagToCode)return null;
+    for(var i=L.length-1;i>=0;i--){
+      var e=L[i],ca=window.msrTagToCode(e.a),cb=window.msrTagToCode(e.b);
+      if(!((ca===ka&&cb===kb)||(ca===kb&&cb===ka)))continue;
+      var aw=(e.auto&&e.auto.a)||0,bw=(e.auto&&e.auto.b)||0;
+      (e.maps||[]).forEach(function(m){if(m.aScore>m.bScore)aw++;else if(m.bScore>m.aScore)bw++;});
+      if(aw===bw)return null;
+      return ca===ka?{a:aw,b:bw}:{a:bw,b:aw};
+    }
+    return null;
+  }
   function msrRelMatchCard(row){
-    function team(name){
-      var key=msrRelTeamKey(name);
-      return h(key?'a':'span',{class:'msr-rel-team',href:key?teamHref(key):null},
-        key?crest(key,'md'):null,h('span',null,h('b',null,key?(T[key].tag||name):name),key?h('small',null,T[key].n):null));
+    var rk=[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=msrRelResult(rk[0],rk[1]);
+    function team(name,mine){
+      var key=msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a);
+      return h(key?'a':'span',{class:'msr-rel-team'+(res?(won?' msr-rel-win':' msr-rel-loss'):''),href:key?teamHref(key):null},
+        key?crest(key,'md'):null,h('span',null,h('b',null,key?(T[key].tag||name):name),key?h('small',null,T[key].n):null,res?h('em',{class:'msr-rel-wl'},won?'WIN':'LOSS'):null));
     }
     var time=row.time_label||'';
     return h('article',{class:'box msr-rel-match','aria-label':row.team_a+' vs '+row.team_b},
-      h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · UPCOMING'),
+      h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · '+(res?'FINISHED':'UPCOMING')),
         h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):'Time · Not announced yet')),
-      h('div',{class:'msr-rel-match-teams'},team(row.team_a),h('b',{class:'msr-rel-match-vs'},'VS'),team(row.team_b)),
+      h('div',{class:'msr-rel-match-teams'},team(row.team_a,true),h('b',{class:'msr-rel-match-vs'},res?(res.a+' – '+res.b):'VS'),team(row.team_b,false)),
       h('div',{class:'msr-rel-match-maps msr-rel-mini'},(row.picks||[]).length?(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Pick 1','TBA'),msrRelMapCard('Pick 2','TBA')],
         msrRelMapCard('Decider',row.decider||'TBA')));
   }
