@@ -4621,6 +4621,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
           teamStatTile('Points',fmt(r[1]),'points'),teamStatTile('Rank','#'+pos,'rank'),
           teamStatTile('Win rate',wp+'%','win'),
           teamStatTile('Matches',past.length,'matches'),teamStatTile('K/D',tg.kd?tg.kd.toFixed(2):'0.00','kd'))),
+      (Number(r[1])>=250&&!(Date.parse(T[code].vipExpiresAt)>Date.now()))?h('div',{class:'msr-vip-nudge',style:'margin:12px 0;padding:10px 14px;border:1px solid rgba(245,195,73,.55);border-radius:8px;background:rgba(245,195,73,.08);color:#e7bf68;font-size:13px;font-weight:700'},Number(r[1])>=300?'ELO 300 хязгаарт хүрсэн: үнэгүй эрхээр дээш өсөхгүй. VIP CLAN авбал ELO хязгааргүй өснө.':'ELO '+fmt(r[1])+' — 300 хязгаарт ойртож байна. 300-аас дээш өсөхөд VIP CLAN шаардлагатай.'):null,
       h('div', { class: 'grp-h' }, 'Form (last 5)'),
       h('div', { class: 'form left', 'aria-label': 'Last 5: ' + r[5] }, r[5].split('').map(function (c) { return h('i', { class: c }, c === 'w' ? 'W' : 'L'); })),
       h('div', { class: 'prof-grid', style: 'margin-top:18px' }, h('div', { class: 'box' }, panelHead('Lineup', 'Click a player to see their stats'), rosterTbl), mapBox),
@@ -5431,6 +5432,26 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   applyConfirmedScreenshotTags();
   // Keep verified match ELO in the actual MSR Ranking, not a separate table.
   function applyVerifiedTeamEloToRank(){
+    var exactTeamNames={
+      'DXIII':'Dxvil13','TLnrs':'Team Lunaris','1NFYx':'1nfinityX',
+      '8MNA':'Manai','DRDRX':'DRDRX','SIXP':'SIX LENCE PURPLE',
+      'AIM4R':'AIM4R','RESKK':'Asterisk (RESKK)','KGTSS':'KnightSS',
+      'R6':'Team Resolve','6LC':'Six Lence','DL340':'DIFFIRENT LEVEL',
+      'CioR':'Civilization of ruin','0kz':'Omega ForceZ',
+      'SCLAT':'Scarlet','ACCA':'AccaciN','UCLT':'Ulseratif Colitis',
+      'OMV':'Omnis Over','OTR':'Clan-One True Reign',
+      'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
+      '2990':'2990 RED','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
+    };
+    // VIP teams may grow past 300. Non-VIP teams stop gaining at 300 but are never pulled down to it.
+    function vipTagActive(tag){
+      var name=exactTeamNames[tag],code=name&&Object.keys(T).find(function(c){return String(T[c].n||'').trim().toLowerCase()===name.toLowerCase();});
+      if(!code&&T[tag])code=tag;
+      var t=code&&T[code];
+      return !!(t&&Date.parse(t.vipExpiresAt)>Date.now());
+    }
+    window.msrVipTagActive=vipTagActive;
+
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
     // The first 10 ledger matches are already in the baseline above; every later ledger match is chained in order.
@@ -5453,7 +5474,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var da=fullAuto?(aw>bw?5:-7):Math.max(-40,Math.min(35,Math.round((32*((aw>bw?1:0)-ex)+1.4*diff/count)*mult)))+(hasAuto?(aw>bw?5:-7):0);
       var db=fullAuto?(bw>aw?5:-7):Math.max(-40,Math.min(35,Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)))+(hasAuto?(bw>aw?5:-7):0);
       [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].forEach(function(x){
-        var tag=x[0],before=x[3],after=Math.max(0,Math.min(300,before+x[1])),prev=x[4]||{w:0,l:0};
+        var tag=x[0],before=x[3],after=Math.max(0,Math.min(vipTagActive(tag)?Infinity:Math.max(300,before),before+x[1])),prev=x[4]||{w:0,l:0};
         adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1)});
       });
     });
@@ -5461,17 +5482,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     applyConfirmedScreenshotTags();
     // Exact registered team identity is authoritative. A clan TAG can belong
     // to multiple independent teams and must never be used alone.
-    var exactTeamNames={
-      'DXIII':'Dxvil13','TLnrs':'Team Lunaris','1NFYx':'1nfinityX',
-      '8MNA':'Manai','DRDRX':'DRDRX','SIXP':'SIX LENCE PURPLE',
-      'AIM4R':'AIM4R','RESKK':'Asterisk (RESKK)','KGTSS':'KnightSS',
-      'R6':'Team Resolve','6LC':'Six Lence','DL340':'DIFFIRENT LEVEL',
-      'CioR':'Civilization of ruin','0kz':'Omega ForceZ',
-      'SCLAT':'Scarlet','ACCA':'AccaciN','UCLT':'Ulseratif Colitis',
-      'OMV':'Omnis Over','OTR':'Clan-One True Reign',
-      'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
-      '2990':'2990 RED','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
-    };
+
     adjustments.forEach(function(item){
       var exact=exactTeamNames[item.tag];
       var match=exact&&Object.keys(T).find(function(code){
@@ -5839,8 +5850,9 @@ const eloMatches=results.map(match=>{
  const bChange=fullAuto?(bWins>aWins?5:-7):Math.max(-40,Math.min(35,bDelta))+(hasAuto?(bWins>aWins?5:-7):0);
  // The free tier stops at 300. VIP entitlement must be checked server-side
  // before awarding points above 300; never infer VIP from screenshots.
- const aAfter=Math.max(0,Math.min(300,ra+aChange));
- const bAfter=Math.max(0,Math.min(300,rb+bChange));
+ const vc=t=>window.msrVipTagActive&&window.msrVipTagActive(t)?Infinity:null;
+ const aAfter=Math.max(0,Math.min(vc(match.a)??Math.max(300,ra),ra+aChange));
+ const bAfter=Math.max(0,Math.min(vc(match.b)??Math.max(300,rb),rb+bChange));
  runningElo.set(match.a,aAfter);runningElo.set(match.b,bAfter);
  for(const [team,before,after,w,l] of [[match.a,ra,aAfter,aWins>bWins?1:0,aWins<bWins?1:0],[match.b,rb,bAfter,bWins>aWins?1:0,bWins<aWins?1:0]]){
   const previous=verifiedElo[team]||{before:50,after:50,change:0,w:0,l:0};
