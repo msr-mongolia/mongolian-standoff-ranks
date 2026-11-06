@@ -4892,6 +4892,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
         var accentRGB=/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(accent);
         if(accentRGB)accent=brightSignatureColor(parseInt(accentRGB[1],16),parseInt(accentRGB[2],16),parseInt(accentRGB[3],16));
         if(/^xiverion divine$/i.test(clan.n||'')) accent='#F47AB9';
+        if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59') accent='#C9D1DC';
         app.style.setProperty('--clan-accent',accent);
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
@@ -6395,19 +6396,19 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #app .msr-rr-table th:nth-child(5),#app .msr-rr-table td:nth-child(5){color:#ff5468!important;font-weight:800}
 </style>
 <style id="msr-rvurz-back1">
-/* Rvurz VIP30 Back1: black-hole backdrop with a pink-tinted dark grey wash. */
+/* Rvurz VIP30 Back1: black-hole backdrop with a silver-tinted dark grey wash. */
 #app .prof.msr-rvurz-back1{
- background-color:#120d14!important;
- background-image:linear-gradient(90deg,rgba(16,10,16,.88) 0%,rgba(52,14,40,.62) 52%,rgba(150,40,100,.30) 100%),url("assets/rvurz_back1.jpg")!important;
+ background-color:#0e1014!important;
+ background-image:linear-gradient(90deg,rgba(12,14,18,.88) 0%,rgba(36,40,48,.62) 52%,rgba(170,180,195,.26) 100%),url("assets/rvurz_back1.jpg")!important;
  background-position:center center!important;background-size:cover!important;background-repeat:no-repeat!important;
 }
 #app .prof.msr-rvurz-back1::before,#app .prof.msr-rvurz-back1::after{content:none!important;animation:none!important}
 #app .prof.msr-rvurz-back1 .msr-clan-background-logo{display:none!important}
 #app .prof.msr-rvurz-back1>*{position:relative;z-index:1}
 #app.msr-clan-profile:has(.prof.msr-rvurz-back1) .msr-team-stats{
- background:linear-gradient(90deg,rgba(16,10,16,.90),rgba(52,14,40,.66)),url("assets/rvurz_back1.jpg") center/cover no-repeat!important;
+ background:linear-gradient(90deg,rgba(12,14,18,.90),rgba(36,40,48,.66)),url("assets/rvurz_back1.jpg") center/cover no-repeat!important;
 }
-#app.msr-clan-profile:has(.prof.msr-rvurz-back1) .msr-team-stat{background:rgba(22,10,20,.55)!important}
+#app.msr-clan-profile:has(.prof.msr-rvurz-back1) .msr-team-stat{background:rgba(18,20,26,.55)!important}
 @media(max-width:650px){#app .prof.msr-rvurz-back1{background-position:60% center!important}}
 </style>
 <style id="msr-day-tabs-css">
