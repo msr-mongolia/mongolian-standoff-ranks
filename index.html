@@ -5689,6 +5689,24 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       if(!code&&tag==='6LC'&&T.SIXL)code='SIXL';
       return code||null;
     };
+    // Result cards: fill missing team logos from the loaded team data (stays correct after Discord data arrives).
+    window.msrTeamLogo=function(tag){var c=window.msrTagToCode(tag);return c&&T[c]&&T[c].img?T[c].img:'';};
+    (function(){
+      var queued=false;
+      function fill(){
+        queued=false;
+        [].forEach.call(document.querySelectorAll('img.msr-hltv-summary-logo'),function(im){
+          if(im.getAttribute('src')&&!im.hidden)return;
+          var tag=String(im.alt||'').replace(/ logo$/,''),u=window.msrTeamLogo(tag==='6LC Purple'?'SIXP':tag);
+          if(u&&/^(https?:\/\/|data:image\/|assets\/)/i.test(u)){im.src=u;im.hidden=false;im.onerror=function(){im.hidden=true;};}
+        });
+      }
+      function schedule(){if(!queued){queued=true;requestAnimationFrame(fill);}}
+      var app=document.getElementById('app');
+      if(app&&window.MutationObserver)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
+      [1200,3000,6000,12000].forEach(function(ms){setTimeout(schedule,ms);});
+      window.addEventListener('hashchange',function(){setTimeout(schedule,300);});
+    })();
 
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
