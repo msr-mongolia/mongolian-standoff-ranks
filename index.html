@@ -3407,7 +3407,37 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   var _ranking = V.ranking, _players = V.players, _live = V.live;
   V.ranking = function () { return RANK.length ? _ranking() : emptyPage('Ranking', 'Teams will be ranked here once they are added.', 'No teams yet.'); };
   V.players = function () { return PLAYERS.length ? _players() : emptyPage('Players', 'Players will be listed here once teams are added.', 'No players yet.'); };
-  V.live = function () { return M.some(function (x) { return x.state === 'live'; }) ? _live() : emptyPage('Live', 'Matches in progress and streams.', 'No match is live right now.'); };
+  /* Scheduled broadcasts. Add the YouTube/Facebook link in `stream` once the stream is live. Times are Ulaanbaatar (UTC+8). */
+  var MSR_LIVE_SCHEDULE = [
+    { date: '2026-11-06', time: '20:00', a: 'KngZz', b: 'Rvurz', ev: 'MSL Major S2 · Group C · Day 3', stream: '' },
+    { date: '2026-11-06', time: '22:00', a: 'MetaS', b: '8MNA', ev: 'MSL Major S2 · Group E · Day 3', stream: '' }
+  ];
+  function msrLiveTeam(name) {
+    var n = function (v) { return String(v || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }, k = n(name), code = null;
+    Object.keys(T).some(function (c) { if (n(T[c].tag) === k || n(T[c].n) === k || n(c) === k) { code = c; return true; } return false; });
+    return code;
+  }
+  function msrLiveCard(item) {
+    var start = Date.parse(item.date + 'T' + item.time + ':00+08:00'), now = Date.now();
+    var isLive = now >= start && now < start + 3 * 3600000;
+    var link = /^https:\/\//i.test(item.stream || '') ? item.stream : '';
+    var side = function (name) { var c = msrLiveTeam(name); return h('div', { class: 'lc-t' }, c ? crest(c, 'lg') : null, c ? T[c].n : name); };
+    return h('div', { class: 'box livecard' },
+      h('div', { style: 'display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)' },
+        h('span', null, h('b', { style: 'color:var(--steel)' }, item.ev)),
+        isLive ? h('span', { class: 'tag live' }, h('span', { class: 'pip' }), 'Live') : h('span', { class: 'tag soft' }, 'Өнөөдөр ' + item.time)),
+      h('div', { class: 'lc-sc' }, side(item.a), h('div', { class: 'lc-n' }, item.time), side(item.b)),
+      link ? h('a', { class: 'btn', href: link, target: '_blank', rel: 'noopener noreferrer', style: 'margin-top:14px;display:inline-block' }, isLive ? 'Watch live' : 'Stream link')
+           : h('div', { style: 'margin-top:14px;font-size:13px;color:var(--muted)' }, 'Stream link will be posted here when the match goes live.'));
+  }
+  V.live = function () {
+    if (M.some(function (x) { return x.state === 'live'; })) return _live();
+    var today = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10);
+    var list = MSR_LIVE_SCHEDULE.filter(function (x) { return x.date >= today; });
+    if (!list.length) return emptyPage('Live', 'Matches in progress and streams.', 'No match is live right now.');
+    return h('div', null, pageHead('Live', 'Today\'s scheduled broadcasts. Times are Ulaanbaatar time (UTC+8).'),
+      h('div', { style: 'display:flex;flex-direction:column;gap:18px' }, list.map(msrLiveCard)));
+  };
 
   var COIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M14.8 9.6a3.4 3.4 0 1 0 .2 4.6V12h-2.3"></path></svg>';
   function goldBanner() {
