@@ -2300,6 +2300,15 @@ background-color:#121923!important
 <style id="msr-results-remove-duplicate-team-panels">#app .msr-match-expand-content > .msr-finished-teams{display:none!important}</style>
 <style id="msr-results-hide-teams-v2">.msr-finished-detail .msr-finished-teams,.msr-match-expand .msr-finished-teams{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important}</style>
 <style id="msr-hltv-map-tab-styles">#app .msr-hltv-map-tabs{display:block!important;width:100%}#app .msr-hltv-tab-bar{display:flex;gap:6px;flex-wrap:wrap;background:#202b35;padding:10px;margin-bottom:10px}#app .msr-hltv-map-tab{display:flex;align-items:center;gap:9px;background:#34424f;color:#d7e2eb;border:1px solid #465663;border-radius:3px;padding:10px 17px;font-weight:800;cursor:pointer}#app .msr-hltv-map-tab.active{background:#54718b;color:#fff;border-color:#83a7c6}#app .msr-hltv-map-tab small{font-size:11px;color:#a7c4d7}#app .msr-hltv-tab-panel{background:#222d37}#app .msr-hltv-tab-panel .msr-finished-stats{padding:0!important}@media(max-width:650px){#app .msr-hltv-map-tab{padding:8px 11px;font-size:12px}}</style>
+<style id="msr-team-map-pool-art">
+/* Map artwork behind every Map pool row on team pages, including clan-themed (back1) profiles. */
+#app .prof-grid .box tbody tr.mapr.msr-map-pool-photo,
+#app.msr-clan-profile .prof-grid>.box tbody tr.mapr.msr-map-pool-photo,
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-header-back1 tbody tr.mapr.msr-map-pool-photo,
+#app.msr-clan-profile .prof-grid>.box.msr-clan-panel-back1 tbody tr.mapr.msr-map-pool-photo{
+ background:linear-gradient(90deg,rgba(10,16,27,.72),rgba(10,16,27,.38)),var(--mi) center/cover no-repeat!important;background-size:cover!important}
+#app .prof-grid .box tbody tr.mapr.msr-map-pool-photo td{background:transparent!important;color:#f3f6ff;text-shadow:0 1px 4px #000}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -4661,7 +4670,7 @@ window.MSR_RESULTS_ONLY={'0kz|zxc':1};
       h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:500px' },
         h('thead', null, h('tr', null, h('th', null, 'Map'), h('th', { class: 'n' }, 'Played'), h('th', { class: 'n' }, 'Win %'))),
         h('tbody', null, poolRows.map(function (o) {
-          return h('tr', { class: 'mapr', style: '--mi:' + MAPART[o.map] }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, pc(o.won, o.played)));
+          return h('tr', { class: 'mapr msr-map-pool-photo', style: '--mi:' + (MAPART[o.map] || 'none') }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, pc(o.won, o.played)));
         })))));
 
     return h('div', null,
