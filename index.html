@@ -5374,6 +5374,21 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   document.addEventListener('DOMContentLoaded', loadDiscordTeams);
   window.addEventListener('pageshow',function(e){if(e.persisted)loadDiscordTeams();});
 
+  /* Scoreboard links use ledger team labels (MetaS, SNT...) and OCR nicks; resolve them to the registered player before falling back to the player ranking. */
+  (function () {
+    var baseVPlayer = V.player;
+    var nk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); };
+    V.player = function (nick, teamCode) {
+      var exact = teamCode ? PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) : PBY[nick];
+      if (exact) return baseVPlayer(nick, teamCode);
+      var tk = nk(teamCode), codes = [];
+      Object.keys(T).forEach(function (c) { if (tk && (nk(T[c].tag) === tk || nk(T[c].n) === tk || nk(c) === tk)) codes.push(c); });
+      var found = PLAYERS.find(function (x) { return codes.indexOf(x.team) !== -1 && nk(x.nick) === nk(nick); });
+      if (!found) { var any = PLAYERS.filter(function (x) { return nk(x.nick) === nk(nick) && x.team && T[x.team]; }); if (any.length === 1) found = any[0]; }
+      return found ? baseVPlayer(found.nick, found.team) : baseVPlayer(nick, teamCode);
+    };
+  })();
+
   function safeRouteDecode(value) {
     try { return decodeURIComponent(value); } catch(e) { return String(value || ''); }
   }
