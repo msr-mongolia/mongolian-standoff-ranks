@@ -4339,7 +4339,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       keys.find(function(k){return norm(T[k].tag)===n;})||null;
   }
 
-  var MSR_REL_GROUP_TEAMS={"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]],"E":[["1nfinityX","1NFYx"],["METAS","MetaS"],["DRDRX","DRDRX"],["Starfire Nirvana Team","SNT"],["SIX LENCE PURPLE","6LC purple"],["MANAI","8MNA"],["OMEN ESPORTS","OMEN"]]};
+  var MSR_REL_GROUP_TEAMS={"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR","Cior red"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN","XvrN divine"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T","-aNOT"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]],"E":[["1nfinityX","1NFYx"],["METAS","MetaS"],["DRDRX","DRDRX"],["Starfire Nirvana Team","SNT"],["SIX LENCE PURPLE","6LC purple"],["MANAI","8MNA"],["OMEN ESPORTS","OMEN"]]};
   function msrRelGroup(row){
     var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
     function belongs(name,entries){
@@ -4388,9 +4388,9 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var a=teams[pair[0]],b=teams[pair[1]];
       if(!a||!b||a[1]==='B2Di'||b[1]==='B2Di')return null;
       var same=function(x,y){return String(x||'').toLowerCase().replace(/[^a-z0-9]/g,'')===String(y||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+      var is=function(name,t){return t.some(function(alias){return same(name,alias);});};
       var known=msrRelUpcoming().find(function(r){
-        return (same(r.team_a,a[0])||same(r.team_a,a[1]))&&(same(r.team_b,b[0])||same(r.team_b,b[1]))
-          ||(same(r.team_b,a[0])||same(r.team_b,a[1]))&&(same(r.team_a,b[0])||same(r.team_a,b[1]));
+        return (is(r.team_a,a)&&is(r.team_b,b))||(is(r.team_b,a)&&is(r.team_a,b));
       });
       // REL imports do not contain a scheduled date. Never assign their time/maps to a specific day without one.
       // A pair meets only once in a round-robin group, so its imported veto details belong to this exact scheduled match.
