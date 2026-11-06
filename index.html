@@ -2342,6 +2342,20 @@ h1,h2,.hl-card h1,.msc{text-shadow:0 0 18px rgba(25,227,255,.28)}
 a.tl:hover,.tl:hover{color:var(--neon-cyan)}
 .tag.gold{background:rgba(255,210,63,.14);color:var(--gold)}
 ::selection{background:rgba(255,43,214,.45)}
+@media(max-width:640px){
+.pl-grid{gap:8px!important}
+.pl-grid .plc{padding:8px 10px!important;gap:6px!important;border-radius:9px!important}
+html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:34px!important;flex:0 0 34px!important}
+.pl-grid .plc .top{gap:8px!important;align-items:center!important}
+.pl-grid .plc .nk{font-size:13px!important}
+.pl-grid .plc .msr-player-identity .game-id{font-size:10px!important;line-height:1.1!important}
+.pl-grid .plc .tm{font-size:10px!important}
+.pl-grid .plc .tm img,.pl-grid .plc .tm .crest{width:14px!important;height:14px!important}
+.pl-grid .plc .row3{gap:4px!important}
+.pl-grid .plc .s{padding:3px 6px!important;display:flex!important;flex-direction:row!important;justify-content:space-between!important;align-items:baseline!important;gap:4px}
+.pl-grid .plc .s .k{font-size:8px!important;letter-spacing:.04em!important}
+.pl-grid .plc .s .v{font-size:12px!important;line-height:1.2!important}
+}
 </style>
 </head>
 <body>
@@ -3410,7 +3424,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     function draw() {
       wrap.textContent = '';
       var matched = PLAYERS.filter(function (p) { return p.team && T[p.team] && p.rank>0; }).slice().sort(function (a, b) { return a.rank - b.rank; });
-      var lim = (window.matchMedia && window.matchMedia('(max-width:640px)').matches) ? 10 : 20;
+      var lim = 20;
       matched.slice(0, showAll ? matched.length : lim).forEach(function (p) {
         wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick, p.team) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
