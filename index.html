@@ -2643,8 +2643,10 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var aPlayed=a.verifiedMSR&&Number(a.maps)>0?1:0;
       var bPlayed=b.verifiedMSR&&Number(b.maps)>0?1:0;
       if(aPlayed!==bPlayed)return bPlayed-aPlayed;
-      // Rank by verified performance first; map sample is a tiebreaker, not a hard exclusion.
-      return playerRankScore(b) - playerRankScore(a) ||
+      // Rank by verified performance, pulled toward the 1.00 average for small samples so a
+      // 1-2 map player cannot out-rank players with a full map record. The displayed rating stays raw.
+      var rk=function(p){var m=Math.max(0,Number(p.maps)||0),r=playerRankScore(p);return p.verifiedMSR&&m>0?(r*m+1.0*6)/(m+6):r;};
+      return rk(b) - rk(a) ||
         (Number(b.maps) || 0) - (Number(a.maps) || 0);
     });
     var activeRank = 0;
