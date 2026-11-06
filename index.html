@@ -3244,7 +3244,12 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           h('p',{class:'msr-zone-note'},'Official team list and match schedule pending. No provisional Swiss pairings shown.'));
       })),
       h('section', { class: 'box' }, h('h2', null, 'Round Robin group stage'),
-        h('p', null, 'Teams play each other once within their group. Qualification rules and other group schedules will be published when confirmed.')));
+        h('p', null, 'Teams play each other once within their group. The top 5 teams of each group (30 teams) advance to the next stage.'),
+        h('h3', { style: 'margin:16px 0 8px;font-size:14px' }, 'Invited teams (2)'),
+        h('p', { style: 'margin:0 0 10px;font-size:12.5px;color:var(--dim)' }, 'Invited directly to the next stage, alongside the 30 qualifiers.'),
+        h('div', { style: 'display:flex;flex-wrap:wrap;gap:8px' }, ['DS_5EE6F3BEECF59DC3C6196F49', 'DS_3291095B83319C890D9700EB'].map(function (c) {
+          return T[c] ? h('a', { class: 'msr-zone-team', href: teamHref(c) }, crest(c, 'md'), h('span', null, T[c].n)) : null;
+        }))));
     var tabbar = h('div', { class: 'msr-zone-tabs', role: 'tablist', 'aria-label': 'Tournament zones' });
     var cards = Array.from(root.querySelectorAll('.msr-zone-card'));
     function selectZone(index) {
