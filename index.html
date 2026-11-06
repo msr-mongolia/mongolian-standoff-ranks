@@ -2421,6 +2421,7 @@ window.MSR_SCREENSHOT_MATCHES = [{"a":"CioR","b":"0kz","maps":[{"map":"Rust","aS
 window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 // Players shown on the results scoreboard only; excluded from rosters, player stats, rankings and Stats.
 window.MSR_RESULTS_ONLY={'0kz|zxc':1};
+window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nick:'Chigiro',id:'',from:'Name Another Level'}];
 
 </script>
 <script>
@@ -3390,7 +3391,14 @@ window.MSR_RESULTS_ONLY={'0kz|zxc':1};
       more.setAttribute('aria-expanded', showAll ? 'true' : 'false');
     }
     draw();
-    return h('div', null, pageHead('Players', PLAYERS.filter(function (p) { return p.team && T[p.team]; }).length + ' registered players. Statistics start at zero until verified match screenshots are added.'), wrap, more);
+    var fa = window.MSR_FREE_AGENTS || [], faBox = null;
+    if (fa.length) faBox = h('div', { style: 'margin-top:34px' }, h('div', { class: 'grp-h' }, 'Free Agents (' + fa.length + ')'),
+      h('p', { style: 'font-size:12.5px;color:var(--dim);margin:0 0 12px' }, 'Players without a team. Teams can pick them up.'),
+      h('div', { class: 'pl-grid' }, fa.map(function (f) {
+        return h('div', { class: 'plc' }, h('div', { class: 'top' }, h('span', { title: f.nick, style: 'width:54px;height:54px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);font-weight:800;font-size:20px;color:var(--gold)' }, f.nick.charAt(0).toUpperCase()),
+          h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, f.nick), f.id ? h('div', { class: 'tm' }, 'ID ' + f.id) : null, h('div', { class: 'tm' }, 'Free agent' + (f.from ? ' · ex-' + f.from : '')))));
+      })));
+    return h('div', null, pageHead('Players', PLAYERS.filter(function (p) { return p.team && T[p.team]; }).length + ' registered players. Statistics start at zero until verified match screenshots are added.'), wrap, more, faBox);
   };
 
   V.live = function () {
