@@ -3211,7 +3211,28 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var mobileUpdate = NEWS.filter(function(n){return n.id===20261105})[0];
     var guide = NEWS.filter(function(n){return n.id==='msr-login-guide'})[0];
     var vip = NEWS.filter(function(n){return n.id===20261103})[0];
+    function msrPost(n, label){
+      return n ? h('article', { class:'msr-about-post' },
+        h('header', { class:'msr-post-author' },
+          h('div', { class:'msr-post-avatar', 'aria-hidden':'true' }, 'MSR'),
+          h('div', { class:'msr-post-author-text' },
+            h('strong', null, 'Mongolian Standoff Ranks'),
+            h('span', null, label+' · '+n.t+' · Public')
+          )
+        ),
+        h('div', { class:'msr-post-copy' },
+          h('h1', null, n.h),
+          h('p', null, n.lead),
+          n.body.map(function(p){return h('p', null, p)}),
+          h('p', null, h('a', {href:'#article/'+n.id,class:'msr-shop-contact'},'Мэдээг нээж сэтгэгдэл үлдээх →'))
+        )
+      ) : null;
+    }
+    var banPost = NEWS.filter(function(n){return n.id===2026110702})[0];
+    var updPost = NEWS.filter(function(n){return n.id===2026110701})[0];
     return h('div', { class: 'msr-post-feed' },
+      msrPost(banPost, 'MSR Official'),
+      msrPost(updPost, 'Сайтын шинэчлэл'),
       mobileUpdate ? h('article', { class:'msr-about-post' },
         h('header', { class:'msr-post-author' },
           h('div', { class:'msr-post-avatar', 'aria-hidden':'true' }, 'MSR'),
@@ -4264,6 +4285,23 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
+      { id: 2026110702, g: 'MSR OFFICIAL', t: '11-р сарын 7', c: 0, h: 'B2DI (Born To Die) — MSR-ээс бүрмөсөн BAN', lead: 'B2DI багийн бүх тоглогч болон клан MSR-ээс бүрмөсөн (permanent) хориглогдлоо.', body: [
+        'B2DI (Born To Die) багийн бүх тоглогч болон клан MSR-д оролцохоос бүрмөсөн хориглогдсон болохыг мэдэгдэж байна.',
+        'Энэ нь 11-р сарын 5-ны мэдэгдлийн үргэлжлэл бөгөөд хориг нь тус багийн бүх гишүүн, клан бүрт хамаарна.',
+        'B2DI-тэй холбоотой тоглолтууд MSR-ийн Ranking, ELO, статистикт тооцогдохгүй.',
+        'MSR нь шударга өрсөлдөөнийг дэмжиж, cheat болон бусад хориотой программ ашиглахыг хатуу хориглоно. Шударга тоглолт — Шударга чансаа.',
+        'Асуулт байвал MSR админтай Discord-оор холбогдоно уу: https://discord.com/users/1128188613230874727',
+        '— MSR Administration'
+      ] },
+      { id: 2026110701, g: 'MSR NEWS', t: '11-р сарын 7', c: 0, h: 'MSR — Шинэ Matches хуудас, тоглолтын дэлгэрэнгүй, апп болгон суулгах', lead: 'Тоглолт бүр одоо өөрийн хуудастай боллоо: map pick, дүн, тоглогчид, head to head, map stats, form.', body: [
+        'MATCHES: HLTV-ийн загвартай цэвэр жагсаалт болсон. Мөр бүрт цаг, Bo3, хоёр баг, дууссан бол цувралын дүн харагдана. Тоглолт дээр дарвал тусдаа хуудас нээгдэнэ.',
+        'ТОГЛОЛТЫН ХУУДАС: Map pick болон decider зурагтай нь, дууссан бол map бүрийн оноо. Хоёр багийн хамгийн өндөр rating-тай 5 тоглогч (дарвал профайл руу орно). Head to head, map бүрийн Win % / Pick %, сүүлийн 3 тоглолтын Form.',
+        'Pick, цагийн мэдээлэл Discord-ын REL channel-аас автоматаар орно. Статистик нь зөвхөн баталгаажсан үр дүнгээс бодогддог.',
+        'MSL MAJOR S2: Stage 1 / Stage 2 таб, Swiss bracket нэмэгдсэн.',
+        'ТОГЛОГЧИД: Free agent (багаас гарсан тоглогч) хэсэг нэмэгдэж, тоглолтын түүх нөхөгдсөн.',
+        'АПП БОЛГОХ: iPhone — Safari → Share → Add to Home Screen. Android — Chrome → ⋮ → Install app (эсвэл сайт дээр гарах "Install" товч).',
+        'Санал, алдаа байвал MSR админтай Discord-оор холбогдоорой: https://discord.com/users/1128188613230874727'
+      ] },
       { id: 2026110502, g: 'MSR OFFICIAL', t: '11-р сарын 5', c: 0, h: 'B2DI (Born To Die) — MSR BAN мэдэгдэл', lead: 'MSL-ээс cheat ашигласан зөрчлийн улмаас хасагдсан B2DI багт MSR мөн BAN тавьж, бүртгэлээс хаслаа.', body: [
         'B2DI (Born To Die) баг нь cheat буюу хориотой программ ашигласан зөрчлийн улмаас MSL-ээс хасагдсан тул MSR-ийн зүгээс мөн тус багт BAN тавих шийдвэр гаргалаа.',
         'Үүнтэй холбогдуулан B2DI баг болон түүний бүрэлдэхүүнийг MSR-ийн бүртгэл, Ranking, тэмцээний жагсаалтаас хасаж, MSR-д оролцох эрхийг цуцаллаа.',
