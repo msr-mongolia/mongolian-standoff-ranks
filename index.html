@@ -6740,6 +6740,19 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
  run();
 })();
 </script>
+<script id="msr-video-perf">
+/* Perf: clan profile backgrounds use several looping videos at once. Play only the ones on screen, pause the rest. */
+(function(){
+ if(!('IntersectionObserver' in window))return;
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){if(!document.hidden)v.play&&v.play().catch(function(){});}else if(v.pause)v.pause();});},{rootMargin:'80px 0px'});
+ var seen=new WeakSet();
+ function scan(){document.querySelectorAll('#app video').forEach(function(v){if(seen.has(v))return;seen.add(v);v.setAttribute('disablepictureinpicture','');io.observe(v);});}
+ var app=document.getElementById('app'),t=0;
+ if(app)new MutationObserver(function(){clearTimeout(t);t=setTimeout(scan,60);}).observe(app,{childList:true,subtree:true});
+ document.addEventListener('visibilitychange',function(){document.querySelectorAll('#app video').forEach(function(v){if(document.hidden)v.pause();else{var r=v.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)v.play().catch(function(){});}});});
+ scan();
+})();
+</script>
 </body>
 </html>
 
