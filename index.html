@@ -2381,6 +2381,20 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 .msr-stage2-zone b{font-size:15px}.msr-stage2-zone span{font-size:12px;color:var(--dim)}
 .msr-stage-inv{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--muted)}
 .msr-stage-inv-t{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border:1px solid var(--line);border-radius:999px;background:var(--raised);color:var(--text);text-decoration:none;font-size:13px}
+.msr-stage-tabs.sm{margin:0 0 12px}.msr-stage-tabs.sm .msr-stage-tab{padding:5px 14px;font-size:12.5px}
+.sw2-wrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:hidden}
+.sw2-zh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:12px}.sw2-zh b{font-size:17px}.sw2-zh span{font-size:12px;color:var(--dim)}
+.sw2-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.sw2-col{flex:0 0 190px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.sw2-rl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:800;text-align:center}
+.sw2-g{background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:8px}
+.sw2-g.q{border-color:rgba(57,255,154,.55)}.sw2-g.e{border-color:rgba(255,107,122,.5)}.sw2-g.d{border-color:rgba(255,210,63,.55)}
+.sw2-gh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}.sw2-gh b{font-size:15px}.sw2-gh span{font-size:10.5px;color:var(--dim)}
+.sw2-m{display:flex;align-items:center;gap:4px;margin-bottom:4px;font-size:11.5px}.sw2-m i{font-style:normal;font-size:9.5px;color:var(--dim)}
+.sw2-t{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:4px;padding:3px 6px;border-radius:6px;background:var(--sunk);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
+.sw2-t.inv{color:var(--text);border:1px solid var(--neon-cyan,#19E3FF)}
+.sw2-note{font-size:10.5px;color:var(--dim);margin-top:4px}
+
 </style>
 </head>
 <body>
@@ -3147,14 +3161,42 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'Tournament stages' },
       [1, 2].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
-    var invitedRow = h('div', { class: 'msr-stage-inv' }, h('b', null, 'Invited'), [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_3291095B83319C890D9700EB', 'REIGN']].map(function (x) {
-      var c = x[0];
-      return T[c] ? h('a', { class: 'msr-stage-inv-t', href: teamHref(c) }, crest(c, 'md'), h('span', null, T[c].n)) : h('span', { class: 'msr-stage-inv-t' }, x[1]);
-    }));
-    var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' },
-      h('div', { class: 'msr-stage2-zones' }, ['Zone 1', 'Zone 2'].map(function (z) { return h('div', { class: 'msr-stage2-zone' }, h('b', null, z), h('span', null, '16 teams · Bo3')); })),
-      invitedRow);
-    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 Round Robin · Each team plays every other team in its group'), stageStrip,
+    var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_3291095B83319C890D9700EB', 'REIGN']];
+    var SW2 = [[1, '0–0', 8, 'W → 1–0 · L → 0–1', ''], [2, '1–0', 4, 'W → 2–0 · L → 1–1', ''], [2, '0–1', 4, 'W → 1–1 · L → 0–2', ''],
+      [3, '2–0', 2, 'W → 3–0 · L → 2–1', 'q'], [3, '1–1', 4, 'W → 2–1 · L → 1–2', ''], [3, '0–2', 2, 'W → 1–2 · L → 0–3', 'e'],
+      [4, '2–1', 3, 'W → 3–1 · L → 2–2', 'q'], [4, '1–2', 3, 'W → 2–2 · L → 1–3', 'e'], [5, '2–2', 3, 'W → 3–2 · L → 2–3', 'd']];
+    function swSlot(inv) {
+      if (!inv) return h('span', { class: 'sw2-t tbd' }, 'TBD');
+      var c = inv[0];
+      return T[c] ? h('a', { class: 'sw2-t inv', href: teamHref(c) }, crest(c, 'md'), h('span', null, T[c].n)) : h('span', { class: 'sw2-t inv' }, inv[1]);
+    }
+    function swissBoard(zone) {
+      var inv = INV[zone];
+      var board = h('div', { class: 'sw2-board' });
+      for (var r = 1; r <= 5; r++) {
+        var col = h('div', { class: 'sw2-col' }, h('div', { class: 'sw2-rl' }, 'Round ' + r));
+        SW2.filter(function (g) { return g[0] === r; }).forEach(function (g) {
+          var ms = [];
+          for (var k = 0; k < g[2]; k++) ms.push(h('div', { class: 'sw2-m' }, swSlot(r === 1 && k === 0 ? inv : null), h('i', null, 'vs'), swSlot(null)));
+          col.appendChild(h('section', { class: 'sw2-g' + (g[4] ? ' ' + g[4] : '') }, h('div', { class: 'sw2-gh' }, h('b', null, g[1]), h('span', null, 'Bo3')), ms, h('div', { class: 'sw2-note' }, g[3])));
+        });
+        board.appendChild(col);
+      }
+      board.appendChild(h('div', { class: 'sw2-col' }, h('div', { class: 'sw2-rl' }, 'Result'),
+        h('section', { class: 'sw2-g q' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Qualified'), h('span', null, '8')), h('div', { class: 'sw2-note' }, '3–0 · 2 teams'), h('div', { class: 'sw2-note' }, '3–1 · 3 teams'), h('div', { class: 'sw2-note' }, '3–2 · 3 teams')),
+        h('section', { class: 'sw2-g e' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Eliminated'), h('span', null, '8')), h('div', { class: 'sw2-note' }, '0–3 · 2 teams'), h('div', { class: 'sw2-note' }, '1–3 · 3 teams'), h('div', { class: 'sw2-note' }, '2–3 · 3 teams'))));
+      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Zone ' + (zone + 1)), h('span', null, '16 teams · Bo3 · 3 wins qualify · 3 losses eliminated')), board);
+    }
+    var zoneTabs = h('div', { class: 'msr-stage-tabs sm', role: 'tablist', 'aria-label': 'Swiss zones' }, [0, 1].map(function (z) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-zone': z, 'aria-selected': z === 0 ? 'true' : 'false' }, 'Zone ' + (z + 1)); }));
+    var zoneHost = h('div', null, swissBoard(0));
+    zoneTabs.addEventListener('click', function (e) {
+      var b2 = e.target.closest('.msr-stage-tab'); if (!b2) return;
+      var z = Number(b2.getAttribute('data-zone'));
+      [].slice.call(zoneTabs.children).forEach(function (x) { x.setAttribute('aria-selected', String(Number(x.getAttribute('data-zone')) === z)); });
+      zoneHost.textContent = ''; zoneHost.appendChild(swissBoard(z));
+    });
+    var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, zoneTabs, zoneHost);
+    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Swiss'), stageStrip,
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
           h('div',null,h('h2',null,'GROUP ',h('em',null,'E')),h('p',null,'ROUND ROBIN STAGE'))),
