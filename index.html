@@ -7327,6 +7327,29 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
  sched();
 })();
 </script>
+<script id="msr-visit-counter">
+(function(){
+  // Anonymous daily visitor counter (Supabase). No cookies, no personal data: a random id kept in localStorage.
+  try{
+    if(!/^https?:$/.test(location.protocol)||/^(localhost|127\.|0\.0\.0\.0)/.test(location.hostname))return;
+    var cfg=window.MSR_CONFIG||{};if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY)return;
+    var ua=navigator.userAgent||'';
+    if(navigator.webdriver||/bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|whatsapp|telegram|discord|pingdom|monitor|python|curl|wget|axios|node-fetch|go-http/i.test(ua))return;
+    var id='';try{id=localStorage.getItem('msr_vid')||'';if(!id){id=(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2,12));localStorage.setItem('msr_vid',id);}}catch(e){}
+    if(!id)id='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+    var last={t:0,p:''};
+    function send(){
+      if(document.visibilityState==='hidden')return;
+      var page=(location.hash||'#').slice(1).split('/')[0]||'home',now=Date.now();
+      if(page===last.p&&now-last.t<30000)return;
+      last={t:now,p:page};
+      try{fetch(cfg.SUPABASE_URL+'/rest/v1/rpc/msr_track_visit',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',apikey:cfg.SUPABASE_ANON_KEY,Authorization:'Bearer '+cfg.SUPABASE_ANON_KEY},body:JSON.stringify({p_visitor:id,p_page:page})}).catch(function(){});}catch(e){}
+    }
+    setTimeout(send,2500);
+    window.addEventListener('hashchange',function(){setTimeout(send,800);});
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
 
