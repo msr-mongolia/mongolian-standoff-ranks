@@ -2023,7 +2023,7 @@ background-color:#121923!important
 #app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stat-icon,
 #app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats-heading svg{color:#FF8CC7!important}
 </style>
-<style id="msr-xvrn-gold-sticker">#app .prof.msr-xvrn-profile{position:relative;padding-right:185px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:160px;height:84px;border:0;padding:0;background:transparent;cursor:zoom-in;filter:drop-shadow(0 3px 6px #0009);z-index:4}@media(max-width:650px){#app .prof.msr-xvrn-profile{padding-right:110px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{width:96px;height:50px;right:6px}}</style>
+<style id="msr-xvrn-gold-sticker">#app .prof.msr-xvrn-profile{position:relative;padding-right:160px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:128px;height:102px;border:0;padding:0;background:transparent;cursor:zoom-in;filter:drop-shadow(0 3px 6px #0009);z-index:4}@media(max-width:650px){#app .prof.msr-xvrn-profile{padding-right:95px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{width:80px;height:64px;right:6px}}</style>
 <style id="msr-team-gold-sticker">
 #app .prof.msr-lunaris-clean{padding-right:125px!important}
 #app .prof.msr-lunaris-clean .msr-team-gold-sticker{position:absolute!important;right:18px;top:50%;transform:translateY(-50%);width:90px;height:90px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 5px #0009)}
@@ -4512,7 +4512,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 
   function openLunarisGoldSticker(){openTeamGoldSticker('TLNRS');}
   function isXvrnDivine(code){var team=T[code]||{};return /^xvrn$/i.test(String(team.tag||'').trim()) || /^xiverion\s+divine$/i.test(String(team.n||'').trim());}
-  function teamGoldStickerSrc(code){return isXvrnDivine(code)?'assets/xvrn_gold_sticker.png?v=20261106-2':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':code==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_gold_sticker.png':'assets/lunaris_gold_sticker.png';}
+  function teamGoldStickerSrc(code){return isXvrnDivine(code)?'assets/xvrn_gold_sticker.png?v=20261106-3':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':code==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_gold_sticker.png':'assets/lunaris_gold_sticker.png';}
   function isOmvTeam(code){return code==='DS_02454733FB68AAB2875350A0'||/^omnis\s+over$/i.test((T[code]||{}).n||'');}
   // Golden stickers must contain only the gold cutout with transparent alpha; never add a background.
   function openTeamGoldSticker(code){
