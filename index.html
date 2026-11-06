@@ -2471,6 +2471,37 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-hl-match.open .msr-hl-maps{display:grid!important}
 @media(max-width:420px){#app .msr-hl-row{gap:10px;padding:12px}#app .msr-hl-time{width:48px}#app .msr-hl-n,#app .msr-hl-s{font-size:16px}}
 </style>
+<style id="msr-mslmatch-css">
+#app .msr-hl-chev{font-size:24px!important;line-height:1}
+#app .msr-hl-row{cursor:pointer}
+#app .msr-mm{max-width:760px;margin:0 auto;color:#e4e8ee}
+#app .msr-mm-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:14px 0 18px;padding:18px 12px;background:#242a33;border-radius:14px}
+#app .msr-mm-ht{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:#e4e8ee!important;text-decoration:none!important;min-width:0}
+#app .msr-mm-ht .crest{width:64px!important;height:64px!important;border-radius:14px!important}
+#app .msr-mm-ht b{font-size:16px;font-weight:700;overflow-wrap:anywhere}
+#app .msr-mm-mid{text-align:center}
+#app .msr-mm-score{display:block;font-size:30px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
+#app .msr-mm-mid small{display:block;color:#8b95a3;font-size:13px;margin-top:4px}
+#app .msr-mm-sec{margin:0 0 22px}
+#app .msr-mm-sec>h2{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;margin:0 0 10px}
+#app .msr-mm-pill{font-size:12px;font-weight:700;color:#9aa5b4;background:#3a414c;border-radius:6px;padding:3px 8px}
+#app .msr-mm-info{background:#242a33;border-radius:10px;padding:13px 16px;color:#a7b1be;font-size:16px}
+#app .msr-mm-maps,#app .msr-mm-lineup{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+#app .msr-mm-maps::-webkit-scrollbar,#app .msr-mm-lineup::-webkit-scrollbar{display:none}
+#app .msr-mm-map{flex:0 0 min(78%,300px);background:#242a33;border:1px solid #333a45;border-radius:12px;overflow:hidden}
+#app .msr-mm-map-top{height:82px;display:flex;align-items:center;justify-content:center;background-color:#39404c;background-size:cover;background-position:center}
+#app .msr-mm-map-top b{font-size:20px;font-weight:800;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+#app .msr-mm-map-bot{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:10px 12px}
+#app .msr-mm-map-bot small{color:#8b95a3;font-size:12px;text-align:center;white-space:nowrap}
+#app .msr-mm-sc{display:flex;align-items:center;gap:7px;font-weight:700;font-size:16px;color:#8b95a3}
+#app .msr-mm-sc:last-child{justify-content:flex-end}
+#app .msr-mm-sc.w{color:#fff}
+#app .msr-mm-sc .crest{width:24px!important;height:24px!important;border-radius:6px!important}
+#app .msr-mm-pl{flex:0 0 112px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:#242a33;border:1px solid #333a45;border-radius:12px;color:#e4e8ee!important;text-decoration:none!important}
+#app .msr-mm-pl .bigav{width:52px!important;height:52px!important;font-size:20px}
+#app .msr-mm-pl b{font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#app .msr-mm-pl small{color:#9aa5b4;font-size:13px}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -4425,7 +4456,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       });
       // REL imports do not contain a scheduled date. Never assign their time/maps to a specific day without one.
       // A pair meets only once in a round-robin group, so its imported veto details belong to this exact scheduled match.
-      return {team_a:a[0],team_b:b[0],time_label:known?(known.time_label||null):null,picks:known?(known.picks||[]):[],decider:known?(known.decider||null):null,scheduled:true,has_imported_details:!!known};
+      return {team_a:a[0],team_b:b[0],time_label:known?(known.time_label||null):null,picks:known?(known.picks||[]):[],decider:known?(known.decider||null):null,scheduled:true,has_imported_details:!!known,group:group,day:day};
     }).filter(Boolean);
   }
   // Series result from the verified match ledger (map wins + forfeit map wins). Returns {a,b} oriented to ka/kb, or null.
@@ -4451,26 +4482,68 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         key?h('a',{class:'msr-hl-tl',href:teamHref(key),title:label},crest(key,'sm'),h('span',{class:'msr-hl-n'},label)):h('span',{class:'msr-hl-tl'},crest(null,'sm'),h('span',{class:'msr-hl-n'},label)),
         res?h('span',{class:'msr-hl-s'},String(mine?res.a:res.b)):null);
     }
-    var time=row.time_label||'',hasPicks=(row.picks||[]).length>0;
-    var mapCards=(!hasPicks&&res&&res.maps&&res.maps.length)
-      // No veto message was posted, but the verified result lists the maps that were played: show those (never guess who picked).
-      ?res.maps.map(function(m,i){return msrRelMapCard('Map '+(i+1)+' · '+m.a+'–'+m.b,m.map);})
-      :(hasPicks?row.picks.map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Pick 1','TBA'),msrRelMapCard('Pick 2','TBA')]).concat([msrRelMapCard('Decider',row.decider||'TBA')]);
-    var maps=h('div',{class:'msr-rel-match-maps msr-rel-mini msr-hl-maps'},mapCards);
-    var rowEl=h('div',{class:'msr-hl-row',role:'button',tabindex:'0','aria-expanded':'false'},
+    var time=row.time_label||'';
+    var href=(rk[0]&&rk[1])?('#mslmatch/'+rk[0]+'/'+rk[1]+'/'+(1104+(row.day||0))+'/'+(row.group||'')):null;
+    var rowEl=h('div',{class:'msr-hl-row',role:href?'link':null,tabindex:href?'0':null},
       h('div',{class:'msr-hl-time'},h('b',null,time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):(res?'Final':'TBA')),h('small',null,'Bo3')),
       h('i',{class:'msr-hl-sep'}),
       h('div',{class:'msr-hl-teams'},team(row.team_a,true),team(row.team_b,false)),
-      h('span',{class:'msr-hl-chev','aria-hidden':'true'},'\u25BE'));
-    var card=h('article',{class:'msr-hl-match','aria-label':row.team_a+' vs '+row.team_b},rowEl,maps);
-    function toggle(e){
-      if(e&&e.target&&e.target.closest&&e.target.closest('a'))return;
-      var open=!card.classList.contains('open');card.classList.toggle('open',open);rowEl.setAttribute('aria-expanded',String(open));
-    }
-    rowEl.addEventListener('click',toggle);
-    rowEl.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
+      href?h('span',{class:'msr-hl-chev','aria-hidden':'true'},'\u203A'):null);
+    var card=h('article',{class:'msr-hl-match','aria-label':row.team_a+' vs '+row.team_b},rowEl);
+    function open(e){if(!href||(e&&e.target&&e.target.closest&&e.target.closest('a')))return;location.hash=href;}
+    rowEl.addEventListener('click',open);
+    rowEl.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
     return card;
   }
+
+  // Match page (HLTV-style preview/result) for a scheduled MSL group match: #mslmatch/<codeA>/<codeB>/<MMDD>/<group>
+  V.mslmatch=function(arg){
+    var pp=String(arg||'').split('/'),ka=pp[0],kb=pp[1],dn=+pp[2]||0,grp=pp[3]||'';
+    if(!T[ka]||!T[kb])return V.matches();
+    var known=msrRelUpcoming().find(function(r){var x=msrRelTeamKey(r.team_a),y=msrRelTeamKey(r.team_b);return (x===ka&&y===kb)||(x===kb&&y===ka);})||null;
+    var res=msrRelResult(ka,kb),time=known&&known.time_label?known.time_label:'';
+    var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var dateTxt=dn?(('0'+(dn%100)).slice(-2)+' '+MON[Math.floor(dn/100)-1]+' '+YEAR):'';
+    function headTeam(k){return h('a',{class:'msr-mm-ht',href:teamHref(k)},crest(k,'lg'),h('b',null,T[k].n));}
+    function mmCard(label,map,pickKey){
+      var photo=MSR_MAP_PHOTOS[String(map||'').toLowerCase()];
+      var sc=res&&res.maps&&res.maps.find(function(m){return String(m.map).toLowerCase()===String(map||'').toLowerCase();});
+      var win=sc?(sc.a>sc.b?ka:sc.b>sc.a?kb:null):null;
+      return h('div',{class:'msr-mm-map'},
+        h('div',{class:'msr-mm-map-top',style:photo?'background-image:linear-gradient(0deg,rgba(28,33,41,.55),rgba(28,33,41,.25)),'+photo:null},h('b',null,map||'TBA')),
+        h('div',{class:'msr-mm-map-bot'},
+          h('span',{class:'msr-mm-sc'+(win===ka?' w':'')},crest(ka,'xs'),sc?String(sc.a):''),
+          h('small',null,label),
+          h('span',{class:'msr-mm-sc'+(win===kb?' w':'')},sc?String(sc.b):'',crest(kb,'xs'))));
+    }
+    var cards=[];
+    if(known&&(known.picks||[]).length){
+      known.picks.forEach(function(p){var pk=msrRelTeamKey(p.team);cards.push(mmCard((pk&&T[pk]?T[pk].tag||T[pk].n:p.team)+' pick',p.map,pk));});
+      cards.push(mmCard('Decider',known.decider||'TBA'));
+    }else if(res&&res.maps&&res.maps.length){
+      res.maps.forEach(function(m,i){cards.push(mmCard('Map '+(i+1),m.map));});
+    }else{cards=[mmCard('Pick 1','TBA'),mmCard('Pick 2','TBA'),mmCard('Decider','TBA')];}
+    function lineup(k){
+      var list=PLAYERS.filter(function(p){return p.team===k;}).sort(function(a,b){return Number(b.nick===teamCaptain(k))-Number(a.nick===teamCaptain(k))||b.rating-a.rating;});
+      return h('section',{class:'msr-mm-sec'},
+        h('h2',null,T[k].n+(res?' Lineup':' Expected Lineup')),
+        h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){
+          var nick=String(p.nick||'').replace(/^\s*ign\s*:\s*/i,'').trim();
+          return h('a',{class:'msr-mm-pl',href:playerHref(p.nick,p.team)},
+            h('span',{class:'bigav sg'+tc(p),'aria-hidden':'true'},nick.slice(0,1).toUpperCase()),
+            h('b',null,nick),h('small',null,p.maps?rt(p.rating):'—'));
+        }):h('div',{class:'empty'},'Roster not available.')));
+    }
+    var center=res?h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},res.a+' – '+res.b),h('small',null,'Final'+(dateTxt?' · '+dateTxt:'')))
+      :h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):'TBA'),h('small',null,dateTxt||'Not announced yet'));
+    return h('div',{class:'msr-mm'},
+      h('a',{class:'back',href:'#matches',svg:ICON.back+'<span>Matches</span>'}),
+      h('div',{class:'msr-mm-head'},headTeam(ka),center,headTeam(kb)),
+      h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'BO3')),
+        h('div',{class:'msr-mm-info'},'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
+      h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards)),
+      lineup(ka),lineup(kb));
+  };
 
   V.matches = function () {
     var box = h('div', null);
