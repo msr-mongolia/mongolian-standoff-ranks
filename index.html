@@ -2587,11 +2587,10 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 }
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 a,button,summary,label,[role="button"],[role="link"],.msr-hl-row,.ap-day,.msr-rel-group-button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-/* Group standings: top 5 advance to Stage 2 */
-#app .msr-rr-standings tbody tr:nth-child(-n+5) td:first-child{box-shadow:inset 3px 0 0 #35f0a0}
-#app .msr-rr-standings tbody tr:nth-child(5) td{border-bottom:2px dashed #35f0a0!important}
-#app .msr-rr-standings tbody tr:nth-child(n+6){opacity:.72}
-#app .msr-rr-standings::after{content:"Top 5 advance to Stage 2";display:block;margin-top:8px;padding:6px 10px;border-left:3px solid #35f0a0;color:#8ff0c4;font-size:12px;font-weight:700;letter-spacing:.04em;background:rgba(53,240,160,.07);border-radius:4px}
+/* Group standings: green mark = advances to Stage 2 (top 5), red mark = out (6th and below) */
+#app .msr-rr-standings tbody tr:nth-child(-n+5) td:first-child{box-shadow:inset 4px 0 0 #35f0a0}
+#app .msr-rr-standings tbody tr:nth-child(n+6) td:first-child{box-shadow:inset 4px 0 0 #ff5470}
+#app .msr-rr-standings::after{content:"Green: advances to Stage 2 (top 5) · Red: out";display:block;margin-top:8px;padding:6px 10px;border-left:3px solid #35f0a0;color:#cfd9e6;font-size:12px;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,.05);border-radius:4px}
 </style>
 </head>
 <body>
