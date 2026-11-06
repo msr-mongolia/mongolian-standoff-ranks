@@ -4415,7 +4415,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var aw=(e.auto&&e.auto.a)||0,bw=(e.auto&&e.auto.b)||0;
       (e.maps||[]).forEach(function(m){if(m.aScore>m.bScore)aw++;else if(m.bScore>m.aScore)bw++;});
       if(aw===bw)return null;
-      return ca===ka?{a:aw,b:bw}:{a:bw,b:aw};
+      var ms=(e.maps||[]).map(function(m){return {map:m.map,a:ca===ka?m.aScore:m.bScore,b:ca===ka?m.bScore:m.aScore};});
+      return ca===ka?{a:aw,b:bw,maps:ms}:{a:bw,b:aw,maps:ms};
     }
     return null;
   }
@@ -4429,10 +4430,13 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var time=row.time_label||'';
     return h('article',{class:'box msr-rel-match','aria-label':row.team_a+' vs '+row.team_b},
       h('div',{class:'msr-rel-match-heading'},h('span',{class:'tag soft'},'MSL Major S2 · '+(res?'FINISHED':'UPCOMING')),
-        h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):'Time · Not announced yet')),
+        h('b',{class:'msr-rel-match-time'},time?('Time · '+time+(/^\d{1,2}:\d{2}$/.test(time)?'':' (confirm)')):(res?'Final result':'Time · Not announced yet'))),
       h('div',{class:'msr-rel-match-teams'},team(row.team_a,true),h('b',{class:'msr-rel-match-vs'},res?(res.a+' – '+res.b):'VS'),team(row.team_b,false)),
-      h('div',{class:'msr-rel-match-maps msr-rel-mini'},(row.picks||[]).length?(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Pick 1','TBA'),msrRelMapCard('Pick 2','TBA')],
-        msrRelMapCard('Decider',row.decider||'TBA')));
+      (!(row.picks||[]).length&&res&&res.maps&&res.maps.length
+        // No veto message was posted, but the verified result lists the maps that were played: show those (never guess who picked).
+        ?h('div',{class:'msr-rel-match-maps msr-rel-mini'},res.maps.map(function(m,i){return msrRelMapCard('Map '+(i+1)+' · '+m.a+'–'+m.b,m.map);}))
+        :h('div',{class:'msr-rel-match-maps msr-rel-mini'},(row.picks||[]).length?(row.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}):[msrRelMapCard('Pick 1','TBA'),msrRelMapCard('Pick 2','TBA')],
+        msrRelMapCard('Decider',row.decider||'TBA'))));
   }
 
   V.matches = function () {
