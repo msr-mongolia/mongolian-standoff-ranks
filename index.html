@@ -5017,6 +5017,12 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     app.style.removeProperty('--clan-glow');
     if (name === 'player' || name === 'team') {
       var clanCode = name === 'team' ? safeRouteDecode((H.split('/')[1]||'')).toUpperCase() : (safeRouteDecode(H.split('/')[2]||'') || (PBY[safeRouteDecode(H.split('/')[1]||'')]||{}).team||'');
+      if(name==='player' && !T[clanCode]){
+        var _nk=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
+        var _want=_nk(clanCode), _pt=(PBY[safeRouteDecode(H.split('/')[1]||'')]||{}).team||'';
+        var _found=Object.keys(T).find(function(k){return _want&&(_nk(k)===_want||_nk(T[k].tag)===_want||_nk(T[k].n)===_want);})||(T[_pt]?_pt:'');
+        if(_found)clanCode=_found;
+      }
       var clan = T[clanCode];
       if (clan) {
         var palette=['#45d98b','#53b5ff','#b58cff','#ff6c8d','#f4b94e','#22d5d1','#a3e65d','#fa8855'];
