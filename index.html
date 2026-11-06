@@ -2537,6 +2537,24 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-mm-fp.w{background:#2e9b4a}
 #app .msr-mm-fp.l{background:#c0414e}
 </style>
+<style id="msr-mslmatch3-css">
+#app .msr-mm-maps{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:visible!important}
+#app .msr-mm-map{flex:none;min-width:0}
+#app .msr-mm-map-top{height:64px!important;flex-direction:column;gap:2px;padding:4px;text-align:center}
+#app .msr-mm-map-top b{font-size:15px!important;line-height:1.1}
+#app .msr-mm-map-top small{font-size:10px;color:#dfe6ee;line-height:1.1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#app .msr-mm-map-bot{display:flex!important;justify-content:space-between;align-items:center;gap:4px!important;padding:6px 8px!important}
+#app .msr-mm-sc{font-size:13px!important;gap:4px!important}
+#app .msr-mm-sc .crest{width:18px!important;height:18px!important;border-radius:4px!important}
+#app .msr-mm-lineup{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px!important;overflow:visible!important}
+#app .msr-mm-pl{flex:none!important;min-width:0;padding:8px 2px!important;gap:3px!important;border-radius:10px!important}
+#app .msr-mm-pl .bigav{width:42px!important;height:42px!important;font-size:14px}
+#app .msr-mm-pl .bigav .sigtxt{font-size:12px!important}
+#app .msr-mm-pl b{font-size:11px!important;max-width:100%}
+#app .msr-mm-pl small{font-size:11px!important}
+#app .msr-mm-sec>h2{font-size:18px!important}
+@media(min-width:560px){#app .msr-mm-map-top{height:84px!important}#app .msr-mm-map-top b{font-size:18px!important}#app .msr-mm-pl .bigav{width:56px!important;height:56px!important}#app .msr-mm-pl b{font-size:13px!important}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -4559,10 +4577,9 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var sc=res&&res.maps&&res.maps.find(function(m){return String(m.map).toLowerCase()===String(map||'').toLowerCase();});
       var win=sc?(sc.a>sc.b?ka:sc.b>sc.a?kb:null):null;
       return h('div',{class:'msr-mm-map'},
-        h('div',{class:'msr-mm-map-top',style:photo?'background-image:linear-gradient(0deg,rgba(28,33,41,.55),rgba(28,33,41,.25)),'+photo:null},h('b',null,map||'TBA')),
+        h('div',{class:'msr-mm-map-top',style:photo?'background-image:linear-gradient(0deg,rgba(20,24,31,.7),rgba(20,24,31,.3)),'+photo:null},h('b',null,map||'TBA'),h('small',null,label)),
         h('div',{class:'msr-mm-map-bot'},
           h('span',{class:'msr-mm-sc'+(win===ka?' w':'')},crest(ka,'xs'),sc?String(sc.a):''),
-          h('small',null,label),
           h('span',{class:'msr-mm-sc'+(win===kb?' w':'')},sc?String(sc.b):'',crest(kb,'xs'))));
     }
     var cards=[];
