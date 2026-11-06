@@ -5403,8 +5403,9 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   function applyVerifiedTeamEloToRank(){
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
-    (window.MSR_SCREENSHOT_MATCHES||[]).filter(function(m){
-      return (m.a==='NNRDS'&&m.b==='Humn7')||(m.a==='2990'&&m.b==='EknZ')||(m.a==='MSDTP'&&m.b==='EVKZ')||(m.a==='4zi'&&m.b==='WarKz')||(m.a==='KngZz'&&m.b==='Mpct')||(m.a==='UxrN'&&m.b==='Rvurz')||(m.a==='4zi'&&m.b==='UxrN')||(m.a==='XvrN'&&m.b==='R4GE7')||(m.a==='SNT'&&m.b==='MetaS')||(m.a==='8MNA'&&m.b==='SIXP')||(m.a==='OMEN'&&m.b==='SNT')||(m.a==='MetaS'&&m.b==='DRDRX')||(m.a==='EKS'&&m.b==='-aN0T')||(m.a==='WOART'&&m.b==='-aN0T')||(m.a==='EKS'&&m.b==='6vmp6')||(m.a==='KGTSS'&&m.b==='6vmp6')||(m.a==='R6'&&m.b==='2990 Purple')||(m.a==='ETXEN'&&m.b==='7ADD')||(m.a==='Rvurz'&&m.b==='Mpct')||(m.a==='KngZz'&&m.b==='ETXEN')||(m.a==='CioR White'&&m.b==='Humn7')||(m.a==='NNRDS'&&m.b==='EVKZ')||(m.a==='OMV'&&m.b==='IMTLL')||(m.a==='UCLT'&&m.b==='SCLAT')||(m.a==='ACCA'&&m.b==='RESKK')||(m.a==='OTR'&&m.b==='AIM4R');
+    // The first 10 ledger matches are already in the baseline above; every later ledger match is chained in order.
+    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).filter(function(m){
+      return true;
     }).forEach(function(m){
       // Auto-wins (forfeited maps) count as map wins but carry no round score.
       var au=m.auto||{a:0,b:0};
@@ -5417,8 +5418,9 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       var lastAdj=function(tag){for(var i=adjustments.length-1;i>=0;i--)if(adjustments[i].tag===tag)return adjustments[i];return null;};
       var pa=lastAdj(m.a),pb=lastAdj(m.b),ra=pa?pa.points:50,rb=pb?pb.points:50;
       var ex=1/(1+Math.pow(10,(rb-ra)/150));
-      var da=Math.max(-40,Math.min(35,Math.round((32*((aw>bw?1:0)-ex)+1.4*diff/count)*mult)));
-      var db=Math.max(-40,Math.min(35,Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)));
+      var fullAuto=!m.maps.length;
+      var da=fullAuto?(aw>bw?5:0):Math.max(-40,Math.min(35,Math.round((32*((aw>bw?1:0)-ex)+1.4*diff/count)*mult)));
+      var db=fullAuto?(bw>aw?5:0):Math.max(-40,Math.min(35,Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)));
       [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].forEach(function(x){
         var tag=x[0],before=x[3],after=Math.max(0,Math.min(300,before+x[1])),prev=x[4]||{w:0,l:0};
         adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1)});
