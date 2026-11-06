@@ -1,3 +1,2 @@
 User-agent: *
-Allow: /
-Sitemap: https://msr-mongolia.github.io/mongolian-standoff-ranks/sitemap.xml
+Disallow: /

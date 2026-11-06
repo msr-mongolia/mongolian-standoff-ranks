@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Mongolian Standoff Ranks (MSR) — Монголын Standoff 2 багуудын чансаа, тоглогчдын рейтинг, тэмцээн болон тоглолтын мэдээлэл.">
-<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <link rel="canonical" href="https://msr-mongolia.github.io/mongolian-standoff-ranks/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Mongolian Standoff Ranks | MSR Standoff 2 Mongolia">
@@ -4412,9 +4412,29 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
   /* ================= Stats hub ================= */
   var SF = { tab: 'overview', days: 'all', ev: 'all', map: 'all', team: 'all', min: '3',
     sp: { k: 'rating', dir: -1 }, st: { k: 'rating', dir: -1 }, sm: { k: 'played', dir: -1 } };
+  // Real verified ledger -> Stats rows. Only K/D/A and map scores exist; ADR/KAST are estimated later by msrCalc. No sides/veto data.
+  var LEDGER_KEY = '';
+  function ensureLedgerRows() {
+    var led = window.MSR_SCREENSHOT_MATCHES || [], key = led.length + ':' + Object.keys(T).length;
+    if (key === LEDGER_KEY || !window.msrTagToCode) return;
+    LEDGER_KEY = key;
+    for (var i = PMROWS.length - 1; i >= 0; i--) if (PMROWS[i].ledger) PMROWS.splice(i, 1);
+    var ev = (EVOPT.filter(function (o) { return o[0] !== 'all'; })[0] || ['all'])[0];
+    led.forEach(function (m, li) {
+      var ca = window.msrTagToCode(m.a), cb = window.msrTagToCode(m.b);
+      (m.maps || []).forEach(function (x, mi) {
+        var R = (x.aScore || 0) + (x.bScore || 0), mo = { id: 'L' + li, ledger: true, a: ca, b: cb };
+        [[ca, x.a, x.aScore > x.bScore, cb], [cb, x.b, x.bScore > x.aScore, ca]].forEach(function (t) {
+          if (!t[0]) return;
+          (t[1] || []).forEach(function (p) { PMROWS.push({ ledger: true, m: mo, mi: mi, map: x.map, nick: p[0], team: t[0], opp: t[3], win: t[2], ev: ev, date: 0, ago: 0, R: R, k: p[1], d: p[2], a: p[3], adr: 0, kast: 0, rating: 0 }); });
+        });
+      });
+    });
+  }
   function playerAggs(f) {
+    ensureLedgerRows();
     var by = {}; filterRows(PMROWS, f).forEach(function (r) { (by[r.nick] = by[r.nick] || []).push(r); });
-    return Object.keys(by).map(function (n) { var g = agg(by[n]); g.nick = n; g.team = PBY[n].team; g.maps = by[n].length; g.diff = g.k - g.d; return g; });
+    return Object.keys(by).map(function (n) { var g = agg(by[n]); g.nick = n; g.team = by[n][0].team || (PBY[n] || {}).team; g.maps = by[n].length; g.diff = g.k - g.d; return g; });
   }
   function mapKey(r) { return r.m.id + ':' + r.mi; }
   function sidesOf(m, i, code) {
@@ -4425,26 +4445,32 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
     return { ctP: ctPlayed, ctW: ctWon, tP: tPlayed, tW: tWon };
   }
   function teamAggs(f) {
+    ensureLedgerRows();
     var by = {}; filterRows(PMROWS, f).forEach(function (r) { (by[r.team] = by[r.team] || []).push(r); });
     return Object.keys(by).map(function (code) {
       var rows = by[code], g = agg(rows), seen = {}, wins = 0, maps = 0, c1 = 0, c2 = 0, t1 = 0, t2 = 0;
-      rows.forEach(function (r) { var k = mapKey(r); if (seen[k]) return; seen[k] = 1; maps++; if (r.win) wins++; var sd = sidesOf(r.m, r.mi, code); c1 += sd.ctW; c2 += sd.ctP; t1 += sd.tW; t2 += sd.tP; });
-      g.code = code; g.name = T[code].n; g.maps = maps; g.wins = wins; g.winp = maps ? wins / maps * 100 : 0; g.ctp = c2 ? c1 / c2 * 100 : 0; g.tp = t2 ? t1 / t2 * 100 : 0;
+      rows.forEach(function (r) { var k = mapKey(r); if (seen[k]) return; seen[k] = 1; maps++; if (r.win) wins++; if (r.ledger) return; var sd = sidesOf(r.m, r.mi, code); c1 += sd.ctW; c2 += sd.ctP; t1 += sd.tW; t2 += sd.tP; });
+      g.code = code; g.name = T[code].n; g.maps = maps; g.wins = wins; g.winp = maps ? wins / maps * 100 : 0; g.ctp = c2 ? c1 / c2 * 100 : 0; g.tp = t2 ? t1 / t2 * 100 : 0; g.noSides = !c2 && !t2;
       return g;
     });
   }
   function mapAggs(f) {
-    var dd = f.days === 'all' ? 1e9 : +f.days, out = {};
-    MAPS.forEach(function (n) { out[n] = { map: n, played: 0, rounds: 0, ctW: 0, tW: 0, pick: 0, ban: 0, left: 0 }; });
+    ensureLedgerRows();
+    var dd = f.days === 'all' ? 1e9 : +f.days, out = {}, lseen = {};
+    MAPS.forEach(function (n) { out[n] = { map: n, played: 0, rounds: 0, sideR: 0, ctW: 0, tW: 0, pick: 0, ban: 0, left: 0 }; });
     doneList().forEach(function (m) {
       if (ago(m.date) > dd || (f.ev !== 'all' && m.ev !== f.ev) || (f.team !== 'all' && m.a !== f.team && m.b !== f.team)) return;
       m.maps.forEach(function (x, i) {
-        var d = detail(m, i); if (!d) return; var o = out[x[0]]; o.played++; o.rounds += d.R;
+        var d = detail(m, i); if (!d) return; var o = out[x[0]]; o.played++; o.rounds += d.R; o.sideR += d.R;
         var sa = sidesOf(m, i, m.a), sb = sidesOf(m, i, m.b); o.ctW += sa.ctW + sb.ctW; o.tW += sa.tW + sb.tW;
       });
       vetoOf(m).forEach(function (v) { var o = out[v.map]; if (v.t === 'ban') o.ban++; else if (v.t === 'pick') o.pick++; else o.left++; });
     });
-    return Object.keys(out).map(function (n) { var o = out[n]; o.avgR = o.played ? o.rounds / o.played : 0; o.ctp = o.played ? o.ctW / o.rounds * 100 : 0; o.tp = o.played ? o.tW / o.rounds * 100 : 0; return o; });
+    filterRows(PMROWS.filter(function (r) { return r.ledger; }), { days: f.days, ev: f.ev, map: 'all', team: 'all' }).forEach(function (r) {
+      if (f.team !== 'all' && r.m.a !== f.team && r.m.b !== f.team) return;
+      var k = mapKey(r); if (lseen[k]) return; lseen[k] = 1; var o = out[r.map]; if (!o) return; o.played++; o.rounds += r.R;
+    });
+    return Object.keys(out).map(function (n) { var o = out[n]; o.avgR = o.played ? o.rounds / o.played : 0; o.ctp = o.sideR ? o.ctW / o.sideR * 100 : null; o.tp = o.sideR ? o.tW / o.sideR * 100 : null; return o; });
   }
   function board(title, sub, rows, valFn) {
     return h('div', { class: 'box' }, panelHead(title, sub), h('div', { class: 'lb2' }, rows.map(function (g, i) {
@@ -4502,7 +4528,7 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
             h('tbody', null, sortBy(tl, SF.st).map(function (g, i) {
               return h('tr', { class: 'clk', onclick: go(teamHref(g.code)) }, h('td', { class: 'pos' }, i + 1), h('td', null, h('div', { class: 'tcell' }, crest(g.code), h('a', { class: 'tl', href: teamHref(g.code) }, h('b', null, g.name)))),
                 h('td', { class: 'n' }, g.maps), h('td', { class: 'n' }, g.wins + '–' + (g.maps - g.wins)), h('td', { class: 'n' }, g.winp.toFixed(0) + '%'), h('td', { class: 'n' }, g.kd.toFixed(2)),
-                h('td', { class: 'n' }, g.ctp.toFixed(1) + '%'), h('td', { class: 'n' }, g.tp.toFixed(1) + '%'), h('td', { class: 'n' }, rt(g.rating)));
+                h('td', { class: 'n' }, g.noSides ? '\u2014' : g.ctp.toFixed(1) + '%'), h('td', { class: 'n' }, g.noSides ? '\u2014' : g.tp.toFixed(1) + '%'), h('td', { class: 'n' }, rt(g.rating)));
             }))))));
           if (!tl.length) body.appendChild(h('div', { class: 'empty' }, 'No teams match these filters.'));
         };
@@ -4515,9 +4541,9 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
           body.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:600px' }, thead(mc, SF.sm, draw4),
             h('tbody', null, sortBy(ml, SF.sm).map(function (o) {
               return h('tr', { class: 'mapr msr-map-pool-photo', style: '--mi:' + (MAPART[o.map] || 'none') }, h('td', null, h('b', null, o.map)), h('td', { class: 'n' }, o.played), h('td', { class: 'n' }, o.played ? o.avgR.toFixed(1) : '—'),
-                h('td', { class: 'n' }, o.played ? o.ctp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.played ? o.tp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.pick), h('td', { class: 'n' }, o.ban), h('td', { class: 'n' }, o.left));
+                h('td', { class: 'n' }, o.ctp != null ? o.ctp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.tp != null ? o.tp.toFixed(1) + '%' : '—'), h('td', { class: 'n' }, o.pick), h('td', { class: 'n' }, o.ban), h('td', { class: 'n' }, o.left));
             }))))));
-          body.appendChild(h('p', { class: 'mini' }, 'Picked, removed and left over come from the map veto of every finished match.'));
+          body.appendChild(h('p', { class: 'mini' }, 'Played maps and rounds come from verified scoreboards. CT/T win % and veto counts are not recorded, so they show \u2014 or 0.'));
         };
         draw4();
       }
@@ -5459,6 +5485,15 @@ window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
       return !!(t&&Date.parse(t.vipExpiresAt)>Date.now());
     }
     window.msrVipTagActive=vipTagActive;
+    window.msrTagToCode=function(tag){
+      var name=exactTeamNames[tag],code=name&&Object.keys(T).find(function(c){return String(T[c].n||'').trim().toLowerCase()===name.toLowerCase();});
+      if(!code&&tag==='SIXP'&&T.SIXP)code='SIXP';
+      if(!code&&tag==='XvrN'&&T.XVRN)code='XVRN';
+      if(!code&&tag==='EKS'&&T.ELKNG)code='ELKNG';
+      if(!code&&tag==='-aN0T'&&T.ANLVL)code='ANLVL';
+      if(!code&&tag==='6LC'&&T.SIXL)code='SIXL';
+      return code||null;
+    };
 
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
