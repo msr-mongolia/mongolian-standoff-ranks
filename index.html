@@ -2356,6 +2356,22 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 .pl-grid .plc .s .k{font-size:8px!important;letter-spacing:.04em!important}
 .pl-grid .plc .s .v{font-size:12px!important;line-height:1.2!important}
 }
+@media(max-width:640px){
+#app .ap-list{gap:6px!important}
+#app .ap-rk{padding:7px 10px!important;gap:8px!important;min-height:0!important}
+#app .ap-rk .no{font-size:17px!important;min-width:20px!important}
+#app .ap-rk .nm b{font-size:14px!important}
+#app .ap-rk .nm small{font-size:11px!important}
+#app .ap-rk .nm{gap:1px!important}
+#app .ap-rk .msr-rank-event-chip{font-size:10px!important;padding:0 6px!important;margin-top:2px!important}
+#app .ap-rk .mv{min-width:50px!important;gap:1px!important}
+#app .ap-rk .msr-mv-pts{font-size:12px!important}
+#app .ap-rk .msr-mv-badge{font-size:11px!important;padding:0 6px!important}
+#app .ap-rk .msr-mv-d{font-size:11px!important}
+#app .ap-rk .crest,#app .ap-rk img.crest{width:30px!important;height:30px!important}
+}
+.ap-card{background:var(--surface)!important;border-color:var(--line)!important}
+.ap-card.open{background:var(--raised)!important}
 </style>
 </head>
 <body>
@@ -4907,9 +4923,17 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       cards.push({ el: el, btn: btn });
       return el;
     }));
+    var apLim = 10, apAll = false, apMore = h('button', { type: 'button', class: 'ap-show-all', style: 'display:none;margin:16px auto 0;padding:12px 26px;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer' });
+    function apDraw() {
+      cards.forEach(function (c, k) { c.el.style.display = (apAll || k < apLim) ? '' : 'none'; });
+      apMore.style.display = cards.length > apLim ? 'block' : 'none';
+      apMore.textContent = apAll ? 'Show Less' : 'Show All (' + (cards.length - apLim) + ' more)';
+    }
+    apMore.addEventListener('click', function () { apAll = !apAll; apDraw(); });
+    apDraw();
     return h('div', { class: 'ap' },
       h('div', { class: 'ap-sub' }, h('h2', null, 'MSR Ranking'), h('span', { class: 'ap-date' }, dt)),
-      list);
+      list, apMore);
   }
   V.ranking = function () { return RANK.length ? rankApp() : emptyPage('Ranking', 'Teams will be ranked here once they are added.', 'No teams yet.'); };
 
