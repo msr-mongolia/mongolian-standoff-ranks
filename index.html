@@ -4329,7 +4329,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
 
   function msrRelTeamKey(name){
     var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},n=norm(name);
-    var fixed={ '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','sixlencepurple':'SIXP','sixlence':'SIXL','8mna':'MANAI','1nfyx':'INFYX' };
+    var otrCode=Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));});
+    var fixed={ 'onetruereign':otrCode,'clanonetruereign':otrCode, '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','sixlencepurple':'SIXP','sixlence':'SIXL','8mna':'MANAI','1nfyx':'INFYX' };
     if(fixed[n]&&T[fixed[n]])return fixed[n];
     var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk'};
     var wanted=norm(aliases[n]||name),keys=Object.keys(T);
