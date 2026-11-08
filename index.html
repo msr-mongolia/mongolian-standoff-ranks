@@ -5778,6 +5778,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
         if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
         if(isSixpPurple(clanCode))applyClanVideoBack1(node,'assets/sixp_back1_video.json');
+        if(isVampTeam)applyClanVideoBack1(node,'assets/vamp_back1_video.json?v=1');
         if(isSixlBlue(clanCode)){node.classList.add('msr-sixl-back1');applyClanVideoBack1(node,'assets/sixl_back1_video.json?v=1');}
         if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
         if(name==='team')node.dataset.msrBack1Team=clanCode;
@@ -7750,6 +7751,8 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 <style id="msr-vamp-blood">
 #app.msr-clan-profile .msr-team-stats,#app.msr-clan-profile .prof.msr-vamp-blood{position:relative}
 .msr-blood{position:absolute;left:0;right:0;top:0;height:0;pointer-events:none;z-index:2;overflow:visible}
+#app .msr-knight-video-panel>.msr-blood{position:absolute!important;left:0!important;right:0!important;top:0!important;height:0!important;z-index:3!important;pointer-events:none}
+#app .msr-knight-video-panel>.msr-knight-video-shade{background:linear-gradient(90deg,rgba(20,0,4,.55),rgba(20,0,4,.2))!important}
 .msr-blood::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(#7a0010,#b3001b 60%,rgba(179,0,27,0));filter:blur(.4px)}
 .msr-blood>i{position:absolute;top:0;width:var(--w,7px);height:0;background:linear-gradient(90deg,#6f000e,#c2001d 45%,#8e0014);border-radius:0 0 999px 999px;box-shadow:0 0 5px #d4001f66;animation:msrBloodDrip var(--dur,7s) cubic-bezier(.45,.05,.55,.95) var(--delay,0s) infinite;opacity:.95}
 .msr-blood>i::after{content:"";position:absolute;left:50%;bottom:-3px;width:calc(var(--w,7px) + 3px);height:calc(var(--w,7px) + 3px);transform:translateX(-50%);background:radial-gradient(circle at 35% 30%,#ff4a5e,#b3001b 55%,#6f000e);border-radius:50% 50% 55% 55%}
