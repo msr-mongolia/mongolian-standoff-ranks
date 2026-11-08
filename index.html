@@ -7677,52 +7677,60 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 .msr-team-gold-sticker,.msr-holo-wrap{--hx:.5;--hy:.5;--tx:0deg;--ty:0deg}
 .msr-holo-wrap{position:relative;display:block;width:min(640px,70vw);height:min(640px,70vh)}
 .msr-gold-sticker-dialog>.msr-holo-wrap>img{width:100%;height:100%;display:block;object-fit:contain}
-.msr-team-gold-sticker img,.msr-holo-wrap>img{transform:perspective(260px) rotateX(var(--ty)) rotateY(var(--tx));transition:transform .12s ease-out;will-change:transform}
-.msr-team-gold-sticker::after,.msr-holo-wrap::after{content:"";position:absolute;inset:0;pointer-events:none;
- background:linear-gradient(115deg,transparent 18%,rgba(255,60,200,.75) 32%,rgba(60,220,255,.75) 44%,rgba(255,240,80,.75) 56%,rgba(140,255,120,.65) 66%,transparent 80%);
- background-size:260% 100%;background-position:calc(var(--hx)*100%) 50%;
- -webkit-mask:var(--st) center/contain no-repeat;mask:var(--st) center/contain no-repeat;
- mix-blend-mode:color-dodge;opacity:.55;transform:perspective(260px) rotateX(var(--ty)) rotateY(var(--tx));transition:transform .12s ease-out;
- animation:msrHoloSweep 3.6s ease-in-out infinite alternate}
-.msr-team-gold-sticker.msr-holo-on::after,.msr-holo-wrap.msr-holo-on::after{animation:none;opacity:.8}
-@keyframes msrHoloSweep{from{background-position:0% 50%}to{background-position:100% 50%}}
-@media(prefers-reduced-motion:reduce){.msr-team-gold-sticker::after,.msr-holo-wrap::after{animation:none}.msr-team-gold-sticker img,.msr-holo-wrap>img{transition:none}}
+.msr-team-gold-sticker img,.msr-holo-wrap>img{transform:perspective(320px) rotateX(var(--ty)) rotateY(var(--tx));will-change:transform}
+.msr-team-gold-sticker::before,.msr-team-gold-sticker::after,.msr-holo-wrap::before,.msr-holo-wrap::after{content:"";position:absolute;inset:0;pointer-events:none;
+ -webkit-mask:var(--st) center/contain no-repeat;mask:var(--st) center/contain no-repeat;transform:perspective(320px) rotateX(var(--ty)) rotateY(var(--tx));will-change:transform,background-position}
+.msr-team-gold-sticker::after,.msr-holo-wrap::after{
+ background:linear-gradient(115deg,transparent 20%,rgba(255,70,200,.7) 33%,rgba(70,220,255,.7) 44%,rgba(255,240,90,.7) 55%,rgba(150,255,130,.6) 66%,transparent 80%);
+ background-size:280% 100%;background-position:calc(var(--hx)*100%) 50%;mix-blend-mode:color-dodge;opacity:.6}
+.msr-team-gold-sticker::before,.msr-holo-wrap::before{z-index:1;
+ background:radial-gradient(circle at calc(var(--hx)*100%) calc(var(--hy)*100%),rgba(255,255,255,.75),rgba(255,255,255,0) 45%);mix-blend-mode:soft-light;opacity:.9}
 </style>
 <script id="msr-holo-sticker-js">
 (function(){
+ var S=new Map(),running=false,t0=performance.now(),RM=false;
+ try{RM=matchMedia('(prefers-reduced-motion:reduce)').matches;}catch(_e){}
+ function st(el){var o=S.get(el);if(!o){o={hx:.5,hy:.5,thx:.5,thy:.5,act:0,gyro:0};S.set(el,o);}return o;}
  function prep(el){var im=el.querySelector('img');if(im&&!el.style.getPropertyValue('--st'))el.style.setProperty('--st','url("'+(im.getAttribute('src')||'').replace(/"/g,'%22')+'")');}
- function scan(){document.querySelectorAll('.msr-team-gold-sticker').forEach(prep);}
- function move(e){var el=e.target.closest&&e.target.closest('.msr-team-gold-sticker,.msr-holo-wrap');if(!el)return;
-  var r=el.getBoundingClientRect();if(!r.width)return;
-  var x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height));
-  el.style.setProperty('--hx',x.toFixed(3));el.style.setProperty('--hy',y.toFixed(3));
-  el.style.setProperty('--tx',((x-.5)*26).toFixed(1)+'deg');el.style.setProperty('--ty',((.5-y)*26).toFixed(1)+'deg');
-  el.classList.add('msr-holo-on');if(e.pointerType==='touch')el.classList.add('msr-holo-touch');}
- function leave(e){var el=e.target.closest&&e.target.closest('.msr-team-gold-sticker,.msr-holo-wrap');if(!el)return;
-  el.classList.remove('msr-holo-on');el.style.setProperty('--tx','0deg');el.style.setProperty('--ty','0deg');}
+ function els(){return document.querySelectorAll('.msr-team-gold-sticker,.msr-holo-wrap');}
+ function scan(){els().forEach(prep);kick();}
+ function frame(now){
+  var any=false,t=(now-t0)/1000;
+  S.forEach(function(o,el){
+   if(!el.isConnected){S.delete(el);return;}
+   var tx=o.thx,ty=o.thy;
+   if(!o.act&&!o.gyro&&!RM){tx=.5+.16*Math.sin(t*.9);ty=.5+.12*Math.sin(t*.7+1);}   // gentle idle sway
+   o.hx+=(tx-o.hx)*.14;o.hy+=(ty-o.hy)*.14;
+   el.style.setProperty('--hx',o.hx.toFixed(4));el.style.setProperty('--hy',o.hy.toFixed(4));
+   el.style.setProperty('--tx',((o.hx-.5)*(o.gyro?44:30)).toFixed(2)+'deg');el.style.setProperty('--ty',((.5-o.hy)*(o.gyro?44:30)).toFixed(2)+'deg');
+   any=true;});
+  if(any&&!document.hidden)requestAnimationFrame(frame);else running=false;
+ }
+ function kick(){els().forEach(function(el){st(el);});if(!running&&S.size){running=true;requestAnimationFrame(frame);}}
+ function target(e){return e.target.closest&&e.target.closest('.msr-team-gold-sticker,.msr-holo-wrap');}
+ function move(e){var el=target(e);if(!el)return;var r=el.getBoundingClientRect();if(!r.width)return;var o=st(el);
+  o.thx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));o.thy=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height));o.act=1;kick();}
+ function leave(e){var el=target(e);if(!el)return;var o=st(el);o.act=0;o.thx=.5;o.thy=.5;}
  document.addEventListener('pointermove',move,{passive:true});
  document.addEventListener('pointerdown',move,{passive:true});
  document.addEventListener('pointerout',leave,{passive:true});
- document.addEventListener('pointerup',function(e){if(e.pointerType==='touch'){leave(e);var t=e.target.closest&&e.target.closest('.msr-team-gold-sticker,.msr-holo-wrap');if(t)t.classList.remove('msr-holo-touch');}},{passive:true});
+ document.addEventListener('pointerup',function(e){if(e.pointerType==='touch')leave(e);},{passive:true});
+ document.addEventListener('visibilitychange',function(){if(!document.hidden)kick();});
  try{new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});}catch(_e){}
  scan();
  // Phone tilt (gyro): Android starts right away, iOS asks permission on the first tap on a sticker.
- var gyroOn=false,lastTilt=0;
+ var gyroOn=false;
  function tilt(e){
   if(e.gamma==null||e.beta==null)return;
-  var now=Date.now();if(now-lastTilt<30)return;lastTilt=now;
-  var x=Math.min(1,Math.max(0,.5+e.gamma/60)),y=Math.min(1,Math.max(0,.5+(e.beta-40)/60));
-  document.querySelectorAll('.msr-team-gold-sticker:not(.msr-holo-touch),.msr-holo-wrap:not(.msr-holo-touch)').forEach(function(el){
-   el.style.setProperty('--hx',x.toFixed(3));el.style.setProperty('--hy',y.toFixed(3));
-   el.style.setProperty('--tx',((x-.5)*40).toFixed(1)+'deg');el.style.setProperty('--ty',((.5-y)*40).toFixed(1)+'deg');
-   el.classList.add('msr-holo-on');});
+  var x=Math.min(1,Math.max(0,.5+e.gamma/55)),y=Math.min(1,Math.max(0,.5+(e.beta-40)/55));
+  els().forEach(function(el){var o=st(el);if(o.act)return;o.gyro=1;o.thx=x;o.thy=y;});kick();
  }
  function startGyro(){if(gyroOn)return;gyroOn=true;window.addEventListener('deviceorientation',tilt,{passive:true});}
  try{
   var DO=window.DeviceOrientationEvent;
   if(DO&&typeof DO.requestPermission==='function'){
    document.addEventListener('click',function(e){
-    if(window.__msrGyroAsked||!(e.target.closest&&e.target.closest('.msr-team-gold-sticker,.msr-holo-wrap')))return;
+    if(window.__msrGyroAsked||!target(e))return;
     window.__msrGyroAsked=true;DO.requestPermission().then(function(r){if(r==='granted')startGyro();}).catch(function(){});
    },true);
   }
