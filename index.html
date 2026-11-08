@@ -6704,7 +6704,7 @@ function verifiedTeamProfiles(){
  // legacy Results array has not been hydrated; never count maps as matches.
  const screenshotSeries=screenshotMatches.filter(m=>m.a===code||m.b===code).map(m=>{
   const au=m.auto||{a:0,b:0},aw=m.maps.filter(x=>x.aScore>x.bScore).length+(au.a||0),bw=m.maps.length+(au.a||0)+(au.b||0)-aw;
-  return {a:m.a,b:m.b,winner:aw>bw?m.a:bw>aw?m.b:null,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore])};
+  return {a:m.a,b:m.b,winner:aw>bw?m.a:bw>aw?m.b:null,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore,x])};
  });
  const completeMatches=teamMatches.length?teamMatches:screenshotSeries.filter(m=>m.winner);
 
@@ -6763,11 +6763,11 @@ function verifiedTeamProfiles(){
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(pool){
   const mapStats=new Map();
-  completeMatches.forEach(match=>match.maps.forEach(([name,a,b])=>{
+  completeMatches.forEach(match=>match.maps.forEach(([name,a,b,raw])=>{
    const key=norm(name),entry=mapStats.get(key)||{name,played:0,wins:0,list:[]};
    entry.played++;
    if((match.a===code?a>b:b>a))entry.wins++;
-   entry.list.push({opp:match.a===code?match.b:match.a,mine:match.a===code?a:b,theirs:match.a===code?b:a});
+   entry.list.push({opp:match.a===code?match.b:match.a,mine:match.a===code?a:b,theirs:match.a===code?b:a,my:raw?(match.a===code?raw.a:raw.b):null,their:raw?(match.a===code?raw.b:raw.a):null});
    mapStats.set(key,entry);
   }));
   [...pool.querySelectorAll('tbody tr')].forEach(row=>{
@@ -6786,13 +6786,39 @@ function verifiedTeamProfiles(){
      const wrap=document.createElement('div');const hostW=(row.closest('table')?.parentElement?.clientWidth||340)-24;wrap.style.cssText='position:sticky;left:0;width:'+hostW+'px';td.appendChild(wrap);
      [...row.entry.list].reverse().forEach(g=>{
       const oc=window.msrTagToCode?window.msrTagToCode(g.opp):null;
-      const a=document.createElement('a');a.href=(selfCode&&oc)?'#mslmatch/'+selfCode+'/'+oc:'#matches';
-      a.style.cssText='display:flex;align-items:center;gap:10px;padding:6px 4px;color:inherit;text-decoration:none';
+      if(!g.my&&!g.their){
+       for(const m of (window.MSR_SCREENSHOT_MATCHES||[])){
+        const fwd=m.a===code&&m.b===g.opp,rev=m.b===code&&m.a===g.opp;if(!fwd&&!rev)continue;
+        const mp=(m.maps||[]).find(x=>norm(x.map)===norm(row.entry.name)&&(fwd?(x.aScore===g.mine&&x.bScore===g.theirs):(x.bScore===g.mine&&x.aScore===g.theirs)));
+        if(mp){g.my=fwd?mp.a:mp.b;g.their=fwd?mp.b:mp.a;break;}
+       }
+      }
+      const a=document.createElement('div');
+      a.style.cssText='display:flex;align-items:center;gap:10px;padding:6px 4px;cursor:pointer';
       const logo=window.msrTeamLogo?window.msrTeamLogo(g.opp):'';
       if(logo){const im=document.createElement('img');im.src=logo;im.alt='';im.onerror=()=>{im.style.display='none';};im.style.cssText='width:22px;height:22px;border-radius:5px;object-fit:contain';a.appendChild(im);}
       const nm=document.createElement('span');nm.style.cssText='flex:1;font-weight:700';nm.textContent='vs '+g.opp;a.appendChild(nm);
       const sc=document.createElement('b');const w=g.mine>g.theirs;sc.textContent=g.mine+'-'+g.theirs;sc.style.cssText='min-width:52px;text-align:center;padding:2px 8px;border-radius:6px;color:#fff;background:'+(w?'#2e9b4a':'#c0414e');a.appendChild(sc);
-      wrap.appendChild(a);
+      const board=document.createElement('div');board.style.cssText='display:none;padding:4px 0 10px';
+      const side=(label,rows)=>{
+       const t=document.createElement('div');t.style.cssText='margin-top:6px';
+       const h=document.createElement('div');h.style.cssText='font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.7;padding:2px 4px';h.textContent=label;t.appendChild(h);
+       (rows||[]).forEach(r=>{
+        const l=document.createElement('div');l.style.cssText='display:grid;grid-template-columns:1fr 34px 34px 34px 40px;gap:4px;padding:3px 4px;font-size:13px;font-variant-numeric:tabular-nums';
+        const d=(r[1]||0)-(r[2]||0);
+        [[r[0],'left'],[r[1],'center'],[r[2],'center'],[r[3],'center'],[(d>0?'+':'')+d,'center']].forEach(([v,al],k)=>{const c=document.createElement('span');c.style.textAlign=al;c.textContent=v;if(k===0){c.style.cssText+=';font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';}if(k===4)c.style.cssText+=';font-weight:800;color:'+(d>0?'#5ad17d':d<0?'#ef6a73':'inherit');l.appendChild(c);});
+        t.appendChild(l);
+       });
+       return t;
+      };
+      if(g.my||g.their){
+       const hd=document.createElement('div');hd.style.cssText='display:grid;grid-template-columns:1fr 34px 34px 34px 40px;gap:4px;padding:0 4px;font-size:10px;font-weight:800;opacity:.55;text-align:center';
+       ['PLAYER','K','D','A','+/-'].forEach((x,k)=>{const c=document.createElement('span');c.textContent=x;if(k===0)c.style.textAlign='left';hd.appendChild(c);});
+       board.appendChild(hd);board.appendChild(side(code,g.my));board.appendChild(side(g.opp,g.their));
+      }else{board.textContent='Scoreboard is not available for this map.';}
+      a.addEventListener('click',e=>{e.stopPropagation();board.style.display=board.style.display==='none'?'block':'none';});
+      wrap.appendChild(a);wrap.appendChild(board);
+
      });
      tr.appendChild(td);row.after(tr);
     });
