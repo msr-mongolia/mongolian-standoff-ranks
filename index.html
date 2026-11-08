@@ -6740,11 +6740,17 @@ function verifiedTeamProfiles(){
    const tooltip='All verified maps · '+x.k+' kills / '+x.d+' deaths / '+x.a+' assists';
    if(row.title!==tooltip)row.title=tooltip;
    let totals=row.cells[0]?.querySelector('.msr-total-kills');
-   if(!totals&&row.cells[0]){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:block;color:#9fe7b4;font-size:10px;white-space:normal;overflow-wrap:anywhere;line-height:1.4;max-width:190px';row.cells[0].appendChild(totals);}
+   if(!totals&&row.cells[0]){totals=document.createElement('small');totals.className='msr-total-kills';totals.style.cssText='display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;max-width:220px';row.cells[0].appendChild(totals);}
    const pct=(v)=>x.rounds?(100*v/x.rounds).toFixed(1)+'%':'—';
    const roundsPerAssist=x.a?(x.rounds/x.a).toFixed(2):'—';
    const totalLabel=x.k+' K · '+x.d+' D · '+x.a+' A · '+x.rounds+' R · R/A '+roundsPerAssist;
-   if(totals&&totals.textContent!==totalLabel)totals.textContent=totalLabel;
+   if(totals&&totals.dataset.v!==totalLabel){
+    totals.dataset.v=totalLabel;totals.title=x.rounds+' rounds';totals.textContent='';
+    [[x.k,'K','#7be3a0','rgba(46,155,74,.18)'],[x.d,'D','#ff8a93','rgba(192,65,78,.18)'],[x.a,'A','#8db8ff','rgba(60,110,230,.18)'],[roundsPerAssist,'R/A','#cfd6e8','rgba(255,255,255,.08)']].forEach(([v,l,c,bg])=>{
+     const chip=document.createElement('span');chip.style.cssText='display:inline-flex;align-items:baseline;gap:3px;padding:1px 7px;border-radius:999px;font-size:11px;line-height:1.5;font-weight:800;color:'+c+';background:'+bg+';white-space:nowrap';
+     const n=document.createElement('b');n.textContent=v;const t=document.createElement('i');t.textContent=l;t.style.cssText='font-style:normal;font-size:9px;font-weight:700;opacity:.8';chip.appendChild(n);chip.appendChild(t);totals.appendChild(chip);
+    });
+   }
    set(3,String(estimatedAdr(x.k,x.a,x.rounds)??'—'));
    set(4,String(estimatedKast(x.k,x.d,x.a,x.rounds)??'—')); // estimate: exact survival + modelled kill/assist rounds
    set(5,String(msrRating(x.k,x.d,x.a,x.rounds)??'—'));
