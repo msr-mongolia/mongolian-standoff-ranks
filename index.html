@@ -6762,6 +6762,7 @@ function verifiedTeamProfiles(){
  }
  const pool=boxes.find(x=>/Map pool/i.test(x.querySelector('.panel-h')?.textContent||''));
  if(pool){
+  pool.querySelectorAll('table').forEach(t=>{t.style.minWidth='0';t.style.width='100%';});
   const mapStats=new Map();
   completeMatches.forEach(match=>match.maps.forEach(([name,a,b,raw])=>{
    const key=norm(name),entry=mapStats.get(key)||{name,played:0,wins:0,list:[]};
