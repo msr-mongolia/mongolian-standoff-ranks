@@ -5763,7 +5763,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         if(accentRGB)accent=brightSignatureColor(parseInt(accentRGB[1],16),parseInt(accentRGB[2],16),parseInt(accentRGB[3],16));
         if(/^xiverion divine$/i.test(clan.n||'')) accent='#F47AB9';
         if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59') accent='#C9D1DC';
-        var isVampTeam=(/^6vmp6$/i.test(String(clan.tag||''))||/vamp\s*empire/i.test(clan.n||'')||clanCode==='DS_B8BA2EC7E90713C104377816'); if(isVampTeam) accent='#e0182d';
+        var isVampTeam=(/^6vmp6$/i.test(String(clan.tag||''))||/vamp\s*empire/i.test(clan.n||'')||clanCode==='DS_B8BA2EC7E90713C104377816'); if(isVampTeam) accent='#d0021b';
         app.style.setProperty('--clan-accent',accent);
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
@@ -5864,7 +5864,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       if(!avatar||!p||!p.team||!T[p.team])return;
       var clan=T[p.team],logo=clan.img;
       avatar.style.setProperty('--signature-color',signatureFallback(clan));
-      if(isVampTeamCode(p.team)){avatar.style.setProperty('--signature-color','#ff3347');avatar.classList.add('msr-vamp-sig');}
+      if(isVampTeamCode(p.team)){avatar.style.setProperty('--signature-color','#e8102a');avatar.classList.add('msr-vamp-sig');}
       else signatureLogoColor(clan).then(function(color){
         if(avatar.isConnected)avatar.style.setProperty('--signature-color',color);
       });
@@ -7759,19 +7759,19 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 .msr-blood>i::after{content:"";position:absolute;left:50%;bottom:-3px;width:calc(var(--w,7px) + 3px);height:calc(var(--w,7px) + 3px);transform:translateX(-50%);background:radial-gradient(circle at 35% 30%,#ff4a5e,#b3001b 55%,#6f000e);border-radius:50% 50% 55% 55%}
 @keyframes msrBloodDrip{0%{height:2px;opacity:0}8%{height:3px;opacity:.9}60%{height:var(--len,30px);opacity:.9}85%{height:calc(var(--len,30px) + 6px);opacity:.6}100%{height:calc(var(--len,30px) + 12px);opacity:0}}
 #app.msr-clan-profile .prof.msr-vamp-blood{overflow:hidden!important}
-#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-verified-match-summary,#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-team-kda-note,#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-team-verified-players{color:#ffc9d0!important;background:rgba(120,10,25,.28)!important;border-color:#a3182b!important}
+#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-verified-match-summary,#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-team-kda-note,#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-team-verified-players{color:#ffb3b3!important;background:rgba(150,0,15,.3)!important;border-color:#c40018!important}
 @media(prefers-reduced-motion:reduce){.msr-blood>i{animation:none;height:var(--len,50px)}}
 </style>
 <style id="msr-vamp-gold-sticker">#app .prof.msr-vamp-sticker{position:relative;padding-right:170px!important}#app .prof.msr-vamp-sticker .msr-team-gold-sticker{position:absolute!important;right:14px;top:50%;transform:translateY(-50%);width:150px;height:76px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 6px #000a)}#app .prof.msr-vamp-sticker .msr-team-gold-sticker img{width:100%;height:100%;object-fit:contain;display:block;background:transparent}@media(max-width:650px){#app .prof.msr-vamp-sticker{padding-right:104px!important}#app .prof.msr-vamp-sticker .msr-team-gold-sticker{width:92px;height:48px;right:6px}}</style>
 <style id="msr-vamp-red-holo">
 #app .prof.msr-vamp-sticker .msr-team-gold-sticker::after,.msr-holo-wrap.msr-vamp-holo::after{
- background:linear-gradient(115deg,transparent 18%,rgba(255,30,60,.8) 34%,rgba(255,120,150,.7) 46%,rgba(255,40,40,.8) 56%,rgba(190,0,40,.75) 68%,transparent 82%)!important;
+ background:linear-gradient(115deg,transparent 18%,rgba(255,20,40,.8) 34%,rgba(255,70,70,.7) 46%,rgba(230,10,25,.8) 56%,rgba(170,0,20,.75) 68%,transparent 82%)!important;
  background-size:280% 100%!important;background-position:calc(var(--hx)*100%) 50%!important;mix-blend-mode:color-dodge;opacity:.55}
 #app .prof.msr-vamp-sticker .msr-team-gold-sticker::before,.msr-holo-wrap.msr-vamp-holo::before{
- background:radial-gradient(circle at calc(var(--hx)*100%) calc(var(--hy)*100%),rgba(255,210,215,.7),rgba(255,255,255,0) 42%)!important;mix-blend-mode:soft-light;opacity:.9}
+ background:radial-gradient(circle at calc(var(--hx)*100%) calc(var(--hy)*100%),rgba(255,110,110,.65),rgba(255,255,255,0) 42%)!important;mix-blend-mode:soft-light;opacity:.9}
 </style>
 <style id="msr-vamp-signature-red">
-html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt{background-image:linear-gradient(172deg,#ffc2c9 0%,#ff6475 20%,#c4001a 40%,#ff9aa5 48%,#e0182d 58%,#8e0014 78%,#ff6b7a 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:#ff3347!important;filter:drop-shadow(0 1px 0.6px rgba(40,0,6,.75))!important}
+html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt{background-image:linear-gradient(172deg,#ff5a5a 0%,#e0102a 22%,#a30015 45%,#ff3d4d 52%,#d0021b 62%,#7a0010 80%,#e8283a 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:#e8102a!important;filter:drop-shadow(0 1px 0.6px rgba(40,0,6,.75))!important}
 </style>
 </body>
 </html>
