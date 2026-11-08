@@ -5762,10 +5762,18 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         if(accentRGB)accent=brightSignatureColor(parseInt(accentRGB[1],16),parseInt(accentRGB[2],16),parseInt(accentRGB[3],16));
         if(/^xiverion divine$/i.test(clan.n||'')) accent='#F47AB9';
         if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59') accent='#C9D1DC';
+        var isVampTeam=(/^6vmp6$/i.test(String(clan.tag||''))||/vamp\s*empire/i.test(clan.n||'')||clanCode==='DS_B8BA2EC7E90713C104377816'); if(isVampTeam) accent='#e0182d';
         app.style.setProperty('--clan-accent',accent);
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
         var banner=node.querySelector('.hl-top, .prof');
+        if(isVampTeam){
+          var vampProf=node.querySelector('.prof');if(vampProf)vampProf.classList.add('msr-vamp-blood');
+          var bloodHost=function(host,n){if(!host||host.querySelector(':scope>.msr-blood'))return;var wrap=document.createElement('div');wrap.className='msr-blood';wrap.setAttribute('aria-hidden','true');
+            for(var i=0;i<n;i++){var d=document.createElement('i');var seed=(i*37+11)%97/97;d.style.left=(i%2?(48+i*7):(3+i*6))+'%';d.style.setProperty('--w',(3+Math.round(seed*3))+'px');d.style.setProperty('--len',(16+Math.round(((i*29)%41)/41*26))+'px');d.style.setProperty('--dur',(5.5+((i*13)%9)*.7).toFixed(1)+'s');d.style.setProperty('--delay',(-((i*17)%11)*.9).toFixed(1)+'s');wrap.appendChild(d);}
+            host.insertBefore(wrap,host.firstChild);};
+          bloodHost(vampProf,6);bloodHost(node.querySelector('.msr-team-stats'),6);
+        }
         if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
         if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
         if(isSixpPurple(clanCode))applyClanVideoBack1(node,'assets/sixp_back1_video.json');
@@ -7738,6 +7746,17 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
  }catch(_e){}
 })();
 </script>
+<style id="msr-vamp-blood">
+#app.msr-clan-profile .msr-team-stats,#app.msr-clan-profile .prof.msr-vamp-blood{position:relative}
+.msr-blood{position:absolute;left:0;right:0;top:0;height:0;pointer-events:none;z-index:2;overflow:visible}
+.msr-blood::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(#7a0010,#b3001b 60%,rgba(179,0,27,0));filter:blur(.4px)}
+.msr-blood>i{position:absolute;top:0;width:var(--w,7px);height:0;background:linear-gradient(90deg,#6f000e,#c2001d 45%,#8e0014);border-radius:0 0 999px 999px;box-shadow:0 0 5px #d4001f66;animation:msrBloodDrip var(--dur,7s) cubic-bezier(.45,.05,.55,.95) var(--delay,0s) infinite;opacity:.95}
+.msr-blood>i::after{content:"";position:absolute;left:50%;bottom:-3px;width:calc(var(--w,7px) + 3px);height:calc(var(--w,7px) + 3px);transform:translateX(-50%);background:radial-gradient(circle at 35% 30%,#ff4a5e,#b3001b 55%,#6f000e);border-radius:50% 50% 55% 55%}
+@keyframes msrBloodDrip{0%{height:2px;opacity:0}8%{height:3px;opacity:.9}60%{height:var(--len,30px);opacity:.9}85%{height:calc(var(--len,30px) + 6px);opacity:.6}100%{height:calc(var(--len,30px) + 12px);opacity:0}}
+#app.msr-clan-profile .prof.msr-vamp-blood{overflow:hidden!important}
+#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-verified-match-summary,#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-team-kda-note,#app.msr-clan-profile:has(.prof.msr-vamp-blood) .msr-team-verified-players{color:#ffc9d0!important;background:rgba(120,10,25,.28)!important;border-color:#a3182b!important}
+@media(prefers-reduced-motion:reduce){.msr-blood>i{animation:none;height:var(--len,50px)}}
+</style>
 </body>
 </html>
 
