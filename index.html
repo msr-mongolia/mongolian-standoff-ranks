@@ -7419,6 +7419,53 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #msr-install .go{background:#19e3ff;color:#06121a}
 #msr-install .x{background:none;color:#8b95a3;font-size:22px;line-height:1;padding:4px 8px}
 </style>
+<style id="msr-push-css">
+#msr-bell{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;margin-left:8px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#cfd6e4;cursor:pointer;font-size:18px;line-height:1;padding:0}
+#msr-bell.on{color:#19e3ff;border-color:#19e3ff;background:rgba(25,227,255,.12)}
+#msr-bell[hidden]{display:none}
+#msr-push-toast{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:9999;padding:12px 14px;border-radius:14px;background:rgba(18,22,34,.97);border:1px solid #3b4a78;color:#e8ecf4;font:600 14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;box-shadow:0 12px 34px rgba(0,0,0,.55)}
+</style>
+<script id="msr-push">
+(function(){
+  try{
+    var cfg=window.MSR_CONFIG||{},FN=(cfg.SUPABASE_URL||'')+'/functions/v1/msr-push';
+    if(!cfg.SUPABASE_URL||!('serviceWorker' in navigator)||location.protocol!=='https:')return;
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+    var standalone=window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+    var supported=('PushManager' in window)&&('Notification' in window);
+    if(!supported&&!(ios&&!standalone))return;
+    var topIn=document.querySelector('header.top .top-in');if(!topIn)return;
+    var b=document.createElement('button');b.type='button';b.id='msr-bell';b.setAttribute('aria-label','Мэдэгдэл');b.title='Мэдэгдэл';b.textContent='🔔';
+    topIn.appendChild(b);
+    function toast(t){var o=document.getElementById('msr-push-toast');if(o)o.remove();var d=document.createElement('div');d.id='msr-push-toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove();},6000);}
+    function u8(k){var p='='.repeat((4-k.length%4)%4),r=(k+p).replace(/-/g,'+').replace(/_/g,'/'),raw=atob(r),a=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a;}
+    function post(o){return fetch(FN,{method:'POST',headers:{'content-type':'application/json',apikey:cfg.SUPABASE_ANON_KEY||''},body:JSON.stringify(o)}).then(function(r){return r.json();});}
+    function reg(){return navigator.serviceWorker.ready;}
+    function refresh(){
+      if(!supported)return;
+      reg().then(function(r){return r.pushManager.getSubscription();}).then(function(s){b.classList.toggle('on',!!s&&Notification.permission==='granted');}).catch(function(){});
+    }
+    b.addEventListener('click',function(){
+      if(!supported){toast('iPhone дээр мэдэгдэл авахын тулд Share → "Add to Home Screen" хийж суулгаад, суулгасан апп-аасаа нээнэ үү.');return;}
+      if(Notification.permission==='denied'){toast('Мэдэгдэл хаалттай байна. Хөтчийн тохиргооноос зөвшөөрнө үү.');return;}
+      reg().then(function(r){
+        return r.pushManager.getSubscription().then(function(s){
+          if(s){return post({action:'unsubscribe',endpoint:s.endpoint}).then(function(){return s.unsubscribe();}).then(function(){b.classList.remove('on');toast('Мэдэгдлийг унтраалаа.');});}
+          return Notification.requestPermission().then(function(p){
+            if(p!=='granted'){toast('Мэдэгдэл зөвшөөрөгдсөнгүй.');return;}
+            return fetch(FN).then(function(x){return x.json();}).then(function(k){
+              return r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(k.key)});
+            }).then(function(sub){
+              var j=sub.toJSON();return post({action:'subscribe',sub:j,topics:['news','match']});
+            }).then(function(){b.classList.add('on');toast('Мэдэгдэл асаалаа. Шинэ мэдээ, тоглолтын мэдээллийг авна.');});
+          });
+        });
+      }).catch(function(){toast('Мэдэгдэл асаахад алдаа гарлаа. Дахин оролдоно уу.');});
+    });
+    refresh();
+  }catch(e){}
+})();
+</script>
 <script id="msr-install-hint">
 (function(){
   try{

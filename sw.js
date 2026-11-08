@@ -14,3 +14,19 @@ self.addEventListener('fetch', e => {
     }).catch(() => caches.match(r).then(m => m || (r.mode === 'navigate' ? caches.match('./') : undefined)))
   );
 });
+
+/* Push notifications (sent by the msr-push edge function). */
+self.addEventListener('push', e => {
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (_) {}
+  e.waitUntil(self.registration.showNotification(d.title || 'MSR', {
+    body: d.body || '', icon: 'assets/pwa/icon-192.png', badge: 'assets/pwa/icon-192.png', data: { url: d.url || './' }
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const target = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    for (const c of list) { if ('focus' in c) { c.navigate(target).catch(() => {}); return c.focus(); } }
+    return clients.openWindow(target);
+  }));
+});
