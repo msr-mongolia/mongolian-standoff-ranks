@@ -2536,6 +2536,8 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .msr-mm-fp{min-width:46px;text-align:center;font-weight:800;font-size:15px;border-radius:6px;padding:3px 6px;color:#fff}
 #app .msr-mm-fp.w{background:#2e9b4a}
 #app .msr-mm-fp.l{background:#c0414e}
+#app .msr-mm-fp.a{background:#e2b93b;color:#201a05;white-space:nowrap}
+#app .msr-mm-form-row:hover .msr-mm-fp{filter:brightness(1.12)}
 </style>
 <style id="msr-mslmatch3-css">
 #app .msr-mm-maps{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:visible!important}
@@ -4618,7 +4620,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       if(ca===cb)return;
       var mine=ca===k,aw=(e.auto&&e.auto.a)||0,bw=(e.auto&&e.auto.b)||0;
       var maps=(e.maps||[]).map(function(m){if(m.aScore>m.bScore)aw++;else if(m.bScore>m.aScore)bw++;return {map:m.map,mine:mine?m.aScore:m.bScore,theirs:mine?m.bScore:m.aScore};});
-      out.push({idx:idx,opp:mine?cb:ca,mine:mine?aw:bw,theirs:mine?bw:aw,maps:maps});
+      out.push({idx:idx,opp:mine?cb:ca,mine:mine?aw:bw,theirs:mine?bw:aw,maps:maps,auto:((e.auto&&((e.auto.a||0)+(e.auto.b||0)))||0)>0,fullAuto:!(e.maps||[]).length});
     });
     return out;
   }
@@ -4761,17 +4763,33 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     draw();
     return h('section',{class:'msr-mm-sec'},h('h2',null,'Map stats'),h('div',{class:'msr-mm-card'},tabs,body));
   }
+  // Find the group and round day (0-based) where two teams meet in the group stage.
+  function msrFindSlot(ka,kb){
+    if(!ka||!kb)return null;
+    var gs=Object.keys(MSR_REL_GROUP_TEAMS);
+    for(var gi=0;gi<gs.length;gi++){
+      for(var d=0;d<7;d++){
+        var ms=msrScheduledGroupMatches(gs[gi],d);
+        for(var i=0;i<ms.length;i++){
+          var x=msrRelTeamKey(ms[i].team_a),y=msrRelTeamKey(ms[i].team_b);
+          if((x===ka&&y===kb)||(x===kb&&y===ka))return {group:gs[gi],day:d};
+        }
+      }
+    }
+    return null;
+  }
   function msrMatchForm(ka,kb){
     var cur=msrCurIdx(ka,kb);
     function col(k){
       var last=msrLedgerSeries(k).filter(function(x){return x.idx!==cur;}).slice(-3).reverse();
       return h('div',{class:'msr-mm-form-col'},last.length?last.map(function(x){
-        var w=x.mine>x.theirs;
-        return h('a',{class:'msr-mm-form-row',href:teamHref(x.opp),title:T[x.opp]?T[x.opp].n:''},crest(k,'xs'),h('span',{class:'msr-mm-fp '+(w?'w':'l')},x.mine+'-'+x.theirs),crest(x.opp,'xs'));
+        var w=x.mine>x.theirs,slot=msrFindSlot(k,x.opp);
+        var href=T[x.opp]?'#mslmatch/'+k+'/'+x.opp+'/'+(slot?(1104+slot.day)+'/'+slot.group:''):teamHref(k);
+        return h('a',{class:'msr-mm-form-row',href:href,title:(T[x.opp]?T[x.opp].n:'')+(x.auto?' · auto win':'')},crest(k,'xs'),h('span',{class:'msr-mm-fp '+(x.auto?'a':(w?'w':'l'))},x.fullAuto?'A':(x.mine+'-'+x.theirs+(x.auto?' A':''))),crest(x.opp,'xs'));
       }):h('div',{class:'msr-mm-empty'},'No results yet'));
     }
     return h('section',{class:'msr-mm-sec'},h('h2',null,'Form'),h('div',{class:'msr-mm-card msr-mm-form'},col(ka),col(kb)),
-      h('div',{class:'msr-mm-note'},'Last 3 verified results before this match.'));
+      h('div',{class:'msr-mm-note'},'Last 3 verified results before this match. A = auto win. Tap a row to open that match.'));
   }
 
   V.matches = function () {
