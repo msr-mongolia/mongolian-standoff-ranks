@@ -6841,7 +6841,7 @@ function verifiedTeamProfiles(){
   if(note.textContent!==noteText)note.textContent=noteText;
  }
  const form=document.querySelector('.form.left');
- if(form&&completeMatches.length){const seq=(teamMatches.length?teamMatches:completeMatches).filter(m=>m.winner).slice(-5).map(m=>m.winner===code?'W':'L');const status=seq.join('');if(status&&form.dataset.msrVerifiedForm!==status){form.dataset.msrVerifiedForm=status;form.replaceChildren();seq.forEach(c=>{const el=document.createElement('i');el.className=c==='W'?'w':'l';el.textContent=c;form.appendChild(el);});}}
+ if(form&&(completeMatches.length||screenshotSeries.length)){const seq=(screenshotSeries.length?screenshotSeries:(teamMatches.length?teamMatches:completeMatches)).filter(m=>m.winner).slice(-5).map(m=>m.winner===code?'W':'L');const status=seq.join('');if(status&&form.dataset.msrVerifiedForm!==status){form.dataset.msrVerifiedForm=status;form.replaceChildren();seq.forEach(c=>{const el=document.createElement('i');el.className=c==='W'?'w':'l';el.textContent=c;form.appendChild(el);});}}
  if(stats){
   let info=stats.querySelector('.msr-verified-match-summary');
   if(!info){info=document.createElement('div');info.className='msr-verified-match-summary';stats.appendChild(info);}
