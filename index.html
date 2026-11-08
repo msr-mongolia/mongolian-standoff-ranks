@@ -5864,7 +5864,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       if(!avatar||!p||!p.team||!T[p.team])return;
       var clan=T[p.team],logo=clan.img;
       avatar.style.setProperty('--signature-color',signatureFallback(clan));
-      signatureLogoColor(clan).then(function(color){
+      if(isVampTeamCode(p.team)){avatar.style.setProperty('--signature-color','#ff3347');avatar.classList.add('msr-vamp-sig');}
+      else signatureLogoColor(clan).then(function(color){
         if(avatar.isConnected)avatar.style.setProperty('--signature-color',color);
       });
       avatar.classList.add('msr-clan-avatar');
@@ -7768,6 +7769,9 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
  background-size:280% 100%!important;background-position:calc(var(--hx)*100%) 50%!important;mix-blend-mode:color-dodge;opacity:.55}
 #app .prof.msr-vamp-sticker .msr-team-gold-sticker::before,.msr-holo-wrap.msr-vamp-holo::before{
  background:radial-gradient(circle at calc(var(--hx)*100%) calc(var(--hy)*100%),rgba(255,210,215,.7),rgba(255,255,255,0) 42%)!important;mix-blend-mode:soft-light;opacity:.9}
+</style>
+<style id="msr-vamp-signature-red">
+html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt{background-image:linear-gradient(172deg,#ffc2c9 0%,#ff6475 20%,#c4001a 40%,#ff9aa5 48%,#e0182d 58%,#8e0014 78%,#ff6b7a 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:#ff3347!important;filter:drop-shadow(0 1px 0.6px rgba(40,0,6,.75))!important}
 </style>
 </body>
 </html>
