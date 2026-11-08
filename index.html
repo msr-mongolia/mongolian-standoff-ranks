@@ -6764,14 +6764,39 @@ function verifiedTeamProfiles(){
  if(pool){
   const mapStats=new Map();
   completeMatches.forEach(match=>match.maps.forEach(([name,a,b])=>{
-   const key=norm(name),entry=mapStats.get(key)||{name,played:0,wins:0};
+   const key=norm(name),entry=mapStats.get(key)||{name,played:0,wins:0,list:[]};
    entry.played++;
    if((match.a===code?a>b:b>a))entry.wins++;
+   entry.list.push({opp:match.a===code?match.b:match.a,mine:match.a===code?a:b,theirs:match.a===code?b:a});
    mapStats.set(key,entry);
   }));
   [...pool.querySelectorAll('tbody tr')].forEach(row=>{
+   if(row.classList.contains('msr-map-detail'))return;
    const entry=mapStats.get(norm(row.cells[0]?.textContent.trim()));
    if(!entry)return;
+   row.entry=entry;
+   if(!row.dataset.msrMapBound){
+    row.dataset.msrMapBound='1';row.style.cursor='pointer';row.title='Tap to see previous games on this map';
+    row.addEventListener('click',()=>{
+     const nx=row.nextElementSibling;
+     if(nx&&nx.classList.contains('msr-map-detail')){nx.remove();return;}
+     const tr=document.createElement('tr');tr.className='msr-map-detail';
+     const td=document.createElement('td');td.colSpan=row.cells.length;td.style.cssText='padding:8px 12px;background:rgba(10,13,24,.75)';
+     const selfCode=window.msrTagToCode?window.msrTagToCode(code):null;
+     const wrap=document.createElement('div');const hostW=(row.closest('table')?.parentElement?.clientWidth||340)-24;wrap.style.cssText='position:sticky;left:0;width:'+hostW+'px';td.appendChild(wrap);
+     [...row.entry.list].reverse().forEach(g=>{
+      const oc=window.msrTagToCode?window.msrTagToCode(g.opp):null;
+      const a=document.createElement('a');a.href=(selfCode&&oc)?'#mslmatch/'+selfCode+'/'+oc:'#matches';
+      a.style.cssText='display:flex;align-items:center;gap:10px;padding:6px 4px;color:inherit;text-decoration:none';
+      const logo=window.msrTeamLogo?window.msrTeamLogo(g.opp):'';
+      if(logo){const im=document.createElement('img');im.src=logo;im.alt='';im.onerror=()=>{im.style.display='none';};im.style.cssText='width:22px;height:22px;border-radius:5px;object-fit:contain';a.appendChild(im);}
+      const nm=document.createElement('span');nm.style.cssText='flex:1;font-weight:700';nm.textContent='vs '+g.opp;a.appendChild(nm);
+      const sc=document.createElement('b');const w=g.mine>g.theirs;sc.textContent=g.mine+'-'+g.theirs;sc.style.cssText='min-width:52px;text-align:center;padding:2px 8px;border-radius:6px;color:#fff;background:'+(w?'#2e9b4a':'#c0414e');a.appendChild(sc);
+      wrap.appendChild(a);
+     });
+     tr.appendChild(td);row.after(tr);
+    });
+   }
    const winRate=(100*entry.wins/entry.played).toFixed(0)+'%';
    if(row.cells[1]&&row.cells[1].textContent.trim()!==String(entry.played))row.cells[1].textContent=String(entry.played);
    if(row.cells[2]&&row.cells[2].textContent.trim()!==winRate)row.cells[2].textContent=winRate;
