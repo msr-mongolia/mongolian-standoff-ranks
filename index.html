@@ -7677,7 +7677,7 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 .msr-team-gold-sticker,.msr-holo-wrap{--hx:.5;--hy:.5;--tx:0deg;--ty:0deg}
 .msr-holo-wrap{position:relative;display:block;width:min(640px,70vw);height:min(640px,70vh)}
 .msr-gold-sticker-dialog>.msr-holo-wrap>img{width:100%;height:100%;display:block;object-fit:contain}
-.msr-team-gold-sticker img,.msr-holo-wrap>img{transform:perspective(320px) rotateX(var(--ty)) rotateY(var(--tx));will-change:transform}
+.msr-team-gold-sticker img,.msr-holo-wrap>img{transform:perspective(420px) rotateX(var(--ty)) rotateY(var(--tx));will-change:transform}
 .msr-team-gold-sticker::before,.msr-team-gold-sticker::after,.msr-holo-wrap::before,.msr-holo-wrap::after{content:"";position:absolute;inset:0;pointer-events:none;
  -webkit-mask:var(--st) center/contain no-repeat;mask:var(--st) center/contain no-repeat;transform:perspective(320px) rotateX(var(--ty)) rotateY(var(--tx));will-change:transform,background-position}
 .msr-team-gold-sticker::after,.msr-holo-wrap::after{
@@ -7699,10 +7699,10 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
   S.forEach(function(o,el){
    if(!el.isConnected){S.delete(el);return;}
    var tx=o.thx,ty=o.thy;
-   if(!o.act&&!o.gyro&&!RM){tx=.5+.16*Math.sin(t*.9);ty=.5+.12*Math.sin(t*.7+1);}   // gentle idle sway
-   o.hx+=(tx-o.hx)*.14;o.hy+=(ty-o.hy)*.14;
+   if(!o.act&&!o.gyro&&!RM){tx=.5+.1*Math.sin(t*.6);ty=.5+.08*Math.sin(t*.45+1);}   // gentle idle sway
+   o.vx=(o.vx||0)*.7+(tx-o.hx)*.04;o.vy=(o.vy||0)*.7+(ty-o.hy)*.04;o.hx+=o.vx;o.hy+=o.vy;   // soft spring: eases in and out, slight float
    el.style.setProperty('--hx',o.hx.toFixed(4));el.style.setProperty('--hy',o.hy.toFixed(4));
-   el.style.setProperty('--tx',((o.hx-.5)*(o.gyro?44:30)).toFixed(2)+'deg');el.style.setProperty('--ty',((.5-o.hy)*(o.gyro?44:30)).toFixed(2)+'deg');
+   el.style.setProperty('--tx',((o.hx-.5)*(o.gyro?30:20)).toFixed(2)+'deg');el.style.setProperty('--ty',((.5-o.hy)*(o.gyro?30:20)).toFixed(2)+'deg');
    any=true;});
   if(any&&!document.hidden)requestAnimationFrame(frame);else running=false;
  }
