@@ -5209,7 +5209,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var label=isVampTeamCode(code)?'VAMP EMPIRE golden sticker':isKgtss(code)?'KnightSS golden sticker':isW2990White(code)?'2990 white golden sticker':isSixlBlue(code)?'Six Lence golden sticker':isSixpPurple(code)?'Six Lence Purple golden sticker':isXvrnDivine(code)?'Xiverion DIVINE golden sticker':isOmvTeam(code)?'Omnis Over golden sticker':code==='ETXEN'?'ETXEN golden sticker':code==='DS_D1764CAF48B74A2D0B7B3E59'?'Rvurz golden sticker':isXvrnDivine(code)?'Xiverion DIVINE golden sticker':'Team Lunaris golden sticker';
     var dialog=document.createElement('dialog');dialog.className='msr-gold-sticker-dialog';dialog.setAttribute('aria-label',label);
     var close=h('button',{type:'button',class:'msr-gold-sticker-close','aria-label':'Close sticker preview',onclick:function(){dialog.close();}},'×');
-    dialog.appendChild(close);var holoWrap=h('span',{class:'msr-holo-wrap'});holoWrap.style.setProperty('--st','url("'+sticker+'")');holoWrap.appendChild(h('img',{src:sticker,alt:label}));dialog.appendChild(holoWrap);
+    dialog.appendChild(close);var holoWrap=h('span',{class:'msr-holo-wrap'+(isVampTeamCode(code)?' msr-no-holo':'')});holoWrap.style.setProperty('--st','url("'+sticker+'")');holoWrap.appendChild(h('img',{src:sticker,alt:label}));dialog.appendChild(holoWrap);
     dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close();});
     dialog.addEventListener('close',function(){dialog.remove();});document.body.appendChild(dialog);dialog.showModal();close.focus();
   }
@@ -7759,6 +7759,10 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 @media(prefers-reduced-motion:reduce){.msr-blood>i{animation:none;height:var(--len,50px)}}
 </style>
 <style id="msr-vamp-gold-sticker">#app .prof.msr-vamp-sticker{position:relative;padding-right:170px!important}#app .prof.msr-vamp-sticker .msr-team-gold-sticker{position:absolute!important;right:14px;top:50%;transform:translateY(-50%);width:150px;height:76px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 6px #000a)}#app .prof.msr-vamp-sticker .msr-team-gold-sticker img{width:100%;height:100%;object-fit:contain;display:block;background:transparent}@media(max-width:650px){#app .prof.msr-vamp-sticker{padding-right:104px!important}#app .prof.msr-vamp-sticker .msr-team-gold-sticker{width:92px;height:48px;right:6px}}</style>
+<style id="msr-vamp-no-holo">
+#app .prof.msr-vamp-sticker .msr-team-gold-sticker::before,#app .prof.msr-vamp-sticker .msr-team-gold-sticker::after,.msr-holo-wrap.msr-no-holo::before,.msr-holo-wrap.msr-no-holo::after{display:none!important}
+#app .prof.msr-vamp-sticker .msr-team-gold-sticker img,.msr-holo-wrap.msr-no-holo>img{transform:none!important;will-change:auto}
+</style>
 </body>
 </html>
 
