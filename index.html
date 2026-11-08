@@ -6199,8 +6199,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var ex=1/(1+Math.pow(10,(rb-ra)/150));
       var fullAuto=!m.maps.length;
       var hasAuto=((au.a||0)+(au.b||0))>0;
-      var da=fullAuto?(aw>bw?5:-7):Math.max(-40,Math.min(35,Math.round((32*((aw>bw?1:0)-ex)+1.4*diff/count)*mult)))+(hasAuto?(aw>bw?5:-7):0);
-      var db=fullAuto?(bw>aw?5:-7):Math.max(-40,Math.min(35,Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)))+(hasAuto?(bw>aw?5:-7):0);
+      var da=fullAuto?(aw>bw?10:-13):Math.max(-40,Math.min(35,Math.round((32*((aw>bw?1:0)-ex)+1.4*diff/count)*mult)))+(hasAuto?(aw>bw?10:-13):0);
+      var db=fullAuto?(bw>aw?10:-13):Math.max(-40,Math.min(35,Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)))+(hasAuto?(bw>aw?10:-13):0);
       [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].forEach(function(x){
         var tag=x[0],before=x[3],after=Math.max(0,Math.min(vipTagActive(tag)?Infinity:Math.max(300,before),before+x[1])),prev=x[4]||{w:0,l:0};
         adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1)});
@@ -6587,12 +6587,12 @@ const eloMatches=results.map(match=>{
  const multiplier=1+0.08*Math.max(0,count-2);
  const aDelta=Math.round((32*((aWins>bWins?1:0)-expected)+1.4*diff/count)*multiplier);
  const bDelta=Math.round((32*((bWins>aWins?1:0)-(1-expected))-1.1*diff/count)*multiplier);
- // Full auto win (no maps played): winner flat +5, loser flat -7.
+ // Full auto win (no maps played): winner flat +10, loser flat -13.
  const fullAuto=!match.maps.length;
- // Any match with an auto win: winner +5, the team that gave the auto and lost -7, once per match, on top of the formula.
+ // Any match with an auto win: winner +10, the team that gave the auto and lost -13, once per match, on top of the formula.
  const hasAuto=((au.a||0)+(au.b||0))>0;
- const aChange=fullAuto?(aWins>bWins?5:-7):Math.max(-40,Math.min(35,aDelta))+(hasAuto?(aWins>bWins?5:-7):0);
- const bChange=fullAuto?(bWins>aWins?5:-7):Math.max(-40,Math.min(35,bDelta))+(hasAuto?(bWins>aWins?5:-7):0);
+ const aChange=fullAuto?(aWins>bWins?10:-13):Math.max(-40,Math.min(35,aDelta))+(hasAuto?(aWins>bWins?10:-13):0);
+ const bChange=fullAuto?(bWins>aWins?10:-13):Math.max(-40,Math.min(35,bDelta))+(hasAuto?(bWins>aWins?10:-13):0);
  // The free tier stops at 300. VIP entitlement must be checked server-side
  // before awarding points above 300; never infer VIP from screenshots.
  const vc=t=>window.msrVipTagActive&&window.msrVipTagActive(t)?Infinity:null;
