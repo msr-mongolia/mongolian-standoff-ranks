@@ -3121,7 +3121,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function crownSigs() {
     [].forEach.call(document.querySelectorAll('.sg:not([data-cw])'), function (a) {
       a.setAttribute('data-cw', '1');
-      var m = /(?:^|\s)t-(\S+)/.exec(a.className), sg = a.querySelector('.sigtxt');
+      var m = /(?:^|\s)t-(\S+)/.exec(a.className), sg = a.querySelector('.sigtxt, .msr-risk-mini');
       if (!m || !sg) return;
       var r = ROSTER[m[1]];
       var captain = teamCaptain(m[1]);
@@ -5847,7 +5847,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
 
   /* Player avatar: display the current clan crest behind the player's signature. */
   function syncPlayerClanAvatars(root) {
-    (root || document).querySelectorAll('.sg .sigtxt[data-nick]').forEach(function(label) {
+    (root || document).querySelectorAll('.sg .sigtxt[data-nick], .sg .msr-risk-mini[data-nick]').forEach(function(label) {
       var nick=label.getAttribute('data-nick'),avatar=label.closest('.sg');
       var teamClass=avatar && /(?:^|\s)t-(\S+)/.exec(avatar.className);
       var p=(teamClass && PLAYERS.find(function(x){return x.nick===nick && x.team===teamClass[1];})) || PBY[nick] || PLAYERS.find(function(x){return x.nick===nick;});
