@@ -7471,6 +7471,28 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 <script id="msr-rankmenu-js">
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#mm-rank .mm-head');if(!b)return;var g=b.parentNode,o=g.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});
 </script>
+<script id="msr-auto-update">
+(function(){
+  try{
+    if(location.protocol!=='https:'&&location.hostname!=='localhost')return;
+    var base=null,busy=false,last=0;
+    function sig(r){return (r.headers.get('etag')||'')+'|'+(r.headers.get('last-modified')||'')+'|'+(r.headers.get('content-length')||'');}
+    function check(){
+      if(busy||document.visibilityState!=='visible'||Date.now()-last<20000)return;busy=true;last=Date.now();
+      fetch(location.pathname+(location.pathname.slice(-1)==='/'?'':''),{method:'HEAD',cache:'no-store'}).then(function(r){
+        var v=sig(r);if(v==='||')return;
+        if(base===null){base=v;return;}
+        if(v!==base){base=v;location.reload();}
+      }).catch(function(){}).then(function(){busy=false;});
+    }
+    check();
+    document.addEventListener('visibilitychange',check);
+    window.addEventListener('focus',check);
+    window.addEventListener('pageshow',check);
+    setInterval(check,5*60*1000);
+  }catch(e){}
+})();
+</script>
 <style id="msr-push-css">
 #msr-bell{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;margin-left:8px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#cfd6e4;cursor:pointer;font-size:18px;line-height:1;padding:0}
 #msr-bell.on{color:#19e3ff;border-color:#19e3ff;background:rgba(25,227,255,.12)}
