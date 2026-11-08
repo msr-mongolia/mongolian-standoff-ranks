@@ -5195,6 +5195,14 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   /* Tournament points (poll result: option B). Separate from ELO. Add real results here only: { TEAMCODE: points }.
      Cap: 500 for non-VIP teams, no cap for VIP-active teams. */
   window.MSR_TOURNAMENT_POINTS = window.MSR_TOURNAMENT_POINTS || {};
+  /* Tournament tiers (set by the admin) and placement points (PROPOSED values, not final). award = placementPoints[place] * tierWeight */
+  window.MSR_TP_TIERS = window.MSR_TP_TIERS || { 'MSL Major': 'S', 'Anvex': 'S', 'MPS': 'S', 'SATT': 'A', 'SPS': 'A', 'MSL Season': 'A', 'MSL Rising Star': 'B' };
+  window.MSR_TP_TIER_WEIGHT = window.MSR_TP_TIER_WEIGHT || { S: 1, A: 0.6, B: 0.3 };
+  window.MSR_TP_PLACEMENT = window.MSR_TP_PLACEMENT || { 1: 200, 2: 140, 3: 100, 4: 70, 5: 40, 6: 40, 7: 40, 8: 40, 9: 20, 10: 20, 11: 20, 12: 20, 13: 20, 14: 20, 15: 20, 16: 20, participated: 10 };
+  window.msrTpAward = function (event, place) {
+    var w = window.MSR_TP_TIER_WEIGHT[window.MSR_TP_TIERS[event]]; if (!w) return 0;
+    var pp = window.MSR_TP_PLACEMENT; return Math.round((pp[place] != null ? pp[place] : pp.participated) * w);
+  };
   window.msrTP = function (code) {
     var raw = Number((window.MSR_TOURNAMENT_POINTS || {})[code] || 0), vip = !!(T[code] && Date.parse(T[code].vipExpiresAt) > Date.now());
     var pts = Math.max(0, vip ? raw : Math.min(500, raw));
