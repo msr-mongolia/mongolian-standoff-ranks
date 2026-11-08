@@ -2839,7 +2839,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     EVENTS.push({ n: x[0], st: 'soon', dt: 'Coming soon', loc: 'TBA', teams: 'TBA', prize: 'TBA', tier: x[1] });
   });
   EVENTS[0].tier = 'S';
-  EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = '1-р 600 000₮ · 2-р 400 000₮ · 3-р 200 000₮';
+  EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = ['🥇 600 000₮', '🥈 400 000₮', '🥉 200 000₮'];
   var STREAMS = [];
 
   // Sellers appear only after their contact and payment details are configured.
@@ -5521,7 +5521,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
 
   /* ---- Events ---- */
   function eventsApp() {
-    function chips(e) { return h('div', { class: 'ap-chips' }, e.dt ? chip('cal', e.dt) : null, chip('cup', e.prize), e.dist ? chip('cup', e.dist) : null, chip('users', e.teams + (/^\d+$/.test(String(e.teams)) ? ' teams' : ' teams')), chip('globe', e.loc)); }
+    function chips(e) { return h('div', { class: 'ap-chips' }, e.dt ? chip('cal', e.dt) : null, chip('cup', e.prize), e.dist ? e.dist.map(function (x) { return h('span', { class: 'ap-chip', style: 'white-space:nowrap' }, x); }) : null, chip('users', e.teams + (/^\d+$/.test(String(e.teams)) ? ' teams' : ' teams')), chip('globe', e.loc)); }
     function status(e) { return e.st === 'now' ? h('span', { class: 'ap-live' }, h('i'), 'LIVE') : e.st === 'soon' ? h('span', { class: 'ap-soon' }, 'UPCOMING') : null; }
     function card(e, feat) {
       var tag = e.id ? 'a' : 'div', href = e.id ? '#event/' + e.id : null;
