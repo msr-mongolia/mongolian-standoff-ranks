@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:10</span>
+    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:20</span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -5959,6 +5959,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         }
         if(String(clan.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/kgtss_back1_video.json?v=smooth-loop-1');
         if(clanCode==='W2990'||/^2990\s+white$/i.test(clan.n||''))applyClanVideoBack1(node,'assets/2990_white_back1_video.json');
+        if(/^2990\s*red$/i.test(String(clan.n||'').trim()))applyClanVideoBack1(node,'assets/2990_red_back1_video.json?v=1');
         if(isSixpPurple(clanCode))applyClanVideoBack1(node,'assets/sixp_back1_video.json');
         if(isVampTeam)applyClanVideoBack1(node,'assets/vamp_back1_video.json?v=2');
         if(isSixlBlue(clanCode)){node.classList.add('msr-sixl-back1');applyClanVideoBack1(node,'assets/sixl_back1_video.json?v=1');}
@@ -5979,6 +5980,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var back1Code=String(back1Clan.tag||'').toUpperCase();
       var back1Asset=back1Code==='KGTSS'||/^knightss$/i.test(back1Clan.n||'')?'assets/kgtss_back1_video.json?v=smooth-loop-1':
         back1Code==='W2990'||/^2990\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':
+        /^2990\s*red$/i.test(String(back1Clan.n||'').trim())?'assets/2990_red_back1_video.json?v=1':
         isSixpPurple(node.dataset.msrBack1Team)?'assets/sixp_back1_video.json':
         isSixlBlue(node.dataset.msrBack1Team)?'assets/sixl_back1_video.json?v=1':
         node.dataset.msrBack1Team==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_back1_video.json?v=1':
