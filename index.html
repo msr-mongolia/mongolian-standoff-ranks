@@ -5903,6 +5903,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         if(isSixpPurple(clanCode))applyClanVideoBack1(node,'assets/sixp_back1_video.json');
         if(isVampTeam)applyClanVideoBack1(node,'assets/vamp_back1_video.json?v=2');
         if(isSixlBlue(clanCode)){node.classList.add('msr-sixl-back1');applyClanVideoBack1(node,'assets/sixl_back1_video.json?v=1');}
+        if(isOmvTeam(clanCode))applyClanVideoBack1(node,'assets/omv_back1_video.json?v=1');
         if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59')applyClanVideoBack1(node,'assets/rvurz_back1_video.json?v=1');
         if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
         if(name==='team')node.dataset.msrBack1Team=clanCode;
@@ -5920,7 +5921,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         back1Code==='W2990'||/^2990\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':
         isSixpPurple(node.dataset.msrBack1Team)?'assets/sixp_back1_video.json':
         isSixlBlue(node.dataset.msrBack1Team)?'assets/sixl_back1_video.json?v=1':
-        node.dataset.msrBack1Team==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_back1_video.json?v=1':null;
+        node.dataset.msrBack1Team==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_back1_video.json?v=1':
+        isOmvTeam(node.dataset.msrBack1Team)?'assets/omv_back1_video.json?v=1':null;
       if(back1Asset && msrClanVideoPromises[back1Asset]){
         msrClanVideoPromises[back1Asset].then(function(){
           if(node.isConnected)applyAllClanPanelBack1(node,back1Clan);
@@ -7128,7 +7130,7 @@ function updateFinishedClanMedia(side){
  const back1Asset=back1Assets[normKey(clan?.tag||side.dataset.team)];
  if(back1Asset)setBack1(back1Asset);
  // Clans whose BACK1 is a looping video (stored as base64 mp4 JSON) get it behind their Results row too.
- const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json'};
+ const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json',omv:'assets/omv_back1_video.json?v=1'};
  const videoUrl=videoAssets[normKey(clan?.tag||side.dataset.team)]||videoAssets[normKey(clan?.name)];
  if(videoUrl&&summarySide&&!summarySide.querySelector('.msr-results-back1-video')){
   window.__msrResVid=window.__msrResVid||{};
