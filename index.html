@@ -3007,6 +3007,11 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function flag() { return h('span', { class: 'flag', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')); }
   function comments(n) { return h('span', { class: 'cm', svg: ICON.cm }, String(n)); }
   function go(hash) { return function () { navTo(hash.replace(/^#/, '')); }; }
+  // Team avatar frames: drop a transparent PNG into assets/frames/ and map the team tag (UPPERCASE) here.
+  // The frame is drawn around the circular avatar of every player of that team (player profile page).
+  var MSR_TEAM_FRAMES = {};
+  function teamFrameSrc(code) { var t = T[code] || {}; return MSR_TEAM_FRAMES[String(t.tag || '').toUpperCase()] || MSR_TEAM_FRAMES[String(code || '').toUpperCase()] || ''; }
+  function avFrame(team, av) { var src = teamFrameSrc(team); if (!src) return av; return h('span', { class: 'msr-avf-wrap' }, av, h('img', { class: 'msr-avf-img', src: src, alt: '', 'aria-hidden': 'true', decoding: 'async' })); }
   var MSR_FLAGS = { mongolia: '\uD83C\uDDF2\uD83C\uDDF3', ulaanbaatar: '\uD83C\uDDF2\uD83C\uDDF3', pakistan: '\uD83C\uDDF5\uD83C\uDDF0' };
   function withFlag(name) { var f = MSR_FLAGS[String(name || '').trim().toLowerCase()]; return f ? f + ' ' + name : name; }
   function tagEl(code) { var t = T[code] || {}; var name = String(t.n || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''); var known = { warriorkingzz: 'WarKz', elitekingzz: 'EknZ', civilizationofruin: 'CioR', kingzz: 'KngZz' }; var tag = known[name] || String(t.tag || '').trim(); if (!tag && code === 'COR') tag = 'CioR'; return tag ? h('span', { class: 'ctag', style: 'color:var(--tracer);display:inline-block;white-space:nowrap;' }, '[' + tag + ']') : null; }
@@ -5405,7 +5410,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       h('a', { class: 'back', href: '#players', svg: ICON.back + '<span>Players</span>' }),
       h('div', { class: 'hl-head' + (team === 'TLNRS' ? ' msr-lunaris-back1-player' : team === 'ETXEN' ? ' msr-etxen-back1-player' : isOmvTeam(team) ? ' msr-omv-back1-player' : '') },
         h('div', { class: 'hl-card' },
-          h('div', { class: 'hl-top' }, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120)), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
+          h('div', { class: 'hl-top' }, avFrame(team, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120))), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
           h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag((T[team] && T[team].country) || 'Mongolia')), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
         statCard),
       flt, host);
@@ -7574,6 +7579,7 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #app .msr-rr-table th:nth-child(4),#app .msr-rr-table td:nth-child(4){color:#3ddc84!important;font-weight:800}
 #app .msr-rr-table th:nth-child(5),#app .msr-rr-table td:nth-child(5){color:#ff5468!important;font-weight:800}
 </style>
+<style id="msr-avatar-frame-css">.msr-avf-wrap{position:relative;display:inline-grid;place-items:center;flex:0 0 auto}.msr-avf-wrap .msr-avf-img{position:absolute;left:50%;top:50%;width:150%;height:150%;transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}.hl-top:has(.msr-avf-wrap){padding-left:26px}</style>
 <style id="msr-day-tabs-css">
 .msr-day-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;overflow:visible;margin:12px 0 10px;padding-bottom:4px}
 @media(max-width:520px){.msr-day-tab{padding:6px 1px!important;font-size:10.5px!important;letter-spacing:.02em!important;border-radius:8px!important}.msr-day-tab small{font-size:8px!important;letter-spacing:.02em!important}}
