@@ -7583,7 +7583,8 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 @media(max-width:650px){#app .prof.msr-rvurz-back1{background-position:60% center!important}}
 </style>
 <style id="msr-day-tabs-css">
-.msr-day-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:6px;overflow:visible;margin:12px 0 10px;padding-bottom:4px}
+.msr-day-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;overflow:visible;margin:12px 0 10px;padding-bottom:4px}
+@media(max-width:520px){.msr-day-tab{padding:6px 1px!important;font-size:10.5px!important;letter-spacing:.02em!important;border-radius:8px!important}.msr-day-tab small{font-size:8px!important;letter-spacing:.02em!important}}
 .msr-day-tab{min-width:0;padding:7px 10px;border:1px solid color-mix(in srgb,var(--group-accent,#ffb627) 45%,transparent);border-radius:9px;background:rgba(3,9,16,.7);color:#cfd6df;font:800 12px/1.2 inherit;letter-spacing:.06em;text-align:center;cursor:pointer}
 .msr-day-tab small{display:block;font-size:9px;font-weight:700;color:#8fa0b0;letter-spacing:.08em;margin-top:2px}
 .msr-day-tab.on{background:var(--group-soft,rgba(255,182,39,.18));border-color:var(--group-accent,#ffb627);color:#fff}
