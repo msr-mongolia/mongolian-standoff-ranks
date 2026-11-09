@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:50</span>
+    <span>MSR · Standoff 2 Mongolia</span><span id="msr-build" style="opacity:.45;font-size:10px;margin-left:8px"></span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -7962,6 +7962,36 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt{background-image:linear-gradient(172deg,#ff5a5a 0%,#e0102a 22%,#a30015 45%,#ff3d4d 52%,#d0021b 62%,#7a0010 80%,#e8283a 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:#e8102a!important;filter:drop-shadow(0 1px 0.6px rgba(40,0,6,.75))!important}
 html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-color:#d0021b!important;border-bottom-color:#d0021b!important;background:none!important;background-image:none!important;box-shadow:none!important;filter:none!important}
 </style>
+<script id="msr-build-update">
+(function(){
+  /* Footer build stamp = this page's deploy time; plus a small "new version" bar when a newer deploy exists. */
+  try{
+    var loaded=Date.parse(document.lastModified)||0;
+    var el=document.getElementById('msr-build');
+    function fmt(t){try{var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Ulaanbaatar',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date(t)).reduce(function(a,x){a[x.type]=x.value;return a;},{});return p.month+'-'+p.day+' '+p.hour+':'+p.minute;}catch(e){return '';}}
+    if(el&&loaded)el.textContent='build '+fmt(loaded);
+    var shown=false;
+    function bar(){
+      if(shown)return;shown=true;
+      var d=document.createElement('div');d.setAttribute('role','status');
+      d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:99999;background:#1b1633;color:#fff;border:1px solid #7c5cff;border-radius:999px;padding:8px 14px;font:600 13px system-ui,sans-serif;display:flex;gap:10px;align-items:center;box-shadow:0 6px 24px #0008';
+      var t=document.createElement('span');t.textContent='Шинэ хувилбар гарлаа';
+      var b=document.createElement('button');b.textContent='Шинэчлэх';b.style.cssText='background:#7c5cff;color:#fff;border:0;border-radius:999px;padding:5px 12px;font:inherit;cursor:pointer';
+      b.onclick=function(){location.reload();};
+      d.appendChild(t);d.appendChild(b);document.body.appendChild(d);
+    }
+    function check(){
+      if(!loaded||document.hidden)return;
+      fetch(location.pathname,{method:'HEAD',cache:'no-store'}).then(function(r){
+        var lm=Date.parse(r.headers.get('last-modified')||'');
+        if(lm&&lm>loaded+5000)bar();
+      }).catch(function(){});
+    }
+    setInterval(check,300000);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(check,1500);});
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
 
