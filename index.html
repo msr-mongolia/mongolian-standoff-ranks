@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:00</span>
+    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:10</span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -7639,6 +7639,7 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #app .msr-rr-table th:nth-child(4),#app .msr-rr-table td:nth-child(4){color:#3ddc84!important;font-weight:800}
 #app .msr-rr-table th:nth-child(5),#app .msr-rr-table td:nth-child(5){color:#ff5468!important;font-weight:800}
 </style>
+<style id="msr-corner-fix">/* iOS/WebKit can leak square corners from composited video/blend children and square box-shadows: clip the children themselves and draw the glow with a shape-following drop-shadow. */#app .msr-knight-video-panel .msr-knight-back1-video,#app .msr-knight-video-panel .msr-knight-video-shade,#app .msr-knight-video-panel .msr-clan-panel-header-video,.msr-fx-video,.msr-fx-canvas{border-radius:inherit;-webkit-clip-path:inset(0 round 15px);clip-path:inset(0 round 15px)}#app.msr-clan-profile .prof.msr-knight-video-panel{box-shadow:none!important;-webkit-filter:drop-shadow(0 0 10px var(--clan-glow));filter:drop-shadow(0 0 10px var(--clan-glow))}</style>
 <style id="msr-team-effect-css">.msr-fx-host{position:relative}.msr-fx-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:screen;pointer-events:none;z-index:6;opacity:0;transition:opacity .5s}.msr-fx-video.on{opacity:1}.msr-fx-canvas{position:absolute!important;inset:0;width:100%;height:100%;pointer-events:none;z-index:7!important;opacity:0;mix-blend-mode:screen}.msr-fx-canvas.on{opacity:1}</style>
 <style id="msr-avatar-frame-css">.msr-avf-wrap{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;margin:calc((var(--avf-s,1.5) - 1) * 56px) 0}.msr-avf-wrap .msr-clan-avatar-item::before,.msr-avf-wrap .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-own{overflow:visible!important}.msr-avf-own .msr-clan-avatar-item::before,.msr-avf-own .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-own>.msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);max-width:none;transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}.msr-avf-wrap .msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}</style>
 <style id="msr-day-tabs-css">
