@@ -110,6 +110,42 @@ function parseRel(content:string){
  return {team_a:versus[1].trim().slice(0,100),team_b:versus[2].trim().slice(0,100),time_label:time,picks:finalPicks,decider};
 }
 
+// Fallback for veto posts without a single "A vs B" line:
+//   "ACCA : UCLT / 10 NOV / 22:00 / Breeze ct( UCLT ) / Prison TR ( UCLT ) / DECIDER PROV"
+//   "UCLT vs ACCA / ... / BREEZE: UCLT (ct) vs ACCA (t) / PRISON: UCLT (t) vs ACCA (ct) / PROVINCE"
+// The side chooser is the opponent of the picker, so the picker is the team NOT on the side that was chosen.
+// Posts name the side-chooser inconsistently, so the picker is taken as the opponent of the CT team (matches both formats above).
+function parseRelSides(content:string){
+ const lines=content.split(/\r?\n/).map((s:string)=>s.replace(/(\d)\s*:\s*(\d)/g,'$1:$2').replace(/\s+/g,' ').trim()).filter(Boolean);
+ const aliases:Record<string,string>={dune:'Dune',rust:'Rust',breeze:'Breeze',breez:'Breeze',hanami:'Hanami',prison:'Prison',sakura:'Sakura',prov:'Province',provice:'Province',province:'Province',sandstone:'Sandstone',sand:'Sandstone'};
+ const findMap=(line:string)=>{for(const t of line.toLowerCase().split(/[^a-z]+/)){if(aliases[t])return aliases[t];}return null;};
+ const hdr=lines.slice(0,3).find((l:string)=>!findMap(l)&&!/\d/.test(l)&&/^[^:()]{1,40}?\s*(?:\bvs\b|:|-|–|\bx\b)\s*[^:()]{1,40}$/i.test(l));
+ if(!hdr)return null;
+ const hm=hdr.match(/^([^:()]{1,40}?)\s*(?:\bvs\b|:|-|–|\bx\b)\s*([^:()]{1,40})$/i);
+ if(!hm)return null;
+ const a=hm[1].trim(),b=hm[2].trim();if(!a||!b)return null;
+ const same=(x:string,y:string)=>x.toLowerCase().replace(/[^a-z0-9]/g,'')===y.toLowerCase().replace(/[^a-z0-9]/g,'');
+ const canon=(n:string)=>same(n,a)?a:same(n,b)?b:null;
+ const other=(n:string)=>n===a?b:a;
+ let time:string|null=null,decider:string|null=null,bare:string|null=null;const picks:any[]=[];
+ for(const line of lines.slice(lines.indexOf(hdr)+1)){
+  const tm=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2})$/i);if(tm){time=tm[1];continue;}
+  const map=findMap(line);if(!map)continue;
+  if(/\bdec(?:ider)?\b/i.test(line)){decider=map;continue;}
+  let ct:string|null=null;
+  const body=line.replace(/^\s*[a-z]+\s*[:\-–]\s*/i,'');
+  const m1=body.match(/\bct\s*\(\s*([^)]+?)\s*\)/i)||body.match(/([^()]+?)\s*\(\s*ct\s*\)/i);
+  if(m1){const nm=m1[1].replace(/^.*\bvs\b/i,'').trim();ct=canon(nm.split(/\bvs\b/i).pop()!.trim())||canon(nm);}
+  if(!ct){const mt=body.match(/\btr?\s*\(\s*([^)]+?)\s*\)/i)||body.match(/([^()]+?)\s*\(\s*t\s*\)/i);if(mt){const t=canon(mt[1].trim());if(t)ct=other(t);}}
+  if(ct){picks.push({team:other(ct),map});continue;}
+  if(!bare)bare=map;
+ }
+ if(picks.length!==2)return null;
+ if(!decider&&bare&&!picks.some((p:any)=>p.map===bare))decider=bare;
+ if(!decider)return null;
+ return {team_a:a.slice(0,100),team_b:b.slice(0,100),time_label:time,picks,decider};
+}
+
 async function syncRel(bot:string){
  const channels=["1566481823515549736","1566482961619222649","1566481893338128495","1566483021689913384","1566481922656444467","1566483063255601294","1566481953052426250","1566483106137903214","1566481985331794091","1566483155404456016","1566482016206323852","1566483232080273529"];
  for(const channel of channels){
@@ -123,7 +159,7 @@ async function syncRel(bot:string){
     scanned=messages.length;
     const rows=messages.map((m:any)=>{const src=m.message_snapshots?.[0]?.message||m;return {message_id:m.id,channel_id:channel,content:String(src.content||'').slice(0,12000),attachments:[...(src.attachments||[]),...(src.embeds||[]).flatMap((e:any)=>e.image?[{url:e.image.url,content_type:'image/unknown'}]:[])].map((a:any)=>({url:a.url,filename:a.filename||'',content_type:a.content_type||'',size:a.size||0})),source_timestamp:m.edited_timestamp||m.timestamp,updated_at:new Date().toISOString()};});
     if(rows.length)await db('msr_discord_rel_inbox?on_conflict=message_id',{method:'POST',body:JSON.stringify(rows),headers:{Prefer:'resolution=merge-duplicates,return=minimal'}});
-    const matches=rows.flatMap((row:any)=>{const parsed=parseRel(row.content);return parsed?[{message_id:row.message_id,source_timestamp:row.source_timestamp,...parsed}]:[];});
+    const matches=rows.flatMap((row:any)=>{const parsed=parseRel(row.content)||parseRelSides(row.content);return parsed?[{message_id:row.message_id,source_timestamp:row.source_timestamp,...parsed}]:[];});
     if(matches.length)await db('msr_discord_rel_matches?on_conflict=message_id',{method:'POST',body:JSON.stringify(matches),headers:{Prefer:'resolution=merge-duplicates,return=minimal'}});
 
    }
