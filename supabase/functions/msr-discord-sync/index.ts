@@ -73,7 +73,7 @@ async function logo(attachments:any[],id:string,embeds:any[]=[]){
 
 
 function parseRel(content:string){
- const lines=content.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+ const lines=content.replace(/\u{1F19A}\uFE0F?/gu,' vs ').split(/\r?\n/).map(s=>s.replace(/(\d)\s*:\s*(\d)/g,'$1:$2').replace(/\s+/g,' ').trim()).filter(Boolean);
  const vsLines=lines.filter(s=>/\bvs\b/i.test(s));
  if(vsLines.length!==1)return null;
  const versus=vsLines[0].match(/^(.+?)\s+vs\s+(.+?)(?:\s+(\d{1,2}:\d{2}))?$/i);
