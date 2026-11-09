@@ -3007,7 +3007,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function flag() { return h('span', { class: 'flag', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')); }
   function comments(n) { return h('span', { class: 'cm', svg: ICON.cm }, String(n)); }
   function go(hash) { return function () { navTo(hash.replace(/^#/, '')); }; }
-  function tagEl(code) { var t = T[code] || {}; var name = String(t.n || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''); var known = { warriorkingzz: 'WarKz', elitekingzz: 'EknZ', elitekings: 'EknZ', civilizationofruin: 'CioR', kingzz: 'KngZz' }; var tag = known[name] || String(t.tag || '').trim(); if (!tag && code === 'COR') tag = 'CioR'; return tag ? h('span', { class: 'ctag', style: 'color:var(--tracer);display:inline-block;white-space:nowrap;' }, '[' + tag + ']') : null; }
+  function tagEl(code) { var t = T[code] || {}; var name = String(t.n || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''); var known = { warriorkingzz: 'WarKz', elitekingzz: 'EknZ', civilizationofruin: 'CioR', kingzz: 'KngZz' }; var tag = known[name] || String(t.tag || '').trim(); if (!tag && code === 'COR') tag = 'CioR'; return tag ? h('span', { class: 'ctag', style: 'color:var(--tracer);display:inline-block;white-space:nowrap;' }, '[' + tag + ']') : null; }
   function teamHref(code) { return '#team/' + code; }
   var GAME_IDS = {};
   function gameIdEl(nick, team) {
