@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 03:20</span>
+    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 03:30</span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -6002,6 +6002,11 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         if(avatar.isConnected)avatar.style.setProperty('--signature-color',color);
       });
       avatar.classList.add('msr-clan-avatar');
+      (function(){var f=teamFrameSrc(p.team);var ex=avatar.querySelector(':scope > .msr-avf-img');
+        if(!f||avatar.closest('.msr-avf-wrap')){if(ex&&!f)ex.remove();return;}
+        if(!ex){ex=h('img',{class:'msr-avf-img',alt:'','aria-hidden':'true',decoding:'async'});avatar.appendChild(ex);}
+        if(ex.getAttribute('src')!==f.src)ex.setAttribute('src',f.src);
+        avatar.style.setProperty('--avf-s',avatar.clientWidth&&avatar.clientWidth<90?Math.min(f.scale,1.55):f.scale);avatar.classList.add('msr-avf-own');})();
       var item=avatar.querySelector('.msr-clan-avatar-item');
       if(!item){
         item=h('span',{class:'msr-clan-avatar-item','aria-hidden':'true'},h('span',{class:'msr-clan-avatar-tag'}));
@@ -7580,7 +7585,7 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #app .msr-rr-table th:nth-child(4),#app .msr-rr-table td:nth-child(4){color:#3ddc84!important;font-weight:800}
 #app .msr-rr-table th:nth-child(5),#app .msr-rr-table td:nth-child(5){color:#ff5468!important;font-weight:800}
 </style>
-<style id="msr-avatar-frame-css">.msr-avf-wrap{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;margin:calc((var(--avf-s,1.5) - 1) * 56px) 0}.msr-avf-wrap .msr-clan-avatar-item::before,.msr-avf-wrap .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-wrap .msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}</style>
+<style id="msr-avatar-frame-css">.msr-avf-wrap{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;margin:calc((var(--avf-s,1.5) - 1) * 56px) 0}.msr-avf-wrap .msr-clan-avatar-item::before,.msr-avf-wrap .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-own{overflow:visible!important}.msr-avf-own .msr-clan-avatar-item::before,.msr-avf-own .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-own>.msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);max-width:none;transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}.msr-avf-wrap .msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}</style>
 <style id="msr-day-tabs-css">
 .msr-day-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;overflow:visible;margin:12px 0 10px;padding-bottom:4px}
 @media(max-width:520px){.msr-day-tab{padding:6px 1px!important;font-size:10.5px!important;letter-spacing:.02em!important;border-radius:8px!important}.msr-day-tab small{font-size:8px!important;letter-spacing:.02em!important}}
