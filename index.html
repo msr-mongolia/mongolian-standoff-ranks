@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:40</span>
+    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:50</span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -5785,7 +5785,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   // Background videos get paused when their panel is re-rendered/moved; resume any that stopped.
   /* Background videos: play only while on screen (max 4 at once), pause the rest and when the tab is hidden. */
   setInterval(function(){
-    var vs=[].slice.call(document.querySelectorAll('video.msr-knight-back1-video,video.msr-clan-panel-header-video')),vh=window.innerHeight||0,shown=0;
+    var vs=[].slice.call(document.querySelectorAll('video.msr-knight-back1-video,video.msr-clan-panel-header-video,video.msr-results-back1-video')),vh=window.innerHeight||0,shown=0;
     vs.forEach(function(v){
       if(!v.isConnected)return;
       var r=v.getBoundingClientRect(),vis=!document.hidden&&r.bottom>0&&r.top<vh&&r.right>0&&r.width>0&&r.height>0;
@@ -7206,11 +7206,11 @@ function updateFinishedClanMedia(side){
  const back1Asset=back1Assets[normKey(clan?.tag||side.dataset.team)];
  if(back1Asset)setBack1(back1Asset);
  // Clans whose BACK1 is a looping video (stored as base64 mp4 JSON) get it behind their Results row too.
- const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json','2990red':'assets/2990_red_back1_video.json?v=1',omv:'assets/omv_back1_video.json?v=1'};
+ const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json','2990red':'assets/2990_red_back1_video.json?v=1',omv:'assets/omv_back1_video.json?v=1',rvurz:'assets/rvurz_back1_video.json?v=1',vampempire:'assets/vamp_back1_video.json?v=2','6vmp6':'assets/vamp_back1_video.json?v=2',sixlence:'assets/sixl_back1_video.json?v=1',sixlencepurple:'assets/sixp_back1_video.json',sixp:'assets/sixp_back1_video.json',xiveriondivine:'assets/ScreenRecording_11-04-2026%2015-07-06_1%20%283%29.mov'};
  const videoUrl=videoAssets[normKey(clan?.tag||side.dataset.team)]||videoAssets[normKey(clan?.name)];
  if(videoUrl&&summarySide&&!summarySide.querySelector('.msr-results-back1-video')){
   window.__msrResVid=window.__msrResVid||{};
-  const loaded=window.__msrResVid[videoUrl]||(window.__msrResVid[videoUrl]=fetch(videoUrl).then(r=>{if(!r.ok)throw Error('unavailable');return r.json();}).then(a=>URL.createObjectURL(new Blob([Uint8Array.from(atob(a.base64),c=>c.charCodeAt(0))],{type:'video/mp4'}))).catch(()=>{window.__msrResVid[videoUrl]=null;return null;}));
+  const loaded=window.__msrResVid[videoUrl]||(window.__msrResVid[videoUrl]=(/\.json(\?|$)/.test(videoUrl)?fetch(videoUrl).then(r=>{if(!r.ok)throw Error('unavailable');return r.json();}).then(a=>URL.createObjectURL(new Blob([Uint8Array.from(atob(a.base64),c=>c.charCodeAt(0))],{type:'video/mp4'}))):Promise.resolve(videoUrl)).catch(()=>{window.__msrResVid[videoUrl]=null;return null;}));
   loaded.then(src=>{
    if(!src||!summarySide.isConnected||summarySide.querySelector('.msr-results-back1-video'))return;
    const v=document.createElement('video');v.className='msr-results-back1-video';v.muted=true;v.defaultMuted=true;v.autoplay=true;v.loop=true;v.playsInline=true;
