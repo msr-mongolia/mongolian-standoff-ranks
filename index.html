@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:30</span>
+    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:40</span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -7206,7 +7206,7 @@ function updateFinishedClanMedia(side){
  const back1Asset=back1Assets[normKey(clan?.tag||side.dataset.team)];
  if(back1Asset)setBack1(back1Asset);
  // Clans whose BACK1 is a looping video (stored as base64 mp4 JSON) get it behind their Results row too.
- const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json',omv:'assets/omv_back1_video.json?v=1'};
+ const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json','2990red':'assets/2990_red_back1_video.json?v=1',omv:'assets/omv_back1_video.json?v=1'};
  const videoUrl=videoAssets[normKey(clan?.tag||side.dataset.team)]||videoAssets[normKey(clan?.name)];
  if(videoUrl&&summarySide&&!summarySide.querySelector('.msr-results-back1-video')){
   window.__msrResVid=window.__msrResVid||{};
