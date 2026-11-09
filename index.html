@@ -5901,6 +5901,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         if(isSixpPurple(clanCode))applyClanVideoBack1(node,'assets/sixp_back1_video.json');
         if(isVampTeam)applyClanVideoBack1(node,'assets/vamp_back1_video.json?v=1');
         if(isSixlBlue(clanCode)){node.classList.add('msr-sixl-back1');applyClanVideoBack1(node,'assets/sixl_back1_video.json?v=1');}
+        if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59')applyClanVideoBack1(node,'assets/rvurz_back1_video.json?v=1');
         if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
         if(name==='team')node.dataset.msrBack1Team=clanCode;
         if(banner && clan.img && !['ETXEN','TLNRS'].includes(String(clan.tag || '').toUpperCase()) && !/^(ETXEN|TEAM LUNARIS)\b/i.test(clan.n || '')){
@@ -5916,7 +5917,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var back1Asset=back1Code==='KGTSS'||/^knightss$/i.test(back1Clan.n||'')?'assets/kgtss_back1_video.json?v=smooth-loop-1':
         back1Code==='W2990'||/^2990\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':
         isSixpPurple(node.dataset.msrBack1Team)?'assets/sixp_back1_video.json':
-        isSixlBlue(node.dataset.msrBack1Team)?'assets/sixl_back1_video.json?v=1':null;
+        isSixlBlue(node.dataset.msrBack1Team)?'assets/sixl_back1_video.json?v=1':
+        node.dataset.msrBack1Team==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_back1_video.json?v=1':null;
       if(back1Asset && msrClanVideoPromises[back1Asset]){
         msrClanVideoPromises[back1Asset].then(function(){
           if(node.isConnected)applyAllClanPanelBack1(node,back1Clan);
