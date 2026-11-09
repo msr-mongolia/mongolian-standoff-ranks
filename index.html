@@ -3419,14 +3419,27 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var c = invCode(inv);
       return c ? h('a', { class: 'sw2-t inv', href: teamHref(c), title: T[c].n }, crest(c, 'md'), h('span', null, swTag(c))) : h('span', { class: 'sw2-t inv' }, inv[1]);
     }
+    function swCode(c) {
+      return c ? h('a', { class: 'sw2-t inv', href: teamHref(c), title: T[c].n }, crest(c, 'md'), h('span', null, swTag(c))) : h('span', { class: 'sw2-t tbd' }, 'TBD');
+    }
+    var S2DRAW = null, S2DRAW_TRIED = false;
+    function s2draw() {
+      if (!S2DRAW_TRIED || !S2DRAW) { S2DRAW = msrStage2Draw(INV.map(invCode).filter(Boolean)); S2DRAW_TRIED = true; }
+      return S2DRAW;
+    }
     function swissBoard(zone) {
-      var inv = INV[zone];
+      var inv = INV[zone], drawn = s2draw(), dz = drawn ? drawn[zone] : null;
       var board = h('div', { class: 'sw2-board' });
       for (var r = 1; r <= 5; r++) {
         var col = h('div', { class: 'sw2-col' }, h('div', { class: 'sw2-rl' }, 'Round ' + r));
         SW2.filter(function (g) { return g[0] === r; }).forEach(function (g) {
           var ms = [];
-          for (var k = 0; k < g[2]; k++) ms.push(h('div', { class: 'sw2-m' }, swSlot(r === 1 && k === 0 ? inv : null), h('i', null, 'vs'), swSlot(null)));
+          for (var k = 0; k < g[2]; k++) {
+            if (r === 1 && dz) {
+              var left = k === 0 ? swSlot(inv) : swCode(dz[2 * k - 1]), right = swCode(k === 0 ? dz[0] : dz[2 * k]);
+              ms.push(h('div', { class: 'sw2-m' }, left, h('i', null, 'vs'), right));
+            } else ms.push(h('div', { class: 'sw2-m' }, swSlot(r === 1 && k === 0 ? inv : null), h('i', null, 'vs'), swSlot(null)));
+          }
           col.appendChild(h('section', { class: 'sw2-g' + (g[4] ? ' ' + g[4] : '') }, h('div', { class: 'sw2-gh' }, h('b', null, g[1]), h('span', null, 'Bo3')), ms, h('div', { class: 'sw2-note' }, g[3])));
         });
         board.appendChild(col);
@@ -3434,7 +3447,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       board.appendChild(h('div', { class: 'sw2-col' }, h('div', { class: 'sw2-rl' }, 'Result'),
         h('section', { class: 'sw2-g q' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Qualified'), h('span', null, '8')), h('div', { class: 'sw2-note' }, '3–0 · 2 teams'), h('div', { class: 'sw2-note' }, '3–1 · 3 teams'), h('div', { class: 'sw2-note' }, '3–2 · 3 teams')),
         h('section', { class: 'sw2-g e' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Eliminated'), h('span', null, '8')), h('div', { class: 'sw2-note' }, '0–3 · 2 teams'), h('div', { class: 'sw2-note' }, '1–3 · 3 teams'), h('div', { class: 'sw2-note' }, '2–3 · 3 teams'))));
-      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Zone ' + (zone + 1)), h('span', null, '16 teams · Bo3 · 3 wins qualify · 3 losses eliminated')), board);
+      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Zone ' + (zone + 1)), h('span', null, '16 teams · Bo3 · 3 wins qualify · 3 losses eliminated' + (dz ? ' · Random draw' : ' · Random draw: Nov 11'))), board);
     }
     var zoneTabs = h('div', { class: 'msr-stage-tabs sm', role: 'tablist', 'aria-label': 'Swiss zones' }, [0, 1].map(function (z) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-zone': z, 'aria-selected': z === 0 ? 'true' : 'false' }, 'Zone ' + (z + 1)); }));
     var zoneHost = h('div', null, swissBoard(0));
@@ -5416,7 +5429,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   var APR = { open: 0 };
   /* Group-stage elimination (MSL Major S2): top 5 of each group advance. A team is out once it can no longer
      reach the top 5 (strictly fewer possible points than 5 others), or the group is finished and it ranks 6th or lower. */
-  var MSR_GRP_ELIM = { len: -1, set: {} };
+  var MSR_GRP_ELIM = { len: -1, set: {}, qual: {}, open: {} };
   var MSR_GRP_TAGS = {
     A: ['uclt','IMTLL','ACCA','SCLAT','OTR','OMV','AIM4R','RESKK'],
     B: ['2990','EknZ','CioR White','EVKZ','MSDTP','NNRDS','Humn7'],
@@ -5431,7 +5444,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function msrGroupEliminatedKeys() {
     var L = window.MSR_SCREENSHOT_MATCHES || [];
     if (MSR_GRP_ELIM.len === L.length) return MSR_GRP_ELIM.set;
-    var out = {};
+    var out = {}, qual = {}, open = {};
     try {
       Object.keys(MSR_GRP_TAGS).forEach(function (g) {
         var codes = MSR_GRP_TAGS[g].map(msrGrpKey), n = codes.length, st = {};
@@ -5449,9 +5462,13 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           Object.keys(s.seen).forEach(function (o) { s.played++; s.md += s.seen[o]; if (s.seen[o] > 0) s.pts += 3; });
           s.max = s.pts + 3 * Math.max(0, n - 1 - s.played);
         });
+        open[g] = true;
         if (codes.every(function (c) { return st[c].played >= n - 1; })) {
-          codes.slice().sort(function (x, y) { return (st[y].pts - st[x].pts) || (st[y].md - st[x].md); })
-            .forEach(function (c, i) { if (i >= 5) out[c] = true; });
+          var srt = codes.slice().sort(function (x, y) { return (st[y].pts - st[x].pts) || (st[y].md - st[x].md); });
+          // A points tie across the 5th/6th cut needs the official tiebreak: leave it undecided.
+          if (st[srt[4]].pts === st[srt[5]].pts) return;
+          srt.forEach(function (c, i) { if (i >= 5) out[c] = true; });
+          qual[g] = srt.slice(0, 5); delete open[g];
           return;
         }
         codes.forEach(function (c) {
@@ -5460,7 +5477,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         });
       });
     } catch (e) {}
-    MSR_GRP_ELIM.len = L.length; MSR_GRP_ELIM.set = out;
+    MSR_GRP_ELIM.len = L.length; MSR_GRP_ELIM.set = out; MSR_GRP_ELIM.qual = qual; MSR_GRP_ELIM.open = open;
     return out;
   }
   window.msrGroupEliminatedKeys = msrGroupEliminatedKeys;
@@ -5483,6 +5500,37 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     return hit;
   }
   window.msrGroupEliminated = msrGroupEliminated;
+  /* Stage 2 draw. From Nov 11 (Ulaanbaatar), once all six groups are finished with a clear top 5, the 30 qualifiers
+     are shuffled with a fixed seed (same result for every visitor) and split 15/15 into Swiss Zone 1 and Zone 2. */
+  var MSR_S2_DRAW_AT = Date.UTC(2026, 10, 10, 16, 0, 0);
+  function msrGrpTeamCode(g, key) {
+    var ent = MSR_REL_GROUP_TEAMS[g].filter(function (en) {
+      return [msrGrpKey(en[0])].concat(en.slice(1).map(msrGrpKey)).indexOf(key) >= 0;
+    })[0];
+    if (!ent) return null;
+    var names = [msrGrpKey(ent[0])].concat(ent.slice(1).map(msrGrpKey)), rel = msrRelTeamKey(ent[0]);
+    if (rel && T[rel]) return rel;
+    return Object.keys(T).filter(function (c) { return names.indexOf(msrGrpKey(c)) >= 0 || names.indexOf(msrGrpKey(T[c].n)) >= 0; })[0] || null;
+  }
+  function msrStage2Draw(invCodes) {
+    if (Date.now() < MSR_S2_DRAW_AT) return null;
+    msrGroupEliminatedKeys();
+    var qual = MSR_GRP_ELIM.qual, groups = Object.keys(MSR_GRP_TAGS);
+    if (!groups.every(function (g) { return qual[g] && qual[g].length === 5; })) return null;
+    var codes = [];
+    for (var i = 0; i < groups.length; i++) for (var j = 0; j < 5; j++) {
+      var c = msrGrpTeamCode(groups[i], qual[groups[i]][j]);
+      if (!c) return null;
+      if (invCodes.indexOf(c) < 0 && codes.indexOf(c) < 0) codes.push(c);
+    }
+    if (codes.length !== 30) return null;
+    codes.sort();
+    var rnd = seeded('MSL-S2-DRAW:' + codes.join('|'));
+    var arr = codes.slice();
+    for (var k = arr.length - 1; k > 0; k--) { var m = Math.floor(rnd() * (k + 1)), t = arr[k]; arr[k] = arr[m]; arr[m] = t; }
+    return [arr.slice(0, 15), arr.slice(15)];
+  }
+  window.msrStage2Draw = msrStage2Draw;
   function rankingEventBadges(code) {
     var entries=EVENTS.filter(function(event){
       if(event.st!=='now' && event.st!=='soon')return false;
