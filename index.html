@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 03:40</span>
+    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 03:50</span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -3010,7 +3010,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   // Team avatar frames: drop a transparent PNG into assets/frames/ and map the team tag (UPPERCASE) here.
   // The frame is drawn around the circular avatar of every player of that team (player profile page).
   // Value: 'assets/frames/x.png' or { src, scale } where scale = frame width / avatar width (hole of the ring should match the avatar).
-  var MSR_TEAM_FRAMES = { RVURZ: { src: 'assets/frames/rvurz.png?v=1', scale: 1.72 } };
+  var MSR_TEAM_FRAMES = { RVURZ: { src: 'assets/frames/rvurz.png?v=1', scale: 1.64 } };
   function teamFrameSrc(code) { var t = T[code] || {}; var f = MSR_TEAM_FRAMES[String(t.tag || '').toUpperCase()] || MSR_TEAM_FRAMES[String(code || '').toUpperCase()] || null; return f ? (typeof f === 'string' ? { src: f, scale: 1.5 } : f) : null; }
   function avFrame(team, av) { var f = teamFrameSrc(team); if (!f) return av; return h('span', { class: 'msr-avf-wrap', style: '--avf-s:' + f.scale }, av, h('img', { class: 'msr-avf-img', src: f.src, alt: '', 'aria-hidden': 'true', decoding: 'async' })); }
   var MSR_FLAGS = { mongolia: '\uD83C\uDDF2\uD83C\uDDF3', ulaanbaatar: '\uD83C\uDDF2\uD83C\uDDF3', pakistan: '\uD83C\uDDF5\uD83C\uDDF0' };
@@ -6006,7 +6006,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         if(!f||avatar.closest('.msr-avf-wrap')){if(ex&&!f)ex.remove();return;}
         if(!ex){ex=h('img',{class:'msr-avf-img',alt:'','aria-hidden':'true',decoding:'async'});avatar.appendChild(ex);}
         if(ex.getAttribute('src')!==f.src)ex.setAttribute('src',f.src);
-        avatar.style.setProperty('--avf-s',avatar.clientWidth&&avatar.clientWidth<90?Math.min(f.scale,1.4):f.scale);avatar.classList.add('msr-avf-own');})();
+        avatar.style.setProperty('--avf-s',avatar.clientWidth&&avatar.clientWidth<90?Math.min(f.scale,1.36):f.scale);avatar.classList.add('msr-avf-own');})();
       var item=avatar.querySelector('.msr-clan-avatar-item');
       if(!item){
         item=h('span',{class:'msr-clan-avatar-item','aria-hidden':'true'},h('span',{class:'msr-clan-avatar-tag'}));
