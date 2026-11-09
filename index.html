@@ -5776,6 +5776,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function goBack() { var i = history.state && history.state.i || 0; if (i > 0) history.back(); else navTo('news'); }
 
   var msrClanVideoPromises={};
+  // Background videos get paused when their panel is re-rendered/moved; resume any that stopped.
+  setInterval(function(){if(document.hidden)return;[].forEach.call(document.querySelectorAll('video.msr-knight-back1-video,video.msr-clan-panel-header-video'),function(v){if(v.paused&&v.isConnected&&!v.ended&&v.readyState>=2)v.play().catch(function(){});});},800);
   function applyClanVideoBack1(node,assetUrl){
     var panels=Array.from(node.querySelectorAll('.prof,.msr-team-stats,.hl-top,.hl-card:has(.hl-grid)'));
     panels.forEach(function(panel){panel.classList.add('msr-knight-video-panel');});
