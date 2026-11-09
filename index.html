@@ -2691,7 +2691,7 @@ window.MSR_SPONSORS=window.MSR_SPONSORS||[];
 
 <footer>
   <div class="foot">
-    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:20</span>
+    <span>MSR · Standoff 2 Mongolia</span><span style="opacity:.45;font-size:10px;margin-left:8px">build 11-10 04:30</span>
     <span>Match data is entered by tournament admins</span>
   </div>
 </footer>
@@ -5783,7 +5783,16 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
 
   var msrClanVideoPromises={};
   // Background videos get paused when their panel is re-rendered/moved; resume any that stopped.
-  setInterval(function(){if(document.hidden)return;[].forEach.call(document.querySelectorAll('video.msr-knight-back1-video,video.msr-clan-panel-header-video'),function(v){if(v.paused&&v.isConnected&&!v.ended&&v.readyState>=2)v.play().catch(function(){});});},800);
+  /* Background videos: play only while on screen (max 4 at once), pause the rest and when the tab is hidden. */
+  setInterval(function(){
+    var vs=[].slice.call(document.querySelectorAll('video.msr-knight-back1-video,video.msr-clan-panel-header-video')),vh=window.innerHeight||0,shown=0;
+    vs.forEach(function(v){
+      if(!v.isConnected)return;
+      var r=v.getBoundingClientRect(),vis=!document.hidden&&r.bottom>0&&r.top<vh&&r.right>0&&r.width>0&&r.height>0;
+      if(vis&&shown<4){shown++;if(v.paused&&!v.ended&&v.readyState>=2)v.play().catch(function(){});}
+      else if(!v.paused)v.pause();
+    });
+  },500);
   function applyClanVideoBack1(node,assetUrl){
     var panels=Array.from(node.querySelectorAll('.prof,.msr-team-stats,.hl-top,.hl-card:has(.hl-grid)'));
     panels.forEach(function(panel){panel.classList.add('msr-knight-video-panel');});
