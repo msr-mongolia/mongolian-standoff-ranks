@@ -6620,6 +6620,7 @@ const eloMatches=results.map(match=>{
 const verifiedRounds={Rust:24,Province:20,Sandstone:23};
 const matchRounds={KngZz:{Dune:15,Rust:20},mpct:{Dune:15,Rust:20}};
 function resolveMsrTeam(value){
+ if(value==='6LC'||value==='SIXP')return value; // both Six Lence teams share the DB tag 6LC: keep the ledger label as given
  const key=norm(value);
  const alias={'6lcpurple':'SIXP','sixlencepurple':'SIXP','infyx':'1NFYx','manai':'8MNA','teamlunaris':'TLnrs','lunaris':'TLnrs','everlasted':'EVKZ','evkz':'EVKZ','etxenmgl':'ETXEN','ascendd':'7ADD','omnisover':'OMV','0tr':'OTR','clanonetruereign':'OTR','onetruereign':'OTR','an0t':'-aN0T','anot':'-aN0T','nameanotherlevel':'-aN0T','anotherlevel':'-aN0T','2990purple':'2990 Purple','2990red':'2990','2990white':'__none__','anlvl':'-aN0T','p2990':'2990 Purple','w2990':'__none__'};
  const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]))];
@@ -6724,7 +6725,7 @@ function verifiedTeamProfiles(){
   if(title.includes('white'))return;
  }
  const sharedTag=/^2990/.test(title)?(title.includes('purple')?'2990 Purple':'2990'):null;
- const code=resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
+ const code=title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  if(!code)return;
  const teamMatches=results.filter(r=>r.a===code||r.b===code);
  // Screenshot series already carries verified map results. Use it when the
