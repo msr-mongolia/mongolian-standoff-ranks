@@ -2603,6 +2603,7 @@ a,button,summary,label,[role="button"],[role="link"],.msr-hl-row,.ap-day,.msr-re
 #app .msr-rr-standings tbody tr:nth-child(n+6) td:first-child{box-shadow:inset 4px 0 0 #ff5470}
 #app .msr-rr-standings::after{content:"Green: advances to Stage 2 (top 5) · Red: out";display:block;margin-top:8px;padding:6px 10px;border-left:3px solid #35f0a0;color:#cfd9e6;font-size:12px;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,.05);border-radius:4px}
 </style>
+<style id="msr-event-discord">#app .ap-dc{display:inline-flex;align-items:center;gap:7px;margin:10px 0 0;padding:7px 13px;border-radius:999px;background:#5865F2;color:#fff!important;font-weight:700;font-size:13px;text-decoration:none!important;box-shadow:0 2px 10px #5865f255;transition:filter .15s}#app .ap-dc:hover{filter:brightness(1.12)}#app .ap-ev .top .ap-dc{margin:0 0 0 auto;align-self:center}#app .ap-ev.feat .ap-dc{margin:10px 14px 14px}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2850,7 +2851,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     EVENTS.push({ n: x[0], st: 'soon', dt: 'Coming soon', loc: 'TBA', teams: 'TBA', prize: 'TBA', tier: x[1] });
   });
   EVENTS[0].tier = 'S';
-  EVENTS.splice(1, 0, { n: 'VOID Tournament', st: 'soon', dt: 'Nov 15, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=1',
+  EVENTS.splice(1, 0, { n: 'VOID Tournament', st: 'soon', dt: 'Nov 15, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=1', discord: 'https://discord.gg/fH3w2wYYs',
     notes: ['⭐ MVP 20 000₮', '🎟️ Entry fee 15 000₮'] });
   EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = ['🥇 600 000₮', '🥈 400 000₮', '🥉 200 000₮'];
   var STREAMS = [];
@@ -5714,11 +5715,18 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function eventsApp() {
     function chips(e) { return h('div', { class: 'ap-chips' }, e.dt ? chip('cal', e.dt) : null, chip('cup', e.prize), e.dist ? e.dist.map(function (x) { return h('span', { class: 'ap-chip', style: 'white-space:nowrap' }, x); }) : null, e.notes ? e.notes.map(function (x) { return h('span', { class: 'ap-chip', style: 'white-space:nowrap' }, x); }) : null, chip('users', e.teams + (/^\d+$/.test(String(e.teams)) ? ' teams' : ' teams')), chip('globe', e.loc)); }
     function status(e) { return e.st === 'now' ? h('span', { class: 'ap-live' }, h('i'), 'LIVE') : e.st === 'soon' ? h('span', { class: 'ap-soon' }, 'UPCOMING') : null; }
+    /* Discord invite button on an event card (opens in the Discord app / a new tab). */
+    var DC_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.32 4.37A19.8 19.8 0 0 0 15.4 2.8a13.7 13.7 0 0 0-.63 1.3 18.4 18.4 0 0 0-5.5 0 13 13 0 0 0-.64-1.3 19.7 19.7 0 0 0-4.92 1.53C.6 9.05-.24 13.6.18 18.1a19.9 19.9 0 0 0 6.03 3.05c.49-.67.92-1.38 1.3-2.12a12.9 12.9 0 0 1-2.04-.98l.5-.39a14.2 14.2 0 0 0 12.16 0l.5.4c-.65.38-1.33.71-2.05.98.38.74.82 1.45 1.3 2.11a19.8 19.8 0 0 0 6.04-3.05c.5-5.22-.84-9.73-3.6-13.73ZM8.02 15.33c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.2 0 2.17 1.1 2.15 2.42 0 1.34-.95 2.42-2.15 2.42Zm7.96 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.2 0 2.17 1.1 2.15 2.42 0 1.34-.94 2.42-2.15 2.42Z"/></svg>';
+    function dcBtn(e) {
+      if (!e.discord) return null;
+      return h('a', { class: 'ap-dc', href: e.discord, target: '_blank', rel: 'noopener noreferrer', 'aria-label': e.n + ' Discord', onclick: function (ev) { ev.stopPropagation(); }, svg: DC_SVG + '<span>Discord</span>' });
+    }
     function card(e, feat) {
-      var tag = e.id ? 'a' : 'div', href = e.id ? '#event/' + e.id : null;
+      var tag = e.id || e.discord ? (e.id ? 'a' : 'div') : 'div', href = e.id ? '#event/' + e.id : null;
+      if (e.id && e.discord) tag = 'div';
       if (feat && e.img) return h(tag, { class: 'ap-card ap-ev feat', href: href },
-        h('div', { class: 'ban', style: 'background-image:url(' + e.img + ')' }, status(e), h('div', { class: 'cap' }, h('b', null, e.n), h('span', null, e.dt + ' · ' + e.loc))), chips(e));
-      return h(tag, { class: 'ap-card ap-ev', href: href }, h('div', { class: 'top' }, evLogo(e.n, 'lg'), h('div', { class: 'tt' }, h('b', null, e.n), status(e))), chips(e));
+        h('div', { class: 'ban', style: 'background-image:url(' + e.img + ')' }, status(e), h('div', { class: 'cap' }, h('b', null, e.n), h('span', null, e.dt + ' · ' + e.loc))), chips(e), dcBtn(e));
+      return h(tag, { class: 'ap-card ap-ev', href: href }, h('div', { class: 'top' }, evLogo(e.n, 'lg'), h('div', { class: 'tt' }, h('b', null, e.n), status(e)), dcBtn(e)), chips(e));
     }
     var list = EVENTS.slice().sort(function (a, b) { return ({ now: 0, soon: 1, past: 2 })[a.st] - ({ now: 0, soon: 1, past: 2 })[b.st]; });
     return h('div', { class: 'ap' }, h('div', { class: 'ap-title' }, h('h1', null, 'Events')),
