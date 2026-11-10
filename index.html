@@ -3243,7 +3243,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       document.body.appendChild(h('a', { class: 'skin ' + side, href: '#event/msl', 'aria-label': 'MSL Major S2' },
         h('span', { class: 'sk-tag' }, 'Event'),
         h('b', { class: 'sk-t' }, 'MSL', h('br'), 'MAJOR', h('br'), 'S2'),
-        h('span', { class: 'sk-s' }, 'Swiss stage', h('br'), '16 teams · Bo3'),
+        h('span', { class: 'sk-s' }, 'Swiss stage', h('br'), '32 teams · Bo3'),
         h('span', { class: 'sk-b' }, 'View bracket →')));
     });
   })();
@@ -3412,9 +3412,10 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var nk2 = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, want = nk2(inv[1]);
       return Object.keys(T).filter(function (c) { return nk2(T[c].n) === want; })[0] || null;
     }
-    var SW2 = [[1, '0–0', 8, 'W → 1–0 · L → 0–1', ''], [2, '1–0', 4, 'W → 2–0 · L → 1–1', ''], [2, '0–1', 4, 'W → 1–1 · L → 0–2', ''],
-      [3, '2–0', 2, 'W → 3–0 · L → 2–1', 'q'], [3, '1–1', 4, 'W → 2–1 · L → 1–2', ''], [3, '0–2', 2, 'W → 1–2 · L → 0–3', 'e'],
-      [4, '2–1', 3, 'W → 3–1 · L → 2–2', 'q'], [4, '1–2', 3, 'W → 2–2 · L → 1–3', 'e'], [5, '2–2', 3, 'W → 3–2 · L → 2–3', 'd']];
+    // One Swiss of 32 teams (30 qualifiers + 2 invited), Bo3: [round, record, matches, note, class]
+    var SW2 = [[1, '0–0', 16, 'W → 1–0 · L → 0–1', ''], [2, '1–0', 8, 'W → 2–0 · L → 1–1', ''], [2, '0–1', 8, 'W → 1–1 · L → 0–2', ''],
+      [3, '2–0', 4, 'W → 3–0 · L → 2–1', 'q'], [3, '1–1', 8, 'W → 2–1 · L → 1–2', ''], [3, '0–2', 4, 'W → 1–2 · L → 0–3', 'e'],
+      [4, '2–1', 6, 'W → 3–1 · L → 2–2', 'q'], [4, '1–2', 6, 'W → 2–2 · L → 1–3', 'e'], [5, '2–2', 6, 'W → 3–2 · L → 2–3', 'd']];
     // Show the short tag; teams that share a tag (2990, 6LC) keep their full name so they stay distinguishable.
     function swTag(c) {
       var tg = String((T[c] && T[c].tag) || '').trim(), low = tg.toLowerCase();
@@ -3437,8 +3438,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       if (!S2DRAW_TRIED || !S2DRAW) { S2DRAW = msrStage2Draw(INV.map(invCode).filter(Boolean)); S2DRAW_TRIED = true; }
       return S2DRAW;
     }
-    function swissBoard(zone) {
-      var inv = INV[zone], drawn = s2draw(), dz = drawn ? drawn[zone] : null;
+    function swissBoard() {
+      var drawn = s2draw(), dz = drawn || null;
       var board = h('div', { class: 'sw2-board' });
       for (var r = 1; r <= 5; r++) {
         var col = h('div', { class: 'sw2-col' }, h('div', { class: 'sw2-rl' }, 'Round ' + r));
@@ -3446,28 +3447,21 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           var ms = [];
           for (var k = 0; k < g[2]; k++) {
             if (r === 1 && dz) {
-              var left = k === 0 ? swSlot(inv) : swCode(dz[2 * k - 1]), right = swCode(k === 0 ? dz[0] : dz[2 * k]);
+              // Round 1: the two invited teams meet the first two drawn teams; the other 28 drawn teams pair up in order.
+              var left = k < 2 ? swSlot(INV[k]) : swCode(dz[2 * (k - 1)]), right = swCode(k < 2 ? dz[k] : dz[2 * (k - 1) + 1]);
               ms.push(h('div', { class: 'sw2-m' }, left, h('i', null, 'vs'), right));
-            } else ms.push(h('div', { class: 'sw2-m' }, swSlot(r === 1 && k === 0 ? inv : null), h('i', null, 'vs'), swSlot(null)));
+            } else ms.push(h('div', { class: 'sw2-m' }, swSlot(r === 1 && k < 2 ? INV[k] : null), h('i', null, 'vs'), swSlot(null)));
           }
           col.appendChild(h('section', { class: 'sw2-g' + (g[4] ? ' ' + g[4] : '') }, h('div', { class: 'sw2-gh' }, h('b', null, g[1]), h('span', null, 'Bo3')), ms, h('div', { class: 'sw2-note' }, g[3])));
         });
         board.appendChild(col);
       }
       board.appendChild(h('div', { class: 'sw2-col' }, h('div', { class: 'sw2-rl' }, 'Result'),
-        h('section', { class: 'sw2-g q' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Qualified'), h('span', null, '8')), h('div', { class: 'sw2-note' }, '3–0 · 2 teams'), h('div', { class: 'sw2-note' }, '3–1 · 3 teams'), h('div', { class: 'sw2-note' }, '3–2 · 3 teams')),
-        h('section', { class: 'sw2-g e' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Eliminated'), h('span', null, '8')), h('div', { class: 'sw2-note' }, '0–3 · 2 teams'), h('div', { class: 'sw2-note' }, '1–3 · 3 teams'), h('div', { class: 'sw2-note' }, '2–3 · 3 teams'))));
-      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Zone ' + (zone + 1)), h('span', null, '16 teams · Bo3 · 3 wins qualify · 3 losses eliminated' + (dz ? ' · Random draw' : ' · Random draw: Nov 11'))), board);
+        h('section', { class: 'sw2-g q' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Qualified'), h('span', null, '16')), h('div', { class: 'sw2-note' }, '3–0 · 4 teams'), h('div', { class: 'sw2-note' }, '3–1 · 6 teams'), h('div', { class: 'sw2-note' }, '3–2 · 6 teams')),
+        h('section', { class: 'sw2-g e' }, h('div', { class: 'sw2-gh' }, h('b', null, 'Eliminated'), h('span', null, '16')), h('div', { class: 'sw2-note' }, '0–3 · 4 teams'), h('div', { class: 'sw2-note' }, '1–3 · 6 teams'), h('div', { class: 'sw2-note' }, '2–3 · 6 teams'))));
+      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Swiss'), h('span', null, '32 teams · Bo3 · 3 wins qualify · 3 losses eliminated' + (dz ? ' · Random draw' : ' · Random draw: Nov 11'))), board);
     }
-    var zoneTabs = h('div', { class: 'msr-stage-tabs sm', role: 'tablist', 'aria-label': 'Swiss zones' }, [0, 1].map(function (z) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-zone': z, 'aria-selected': z === 0 ? 'true' : 'false' }, 'Zone ' + (z + 1)); }));
-    var zoneHost = h('div', null, swissBoard(0));
-    zoneTabs.addEventListener('click', function (e) {
-      var b2 = e.target.closest('.msr-stage-tab'); if (!b2) return;
-      var z = Number(b2.getAttribute('data-zone'));
-      [].slice.call(zoneTabs.children).forEach(function (x) { x.setAttribute('aria-selected', String(Number(x.getAttribute('data-zone')) === z)); });
-      zoneHost.textContent = ''; zoneHost.appendChild(swissBoard(z));
-    });
-    var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, zoneTabs, zoneHost);
+    var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, h('div', null, swissBoard()));
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Swiss'), stageStrip,
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
@@ -3733,7 +3727,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     root.addEventListener('click', pick); root.addEventListener('keydown', pick);
     return h('div', null,
       h('a', { class: 'back', href: '#events', svg: ICON.back + '<span>All events</span>' }),
-      pageHead('MSL Major S2', 'Swiss stage · 16 teams · Bo3. Win 3 to qualify, lose 3 and you are eliminated.'),
+      pageHead('MSL Major S2', 'Swiss stage · 32 teams · Bo3. Win 3 to qualify, lose 3 and you are eliminated.'),
       info, h('div', { class: 'sw-wrap' }, root),
       h('div', { class: 'sw-note' }, 'Teams and results will appear here once they are entered.'));
   };
@@ -5533,7 +5527,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   }
   window.msrGroupEliminated = msrGroupEliminated;
   /* Stage 2 draw. From Nov 11 (Ulaanbaatar), once all six groups are finished with a clear top 5, the 30 qualifiers
-     are shuffled with a fixed seed (same result for every visitor) and split 15/15 into Swiss Zone 1 and Zone 2. */
+     are shuffled with a fixed seed (same result for every visitor) and placed into the single 32-team Swiss (with the 2 invited teams). */
   var MSR_S2_DRAW_AT = Date.UTC(2026, 10, 10, 16, 0, 0);
   function msrGrpTeamCode(g, key) {
     var ent = MSR_REL_GROUP_TEAMS[g].filter(function (en) {
@@ -5560,7 +5554,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var rnd = seeded('MSL-S2-DRAW:' + codes.join('|'));
     var arr = codes.slice();
     for (var k = arr.length - 1; k > 0; k--) { var m = Math.floor(rnd() * (k + 1)), t = arr[k]; arr[k] = arr[m]; arr[m] = t; }
-    return [arr.slice(0, 15), arr.slice(15)];
+    return arr; // one Swiss of 32: these 30 plus the 2 invited teams
   }
   window.msrStage2Draw = msrStage2Draw;
   function rankingEventBadges(code) {
