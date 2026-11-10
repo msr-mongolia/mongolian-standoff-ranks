@@ -5486,17 +5486,22 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           (m.maps || []).forEach(function (x) { if (x.aScore > x.bScore) aw++; else if (x.bScore > x.aScore) bw++; });
           if (aw === bw) return;
           st[a].seen[b] = aw - bw; st[b].seen[a] = bw - aw;   // latest entry wins; a pair meets once in the group
+          var rdm = (m.maps || []).reduce(function (n, x) { return n + (x.aScore - x.bScore); }, 0);
+          st[a].rds = st[a].rds || {}; st[b].rds = st[b].rds || {}; st[a].rds[b] = rdm; st[b].rds[a] = -rdm;
         });
         codes.forEach(function (c) {
           var s = st[c];
-          Object.keys(s.seen).forEach(function (o) { s.played++; s.md += s.seen[o]; if (s.seen[o] > 0) s.pts += 3; });
+          s.rd = 0; Object.keys(s.seen).forEach(function (o) { s.played++; s.md += s.seen[o]; if (s.seen[o] > 0) { s.pts += 3; s.w = (s.w || 0) + 1; } s.rd += (s.rds && s.rds[o]) || 0; });
           s.max = s.pts + 3 * Math.max(0, n - 1 - s.played);
         });
         open[g] = true;
         if (codes.every(function (c) { return st[c].played >= n - 1; })) {
-          var srt = codes.slice().sort(function (x, y) { return (st[y].pts - st[x].pts) || (st[y].md - st[x].md); });
-          // A points tie across the 5th/6th cut needs the official tiebreak: leave it undecided.
-          if (st[srt[4]].pts === st[srt[5]].pts) return;
+          // Same order as the standings table: points, head-to-head among the teams level on points, round difference, wins.
+          var tieOf = function (c) { var t = 0; codes.forEach(function (o) { if (o !== c && st[o].pts === st[c].pts) { var r = st[c].seen[o]; t += r > 0 ? 1 : r < 0 ? -1 : 0; } }); return t; };
+          var cmp = function (x, y) { return (st[y].pts - st[x].pts) || (tieOf(y) - tieOf(x)) || (st[y].rd - st[x].rd) || ((st[y].w || 0) - (st[x].w || 0)); };
+          var srt = codes.slice().sort(cmp);
+          // Still level on every criterion across the 5th/6th cut: leave it undecided.
+          if (cmp(srt[4], srt[5]) === 0) return;
           srt.forEach(function (c, i) { if (i >= 5) out[c] = true; });
           qual[g] = srt.slice(0, 5); delete open[g];
           return;
