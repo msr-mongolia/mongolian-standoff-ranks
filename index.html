@@ -3005,7 +3005,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   }));
 
   /* ================= small builders ================= */
-  function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; return h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); }
+  function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; var lazy = t.img && window.msrLazyCrest && /\/team-logos\//.test(t.img); var el = h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img && !lazy ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); if (lazy) { el.setAttribute('data-lbg', t.img); el.setAttribute('data-lc', t.c); window.msrLazyCrest(el); } return el; }
   function series(m) { var a = 0, b = 0; m.maps.forEach(function (x) { if (x[3] === 'done') { if (x[1] > x[2]) a++; else b++; } }); return [a, b]; }
   function pageHead(title, desc, right) { return h('div', { class: 'ph' }, h('div', null, h('h1', null, title), desc ? h('p', null, desc) : null), right || null); }
   function flag() { return h('span', { class: 'flag', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')); }
@@ -6106,6 +6106,18 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     clanSignatureColors.set(src,promise);return promise;
   }
 
+  /* Run fn only once el is near the viewport (keeps Supabase logo downloads to what is actually seen). */
+  function msrWhenVisible(el, fn) {
+    if (!('IntersectionObserver' in window)) { fn(); return; }
+    el.__msrVis = fn;
+    var io = window.__msrVisIO || (window.__msrVisIO = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting || !(e.boundingClientRect.width > 0 && e.boundingClientRect.height > 0)) return;
+        io.unobserve(e.target); var f = e.target.__msrVis; e.target.__msrVis = null; if (f) f();
+      });
+    }, { rootMargin: '300px' }));
+    io.observe(el);
+  }
   /* Player avatar: display the current clan crest behind the player's signature. */
   function syncPlayerClanAvatars(root) {
     (root || document).querySelectorAll('.sg .sigtxt[data-nick], .sg .msr-risk-mini[data-nick]').forEach(function(label) {
@@ -6116,9 +6128,9 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var clan=T[p.team],logo=clan.img;
       avatar.style.setProperty('--signature-color',signatureFallback(clan));
       if(isVampTeamCode(p.team)){avatar.style.setProperty('--signature-color','#e8102a');avatar.classList.add('msr-vamp-sig');}
-      else signatureLogoColor(clan).then(function(color){
+      else msrWhenVisible(avatar,function(){signatureLogoColor(clan).then(function(color){
         if(avatar.isConnected)avatar.style.setProperty('--signature-color',color);
-      });
+      });});
       avatar.classList.add('msr-clan-avatar');
       (function(){var f=teamFrameSrc(p.team);var ex=avatar.querySelector(':scope > .msr-avf-img');
         if(f&&f.tag)avatar.style.setProperty('--avf-tag',f.tag);else avatar.style.removeProperty('--avf-tag');
@@ -6138,8 +6150,10 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       avatar.style.setProperty('--avatar-size',Math.min(avatar.clientWidth,avatar.clientHeight)+'px');
       avatar.setAttribute('data-clan-initials',clan.i||clan.tag||clan.n.slice(0,2).toUpperCase());
       if(typeof logo==='string' && /^(https:\/\/|assets\/|\.\/assets\/|data:image\/(?:png|jpeg|webp|gif|svg\+xml)[;,])/i.test(logo)) {
-        avatar.style.setProperty('background-image','linear-gradient(rgba(9,15,25,.27),rgba(9,15,25,.45)),url("'+logo.replace(/["'()\\]/g,'')+'")','important');
+        var bgImg='linear-gradient(rgba(9,15,25,.27),rgba(9,15,25,.45)),url("'+logo.replace(/["'()\\]/g,'')+'")';
         avatar.classList.add('msr-has-clan-logo');
+        if(/\/team-logos\//.test(logo))msrWhenVisible(avatar,function(){avatar.style.setProperty('background-image',bgImg,'important');});
+        else avatar.style.setProperty('background-image',bgImg,'important');
       } else {
         avatar.classList.remove('msr-has-clan-logo');
         avatar.style.setProperty('background-image','radial-gradient(circle at 35% 30%,#243448,#080e15 75%)','important');
@@ -6529,6 +6543,23 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     t.dataset.msrLogoFb = '1';
     t.src = msrLogoBadge(m[1]);
   }, true);
+  // Lazy logos: a crest only downloads its logo once it is near the viewport (saves Supabase egress).
+  (function () {
+    var io = null;
+    function load(el) {
+      var url = el.getAttribute('data-lbg'); if (!url || el.dataset.msrLoaded) return;
+      el.dataset.msrLoaded = '1'; el.dataset.msrCrest = '1';
+      var m = /\/team-logos\/(?:thumb\/)?([^\/.?]+)\./i.exec(url), c = el.getAttribute('data-lc') || '#3B4658';
+      var probe = new Image();
+      probe.onload = function () { el.style.background = c + ' url("' + url + '") center/cover no-repeat'; };
+      probe.onerror = function () { if (m) el.style.background = '#1A1A1A url("' + msrLogoBadge(m[1]) + '") center/cover no-repeat'; };
+      probe.src = url;
+    }
+    try {
+      if ('IntersectionObserver' in window) io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && e.boundingClientRect.width > 0 && e.boundingClientRect.height > 0) { io.unobserve(e.target); load(e.target); } }); }, { rootMargin: '300px' });
+    } catch (_e) { io = null; }
+    window.msrLazyCrest = function (el) { if (io) io.observe(el); else load(el); };
+  })();
   // Crests draw the logo as a CSS background: probe it once and swap in the badge if it does not load.
   (function () {
     function fixCrest(el) {
