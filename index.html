@@ -5473,6 +5473,12 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   var APR = { open: 0 };
   /* Group-stage elimination (MSL Major S2): top 5 of each group advance. A team is out once it can no longer
      reach the top 5 (strictly fewer possible points than 5 others), or the group is finished and it ranks 6th or lower. */
+  /* Group-stage points by series score (diff = series wins - series losses of that team): 2:0 or auto win 3, 2:1 win 2, 1:2 loss 1, 0:2 loss 0.
+     Set window.MSR_GROUP_PT_MODE = 'flat' to go back to 3 for a win / 0 for a loss. */
+  window.msrGroupPts = function (diff) {
+    if (window.MSR_GROUP_PT_MODE === 'flat') return diff > 0 ? 3 : 0;
+    return diff >= 2 ? 3 : diff === 1 ? 2 : diff === -1 ? 1 : 0;
+  };
   var MSR_GRP_ELIM = { len: -1, set: {}, qual: {}, open: {} };
   var MSR_GRP_TAGS = {
     A: ['uclt','IMTLL','ACCA','SCLAT','OTR','OMV','AIM4R','RESKK'],
@@ -5505,7 +5511,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         });
         codes.forEach(function (c) {
           var s = st[c];
-          s.rd = 0; Object.keys(s.seen).forEach(function (o) { s.played++; s.md += s.seen[o]; if (s.seen[o] > 0) { s.pts += 3; s.w = (s.w || 0) + 1; } s.rd += (s.rds && s.rds[o]) || 0; });
+          s.rd = 0; Object.keys(s.seen).forEach(function (o) { s.played++; s.md += s.seen[o]; s.pts += window.msrGroupPts(s.seen[o]); if (s.seen[o] > 0) s.w = (s.w || 0) + 1; s.rd += (s.rds && s.rds[o]) || 0; });
           s.max = s.pts + 3 * Math.max(0, n - 1 - s.played);
         });
         open[g] = true;
@@ -7578,7 +7584,8 @@ function updateVerifiedGroupStandings(){
   touched.add(canonical(m.a));touched.add(canonical(m.b));
   const rd=m.maps.reduce((n,x)=>n+x.aScore-x.bScore,0);
   a.mp++;b.mp++;a.rd+=rd;b.rd-=rd;
-  if(aw>bw){a.w++;a.pts+=3;b.l++;}else{b.w++;b.pts+=3;a.l++;}
+  a.pts+=window.msrGroupPts(aw-bw);b.pts+=window.msrGroupPts(bw-aw);
+  if(aw>bw){a.w++;b.l++;}else{b.w++;a.l++;}
   h2h[canonical(m.a)+'|'+canonical(m.b)]=aw>bw?1:-1;h2h[canonical(m.b)+'|'+canonical(m.a)]=aw>bw?-1:1;
  });
  for(const code of codes){
