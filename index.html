@@ -7549,10 +7549,19 @@ function updateVerifiedGroupStandings(){
    const el=col===5?(cells[col].querySelector('strong')||cells[col]):cells[col];
    if(el&&el.textContent.trim()!==String(value))el.textContent=String(value);
   });
-  // Round difference is shown only where the table has a dedicated RD column.
-  const headers=[...row.closest('table')?.querySelectorAll('thead th')||[]];
-  const rdIndex=headers.findIndex(h=>/^(rd|round diff|round difference|раундын зөрүү)$/i.test(h.textContent.trim()));
-  if(rdIndex>=0&&cells[rdIndex]&&cells[rdIndex].textContent.trim()!==String(v.rd))cells[rdIndex].textContent=String(v.rd);
+ }
+ // RD column (round difference) after PTS: add once, then keep in sync.
+ {
+  const head=table.closest('table')?.querySelector('thead tr');
+  if(head&&!head.querySelector('th.msr-rd-h')){const th=document.createElement('th');th.className='msr-rd-h';th.textContent='RD';head.appendChild(th);}
+  const fmt=n=>n>0?'+'+n:String(n);
+  for(const code of codes){
+   const row=rowFor(code),v=byTeam.get(canonical(code));if(!row||!v)continue;
+   let td=row.querySelector('td.msr-rd');
+   if(!td){td=document.createElement('td');td.className='msr-rd';row.appendChild(td);}
+   const t=fmt(v.rd);if(td.textContent!==t)td.textContent=t;
+   td.style.color=v.rd>0?'#35f0a0':v.rd<0?'#ff6b81':'#b9c1cc';td.style.fontWeight='700';
+  }
  }
  // Highest points first. Ties: head-to-head result among the tied teams, then round difference, then wins, then original group order.
  rows.forEach((row,i)=>{if(row.dataset.ord==null)row.dataset.ord=String(i);});
