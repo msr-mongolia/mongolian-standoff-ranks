@@ -7590,12 +7590,12 @@ function updateVerifiedGroupStandings(){
    const d=bye.get(canonical(code));
    if(d==null){if(tag)tag.remove();return;}
    if(!tag){tag=document.createElement('small');tag.className='msr-pend-day';(cell.querySelector('a.msr-rr-standing-team')||cell).appendChild(tag);}
-   const txt='BYE · Nov '+d;
+   const txt='Nov '+d;
    if(tag.textContent!==txt)tag.textContent=txt;
   });
   if(!document.getElementById('msr-pend-day-css')){
    const st=document.createElement('style');st.id='msr-pend-day-css';
-   st.textContent='.msr-rr-standing-team{flex-wrap:nowrap!important}.msr-pend-day{display:inline-block;flex:none;margin-left:8px;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;white-space:nowrap;color:#f5c451;background:rgba(245,196,81,.12);border:1px solid rgba(245,196,81,.35);vertical-align:middle}';
+   st.textContent='@media(max-width:700px){#app .msr-rr-table th,#app .msr-rr-table td{padding-left:2px!important;padding-right:2px!important}#app .msr-rr-table{font-size:11.5px!important}#app .msr-rr-table td.msr-rd{font-size:11px}#app .msr-pend-day{margin-left:5px!important;padding:1px 5px!important;font-size:9px!important}#app .msr-rr-table td:nth-child(2) .msr-rr-standing-team{gap:6px!important}}.msr-rr-standing-team{flex-wrap:nowrap!important}.msr-pend-day{display:inline-block;flex:none;margin-left:8px;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;white-space:nowrap;color:#f5c451;background:rgba(245,196,81,.12);border:1px solid rgba(245,196,81,.35);vertical-align:middle}';
    document.head.appendChild(st);
   }
  }catch(e){}
