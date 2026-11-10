@@ -4783,9 +4783,30 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       if(mode.v==='win')return h('span',{class:'v'},h('b',null,pct(r.won,r.played)),h('small',null,r.played+' maps'));
       return h('span',{class:'v'},h('b',null,pct(r.picks,S.rel)),h('small',null,r.picks+' picks'));
     }
+    function val(S,n){var r=S.o[n];if(mode.v==='win')return r.played?r.won/r.played:0;return S.rel?r.picks/S.rel:0;}
+    // HLTV-style radar: one polygon per team over the map axes (Win % or Pick %).
+    function radar(){
+      var N=MAPS.length,W=300,C=W/2,R=96,lab=[],rings='',axes='',pa=[],pb=[];
+      var mx=1;MAPS.forEach(function(n){mx=Math.max(mx,val(A,n),val(B,n));});
+      var top=mode.v==='win'?1:Math.min(1,Math.ceil(mx*10)/10||1);
+      MAPS.forEach(function(n,i){
+        var ang=-Math.PI/2+i*2*Math.PI/N,cs=Math.cos(ang),sn=Math.sin(ang);
+        axes+='<line x1="'+C+'" y1="'+C+'" x2="'+(C+R*cs).toFixed(1)+'" y2="'+(C+R*sn).toFixed(1)+'" stroke="#5a6472" stroke-opacity=".5"/>';
+        lab.push('<text x="'+(C+(R+18)*cs).toFixed(1)+'" y="'+(C+(R+18)*sn+4).toFixed(1)+'" text-anchor="'+(Math.abs(cs)<.2?'middle':cs>0?'start':'end')+'" fill="#9aa4b2" font-size="11">'+n+'</text>');
+        pa.push((C+R*cs*val(A,n)/top).toFixed(1)+','+(C+R*sn*val(A,n)/top).toFixed(1));
+        pb.push((C+R*cs*val(B,n)/top).toFixed(1)+','+(C+R*sn*val(B,n)/top).toFixed(1));
+      });
+      [.25,.5,.75,1].forEach(function(f){var pts=MAPS.map(function(n,i){var ang=-Math.PI/2+i*2*Math.PI/N;return (C+R*f*Math.cos(ang)).toFixed(1)+','+(C+R*f*Math.sin(ang)).toFixed(1);}).join(' ');rings+='<polygon points="'+pts+'" fill="none" stroke="#5a6472" stroke-opacity=".45"/>';});
+      var svg='<svg viewBox="-10 4 '+(W+20)+' '+(W-8)+'" role="img" aria-label="Map radar">'+rings+axes+
+        '<polygon points="'+pa.join(' ')+'" fill="#d9a21f" fill-opacity=".38" stroke="#d9a21f" stroke-width="1.5"/>'+
+        '<polygon points="'+pb.join(' ')+'" fill="#4a90d9" fill-opacity=".38" stroke="#4a90d9" stroke-width="1.5"/>'+lab.join('')+'</svg>';
+      return h('div',{class:'msr-mm-radar'},h('div',{class:'msr-mm-radar-svg',svg:svg}),
+        h('div',{class:'msr-mm-radar-lg'},h('span',null,h('i',{style:'background:#d9a21f'}),T[ka].n),h('span',null,h('i',{style:'background:#4a90d9'}),T[kb].n)));
+    }
     function draw(){
       tabs.textContent='';body.textContent='';
       [['win','Win %'],['pick','Pick %']].forEach(function(t){tabs.appendChild(h('button',{type:'button',class:mode.v===t[0]?'on':'',onclick:function(){mode.v=t[0];draw();}},t[1]));});
+      body.appendChild(radar());
       body.appendChild(h('div',{class:'msr-mm-ms-h'},crest(ka,'xs'),crest(kb,'xs')));
       MAPS.forEach(function(n){
         var photo=MSR_MAP_PHOTOS[n.toLowerCase()];
@@ -7652,6 +7673,7 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #app .msr-rr-table th:nth-child(5),#app .msr-rr-table td:nth-child(5){color:#ff5468!important;font-weight:800}
 </style>
 <style id="msr-corner-fix">/* iOS/WebKit can leak square corners from composited video/blend children and square box-shadows: clip the children themselves and draw the glow with a shape-following drop-shadow. */#app .msr-knight-video-panel .msr-knight-back1-video,#app .msr-knight-video-panel .msr-knight-video-shade,#app .msr-knight-video-panel .msr-clan-panel-header-video,.msr-fx-video,.msr-fx-canvas{border-radius:inherit;-webkit-clip-path:inset(0 round 15px);clip-path:inset(0 round 15px)}#app.msr-clan-profile .prof.msr-knight-video-panel{box-shadow:none!important;-webkit-filter:drop-shadow(0 0 10px var(--clan-glow));filter:drop-shadow(0 0 10px var(--clan-glow))}</style>
+<style id="msr-mm-radar-css">#app .msr-mm-radar{margin:4px 0 12px}#app .msr-mm-radar-svg svg{display:block;width:100%;max-width:340px;margin:0 auto;height:auto}#app .msr-mm-radar-lg{display:flex;gap:16px;justify-content:center;font-size:12px;color:#9aa4b2;margin-top:2px}#app .msr-mm-radar-lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}</style>
 <style id="msr-team-effect-css">.msr-fx-host{position:relative}.msr-fx-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:screen;pointer-events:none;z-index:6;opacity:0;transition:opacity .5s}.msr-fx-video.on{opacity:1}.msr-fx-canvas{position:absolute!important;inset:0;width:100%;height:100%;pointer-events:none;z-index:7!important;opacity:0;mix-blend-mode:screen}.msr-fx-canvas.on{opacity:1}</style>
 <style id="msr-avatar-frame-css">.msr-avf-wrap{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;margin:calc((var(--avf-s,1.5) - 1) * 56px) 0}.msr-avf-wrap .msr-clan-avatar-item::before,.msr-avf-wrap .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-own{overflow:visible!important}.msr-avf-own .msr-clan-avatar-item::before,.msr-avf-own .msr-clan-avatar-item::after{display:none!important;animation:none!important}html body #app .sg.msr-clan-avatar .msr-clan-avatar-tag{color:var(--avf-tag,inherit)!important;border-color:var(--avf-tag,currentColor)!important}.msr-avf-own>.msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);max-width:none;transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}.msr-avf-wrap .msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}</style>
 <style id="msr-day-tabs-css">
