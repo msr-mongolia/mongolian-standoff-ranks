@@ -239,6 +239,7 @@
   .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
   .chip { background: var(--surface); border: 1px solid var(--line-soft); color: var(--muted); font-size: 13px; font-weight: 600; padding: 7px 13px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
   .chip.on { background: var(--raised); border-color: var(--steel); color: var(--text); }
+  .pl-grid .plc { content-visibility: auto; contain-intrinsic-size: auto 104px; }
   .pl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .plc { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px; transition: border-color .2s, transform .2s; }
   .plc:hover { border-color: var(--line); transform: translateY(-2px); }
@@ -3782,7 +3783,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       wrap.textContent = '';
       var matched = PLAYERS.filter(function (p) { return p.team && T[p.team] && p.rank>0; }).slice().sort(function (a, b) { return a.rank - b.rank; });
       var lim = 10;
-      matched.slice(0, showAll ? matched.length : lim).forEach(function (p) {
+      var drawToken = (wrap._drawToken = (wrap._drawToken || 0) + 1);
+      function addCard(p) {
         wrap.appendChild(h('a', { class: 'plc msr-podium-card-' + (p.rank <= 3 ? p.rank : 0), href: playerHref(p.nick, p.team) },
           h('div', { class: 'top' }, h('span', { class: 'av sg' + tc(p), title: p.nick }, sig(p.nick, 54)),
             h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, tagEl(p.team), p.nick), gameIdEl(p.nick, p.team), h('div', { class: 'tm' }, crest(p.team), (T[p.team] || {n:'Free agent'}).n)),
@@ -3791,7 +3793,16 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
             h('div', { class: 's kd' }, h('div', { class: 'k' }, 'KD'), h('div', { class: 'v' }, (Number(p.kd) || 0).toFixed(2))),
             h('div', { class: 's' }, h('div', { class: 'k' }, 'MSR Rating'), h('div', { class: 'v' }, (Number(p.msrRating) || 0).toFixed(2))),
             h('div', { class: 's' }, h('div', { class: 'k' }, 'Maps'), h('div', { class: 'v' }, p.maps)))));
-      });
+      }
+      // Show All can be 300+ cards: add the first batch now and the rest a few at a time so the page never freezes.
+      var shown = showAll ? matched : matched.slice(0, lim), firstN = Math.min(shown.length, 12), idx = 0;
+      for (; idx < firstN; idx++) addCard(shown[idx]);
+      (function more_() {
+        if (wrap._drawToken !== drawToken || idx >= shown.length) return;
+        var end = Math.min(shown.length, idx + 18);
+        for (; idx < end; idx++) addCard(shown[idx]);
+        requestAnimationFrame(more_);
+      })();
       more.style.display = matched.length > lim ? 'block' : 'none';
       more.textContent = showAll ? 'Show Less' : 'Show All (' + (matched.length - lim) + ' more)';
       more.setAttribute('aria-expanded', showAll ? 'true' : 'false');
