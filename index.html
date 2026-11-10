@@ -8000,23 +8000,29 @@ html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-
     function fmt(t){try{var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Ulaanbaatar',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date(t)).reduce(function(a,x){a[x.type]=x.value;return a;},{});return p.month+'-'+p.day+' '+p.hour+':'+p.minute;}catch(e){return '';}}
     if(el&&loaded)el.textContent='build '+fmt(loaded);
     var shown=false;
-    function bar(){
+    function bar(lm){
       if(shown)return;shown=true;
       var d=document.createElement('div');d.setAttribute('role','status');
       d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:99999;background:#1b1633;color:#fff;border:1px solid #7c5cff;border-radius:999px;padding:8px 14px;font:600 13px system-ui,sans-serif;display:flex;gap:10px;align-items:center;box-shadow:0 6px 24px #0008';
       var t=document.createElement('span');t.textContent='Шинэ хувилбар гарлаа';
       var b=document.createElement('button');b.textContent='Шинэчлэх';b.style.cssText='background:#7c5cff;color:#fff;border:0;border-radius:999px;padding:5px 12px;font:inherit;cursor:pointer';
-      b.onclick=function(){location.reload();};
+      b.onclick=function(){location.replace(fresh(lm));};
       d.appendChild(t);d.appendChild(b);document.body.appendChild(d);
     }
-    function check(){
-      if(!loaded||document.hidden)return;
-      fetch(location.pathname,{method:'HEAD',cache:'no-store'}).then(function(r){
+    /* GitHub Pages' CDN keeps index.html for up to 10 min, so a plain refresh can show an old build.
+       A unique ?v= query skips that cache: check for a newer deploy with one, and load the new build with one. */
+    function fresh(lm){return location.pathname+'?v='+lm+location.hash;}
+    function check(auto){
+      if(!loaded||(document.hidden&&!auto))return;
+      fetch(location.pathname+'?v='+Date.now(),{method:'HEAD',cache:'no-store'}).then(function(r){
         var lm=Date.parse(r.headers.get('last-modified')||'');
-        if(lm&&lm>loaded+5000)bar();
+        if(!(lm&&lm>loaded+5000))return;
+        var k='msr-fresh-'+lm,done=false;try{done=sessionStorage.getItem(k);sessionStorage.setItem(k,'1');}catch(e){}
+        if(auto&&!done)location.replace(fresh(lm));else bar(lm);
       }).catch(function(){});
     }
-    setInterval(check,300000);
+    setTimeout(function(){check(true);},800);
+    setInterval(check,60000);
     document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(check,1500);});
   }catch(e){}
 })();
