@@ -5258,7 +5258,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function isW2990White(code){return code==='W2990'||/^2990\s+white$/i.test(String((T[code]||{}).n||'').trim());}
   function isSixlBlue(code){return code==='DS_3B58BC4EF94967967F5DEE31'||/^six\s+lence$/i.test(String((T[code]||{}).n||'').trim());}
   function isSixpPurple(code){return code==='DS_1EBA48558E161139234422F7'||/^six\s+lence\s+purple$/i.test((T[code]||{}).n||'');}
-  function teamGoldStickerSrc(code){return isP2990(code)?'assets/p2990_gold_sticker.png?v=1':isVampTeamCode(code)?'assets/vamp_gold_sticker.png?v=2':isKgtss(code)?'assets/kgtss_gold_sticker.png?v=1':isW2990White(code)?'assets/w2990_gold_sticker.png?v=1':isSixlBlue(code)?'assets/sixl_gold_sticker.png?v=1':isSixpPurple(code)?'assets/sixp_gold_sticker.png?v=1':isXvrnDivine(code)?'assets/xvrn_gold_sticker.png?v=20261106-3':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':code==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_gold_sticker.png?v=3':'assets/lunaris_gold_sticker.png';}
+  function teamGoldStickerSrc(code){return isP2990(code)?'assets/p2990_blue_sticker.png?v=1':isVampTeamCode(code)?'assets/vamp_gold_sticker.png?v=2':isKgtss(code)?'assets/kgtss_gold_sticker.png?v=1':isW2990White(code)?'assets/w2990_gold_sticker.png?v=1':isSixlBlue(code)?'assets/sixl_gold_sticker.png?v=1':isSixpPurple(code)?'assets/sixp_gold_sticker.png?v=1':isXvrnDivine(code)?'assets/xvrn_gold_sticker.png?v=20261106-3':isOmvTeam(code)?'assets/omv_gold_sticker.svg?v=transparent-1':code==='ETXEN'?'assets/etxen_gold_sticker.png':code==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_gold_sticker.png?v=3':'assets/lunaris_gold_sticker.png';}
   function isOmvTeam(code){return code==='DS_02454733FB68AAB2875350A0'||/^omnis\s+over$/i.test((T[code]||{}).n||'');}
   // Golden stickers must contain only the gold cutout with transparent alpha; never add a background.
   function openTeamGoldSticker(code){
@@ -7949,6 +7949,7 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 .msr-team-gold-sticker,.msr-holo-wrap{--hx:.5;--hy:.5;--tx:0deg;--ty:0deg}
 .msr-holo-wrap{position:relative;display:block;width:min(640px,70vw);height:min(640px,70vh)}
 .msr-gold-sticker-dialog>.msr-holo-wrap>img{width:100%;height:100%;display:block;object-fit:contain}
+.msr-p2990-red{position:absolute!important;inset:0;width:100%;height:100%;object-fit:contain;opacity:var(--dev,0);pointer-events:none;display:block}
 .msr-team-gold-sticker img,.msr-holo-wrap>img{transform:perspective(420px) rotateX(var(--ty)) rotateY(var(--tx));will-change:transform}
 .msr-team-gold-sticker::before,.msr-team-gold-sticker::after,.msr-holo-wrap::before,.msr-holo-wrap::after{content:"";position:absolute;inset:0;pointer-events:none;
  -webkit-mask:var(--st) center/contain no-repeat;mask:var(--st) center/contain no-repeat;transform:perspective(320px) rotateX(var(--ty)) rotateY(var(--tx));will-change:transform,background-position}
@@ -7963,7 +7964,7 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
  var S=new Map(),running=false,t0=performance.now(),RM=false;
  try{RM=matchMedia('(prefers-reduced-motion:reduce)').matches;}catch(_e){}
  function st(el){var o=S.get(el);if(!o){o={hx:.5,hy:.5,thx:.5,thy:.5,act:0,gyro:0};S.set(el,o);}return o;}
- function prep(el){var im=el.querySelector('img');if(im&&!el.style.getPropertyValue('--st'))el.style.setProperty('--st','url("'+(im.getAttribute('src')||'').replace(/"/g,'%22')+'")');}
+ function prep(el){var im=el.querySelector('img');if(im&&/p2990_blue_sticker/.test(im.getAttribute('src')||'')&&!el.querySelector('.msr-p2990-red')){var rd=new Image();rd.className='msr-p2990-red';rd.alt='';rd.setAttribute('aria-hidden','true');rd.src=im.getAttribute('src').replace('blue','red');el.appendChild(rd);}if(im&&!el.style.getPropertyValue('--st'))el.style.setProperty('--st','url("'+(im.getAttribute('src')||'').replace(/"/g,'%22')+'")');}
  function els(){return document.querySelectorAll('.msr-team-gold-sticker,.msr-holo-wrap');}
  function scan(){els().forEach(prep);kick();}
  function frame(now){
@@ -7973,6 +7974,7 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
    var tx=o.thx,ty=o.thy;
    if(!o.act&&!o.gyro&&!RM){tx=.5+.1*Math.sin(t*.6);ty=.5+.08*Math.sin(t*.45+1);}   // gentle idle sway
    o.vx=(o.vx||0)*.7+(tx-o.hx)*.04;o.vy=(o.vy||0)*.7+(ty-o.hy)*.04;o.hx+=o.vx;o.hy+=o.vy;   // soft spring: eases in and out, slight float
+   el.style.setProperty('--dev',Math.min(1,Math.abs(o.hx-.5)*2.4).toFixed(3));   // 0 = centre (blue) .. 1 = tilted either way (red)
    el.style.setProperty('--hx',o.hx.toFixed(4));el.style.setProperty('--hy',o.hy.toFixed(4));
    el.style.setProperty('--tx',((o.hx-.5)*(o.gyro?30:20)).toFixed(2)+'deg');el.style.setProperty('--ty',((.5-o.hy)*(o.gyro?30:20)).toFixed(2)+'deg');
    any=true;});
