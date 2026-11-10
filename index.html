@@ -6518,21 +6518,12 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
     try {
-      // Slow or dropped mobile connections used to leave only the 21 built-in teams: retry, and fall back to the last good copy.
-      var rows = null, CK = 'msr_teams_cache_v1';
-      for (var attempt = 0; attempt < 3 && !rows; attempt++) {
-        try {
-          var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id,vip_started_at,vip_expires_at&order=source_timestamp.asc,name.asc&limit=1000', {
-            headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(attempt ? 20000 : 12000)
-          });
-          if (response.ok) { var got = await response.json(); if (Array.isArray(got) && got.length) rows = got; }
-          else console.warn('MSR teams sync HTTP', response.status);
-        } catch (_fetchError) { console.warn('MSR teams sync attempt', attempt + 1, _fetchError); }
-        if (!rows && attempt < 2) await new Promise(function (r) { setTimeout(r, 1200 * (attempt + 1)); });
-      }
-      if (rows) { try { localStorage.setItem(CK, JSON.stringify(rows)); } catch (_e) {} }
-      else { try { var cached = JSON.parse(localStorage.getItem(CK) || 'null'); if (Array.isArray(cached) && cached.length) rows = cached; } catch (_e) {} }
-      if (!rows) return;
+      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id,vip_started_at,vip_expires_at&order=source_timestamp.asc,name.asc&limit=1000', {
+        headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(10000)
+      });
+      if (!response.ok) { console.warn('MSR teams sync HTTP',response.status); return; }
+      var rows = await response.json();
+      if (!Array.isArray(rows)) return;
       mergeDiscordTeams(rows);
       applyConfirmedScreenshotTags();
       sortPlayerRanking();
