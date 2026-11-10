@@ -2783,7 +2783,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   /* ---- ROSTER: the players of each team (use the same code as in T) ---- */
   var ROSTER = {
     // ALTN: ['player1', 'player2', 'player3', 'player4', 'player5'],
-    P2990: ['softKENBE', 'jennie666', 'B.T', 'ANNIHILATION', 'f0rest', 'Rizix', 'rain'],
+    P2990: ['kenbe.scb', 'jennie666', 'B.T', 'ANNIHILATION', 'f0rest', 'Rizix', 'rain'],
     W2990: ['Yuna', 'S1lent', 'Yakuya', 'Drexer', 'Jerry', '7uan'],
     SIXL: ['Muck', 'Kairos', 'Mitsk', 'Heavyqqq', 'Coldshi', 'Ryo', 'VorK1ng', 'Niko'],
     KGTSS: ['DiDi', 'KIZO', 'Rivo', 'Tami', 'keoz', 'Ada', 'dotaenjoyer', 'Oscar'],
@@ -6211,6 +6211,12 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           delete whiteIds[nick]; whiteIds.Dvrs = '102638966'; return 'Dvrs';
         }), player_ids: whiteIds });
       }
+      // NAME CHANGE: 2990 Purple's softKENBE now plays as kenbe.scb.
+      if (/^2990 purple$/i.test(String(row.name || '').trim()) && row.roster.indexOf('softKENBE') >= 0) {
+        var kbIds = Object.assign({}, row.player_ids || {});
+        if (kbIds.softKENBE != null) { kbIds['kenbe.scb'] = kbIds.softKENBE; delete kbIds.softKENBE; }
+        row = Object.assign({}, row, { roster: row.roster.map(function (nick) { return nick === 'softKENBE' ? 'kenbe.scb' : nick; }), player_ids: kbIds });
+      }
       if (row.id === 'ds_458bacb8c3562ea7529ea5bb') row = Object.assign({}, row, { tag: 'WarKz' });
       // Staff-confirmed NAME CHANGE PFP: game ID 255941851 is Bad, not the old device-suffixed nickname.
       if (row.id === 'ds_752d2420bea0465ec064967f' || String(row.tag||'').toUpperCase()==='DRDRX') {
@@ -6866,7 +6872,7 @@ function resolveMsrTeam(value){
  return known.find(t=>norm(t)===norm(target))||known.find(t=>norm(t)===key)||target;
 }
 // Same player written differently on some scoreboards: count them under the roster nick (player stats only, ledger text is untouched).
-const MSR_NICK_FIX={'2990 purple':{'kenbe.scb':'softKENBE'},'warkz':{'УЙЛАНХАЙТvT':'УЙЛАНХАЙ'},'1nfyx':{'sueño':'sueno','UrTp In Da House':'UrTp_p'},'cior':{'Listt':'List'},'6lc':{'heavy7':'Heavyqqq'},'sixp':{'makimalfu':'Makima'},'dxiii':{'nuubmiuu':'miuu','XAIS2':'aise','.....Revi':'Revi'}};
+const MSR_NICK_FIX={'2990 purple':{'softKENBE':'kenbe.scb'},'warkz':{'УЙЛАНХАЙТvT':'УЙЛАНХАЙ'},'1nfyx':{'sueño':'sueno','UrTp In Da House':'UrTp_p'},'cior':{'Listt':'List'},'6lc':{'heavy7':'Heavyqqq'},'sixp':{'makimalfu':'Makima'},'dxiii':{'nuubmiuu':'miuu','XAIS2':'aise','.....Revi':'Revi'}};
 const msrFixNick=(team,nick)=>((MSR_NICK_FIX[String(team).toLowerCase()]||{})[nick])||nick;
 function verifiedPlayerRows(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick:msrFixNick(team,nick),map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
