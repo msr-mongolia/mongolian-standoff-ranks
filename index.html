@@ -6514,6 +6514,42 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     RANK.sort(function(a,b){return Number(b[1]||0)-Number(a[1]||0);});
   }
   applyVerifiedTeamEloToRank();
+  /* Team logos live in Supabase storage; when they cannot be loaded show a coloured tag badge instead of an empty grey square. */
+  function msrLogoBadge(fileId) {
+    var tag = String((window.MSR_LOGO_TAGS || {})[fileId] || '?').replace(/[<>&"']/g, '').trim().slice(0, 5).toUpperCase() || '?';
+    var hue = 0; for (var i = 0; i < fileId.length; i++) hue = (hue * 31 + fileId.charCodeAt(i)) % 360;
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(' + hue + ',55%,38%)"/><stop offset="1" stop-color="hsl(' + ((hue + 40) % 360) + ',60%,20%)"/></linearGradient></defs><rect width="128" height="128" rx="22" fill="url(#g)"/><text x="64" y="' + (tag.length > 3 ? 74 : 80) + '" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="' + (tag.length > 3 ? 30 : 42) + '" fill="#fff">' + tag + '</text></svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+  document.addEventListener('error', function (e) {
+    var t = e.target;
+    if (!t || t.tagName !== 'IMG' || t.dataset.msrLogoFb) return;
+    var m = /\/team-logos\/(?:thumb\/)?([^\/.?]+)\./i.exec(t.currentSrc || t.src || '');
+    if (!m) return;
+    t.dataset.msrLogoFb = '1';
+    t.src = msrLogoBadge(m[1]);
+  }, true);
+  // Crests draw the logo as a CSS background: probe it once and swap in the badge if it does not load.
+  (function () {
+    function fixCrest(el) {
+      if (el.dataset.msrCrest) return;
+      var m = /url\(["']?([^"')]*\/team-logos\/(?:thumb\/)?([^\/.?"')]+)\.[^"')]*)["']?\)/i.exec(el.getAttribute('style') || '');
+      if (!m) return;
+      el.dataset.msrCrest = '1';
+      var probe = new Image();
+      probe.onerror = function () { el.style.background = '#1A1A1A url("' + msrLogoBadge(m[2]) + '") center/cover no-repeat'; };
+      probe.src = m[1];
+    }
+    function scan(node) {
+      if (!node || node.nodeType !== 1) return;
+      if (node.classList && node.classList.contains('crest')) fixCrest(node);
+      if (node.querySelectorAll) node.querySelectorAll('.crest[style*="team-logos"]').forEach(fixCrest);
+    }
+    try {
+      new MutationObserver(function (list) { list.forEach(function (r) { r.addedNodes.forEach(scan); }); }).observe(document.documentElement, { childList: true, subtree: true });
+      document.addEventListener('DOMContentLoaded', function () { scan(document.body); });
+    } catch (_e) {}
+  })();
   async function loadDiscordTeams() {
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
@@ -6530,6 +6566,9 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         try { var snap = await fetch('assets/teams_snapshot.json?v=1', { cache: 'no-cache' }); if (snap.ok) rows = await snap.json(); } catch (_snapError) {}
       }
       if (!Array.isArray(rows) || !rows.length) return;
+      // Remember each team's tag by logo file, so a logo that fails to load can be replaced with a tag badge.
+      window.MSR_LOGO_TAGS = window.MSR_LOGO_TAGS || {};
+      rows.forEach(function (r) { var m = /\/team-logos\/([^\/.?]+)\./i.exec(String((r && r.logo_url) || '')); if (m) window.MSR_LOGO_TAGS[m[1]] = String(r.tag || r.name || '?'); });
       mergeDiscordTeams(rows);
       applyConfirmedScreenshotTags();
       sortPlayerRanking();
