@@ -7532,6 +7532,7 @@ function updateVerifiedGroupStandings(){
   const text=canonical(cell.textContent);
   return linked===canonical(code)||text===canonical(code)||text.includes(canonical(code))||canonical(code)===canonical((window.MSR_GROUP_TEAM_ALIASES||{})[linked])||({omv:['omnisover'], '0tr':['ontruereign','clanonetruereign']}[canonical(code)]||[]).some(alias=>text.includes(alias));
  });
+ const h2h={}; // head-to-head result per ordered pair: +1 win, -1 loss
  // Update only matches with both teams explicitly in this group.
  screenshotMatches.forEach(m=>{
   const a=byTeam.get(canonical(m.a)),b=byTeam.get(canonical(m.b));
@@ -7544,6 +7545,7 @@ function updateVerifiedGroupStandings(){
   const rd=m.maps.reduce((n,x)=>n+x.aScore-x.bScore,0);
   a.mp++;b.mp++;a.rd+=rd;b.rd-=rd;
   if(aw>bw){a.w++;a.pts+=3;b.l++;}else{b.w++;b.pts+=3;a.l++;}
+  h2h[canonical(m.a)+'|'+canonical(m.b)]=aw>bw?1:-1;h2h[canonical(m.b)+'|'+canonical(m.a)]=aw>bw?-1:1;
  });
  for(const code of codes){
   if(!touched.has(canonical(code)))continue;
@@ -7558,10 +7560,10 @@ function updateVerifiedGroupStandings(){
   const rdIndex=headers.findIndex(h=>/^(rd|round diff|round difference|раундын зөрүү)$/i.test(h.textContent.trim()));
   if(rdIndex>=0&&cells[rdIndex]&&cells[rdIndex].textContent.trim()!==String(v.rd))cells[rdIndex].textContent=String(v.rd);
  }
- // Highest points first. Ties: round difference, then wins, then original group order.
+ // Highest points first. Ties: head-to-head result among the tied teams, then round difference, then wins, then original group order.
  rows.forEach((row,i)=>{if(row.dataset.ord==null)row.dataset.ord=String(i);});
- const stat=row=>{const c=row.querySelectorAll('td');return c.length<6?null:{pts:Number(c[5].textContent)||0,w:Number(c[3].textContent)||0,rd:(codes.map(code=>rowFor(code)===row?byTeam.get(canonical(code)).rd:null).find(x=>x!=null))||0};};
- const sorted=rows.slice().sort((x,y)=>{const a=stat(x),b=stat(y);if(!a||!b)return 0;return b.pts-a.pts||b.rd-a.rd||b.w-a.w||Number(x.dataset.ord)-Number(y.dataset.ord);});
+ const stat=row=>{const c=row.querySelectorAll('td');return c.length<6?null:{tie:(()=>{const k=(codes.map(canonical).find(cc=>rowFor(cc)===row))||'',me=byTeam.get(k);if(!me)return 0;let t=0;byTeam.forEach((v,o)=>{if(o!==k&&v.pts===me.pts)t+=h2h[k+'|'+o]||0;});return t;})(),pts:Number(c[5].textContent)||0,w:Number(c[3].textContent)||0,rd:(codes.map(code=>rowFor(code)===row?byTeam.get(canonical(code)).rd:null).find(x=>x!=null))||0};};
+ const sorted=rows.slice().sort((x,y)=>{const a=stat(x),b=stat(y);if(!a||!b)return 0;return b.pts-a.pts||b.tie-a.tie||b.rd-a.rd||b.w-a.w||Number(x.dataset.ord)-Number(y.dataset.ord);});
  if(sorted.some((row,i)=>row!==rows[i]))sorted.forEach(row=>row.parentElement.appendChild(row));
  sorted.forEach((row,i)=>{const n=row.querySelector('td');if(n&&n.textContent!==String(i+1))n.textContent=String(i+1);});
  // Bye-day label: the day (Nov 4 + day index) on which a team has its bye.
