@@ -3013,7 +3013,10 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   var MSR_TEAM_FRAMES = { RVURZ: { src: 'assets/frames/rvurz.png?v=1', scale: 1.64, tag: '#d5d9e2' } };
   function teamFrameSrc(code) { var t = T[code] || {}; var f = MSR_TEAM_FRAMES[String(t.tag || '').toUpperCase()] || MSR_TEAM_FRAMES[String(code || '').toUpperCase()] || null; return f ? (typeof f === 'string' ? { src: f, scale: 1.5 } : f) : null; }
   function avFrame(team, av) { var f = teamFrameSrc(team); if (!f) return av; return h('span', { class: 'msr-avf-wrap', style: '--avf-s:' + f.scale }, av, h('img', { class: 'msr-avf-img', src: f.src, alt: '', 'aria-hidden': 'true', decoding: 'async' })); }
-  var MSR_FLAGS = { mongolia: '\uD83C\uDDF2\uD83C\uDDF3', ulaanbaatar: '\uD83C\uDDF2\uD83C\uDDF3', pakistan: '\uD83C\uDDF5\uD83C\uDDF0' };
+  var MSR_FLAGS = { mongolia: '\uD83C\uDDF2\uD83C\uDDF3', ulaanbaatar: '\uD83C\uDDF2\uD83C\uDDF3', pakistan: '\uD83C\uDDF5\uD83C\uDDF0', malaysia: '\uD83C\uDDF2\uD83C\uDDFE', vietnam: '\uD83C\uDDFB\uD83C\uDDF3', russia: '\uD83C\uDDF7\uD83C\uDDFA', china: '\uD83C\uDDE8\uD83C\uDDF3' };
+  /* Players whose country differs from their team's. Key = nickname, lower-case letters/digits only. */
+  var MSR_PLAYER_COUNTRY = { yuna: 'Malaysia', s1lent: 'Malaysia', jerry: 'Vietnam', yakuya: 'Russia', '7uan': 'China', vork1ng: 'China', aquaaaaa: 'Vietnam' };
+  function playerCountry(nick, fallback) { return MSR_PLAYER_COUNTRY[String(nick || '').toLowerCase().replace(/[^a-z0-9]/g, '')] || fallback || 'Mongolia'; }
   function withFlag(name) { var f = MSR_FLAGS[String(name || '').trim().toLowerCase()]; return f ? f + ' ' + name : name; }
   function tagEl(code) { var t = T[code] || {}; var name = String(t.n || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''); var known = { warriorkingzz: 'WarKz', elitekingzz: 'EknZ', civilizationofruin: 'CioR', kingzz: 'KngZz' }; var tag = known[name] || String(t.tag || '').trim(); if (!tag && code === 'COR') tag = 'CioR'; return tag ? h('span', { class: 'ctag', style: 'color:var(--tracer);display:inline-block;white-space:nowrap;' }, '[' + tag + ']') : null; }
   function teamHref(code) { return '#team/' + code; }
@@ -5428,7 +5431,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       h('div', { class: 'hl-head' + (team === 'TLNRS' ? ' msr-lunaris-back1-player' : team === 'ETXEN' ? ' msr-etxen-back1-player' : isOmvTeam(team) ? ' msr-omv-back1-player' : '') },
         h('div', { class: 'hl-card' },
           h('div', { class: 'hl-top' }, avFrame(team, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120))), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
-          h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag((T[team] && T[team].country) || 'Mongolia')), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
+          h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag(playerCountry(p.nick, (T[team] && T[team].country) || 'Mongolia'))), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
         statCard),
       flt, host);
   };
@@ -6508,7 +6511,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
         h('div', { class: 'hl-card', style: 'margin-top:14px' },
           h('div', { class: 'hl-top' }, h('span', { style: 'width:96px;height:96px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);font-weight:800;font-size:38px;color:var(--gold)' }, fa0.nick.charAt(0).toUpperCase()),
             h('h1', null, fa0.nick), fa0.id ? h('div', { class: 'tm' }, 'ID ' + fa0.id) : null),
-          h('ul', { class: 'hl-list' }, h('li', null, h('span', null, 'Status'), h('b', null, 'Free agent')), fa0.from ? h('li', null, h('span', null, 'Previous team'), h('b', null, fa0.from)) : null, h('li', null, h('span', null, 'Country'), h('b', null, withFlag('Mongolia'))))),
+          h('ul', { class: 'hl-list' }, h('li', null, h('span', null, 'Status'), h('b', null, 'Free agent')), fa0.from ? h('li', null, h('span', null, 'Previous team'), h('b', null, fa0.from)) : null, h('li', null, h('span', null, 'Country'), h('b', null, withFlag(playerCountry(fa0.nick, 'Mongolia')))))),
         h('p', { style: 'font-size:13px;color:var(--dim);margin-top:14px' }, fa0.team ? 'Match history is kept on the previous team page.' : 'No matches played yet.'));
       var exact = teamCode ? PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) : PBY[nick];
       if (exact) return baseVPlayer(nick, teamCode);
