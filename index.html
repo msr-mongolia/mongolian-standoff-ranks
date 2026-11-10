@@ -6518,12 +6518,18 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var cfg = window.MSR_CONFIG;
     if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return;
     try {
-      var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id,vip_started_at,vip_expires_at&order=source_timestamp.asc,name.asc&limit=1000', {
-        headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(10000)
-      });
-      if (!response.ok) { console.warn('MSR teams sync HTTP',response.status); return; }
-      var rows = await response.json();
-      if (!Array.isArray(rows)) return;
+      var rows = null;
+      try {
+        var response = await fetch(cfg.SUPABASE_URL + '/rest/v1/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id,vip_started_at,vip_expires_at&order=source_timestamp.asc,name.asc&limit=1000', {
+          headers: { apikey: cfg.SUPABASE_ANON_KEY }, signal: AbortSignal.timeout(10000)
+        });
+        if (response.ok) rows = await response.json(); else console.warn('MSR teams sync HTTP', response.status);
+      } catch (_teamsError) { console.warn('MSR teams sync error', _teamsError); }
+      // Supabase unreachable (e.g. HTTP 402 over quota): use the copy of the registered teams that ships with the site.
+      if (!Array.isArray(rows) || !rows.length) {
+        try { var snap = await fetch('assets/teams_snapshot.json?v=1', { cache: 'no-cache' }); if (snap.ok) rows = await snap.json(); } catch (_snapError) {}
+      }
+      if (!Array.isArray(rows) || !rows.length) return;
       mergeDiscordTeams(rows);
       applyConfirmedScreenshotTags();
       sortPlayerRanking();
