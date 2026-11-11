@@ -3757,6 +3757,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       stage2.style.display = n === 2 ? '' : 'none';
     }
     stageStrip.addEventListener('click', function (e) { var b2 = e.target.closest('.msr-stage-tab'); if (b2) showStage(Number(b2.getAttribute('data-stage'))); });
+    showStage(2); // MSL event opens on Stage 2 (current stage)
     return root;
   }
   V.event = function (arg) {
