@@ -7706,6 +7706,8 @@ function updateVerifiedGroupStandings(){
  const sorted=rows.slice().sort((x,y)=>{const a=stat(x),b=stat(y);if(!a||!b)return 0;return b.pts-a.pts||b.tie-a.tie||b.rd-a.rd||b.w-a.w||Number(x.dataset.ord)-Number(y.dataset.ord);});
  if(sorted.some((row,i)=>row!==rows[i]))sorted.forEach(row=>row.parentElement.appendChild(row));
  sorted.forEach((row,i)=>{const n=row.querySelector('td');if(n&&n.textContent!==String(i+1))n.textContent=String(i+1);});
+ // DXIII took REIGN's invited Stage 2 slot: green mark although it finished 6th.
+ if(label==='D'){const dr=rowFor('DXIII'),dn=dr&&dr.querySelector('td');if(dn)dn.style.setProperty('box-shadow','inset 4px 0 0 #35f0a0','important');}
  // Bye-day label: the day (Nov 4 + day index) on which a team has its bye.
  try{
   const R8=[[[0,1],[2,3],[4,5],[6,7]],[[0,3],[1,5],[2,7],[4,6]],[[0,5],[3,7],[1,6],[2,4]],[[0,7],[5,6],[3,4],[1,2]],[[0,6],[7,4],[5,2],[3,1]],[[0,4],[6,2],[7,1],[5,3]],[[0,2],[4,1],[6,3],[7,5]]];
