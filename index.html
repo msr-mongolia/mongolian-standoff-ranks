@@ -3484,25 +3484,33 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       try { c = ref[0] === 'INV' ? invCode(INV[0]) : (window.msrGrpTeamCode ? window.msrGrpTeamCode(ref[0], ref[1]) : null); } catch (e) { c = null; }
       return c && T[c] ? c : null;
     }
-    function s2Match(label) {
-      return h('div', { class: 'sw2-m s2z-m' }, h('small', null, label), h('div', { class: 's2z-t' }, 'TBD'), h('i', null, 'vs'), h('div', { class: 's2z-t' }, 'TBD'));
+    function s2Slot(txt) { return h('div', { class: 's2z-t' }, txt || 'TBD'); }
+    function s2Match(label, a, b) {
+      return h('div', { class: 's2z-m' }, h('small', null, label), s2Slot(a), h('i', null, 'vs'), s2Slot(b));
+    }
+    function s2Col(title, matches, note) {
+      return h('div', { class: 's2z-col' }, h('div', { class: 's2z-ch' }, title), matches, note ? h('div', { class: 's2z-cn' }, note) : null);
     }
     function s2Zones() {
       if (!document.getElementById('msr-s2z-css')) {
         var st = document.createElement('style'); st.id = 'msr-s2z-css';
-        st.textContent = '.s2z-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:700px){.s2z-grid{grid-template-columns:1fr}}.s2z-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}.s2z-card h3{margin:0 0 8px;font-size:15px;letter-spacing:.06em}.s2z-teams{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.s2z-team{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:inherit;text-decoration:none}.s2z-bk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;font-size:12px}.s2z-m{display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}.s2z-m small{color:var(--dim);font-weight:700;letter-spacing:.04em}.s2z-m i{font-style:normal;color:var(--dim);font-size:11px}.s2z-t{text-align:center;color:#9fb0c6;font-size:12px;font-weight:700}.s2z-m .sw2-t{background:none!important;border:0!important;padding:0!important;min-height:0!important;height:auto!important;width:auto!important;color:#9fb0c6!important;font-size:12px;text-align:center;display:block!important;opacity:1!important}.s2z-note{margin-top:8px;font-size:12px;color:var(--dim)}';
+        st.textContent = '.s2z-list{display:flex;flex-direction:column;gap:8px}.s2z-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}.s2z-card>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px}.s2z-card>summary::-webkit-details-marker{display:none}.s2z-card>summary b{font-size:14px;letter-spacing:.06em;min-width:64px}.s2z-chips{display:flex;flex-wrap:wrap;gap:6px 10px;flex:1;min-width:0}.s2z-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:inherit;text-decoration:none}.s2z-chip .crest{transform:scale(.8);margin:-3px -2px}.s2z-card>summary::after{content:"▾";color:var(--dim);transition:transform .2s}.s2z-card[open]>summary::after{transform:rotate(180deg)}.s2z-board{display:flex;gap:14px;overflow-x:auto;padding:4px 12px 12px;-webkit-overflow-scrolling:touch}.s2z-col{display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:118px}.s2z-ch{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}.s2z-m{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;position:relative}.s2z-m small{color:var(--dim);font-weight:700;font-size:10px;letter-spacing:.04em}.s2z-m i{font-style:normal;color:var(--dim);font-size:10px;text-align:center}.s2z-t{text-align:center;color:#9fb0c6;font-size:12px;font-weight:700}.s2z-cn{font-size:11px;color:var(--dim)}.s2z-q{border-color:#35f0a0!important}.s2z-note{padding:0 12px 10px;font-size:12px;color:var(--dim)}';
         document.head.appendChild(st);
       }
       var cards = S2_ZONES.map(function (z) {
-        var teams = z[1].map(function (ref) {
+        var chips = z[1].map(function (ref) {
           var c = s2ZoneTeam(ref);
-          return c ? h('a', { class: 's2z-team', href: teamHref(c) }, crest(c, 'md'), h('span', null, T[c].n)) : h('div', { class: 's2z-team' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Team'));
+          return c ? h('a', { class: 's2z-chip', href: teamHref(c), onclick: function (e) { e.stopPropagation(); } }, crest(c, 'md'), h('span', null, swTag(c))) : h('span', { class: 's2z-chip' }, '?');
         });
-        return h('section', { class: 's2z-card' }, h('h3', null, 'ZONE ' + z[0]), h('div', { class: 's2z-teams' }, teams),
-          h('div', { class: 's2z-bk' }, s2Match('Upper R1 · M1'), s2Match('Upper R1 · M2'), s2Match('Upper Final'), s2Match('Lower R1'), s2Match('Lower Final')),
+        var board = h('div', { class: 's2z-board' },
+          s2Col('Round 1', [s2Match('Upper R1 · M1'), s2Match('Upper R1 · M2')]),
+          s2Col('Round 2', [s2Match('Upper Final', 'W M1', 'W M2'), s2Match('Lower R1', 'L M1', 'L M2')]),
+          s2Col('Round 3', [s2Match('Lower Final', 'L UF', 'W LR1')]),
+          s2Col('Qualified', [h('div', { class: 's2z-m s2z-q' }, h('small', null, 'Advance'), s2Slot('W UF'), s2Slot('W LF'))]));
+        return h('details', { class: 's2z-card' }, h('summary', null, h('b', null, 'ZONE ' + z[0]), h('div', { class: 's2z-chips' }, chips)), board,
           h('div', { class: 's2z-note' }, 'Double elimination · Bo3 · Pairings TBD'));
       });
-      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 2 · Zones A–H'), h('span', null, '32 teams · 8 zones of 4 · double elimination · Bo3')), h('div', { class: 's2z-grid' }, cards));
+      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 2 · Zones A–H'), h('span', null, '32 teams · 8 zones of 4 · double elimination · Bo3')), h('div', { class: 's2z-list' }, cards));
     }
     var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, h('div', null, s2Zones()));
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination'), stageStrip,
