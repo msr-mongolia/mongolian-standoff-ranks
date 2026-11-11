@@ -6248,8 +6248,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       // ROSTER CHANGE (EVERLASTED / EVKZ, 11-11): tsetsEe left (now a free agent); Vyse and Benaruu join as subs.
       if (row.id === 'ds_6ea138d79f80a38599428fb4') {
         var evIds = Object.assign({}, row.player_ids || {});
-        delete evIds.tsetsEe; evIds.Vyse = '91615764'; evIds.Benaruu = '179419444';
-        latestClanById.set('91615764', row.id); latestClanById.set('179419444', row.id);
+        delete evIds.tsetsEe; evIds.Vyse = '91615764'; evIds.Benaruu = '179419444'; evIds.Chronic = '40158219'; // Chronic's game ID updated by the team (was 224804199)
+        latestClanById.set('91615764', row.id); latestClanById.set('179419444', row.id); latestClanById.set('40158219', row.id);
         row = Object.assign({}, row, { roster: ['127', 'Liminar', 'Chronic', '17', 'Salvatore', 'Vyse', 'Benaruu', 'kkeniz'], player_ids: evIds });
       }
       // NAME CHANGE: 2990 Purple's softKENBE now plays as kenbe.scb.
