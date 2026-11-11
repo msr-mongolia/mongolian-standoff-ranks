@@ -3494,23 +3494,35 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     function s2Zones() {
       if (!document.getElementById('msr-s2z-css')) {
         var st = document.createElement('style'); st.id = 'msr-s2z-css';
-        st.textContent = '.s2z-list{display:flex;flex-direction:column;gap:8px}.s2z-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}.s2z-card>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px}.s2z-card>summary::-webkit-details-marker{display:none}.s2z-card>summary b{font-size:14px;letter-spacing:.06em;min-width:64px}.s2z-chips{display:flex;flex-wrap:wrap;gap:6px 10px;flex:1;min-width:0}.s2z-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:inherit;text-decoration:none}.s2z-chip .crest{transform:scale(.8);margin:-3px -2px}.s2z-card>summary::after{content:"▾";color:var(--dim);transition:transform .2s}.s2z-card[open]>summary::after{transform:rotate(180deg)}.s2z-board{display:flex;gap:14px;overflow-x:auto;padding:4px 12px 12px;-webkit-overflow-scrolling:touch}.s2z-col{display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:118px}.s2z-ch{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}.s2z-m{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;position:relative}.s2z-m small{color:var(--dim);font-weight:700;font-size:10px;letter-spacing:.04em}.s2z-m i{font-style:normal;color:var(--dim);font-size:10px;text-align:center}.s2z-t{text-align:center;color:#9fb0c6;font-size:12px;font-weight:700}.s2z-cn{font-size:11px;color:var(--dim)}.s2z-q{border-color:#35f0a0!important}.s2z-note{padding:0 12px 10px;font-size:12px;color:var(--dim)}';
+        st.textContent = '.s2z-list{display:flex;flex-direction:column;gap:8px}.s2z-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}.s2z-card>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px}.s2z-card>summary::-webkit-details-marker{display:none}.s2z-card>summary b{font-size:14px;letter-spacing:.06em;min-width:64px}.s2z-chips{display:flex;flex-wrap:wrap;gap:6px 10px;flex:1;min-width:0}.s2z-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:inherit;text-decoration:none}.s2z-chip .crest{transform:scale(.8);margin:-3px -2px}.s2z-card>summary::after{content:"▾";color:var(--dim);transition:transform .2s}.s2z-card[open]>summary::after{transform:rotate(180deg)}.s2z-board{display:flex;gap:14px;overflow-x:auto;padding:4px 12px 12px;-webkit-overflow-scrolling:touch}.s2z-col{display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:118px}.s2z-ch{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}.s2z-m{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;position:relative}.s2z-m small{color:var(--dim);font-weight:700;font-size:10px;letter-spacing:.04em}.s2z-m i{font-style:normal;color:var(--dim);font-size:10px;text-align:center}.s2z-t{text-align:center;color:#9fb0c6;font-size:12px;font-weight:700}.s2z-cn{font-size:11px;color:var(--dim)}.s2z-q{border-color:#35f0a0!important}.s2z-note{padding:0 4px 4px;font-size:12px;color:var(--dim)}.s2z-tabs{margin-bottom:12px}.s2z-panel{margin-top:4px}.s2z-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin:12px 0}.s2z-team{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:inherit;text-decoration:none}.s2z-board{padding:4px 0 12px}';
         document.head.appendChild(st);
       }
-      var cards = S2_ZONES.map(function (z) {
-        var chips = z[1].map(function (ref) {
+      var panel = h('div', { class: 's2z-panel', role: 'tabpanel' });
+      var tabs = h('div', { class: 'msr-zone-tabs s2z-tabs', role: 'tablist', 'aria-label': 'Stage 2 zones' });
+      var btns = [];
+      function showZone(idx) {
+        var z = S2_ZONES[idx];
+        btns.forEach(function (bt, k) { bt.setAttribute('aria-selected', k === idx ? 'true' : 'false'); bt.setAttribute('tabindex', k === idx ? '0' : '-1'); });
+        var teams = z[1].map(function (ref) {
           var c = s2ZoneTeam(ref);
-          return c ? h('a', { class: 's2z-chip', href: teamHref(c), onclick: function (e) { e.stopPropagation(); } }, crest(c, 'md'), h('span', null, swTag(c))) : h('span', { class: 's2z-chip' }, '?');
+          return c ? h('a', { class: 's2z-team', href: teamHref(c) }, crest(c, 'md'), h('span', null, T[c].n)) : h('div', { class: 's2z-team' }, h('span', { class: 'crest md', 'aria-hidden': 'true' }, '?'), h('span', null, 'Team'));
         });
         var board = h('div', { class: 's2z-board' },
           s2Col('Round 1', [s2Match('Upper R1 · M1'), s2Match('Upper R1 · M2')]),
           s2Col('Round 2', [s2Match('Upper Final', 'W M1', 'W M2'), s2Match('Lower R1', 'L M1', 'L M2')]),
           s2Col('Round 3', [s2Match('Lower Final', 'L UF', 'W LR1')]),
           s2Col('Qualified', [h('div', { class: 's2z-m s2z-q' }, h('small', null, 'Advance'), s2Slot('W UF'), s2Slot('W LF'))]));
-        return h('details', { class: 's2z-card' }, h('summary', null, h('b', null, 'ZONE ' + z[0]), h('div', { class: 's2z-chips' }, chips)), board,
-          h('div', { class: 's2z-note' }, 'Double elimination · Bo3 · Pairings TBD'));
+        panel.innerHTML = '';
+        panel.appendChild(h('section', { class: 'box s2z-card' }, h('div', { class: 'msr-rr-summary-head' }, h('span', { class: 'msr-rr-trophy' }, '🏆'), h('div', null, h('h2', null, 'ZONE ', h('em', null, z[0])), h('p', null, 'DOUBLE ELIMINATION · BO3'))),
+          h('div', { class: 's2z-teams' }, teams), board, h('div', { class: 's2z-note' }, 'Top 2 advance · Pairings TBD')));
+      }
+      S2_ZONES.forEach(function (z, idx) {
+        var bt = h('button', { type: 'button', id: 's2z-tab-' + z[0], role: 'tab', 'aria-selected': idx === 0 ? 'true' : 'false', tabindex: idx === 0 ? '0' : '-1' }, 'ZONE ' + z[0], h('small', null, '4 teams'));
+        bt.addEventListener('click', function (e) { e.stopPropagation(); showZone(idx); });
+        btns.push(bt); tabs.appendChild(bt);
       });
-      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 2 · Zones A–H'), h('span', null, '32 teams · 8 zones of 4 · double elimination · Bo3')), h('div', { class: 's2z-list' }, cards));
+      showZone(0);
+      return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 2 · Zones A–H'), h('span', null, '32 teams · 8 zones of 4 · double elimination · Bo3')), tabs, panel);
     }
     var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, h('div', null, s2Zones()));
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination'), stageStrip,
