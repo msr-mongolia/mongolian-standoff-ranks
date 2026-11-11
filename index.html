@@ -5540,6 +5540,9 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   function msrGroupEliminated(code) {
     // REIGN withdrew from MSL Major S2; DXIII took REIGN's invited Stage 2 slot, so it is not out.
     if (code === 'RGN') return true;
+    var _tn = String((T[code] || {}).n || '').trim(), _tt = String((T[code] || {}).tag || '').trim();
+    if (/^aim4r$/i.test(_tn) || /^aim4r$/i.test(_tt)) return true;
+    if (/^(?:accacin|acca)$/i.test(_tn) || /^acca$/i.test(_tt)) return false;
     if (code === 'DXIII' || /^(?:dxvil13|dxiii)$/i.test(String((T[code] || {}).n || '').trim()) || /^dxiii$/i.test(String((T[code] || {}).tag || '').trim())) return false;
     var el = msrGroupEliminatedKeys(), keys = Object.keys(el);
     if (!keys.length || !T[code]) return false;
@@ -5568,7 +5571,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     if (!ent) return null;
     var names = [msrGrpKey(ent[0])].concat(ent.slice(1).map(msrGrpKey)), rel = msrRelTeamKey(ent[0]);
     if (rel && T[rel]) return rel;
-    return Object.keys(T).filter(function (c) { return names.indexOf(msrGrpKey(c)) >= 0 || names.indexOf(msrGrpKey(T[c].n)) >= 0; })[0] || null;
+    return Object.keys(T).filter(function (c) { return names.indexOf(msrGrpKey(c)) >= 0 || names.indexOf(msrGrpKey(T[c].n)) >= 0 || (T[c].tag && names.indexOf(msrGrpKey(T[c].tag)) >= 0); })[0] || null;
   }
   function msrStage2Draw(invCodes) {
     if (Date.now() < MSR_S2_DRAW_AT) return null;
@@ -5582,7 +5585,14 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       if (invCodes.indexOf(c) < 0 && codes.indexOf(c) < 0) codes.push(c);
     }
     // EknZ is invited (and also finished 3rd in Group B), so DXIII (Group D, 6th) fills the freed Stage 2 slot.
-    ['DXIII'].forEach(function (x) { if (invCodes.indexOf(x) < 0 && codes.indexOf(x) < 0) codes.push(x); });
+    [msrGrpTeamCode('D', 'dxiii')].forEach(function (x) { if (x && invCodes.indexOf(x) < 0 && codes.indexOf(x) < 0) codes.push(x); });
+    // AIM4R withdrew from MSL Major S2; ACCA (Group A, 6th) takes its Stage 2 slot.
+    (function () {
+      var out = msrGrpTeamCode('A', 'aim4r'), inn = msrGrpTeamCode('A', 'acca');
+      var oi = codes.indexOf(out);
+      if (oi >= 0 && inn && invCodes.indexOf(inn) < 0 && codes.indexOf(inn) < 0) codes[oi] = inn;
+    })();
+    if (window.MSR_DEBUG_S2) console.log('S2CODES', codes.length, JSON.stringify(codes));
     if (codes.length !== 30) return null;
     codes.sort();
     var rnd = seeded('MSL-S2-DRAW:' + codes.join('|'));
@@ -5649,7 +5659,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var eventBadges=rankingEventBadges(code),eventLinks=eventBadges?Array.from(eventBadges.querySelectorAll('a')):[];
       // No big event logo behind the card; show a small "participating" chip with the event name instead.
       var eventArtwork=[];
-      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':''),title:link.title},'🏆 '+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
+      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':''),title:link.title},'🏆 '+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz|accacin)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
       if(eventLinks.length)btn.setAttribute('aria-label',T[code].n+' · '+eventLinks.map(function(link){return link.title;}).join(', '));
       var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '')+(eventArtwork.length?' msr-ranking-has-event':'' ) }, 
         eventArtwork.length?h('div',{class:'msr-ranking-event-backdrop','aria-hidden':'true'},eventArtwork):null,btn,body);
@@ -7709,6 +7719,7 @@ function updateVerifiedGroupStandings(){
  if(sorted.some((row,i)=>row!==rows[i]))sorted.forEach(row=>row.parentElement.appendChild(row));
  sorted.forEach((row,i)=>{const n=row.querySelector('td');if(n&&n.textContent!==String(i+1))n.textContent=String(i+1);});
  // DXIII took REIGN's invited Stage 2 slot: green mark although it finished 6th.
+ if(label==='A'){const ar=rowFor('ACCA'),an=ar&&ar.querySelector('td'),wr=rowFor('AIM4R'),wn=wr&&wr.querySelector('td');if(an)an.style.setProperty('box-shadow','inset 4px 0 0 #35f0a0','important');if(wn)wn.style.setProperty('box-shadow','inset 4px 0 0 #ff5470','important');}
  if(label==='D'){const dr=rowFor('DXIII'),dn=dr&&dr.querySelector('td');if(dn)dn.style.setProperty('box-shadow','inset 4px 0 0 #35f0a0','important');}
  // Bye-day label: the day (Nov 4 + day index) on which a team has its bye.
  try{
