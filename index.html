@@ -2719,7 +2719,7 @@ window.MSR_SCREENSHOT_MATCHES = [{"a":"CioR","b":"0kz","maps":[{"map":"Rust","aS
 window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 // Players shown on the results scoreboard only; excluded from rosters, player stats, rankings and Stats.
 window.MSR_RESULTS_ONLY={'0kz|zxc':1};
-window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nick:'Chigiro',id:'',from:'Name Another Level',team:'DS_34794A02BAC83461450702BC'}];
+window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nick:'Chigiro',id:'',from:'Name Another Level',team:'DS_34794A02BAC83461450702BC'},{nick:'tsetsEe',id:'230452728',from:'EVERLASTED',team:'DS_6EA138D79F80A38599428FB4'}];
 
 </script>
 <script>
@@ -6244,6 +6244,13 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           if (String(originalWhiteIds[nick] || '') !== '102638966') return nick;
           delete whiteIds[nick]; whiteIds.Dvrs = '102638966'; return 'Dvrs';
         }), player_ids: whiteIds });
+      }
+      // ROSTER CHANGE (EVERLASTED / EVKZ, 11-11): tsetsEe left (now a free agent); Vyse and Benaruu join as subs.
+      if (row.id === 'ds_6ea138d79f80a38599428fb4') {
+        var evIds = Object.assign({}, row.player_ids || {});
+        delete evIds.tsetsEe; evIds.Vyse = '91615764'; evIds.Benaruu = '179419444';
+        latestClanById.set('91615764', row.id); latestClanById.set('179419444', row.id);
+        row = Object.assign({}, row, { roster: ['127', 'Liminar', 'Chronic', '17', 'Salvatore', 'Vyse', 'Benaruu', 'kkeniz'], player_ids: evIds });
       }
       // NAME CHANGE: 2990 Purple's softKENBE now plays as kenbe.scb.
       if (/^2990 purple$/i.test(String(row.name || '').trim()) && row.roster.indexOf('softKENBE') >= 0) {
