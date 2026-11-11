@@ -3269,6 +3269,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           )
         ),
         h('div', { class:'msr-post-copy' },
+          n.img ? h('img', { src: n.img, alt: '', class: 'msr-post-logo', loading: 'lazy', style: 'display:block;width:96px;height:96px;object-fit:contain;border-radius:14px;margin:0 0 10px;background:#0b0f1a;padding:6px' }) : null,
           h('h1', null, n.h),
           h('p', null, n.lead),
           n.body.map(function(p){return h('p', null, p)}),
@@ -3277,8 +3278,10 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       ) : null;
     }
     var banPost = NEWS.filter(function(n){return n.id===2026110702})[0];
+    var wBan = NEWS.filter(function(n){return n.id===2026111201})[0];
     var updPost = NEWS.filter(function(n){return n.id===2026110701})[0];
     return h('div', { class: 'msr-post-feed' },
+      msrPost(wBan, 'MSR Official'),
       msrPost(banPost, 'MSR Official'),
       msrPost(updPost, 'Сайтын шинэчлэл'),
       mobileUpdate ? h('article', { class:'msr-about-post' },
@@ -3384,6 +3387,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     return h('div', { class: 'article' },
       h('a', { class: 'back', href: '#news', svg: ICON.back + '<span>Бүх мэдээ</span>' }),
       h('div', null, n.live ? h('span', { class: 'tag live' }, h('span', { class: 'pip' }), 'Live') : h('span', { class: 'tag soft' }, ({ Today: 'Өнөөдөр', Yesterday: 'Өчигдөр', Earlier: 'Өмнөх' })[n.g] || n.g)),
+      n.img ? h('img', { src: n.img, alt: '', style: 'display:block;width:110px;height:110px;object-fit:contain;border-radius:16px;margin:8px 0;background:#0b0f1a;padding:8px' }) : null,
       h('h1', null, n.h),
       h('div', { class: 'meta' }, flag(), h('span', null, n.t), comments(n.c + ' сэтгэгдэл')),
       h('p', { style: 'font-weight:600;color:#E9EDF3' }, n.lead),
@@ -4441,6 +4445,13 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
+      { id: 2026111201, g: 'MSR OFFICIAL', t: '11-р сарын 12', c: 0, img: 'assets/woart-logo.svg', h: 'Kl6pse (WonderArt) — cheat ашигласан тул MSR-ээс BAN', lead: 'WonderArt (WOART) багийн Kl6pse тоглогч cheat (хориотой программ) ашигласан тул MSR-ээс хориглогдлоо.', body: [
+        'WonderArt (WOART) багийн Kl6pse тоглогч cheat буюу хориотой программ ашигласан нь тогтоогдсон тул MSR-ээс хориглогдсон болохыг мэдэгдэж байна.',
+        'WonderArt баг MSL Major S2-оос хасагдсан бөгөөд түүний оронд Team Resolve (R6) Stage 2-д оров.',
+        'MSR нь шударга өрсөлдөөнийг дэмжиж, cheat болон бусад хориотой программ ашиглахыг хатуу хориглоно. Шударга тоглолт — Шударга чансаа.',
+        'Асуулт байвал MSR админтай Discord-оор холбогдоно уу: https://discord.com/users/1128188613230874727',
+        '— MSR Administration'
+      ] },
       { id: 2026110702, g: 'MSR OFFICIAL', t: '11-р сарын 7', c: 0, h: 'B2DI (Born To Die) — MSR-ээс бүрмөсөн BAN', lead: 'Cheat (хориотой программ) ашигласан тул B2DI багийн бүх тоглогч болон клан MSR-ээс бүрмөсөн (permanent) хориглогдлоо.', body: [
         'B2DI (Born To Die) баг cheat буюу хориотой программ ашигласан тул тус багийн бүх тоглогч болон клан MSR-д оролцохоос бүрмөсөн хориглогдсон болохыг мэдэгдэж байна.',
         'Энэ нь 11-р сарын 5-ны мэдэгдлийн үргэлжлэл бөгөөд хориг нь тус багийн бүх гишүүн, клан бүрт хамаарна.',
