@@ -3413,7 +3413,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'Tournament stages' },
       [1, 2].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
-    var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DXIII', 'Dxvil13']];
+    var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_286B21B874899423C6F7C160', 'EliteKingZz']];
     function invCode(inv) {
       if (T[inv[0]]) return inv[0];
       var nk2 = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, want = nk2(inv[1]);
@@ -5647,7 +5647,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var eventBadges=rankingEventBadges(code),eventLinks=eventBadges?Array.from(eventBadges.querySelectorAll('a')):[];
       // No big event logo behind the card; show a small "participating" chip with the event name instead.
       var eventArtwork=[];
-      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':''),title:link.title},'🏆 '+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
+      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':''),title:link.title},'🏆 '+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
       if(eventLinks.length)btn.setAttribute('aria-label',T[code].n+' · '+eventLinks.map(function(link){return link.title;}).join(', '));
       var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '')+(eventArtwork.length?' msr-ranking-has-event':'' ) }, 
         eventArtwork.length?h('div',{class:'msr-ranking-event-backdrop','aria-hidden':'true'},eventArtwork):null,btn,body);
