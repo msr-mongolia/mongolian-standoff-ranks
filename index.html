@@ -2898,6 +2898,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
   [['Anvex','S'],['MPS','S'],['SATT','A'],['SPS','A'],['MSL Season','A'],['MSL Rising Star','B']].forEach(function (x) {
     EVENTS.push({ n: x[0], st: 'soon', dt: 'Coming soon', loc: 'TBA', teams: 'TBA', prize: 'TBA', tier: x[1] });
   });
+  EVENTS.forEach(function (e) { if (e.n === 'SPS') { e.img = 'assets/sps_logo.jpg'; e.discord = 'https://discord.gg/fExHtF3xk'; } }); // Standoff Pro Series
   EVENTS[0].tier = 'S';
   EVENTS.splice(1, 0, { n: 'VOID Tournament', st: 'soon', dt: 'Nov 15, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=2', discord: 'https://discord.gg/fH3w2wYYs',
     notes: ['⭐ MVP 20 000₮', '🎟️ Entry fee 15 000₮'] });
