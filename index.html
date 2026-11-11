@@ -1292,6 +1292,24 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 <style id="msr-introduction-style">
 .msr-intro{max-width:1120px;margin:0 auto;padding:10px 0 50px;color:#eaf1fb}.msr-intro-hero{padding:clamp(28px,6vw,70px) clamp(20px,5vw,58px);border:1px solid #355474;border-radius:22px;background:radial-gradient(ellipse at 85% 15%,rgba(45,121,154,.24),transparent 55%),linear-gradient(135deg,#17283d,#101a2b 75%);box-shadow:0 16px 50px #0003}.msr-intro-eyebrow{font-size:12px;font-weight:800;letter-spacing:2px;color:#7dbdff}.msr-intro h1{font-size:clamp(32px,7vw,60px);line-height:1.12;margin:15px 0 20px;letter-spacing:-1.4px}.msr-intro-lead{font-size:clamp(16px,2.3vw,20px);line-height:1.7;max-width:690px;color:#c5d3e5}.msr-intro-buttons{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}.msr-intro-primary,.msr-intro-secondary{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:10px;padding:13px 19px;font-weight:800;font-size:14px}.msr-intro-primary{background:#4d99ef;color:#081526}.msr-intro-secondary{border:1px solid #527294;color:#d7e8ff}.msr-intro-section{margin:36px 0;padding:20px 5px}.msr-intro-section h2{font-size:clamp(22px,4vw,31px);margin:12px 0}.msr-intro-section p{color:#b9c9dd;line-height:1.8;max-width:800px}.msr-intro-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.msr-intro-tile{display:block;text-decoration:none;border:1px solid #34485e;background:linear-gradient(145deg,#1b293a,#111b2a);padding:25px;border-radius:16px;transition:border-color .2s,transform .2s}.msr-intro-tile:hover{border-color:#75b6f5;transform:translateY(-2px)}.msr-intro-tile h3{color:#f2f6ff;font-size:20px;margin:0 0 12px}.msr-intro-tile p{color:#b9c8da;font-size:14px;line-height:1.65}.msr-intro-tile span{color:#85baff;font-size:13px;font-weight:800}.msr-intro-bottom{border-top:1px solid #35475d}@media(max-width:620px){.msr-intro-grid{grid-template-columns:1fr}.msr-intro-tile{padding:20px}.msr-intro-hero{border-radius:16px}.msr-intro{padding-bottom:90px}}
 </style>
+<style id="msr-news-cards-css">
+.msr-nw{max-width:760px;margin:12px auto 0;padding:0 10px}
+.msr-nw-h{display:flex;justify-content:space-between;align-items:baseline;margin:6px 2px 12px}.msr-nw-h h2{margin:0;font-size:26px;font-weight:800;color:#f3f7fd}.msr-nw-h span{font-size:13px;color:#8d9db1}
+.msr-nw a.c{position:relative;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;border-radius:14px;border:1px solid #2a3a4e;color:#fff;text-decoration:none;background:linear-gradient(150deg,#16365a,#0b1424 70%);isolation:isolate}
+.msr-nw a.c .bg{position:absolute;inset:0;z-index:-2;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#24517e55,transparent 65%)}
+.msr-nw a.c .bg img{width:46%;max-width:210px;aspect-ratio:1/1;object-fit:contain;border-radius:18px;margin-top:-34px;opacity:.95}
+.msr-nw a.c .bg b{font-size:64px;font-style:italic;letter-spacing:-5px;font-weight:1000;color:#ffffff22;margin-top:-30px}
+.msr-nw a.c:after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,#050a14f2 0,#050a14b0 42%,transparent 78%)}
+.msr-nw a.c .tx{padding:16px 18px}.msr-nw a.c .tg{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1.4px;color:#8fc4ff;margin-bottom:6px}
+.msr-nw a.c h3{margin:0 0 7px;font-weight:800;line-height:1.25;color:#fff}.msr-nw a.c .mt{font-size:13px;color:#b4c2d4}
+.msr-nw .hero{min-height:340px}.msr-nw .hero h3{font-size:clamp(21px,5vw,28px)}
+.msr-nw .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.msr-nw .g2 a.c{min-height:210px}.msr-nw .g2 h3{font-size:clamp(15px,3.6vw,18px)}.msr-nw .g2 .tx{padding:12px 13px}.msr-nw .g2 .bg img{width:42%}
+.msr-nw .lst{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.msr-nw .lst a.r{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid #2a3a4e;border-radius:12px;background:#142033;text-decoration:none;color:#edf3fc}
+.msr-nw .lst a.r .ic{flex:none;width:46px;height:46px;border-radius:10px;background:#0b1424;display:grid;place-items:center;overflow:hidden;font-weight:900;font-size:13px;color:#79b6f5}.msr-nw .lst a.r .ic img{width:100%;height:100%;object-fit:contain}
+.msr-nw .lst a.r b{display:block;font-size:15px;line-height:1.3}.msr-nw .lst a.r small{color:#8d9db1;font-size:12px}
+@media(max-width:420px){.msr-nw{padding:0 8px}.msr-nw .hero{min-height:300px}.msr-nw .g2{gap:8px}}
+</style>
 <style id="msr-post-feed-style">
 .msr-post-feed{max-width:760px;margin:16px auto 85px;padding:0 10px}.msr-about-post{border:1px solid #35465b;border-radius:16px;overflow:hidden;background:#192330;color:#edf3fc;box-shadow:0 12px 35px #0004}.msr-post-author{display:flex;gap:12px;align-items:center;padding:18px 20px 12px}.msr-post-avatar{display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:50%;border:2px solid #528de0;background:linear-gradient(145deg,#122e4a,#070f1d);font-size:17px;letter-spacing:-1px;font-weight:950;color:#f5faff;text-shadow:0 0 14px #67b9ff}.msr-post-author-text{display:flex;flex-direction:column;gap:4px;min-width:0}.msr-post-author-text strong{font-size:16px;color:#f5f7fb}.msr-post-author-text span{font-size:12px;color:#9eafc3}.msr-post-copy{padding:7px 20px 17px;font-size:15px;line-height:1.75;color:#d6e0ed}.msr-post-copy h1{font-size:clamp(20px,4.5vw,27px);line-height:1.3;color:#fff;margin:7px 0 15px}.msr-post-copy p{margin:0 0 14px}.msr-post-ending{font-weight:800;color:#8fc4ff!important;margin-bottom:0!important}.msr-post-art{position:relative;min-height:345px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:25px;background:radial-gradient(circle at 50% 48%,#235c81 0,#102e4d 33%,#09172b 65%,#050b17 100%);isolation:isolate}.msr-post-art:before{content:'';position:absolute;inset:-45%;z-index:-1;background:repeating-conic-gradient(from 15deg,#6ab4f10a 0 7deg,transparent 7deg 25deg);transform:rotate(-12deg)}.msr-post-art:after{content:'';position:absolute;inset:14px;border:1px solid #79caff30;pointer-events:none}.msr-post-art-ring{display:flex;flex-direction:column;align-items:center;gap:8px;padding:30px 20px;border:2px solid #66b9ed55;box-shadow:0 0 65px #2795db33,inset 0 0 45px #278ec21a;transform:skew(-4deg);background:#091b2d66}.msr-post-art-logo{font-size:clamp(74px,17vw,132px);line-height:1;letter-spacing:-.11em;padding-right:.11em;font-weight:1000;font-style:italic;color:#f5fbff;text-shadow:0 6px 0 #1a6c9b,0 12px 22px #000b,0 0 35px #50b7ef}.msr-post-art-sub{font-size:clamp(10px,2.5vw,16px);letter-spacing:3px;font-weight:900;color:#9bdaff;text-align:center}.msr-post-art-tagline{font-size:10px;letter-spacing:2px;text-align:center;font-weight:800;color:#b7d4e9;padding:0 15px}@media(max-width:540px){.msr-post-feed{padding:0;margin-top:7px}.msr-about-post{border-radius:13px}.msr-post-author{padding:14px 15px 10px}.msr-post-copy{padding:5px 15px 15px;font-size:14px}.msr-post-art{min-height:275px}.msr-post-art-ring{padding:24px 15px}.msr-post-art-sub{letter-spacing:1.4px}}
 </style>
@@ -3256,9 +3274,6 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     });
   })();
   V.news = function () {
-    var mobileUpdate = NEWS.filter(function(n){return n.id===20261105})[0];
-    var guide = NEWS.filter(function(n){return n.id==='msr-login-guide'})[0];
-    var vip = NEWS.filter(function(n){return n.id===20261103})[0];
     function msrPost(n, label){
       return n ? h('article', { class:'msr-about-post' },
         h('header', { class:'msr-post-author' },
@@ -3280,56 +3295,23 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var banPost = NEWS.filter(function(n){return n.id===2026110702})[0];
     var wBan = NEWS.filter(function(n){return n.id===2026111201})[0];
     var updPost = NEWS.filter(function(n){return n.id===2026110701})[0];
+    var cardIds = [2026111201, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
+    var cardItems = cardIds.map(function (id) { return NEWS.filter(function (n) { return n.id === id; })[0]; }).filter(Boolean);
+    function nwBg(n) { return h('div', { class: 'bg' }, n.img ? h('img', { src: n.img, alt: '', loading: 'lazy' }) : h('b', null, 'MSR')); }
+    function nwCard(n, cls) {
+      return h('a', { class: 'c ' + cls, href: '#article/' + n.id }, nwBg(n),
+        h('div', { class: 'tx' }, h('span', { class: 'tg' }, n.g || 'MSR'), h('h3', null, n.h), h('div', { class: 'mt' }, n.t)));
+    }
+    var nwFeed = h('div', { class: 'msr-nw' },
+      h('div', { class: 'msr-nw-h' }, h('h2', null, 'News'), h('span', null, cardItems.length + ' posts')),
+      cardItems[0] ? nwCard(cardItems[0], 'hero') : null,
+      h('div', { class: 'g2' }, cardItems.slice(1, 3).map(function (n) { return nwCard(n, 'sm'); })),
+      h('div', { class: 'lst' }, cardItems.slice(3).map(function (n) {
+        return h('a', { class: 'r', href: '#article/' + n.id }, h('span', { class: 'ic' }, n.img ? h('img', { src: n.img, alt: '' }) : 'MSR'), h('span', null, h('b', null, n.h), h('small', null, (n.g || 'MSR') + ' · ' + n.t)));
+      }))
+    );
     return h('div', { class: 'msr-post-feed' },
-      msrPost(wBan, 'MSR Official'),
-      msrPost(banPost, 'MSR Official'),
-      msrPost(updPost, 'Сайтын шинэчлэл'),
-      mobileUpdate ? h('article', { class:'msr-about-post' },
-        h('header', { class:'msr-post-author' },
-          h('div', { class:'msr-post-avatar', 'aria-hidden':'true' }, 'MSR'),
-          h('div', { class:'msr-post-author-text' },
-            h('strong', null, 'Mongolian Standoff Ranks'),
-            h('span', null, 'Сайтын шинэчлэлт · '+mobileUpdate.t+' · Public')
-          )
-        ),
-        h('div', { class:'msr-post-copy' },
-          h('h1', null, mobileUpdate.h),
-          h('p', null, mobileUpdate.lead),
-          mobileUpdate.body.map(function(p){return h('p', null, p)}),
-          h('p', null, h('a', {href:'#article/20261105',class:'msr-shop-contact'},'Мэдээг нээх →'))
-        )
-      ) : null,
-      vip ? h('article', { class:'msr-about-post' },
-        h('header', { class:'msr-post-author' },
-          h('div', { class:'msr-post-avatar', 'aria-hidden':'true' }, 'MSR'),
-          h('div', { class:'msr-post-author-text' },
-            h('strong', null, 'Mongolian Standoff Ranks'),
-            h('span', null, 'VIP CLAN · '+vip.t+' · Public')
-          )
-        ),
-        h('div', { class:'msr-post-copy' },
-          h('h1', null, vip.h),
-          h('p', null, vip.lead),
-          vip.body.map(function(p){return h('p', null, p)}),
-          h('a', { href:'https://discord.com/users/1128188613230874727', target:'_blank', rel:'noopener noreferrer', class:'msr-shop-contact', style:'display:inline-block;margin-top:12px' }, 'VIP CLAN авах · Discord-оор админтай холбогдох'),
-          h('p', null, h('a', {href:'#article/20261103',class:'msr-shop-contact',style:'display:inline-block;margin-top:10px'},'Мэдээг нээж сэтгэгдэл үлдээх →'))
-        )
-      ) : null,
-      guide ? h('article', { class:'msr-about-post' },
-        h('header', { class:'msr-post-author' },
-          h('div', { class:'msr-post-avatar', 'aria-hidden':'true' }, 'MSR'),
-          h('div', { class:'msr-post-author-text' },
-            h('strong', null, 'Mongolian Standoff Ranks'),
-            h('span', null, 'Official guide · '+guide.t)
-          )
-        ),
-        h('div', { class:'msr-post-copy' },
-          h('h1', null, guide.h),
-          h('p', null, guide.lead),
-          guide.body.map(function(p){return h('p', null, p)}),
-          h('a', { href:'#article/msr-login-guide', class:'msr-shop-contact', style:'display:inline-block;margin-top:12px' }, 'Мэдээг нээж сэтгэгдэл үлдээх →')
-        )
-      ) : null,
+      nwFeed,
       h('article', { class: 'msr-about-post' },
         h('header', { class: 'msr-post-author' },
           h('div', { class: 'msr-post-avatar', 'aria-hidden': 'true' }, 'MSR'),
