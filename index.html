@@ -3413,7 +3413,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'Tournament stages' },
       [1, 2].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
-    var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DXIII', 'Dxvil13']];
+    var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_286B21B874899423C6F7C160', 'EliteKingZz']];
     function invCode(inv) {
       if (T[inv[0]]) return inv[0];
       var nk2 = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, want = nk2(inv[1]);
