@@ -3269,7 +3269,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
           )
         ),
         h('div', { class:'msr-post-copy' },
-          n.img ? h('img', { src: n.img, alt: '', class: 'msr-post-logo', loading: 'lazy', style: 'display:block;width:96px;height:96px;object-fit:contain;border-radius:14px;margin:0 0 10px;background:#0b0f1a;padding:6px' }) : null,
+          n.img ? h('img', { src: n.img, alt: '', class: 'msr-post-logo', loading: 'lazy', style: 'display:block;width:100%;max-width:280px;aspect-ratio:1/1;height:auto;object-fit:contain;border-radius:14px;margin:0 0 10px;background:#0b0f1a;padding:6px' }) : null,
           h('h1', null, n.h),
           h('p', null, n.lead),
           n.body.map(function(p){return h('p', null, p)}),
@@ -3387,7 +3387,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     return h('div', { class: 'article' },
       h('a', { class: 'back', href: '#news', svg: ICON.back + '<span>Бүх мэдээ</span>' }),
       h('div', null, n.live ? h('span', { class: 'tag live' }, h('span', { class: 'pip' }), 'Live') : h('span', { class: 'tag soft' }, ({ Today: 'Өнөөдөр', Yesterday: 'Өчигдөр', Earlier: 'Өмнөх' })[n.g] || n.g)),
-      n.img ? h('img', { src: n.img, alt: '', style: 'display:block;width:110px;height:110px;object-fit:contain;border-radius:16px;margin:8px 0;background:#0b0f1a;padding:8px' }) : null,
+      n.img ? h('img', { src: n.img, alt: '', style: 'display:block;width:100%;max-width:320px;aspect-ratio:1/1;height:auto;object-fit:contain;border-radius:16px;margin:8px 0;background:#0b0f1a;padding:8px' }) : null,
       h('h1', null, n.h),
       h('div', { class: 'meta' }, flag(), h('span', null, n.t), comments(n.c + ' сэтгэгдэл')),
       h('p', { style: 'font-weight:600;color:#E9EDF3' }, n.lead),
