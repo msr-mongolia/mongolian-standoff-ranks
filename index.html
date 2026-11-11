@@ -3473,7 +3473,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       ['A', [['B','nnrds'],['A','omv'],['F','6vmp6'],['C','etxen']]],
       ['B', [['D','0kz'],['D','6lc'],['D','cior'],['B','ciorwhite']]],
       ['C', [['C','mpct'],['A','acca'],['C','kngzz'],['D','dxiii']]],
-      ['D', [['E','snt'],['F','woart'],['E','metas'],['F','2990purple']]],
+      ['D', [['E','snt'],['F','r6'],['E','metas'],['F','2990purple']]],
       ['E', [['D','xvrn'],['INV',1],['D','dl340'],['F','eks']]],
       ['F', [['A','otr'],['C','7add'],['B','eknz'],['A','sclat']]],
       ['G', [['B','2990'],['E','drdrx'],['F','kgtss'],['E','omen']]],
@@ -5626,6 +5626,8 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
     var _tn = String((T[code] || {}).n || '').trim(), _tt = String((T[code] || {}).tag || '').trim();
     if (/^aim4r$/i.test(_tn) || /^aim4r$/i.test(_tt)) return true;
     if (/^(?:accacin|acca)$/i.test(_tn) || /^acca$/i.test(_tt)) return false;
+    if (/^(?:wonderart|woart)$/i.test(_tn) || /^woart$/i.test(_tt)) return true;
+    if (/^(?:team resolve|r6)$/i.test(_tn) || /^r6$/i.test(_tt)) return false;
     if (code === 'DXIII' || /^(?:dxvil13|dxiii)$/i.test(String((T[code] || {}).n || '').trim()) || /^dxiii$/i.test(String((T[code] || {}).tag || '').trim())) return false;
     var el = msrGroupEliminatedKeys(), keys = Object.keys(el);
     if (!keys.length || !T[code]) return false;
@@ -5675,6 +5677,11 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var out = msrGrpTeamCode('A', 'aim4r'), inn = msrGrpTeamCode('A', 'acca');
       var oi = codes.indexOf(out);
       if (oi >= 0 && inn && invCodes.indexOf(inn) < 0 && codes.indexOf(inn) < 0) codes[oi] = inn;
+    })();
+    (function () {
+      var out2 = msrGrpTeamCode('F', 'woart'), inn2 = msrGrpTeamCode('F', 'r6');
+      var oi2 = codes.indexOf(out2);
+      if (oi2 >= 0 && inn2 && invCodes.indexOf(inn2) < 0 && codes.indexOf(inn2) < 0) codes[oi2] = inn2;
     })();
     if (window.MSR_DEBUG_S2) console.log('S2CODES', codes.length, JSON.stringify(codes));
     if (codes.length !== 30) return null;
@@ -5743,7 +5750,7 @@ window.MSR_FREE_AGENTS=[{nick:'Aquaaaaa',id:'90151612',from:'Omen Esports'},{nic
       var eventBadges=rankingEventBadges(code),eventLinks=eventBadges?Array.from(eventBadges.querySelectorAll('a')):[];
       // No big event logo behind the card; show a small "participating" chip with the event name instead.
       var eventArtwork=[];
-      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':''),title:link.title},'🏆 '+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz|accacin)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
+      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':''),title:link.title},'🏆 '+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz|accacin|teamresolve)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
       if(eventLinks.length)btn.setAttribute('aria-label',T[code].n+' · '+eventLinks.map(function(link){return link.title;}).join(', '));
       var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '')+(eventArtwork.length?' msr-ranking-has-event':'' ) }, 
         eventArtwork.length?h('div',{class:'msr-ranking-event-backdrop','aria-hidden':'true'},eventArtwork):null,btn,body);
@@ -7803,6 +7810,7 @@ function updateVerifiedGroupStandings(){
  if(sorted.some((row,i)=>row!==rows[i]))sorted.forEach(row=>row.parentElement.appendChild(row));
  sorted.forEach((row,i)=>{const n=row.querySelector('td');if(n&&n.textContent!==String(i+1))n.textContent=String(i+1);});
  // DXIII took REIGN's invited Stage 2 slot: green mark although it finished 6th.
+ if(label==='F'){const rr=rowFor('R6'),rn=rr&&rr.querySelector('td'),wr=rowFor('WOART'),wn=wr&&wr.querySelector('td');if(rn)rn.style.setProperty('box-shadow','inset 4px 0 0 #35f0a0','important');if(wn)wn.style.setProperty('box-shadow','inset 4px 0 0 #ff5470','important');}
  if(label==='A'){const ar=rowFor('ACCA'),an=ar&&ar.querySelector('td'),wr=rowFor('AIM4R'),wn=wr&&wr.querySelector('td');if(an)an.style.setProperty('box-shadow','inset 4px 0 0 #35f0a0','important');if(wn)wn.style.setProperty('box-shadow','inset 4px 0 0 #ff5470','important');}
  if(label==='D'){const dr=rowFor('DXIII'),dn=dr&&dr.querySelector('td');if(dn)dn.style.setProperty('box-shadow','inset 4px 0 0 #35f0a0','important');}
  // Bye-day label: the day (Nov 4 + day index) on which a team has its bye.
