@@ -5653,7 +5653,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     var team = p.team, F = { days: 'all', ev: 'all', map: 'all' }, host = h('div', null);
     if(team==='KNGZZ' && /^r1sk$/i.test(p.nick) && T[team] && T[team].img){var riskLogo=String(T[team].img).replace(/["\\]/g,''); document.documentElement.style.setProperty('--msr-risk-team-logo','url("'+riskLogo+'")');}
     var mates = PLAYERS.filter(function (x) { return x.team === team && x.nick !== p.nick; });
-    var ranked = PLAYERS.filter(function (p) { return p.team && T[p.team]; }).sort(function (a, b) { return b.rating - a.rating; }), rrank = ranked.indexOf(p) + 1;
+    var ranked = PLAYERS.filter(function (p) { return p.team && T[p.team] && p.rank > 0; }).slice().sort(function (a, b) { return a.rank - b.rank; }), rrank = ranked.indexOf(p) + 1;
     var sb = h('div', { class: 'hl-grid' });
     var statIcons = {
       'Rating':'<path d="m12 2 3.1 6.5 7.1 1-5.1 5 .9 7-6-3.4-6 3.4.9-7-5.1-5 7.1-1Z"/>',
@@ -5714,7 +5714,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       h('div', { class: 'hl-head' + (team === 'TLNRS' ? ' msr-lunaris-back1-player' : team === 'ETXEN' ? ' msr-etxen-back1-player' : isOmvTeam(team) ? ' msr-omv-back1-player' : '') },
         h('div', { class: 'hl-card' },
           h('div', { class: 'hl-top' }, avFrame(team, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120))), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
-          h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag(playerCountry(p.nick, (T[team] && T[team].country) || 'Mongolia'))), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
+          h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag(playerCountry(p.nick, (T[team] && T[team].country) || 'Mongolia'))), li('Rating rank', (rrank > 0 ? '#' + rrank : 'Unranked') + ' of ' + ranked.length))),
         statCard),
       flt, host);
   };
