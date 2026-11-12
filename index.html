@@ -2912,7 +2912,7 @@ window.MSR_FREE_AGENTS=[{nick:'Chronic',id:'224804199',from:'EVERLASTED',team:'D
     notes: ['⭐ MVP 20 000₮', '🎟️ Entry fee 15 000₮'] });
   EVENTS[1].tier = 'B'; // VOID Tournament
   // VOID Tournament participants (team codes). Add more codes here to show the VOID chip in the ranking.
-  window.MSR_VOID_TEAMS = window.MSR_VOID_TEAMS || ['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3','DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28','SIXL','DS_9FEDE81820B36BB7889B86BA']; // imp4ct, Zx_WB Black, Zx_WB White, Rain tzy, Six Lence, Four zest assault
+  window.MSR_VOID_TEAMS = window.MSR_VOID_TEAMS || ['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3','DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28','SIXL']; // imp4ct, Zx_WB Black, Zx_WB White, Rain tzy, Six Lence
   EVENTS.forEach(function (e) { if (e.n === 'VOID Tournament') { e.short = 'VOID'; e.participants = window.MSR_VOID_TEAMS; } });
   (function () { var i = EVENTS.findIndex(function (e) { return e.n === 'SPS'; }); if (i > 2) EVENTS.splice(2, 0, EVENTS.splice(i, 1)[0]); })(); // SPS is next: show 3rd
   EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = ['🥇 600 000₮', '🥈 400 000₮', '🥉 200 000₮'];
