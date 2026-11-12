@@ -3550,16 +3550,20 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     window.msrS2Slots = function () {
       var out = [], kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
       S2_ZONES.forEach(function (z) {
-        function adv(slot, r0) {
+        function adv(slot, r0, refsIn) {
           var rs = window.msrS2Res(z[0], slot);
           if (!rs) return null;
-          var refs = [z[1][r0], z[1][r0 + 1]], aIs0 = kk(rs.a) === refs[0][1], a0 = aIs0 ? rs.aw : rs.bw, a1 = aIs0 ? rs.bw : rs.aw;
+          var refs = refsIn || [z[1][r0], z[1][r0 + 1]], aIs0 = kk(rs.a) === refs[0][1], a0 = aIs0 ? rs.aw : rs.bw, a1 = aIs0 ? rs.bw : rs.aw;
           if (a0 === a1) return null;
           return { w: a0 > a1 ? refs[0] : refs[1], l: a0 > a1 ? refs[1] : refs[0] };
         }
         var r1 = adv('Upper R1 \u00b7 M1', 0), r2 = adv('Upper R1 \u00b7 M2', 2);
         var defs = [['Upper R1 \u00b7 M1', z[1][0], z[1][1]], ['Upper R1 \u00b7 M2', z[1][2], z[1][3]]];
-        if (r1 && r2) { defs.push(['Upper Final', r1.w, r2.w]); defs.push(['Lower R1', r1.l, r2.l]); }
+        if (r1 && r2) {
+          defs.push(['Upper Final', r1.w, r2.w]); defs.push(['Lower R1', r1.l, r2.l]);
+          var uf = adv('Upper Final', 0, [r1.w, r2.w]), lr = adv('Lower R1', 0, [r1.l, r2.l]);
+          if (uf && lr) defs.push(['Lower Final', uf.l, lr.w]);
+        }
         defs.forEach(function (d) {
           var a = s2ZoneTeam(d[1]), b = s2ZoneTeam(d[2]);
           if (!a || !b || a === b || !T[a] || !T[b]) return;
