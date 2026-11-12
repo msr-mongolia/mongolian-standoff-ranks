@@ -6619,7 +6619,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       T[code].vipExpiresAt = row.vip_expires_at || null;
       var rankingRow = RANK.find(function (r) { return r[0] === code; });
       if (rankingRow && Number.isFinite(row.points) && row.points >= 0) rankingRow[1] = row.points;
-      if (typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = (function(u){return String(u).replace('/team-logos/ds_','/team-logos/thumb/ds_');})(row.logo_url) + (row.source_timestamp ? '?v=' + encodeURIComponent(row.source_timestamp) : '');
+      if (!(T[code].img && /^assets\//.test(String(T[code].img))) && typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/[a-z0-9_.-]+$/.test(row.logo_url)) T[code].img = (function(u){return String(u).replace('/team-logos/ds_','/team-logos/thumb/ds_');})(row.logo_url) + (row.source_timestamp ? '?v=' + encodeURIComponent(row.source_timestamp) : '');
       if(row.id==='ds_cc59eccdc299850d94095877')T[code].img='assets/acca_profile.jpg';
       if(row.id==='ds_a4ccd6c33286b304e839a0bc')T[code].img='assets/impact-logo.jpg';
       if(row.id==='ds_5cdaaf806d7d39ac2c809ed3')T[code].img='assets/zxwb-black.jpg';
