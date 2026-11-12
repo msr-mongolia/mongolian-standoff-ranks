@@ -7389,7 +7389,7 @@ function verifiedTeamProfiles(){
   if(title.includes('white'))return;
  }
  const sharedTag=/^2990/.test(title)?(title.includes('purple')?'2990 Purple':'2990'):null;
- const code=title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
+ const code=title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  if(!code)return;
  const teamMatches=results.filter(r=>r.a===code||r.b===code);
  // Screenshot series already carries verified map results. Use it when the
