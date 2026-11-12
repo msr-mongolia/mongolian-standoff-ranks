@@ -4060,7 +4060,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       more.setAttribute('aria-expanded', showAll ? 'true' : 'false');
     }
     draw();
-    var faBox = msrFreeAgentsBox();
+    var faBox = null; // Free agents now live on their own page (#freeagents)
     return h('div', null, pageHead('Players', PLAYERS.filter(function (p) { return p.team && T[p.team]; }).length + ' registered players. Statistics start at zero until verified match screenshots are added.'), wrap, more, faBox);
   };
 
