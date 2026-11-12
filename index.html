@@ -2401,7 +2401,7 @@ html .pl-grid .plc .av.sg{width:34px!important;height:34px!important;min-width:3
 #app .ap-rk .nm small{font-size:11px!important}
 #app .ap-rk .nm{gap:1px!important}
 #app .ap-rk .msr-rank-event-chip{font-size:10px!important;padding:0 6px!important;margin-top:2px!important}
-#app .ap-rk .msr-rank-event-chip.void{color:#e3c8ff!important;background:#7b3fe433!important;border-color:#a56bff!important}
+
 #app .ap-rk .mv{min-width:50px!important;gap:1px!important}
 #app .ap-rk .msr-mv-pts{font-size:12px!important}
 #app .ap-rk .msr-mv-badge{font-size:11px!important;padding:0 6px!important}
@@ -2633,6 +2633,9 @@ a,button,summary,label,[role="button"],[role="link"],.msr-hl-row,.ap-day,.msr-re
 #app .msr-rr-standings::after{content:"Green: advances to Stage 2 (top 5) · Red: out";display:block;margin-top:8px;padding:6px 10px;border-left:3px solid #35f0a0;color:#cfd9e6;font-size:12px;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,.05);border-radius:4px}
 </style>
 <style id="msr-events-compact">
+#app .msr-rank-event-chip.tier-S:not(.out){color:#ffd166!important;background:#ffd16626!important;border-color:#f5c451!important}
+#app .msr-rank-event-chip.tier-A:not(.out){color:#e3c8ff!important;background:#7b3fe433!important;border-color:#a56bff!important}
+#app .msr-rank-event-chip.tier-B:not(.out){color:#9fd4ff!important;background:#2b8cff33!important;border-color:#4aa8ff!important}
 #app .ap-ev .ap-tpmax{font-weight:800;font-size:12px}
 #app .ap-ev .ap-tpmax.t-S{color:#ffd166;background:#ffd16622}
 #app .ap-ev .ap-tpmax.t-A{color:#7fd0ff;background:#7fd0ff22}
@@ -5762,7 +5765,7 @@ window.MSR_FREE_AGENTS=[{nick:'Tmk',id:'258065102',from:'imp4ct',team:'DS_A4CCD6
     if(!entries.length)return null;
     return h('div',{class:'msr-ranking-events','aria-label':'Tournament participation'},entries.map(function(event){
       var out=event.id==='msl'&&([].concat(SWISS.e03||[],SWISS.e13||[]).indexOf(code)!==-1||msrGroupEliminated(code));
-      return h('a',{class:'msr-ranking-event'+(out?' is-eliminated':''),href:'#event/'+encodeURIComponent(event.id),title:event.n+' · '+(out?'Eliminated':'Тэмцээний бүрэлдэхүүнд')},
+      return h('a',{class:'msr-ranking-event'+(out?' is-eliminated':''),'data-tier':event.tier||'',href:'#event/'+encodeURIComponent(event.id),title:event.n+' · '+(out?'Eliminated':'Тэмцээний бүрэлдэхүүнд')},
         event.img?h('img',{src:event.img,alt:'',loading:'lazy',decoding:'async'}):h('span',{'aria-hidden':'true',svg:APIC.cup}),
         h('span',{class:'msr-ranking-event-name'},event.short||event.n),
         h('span',{class:'msr-ranking-event-state'},out?'Eliminated':'Оролцож буй'));
@@ -5803,7 +5806,7 @@ window.MSR_FREE_AGENTS=[{nick:'Tmk',id:'258065102',from:'imp4ct',team:'DS_A4CCD6
       var eventBadges=rankingEventBadges(code),eventLinks=eventBadges?Array.from(eventBadges.querySelectorAll('a')):[];
       // No big event logo behind the card; show a small "participating" chip with the event name instead.
       var eventArtwork=[];
-      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':'')+(nameEl&&nameEl.textContent==='VOID'?' void':''),title:link.title},'🏆 '+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz|accacin|teamresolve)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
+      if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':'')+(link.getAttribute('data-tier')?' tier-'+link.getAttribute('data-tier'):''),title:link.title},(link.getAttribute('data-tier')?'★ '+link.getAttribute('data-tier')+' · ':'🏆 ')+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz|accacin|teamresolve)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
       if(eventLinks.length)btn.setAttribute('aria-label',T[code].n+' · '+eventLinks.map(function(link){return link.title;}).join(', '));
       var el = h('div', { class: 'ap-card' + (i === open ? ' open' : '')+(eventArtwork.length?' msr-ranking-has-event':'' ) }, 
         eventArtwork.length?h('div',{class:'msr-ranking-event-backdrop','aria-hidden':'true'},eventArtwork):null,btn,body);
