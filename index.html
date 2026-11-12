@@ -2685,6 +2685,7 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 .msr-stage-tab[aria-selected="true"]{background:var(--tracer)!important;color:#14100a!important;box-shadow:none!important}
 .flt.flt-one{flex-wrap:nowrap!important;overflow-x:auto;gap:5px!important;-webkit-overflow-scrolling:touch;scrollbar-width:none}.flt.flt-one::-webkit-scrollbar{display:none}.flt.flt-one label{flex:1 1 0!important;min-width:0!important;font-size:8.5px!important;letter-spacing:.04em!important;gap:4px!important}.flt.flt-one select{font-size:10.5px!important;padding:7px 12px 7px 5px!important;border-radius:8px!important;min-height:0!important;height:auto!important;width:100%!important;min-width:0!important;text-overflow:ellipsis;background-size:9px!important;background-position:right 3px center!important}.flt.flt-one{padding:8px!important;gap:5px!important}
 #msr-dc{border-color:rgba(154,87,231,.6)!important;background:rgba(154,87,231,.2)!important}#msr-dc:hover{background:#9a57e7!important}#app .ap-dc{background:#8b5cf6!important;color:#fff!important;box-shadow:0 0 14px rgba(139,92,246,.4)!important}#app .ap-dc:hover{filter:brightness(1.1)}
+#app .ap-sub h2{font-size:15px!important;white-space:nowrap;font-weight:800;letter-spacing:-.01em}#app .ap-sub .ap-date{white-space:nowrap;flex:none}#app .ap-list{gap:10px!important}#app .ap-ev:not(.feat) .top .ap-live{background:none!important;box-shadow:none!important;padding:0!important;color:#ff4d4d!important;font-size:13px!important;font-weight:800;letter-spacing:.04em}#app .ap-ev:not(.feat) .top .ap-live i{width:8px;height:8px}#app .ap-ev .ap-chip{background:rgba(255,255,255,.05)!important;color:var(--muted)!important}#app .ap-ev .ap-chip:has(svg):first-of-type{color:var(--text)!important}
 </style>
 </head>
 <body>
@@ -6158,9 +6159,14 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         h('div', { class: 'ban', style: 'background-image:url(' + e.img + ')' }, status(e), h('div', { class: 'cap' }, h('b', null, e.n), h('span', null, e.dt + ' · ' + e.loc))), chips(e), dcBtn(e));
       return h(tag, Object.assign({ class: 'ap-card ap-ev', href: href }, go), h('div', { class: 'top' }, evLogo(e.n, 'lg'), h('div', { class: 'tt' }, h('b', null, e.n), status(e)), dcBtn(e)), chips(e));
     }
+    function weekTitle() {
+      var d = new Date(), dow = (d.getDay() + 6) % 7, a = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow), b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6);
+      var M = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      return 'Events ' + (a.getMonth() === b.getMonth() ? a.getDate() + ' - ' + b.getDate() + ' ' + M[b.getMonth()] : a.getDate() + ' ' + M[a.getMonth()] + ' - ' + b.getDate() + ' ' + M[b.getMonth()]) + ' ' + b.getFullYear();
+    }
     var list = EVENTS.slice().sort(function (a, b) { return ({ now: 0, soon: 1, past: 2 })[a.st] - ({ now: 0, soon: 1, past: 2 })[b.st]; });
     return h('div', { class: 'ap' }, h('div', { class: 'ap-title' }, h('h1', null, 'Events')),
-      h('div', { class: 'ap-sub' }, h('h2', null, 'Events this season'), h('span', { class: 'ap-date' }, list.length + (list.length === 1 ? ' event' : ' events'))),
+      h('div', { class: 'ap-sub' }, h('h2', null, weekTitle()), h('span', { class: 'ap-date' }, list.length + (list.length === 1 ? ' event' : ' events'))),
       h('div', { class: 'ap-list' }, list.map(function (e, i) { return card(e, i === 0); })));
   }
   V.events = eventsApp;
