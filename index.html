@@ -3504,6 +3504,7 @@ window.MSR_FREE_AGENTS=[{nick:'Shion',id:'25318893',from:'Omen Esports',team:'DS
       try { c = ref[0] === 'INV' ? invCode(INV[0]) : (window.msrGrpTeamCode ? window.msrGrpTeamCode(ref[0], ref[1]) : null); } catch (e) { c = null; }
       return c && T[c] ? c : null;
     }
+    window.msrS2Zones = S2_ZONES; window.msrS2Info = S2_INFO; window.msrS2Team = s2ZoneTeam;
     function s2Tag(ref) { var c = s2ZoneTeam(ref); return c ? h('a', { class: 's2z-tm', href: teamHref(c), title: T[c].n }, crest(c, 'md'), h('span', null, ({ '2990white': '2990 W', '2990purple': '2990 P', '2990red': '2990 R' })[String(T[c].n || '').toLowerCase().replace(/[^a-z0-9]/g, '')] || swTag(c))) : 'TBD'; }
     function s2Slot(txt) { return h('div', { class: 's2z-t' }, txt || 'TBD'); }
     function s2Match(label, a, b, cls) {
@@ -5813,7 +5814,32 @@ window.MSR_FREE_AGENTS=[{nick:'Shion',id:'25318893',from:'Omen Esports',team:'DS
     var e = evInfo(name);
     return h('span', { class: 'ap-evlg' + (size ? ' ' + size : ''), style: e && e.img ? 'background:#031a0c url(' + e.img + ') center / cover no-repeat' : null, svg: e && e.img ? null : APIC.cup });
   }
+  // MSL Major S2 Stage 2, Round 1: every zone plays M1 (teams 1 v 2) and M2 (teams 3 v 4) today.
+  // Only the times the organiser has given are shown; everything else stays TBA.
+  function ensureS2Matches() {
+    try { zoneBracket(); } catch (e) { return; }
+    var Z = window.msrS2Zones, tm = window.msrS2Team, info = window.msrS2Info || {};
+    if (!Z || !tm) return;
+    // rebuilt on every call so team codes always reflect the latest synced teams
+    for (var i = ALLM.length - 1; i >= 0; i--) if (ALLM[i].s2fix) { delete MBY[ALLM[i].id]; ALLM.splice(i, 1); }
+    var nid = 1, out = [];
+    Z.forEach(function (z) {
+      var t = z[1].map(tm);
+      [[0, 1, 'M1'], [2, 3, 'M2']].forEach(function (p) {
+        var a = t[p[0]], b = t[p[1]];
+        if (!a || !b || a === b) return;
+        var inf = (info[z[0]] || []).filter(function (x) { return x.label.indexOf('Upper R1 · ' + p[2]) === 0; })[0];
+        while (MBY[nid]) nid++;
+        var m = { id: nid, s2fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Stage 2 · Zone ' + z[0] + ' · Upper R1 · Bo3', state: 'soon', day: 'Today', date: TODAY, when: inf && inf.time ? inf.time : 'TBA', bo: 3,
+          maps: inf ? inf.maps.map(function (x, i) { return [x[0], null, null, 'soon', i === 2 ? 'Decider' : x[1]]; }) : [] };
+        out.push(m);
+        MBY[nid] = m;
+      });
+    });
+    out.forEach(function (m) { ALLM.push(m); });
+  }
   function matchesApp() {
+    ensureS2Matches();
     var strip = h('div', { class: 'ap-days' }), box = h('div', { class: 'ap-groups' });
     var favBtn = h('button', { type: 'button', class: 'ap-fav', 'aria-label': 'Only my teams' }); favBtn.addEventListener('click', function () { APM.fav = !APM.fav; draw(); });
     function draw() {
