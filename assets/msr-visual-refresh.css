@@ -170,3 +170,62 @@ html body{background:radial-gradient(ellipse at 8% 0%,#32275026,transparent 48%)
 @media(max-width:650px){
  #app .msr-match-expand-head{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)!important;gap:8px!important}
 }
+
+/* Black, silver and electric blue palette; compact mobile player list. */
+:root{
+ --bg:#090b10!important;--surface:#141820!important;--raised:#1d232e!important;--sunk:#080a0f!important;
+ --line:#303947!important;--line-soft:#252d39!important;--text:#eef2f8!important;
+ --muted:#a5aebc!important;--dim:#7f8c9f!important;--tracer:#55aaff!important;
+ --neon-cyan:#55aaff!important;--neon-pink:#8998b3!important;--steel:#a8b7cd!important;--bar:#5c9ce6!important;
+}
+html body{background:#090b10!important;color:#eef2f8!important}
+#sky{background:radial-gradient(ellipse at 85% 0%,#16426c1c,transparent 55%),linear-gradient(#090b10,#0c1018)!important}
+#sky::before,#sky .st2{opacity:.1!important}
+#sky::after{background-image:linear-gradient(#5c9ce605 1px,transparent 1px),linear-gradient(90deg,#5c9ce605 1px,transparent 1px)!important;background-size:44px 44px!important;opacity:1!important}
+#sky .au{display:none!important}
+#snow{opacity:.08!important}
+header.top{background:#0b0e15f5!important;border-color:#303947!important}
+nav.main,nav.main a{background-color:transparent!important}
+nav.main a.on{color:#a0d2ff!important;background:#16273c!important;box-shadow:inset 0 -2px #55aaff!important}
+nav.main a.on::after{background:#55aaff!important}
+#app .box,#app .ncard,#app .evc,#app .tile,#app .hl-card,#app .sw-g,#app .sw-info{border-color:#303947!important}
+#app .ap-card,#app .plc{background:#141820!important;border-color:#303947!important}
+#app .ap-card.open{background:#191f29!important;border-color:#4c75a0!important}
+#app .ap-rk .no,#app .ap-rk .nm small,#app .plc .tm{color:#a0acbe!important}
+#app .ap-rk .nm b,#app .plc .nk{color:#f1f4fa!important}
+#app .ctag,#app .plc .ctag{color:#77baff!important}
+#app .plc .s,#app .msr-ba{background:#0c1018!important;border-color:#2b3646!important}
+#app .plc .s .k{color:#91a0b5!important}
+#app .plc .s .v{color:#e7edf7!important}
+#app .plc .kd .v{color:#8ac6ff!important}
+#app .plc.msr-podium-card-1{background:linear-gradient(110deg,#302c22,#151a22 75%)!important;border-color:#9a8351!important}
+#app .plc.msr-podium-card-2{background:linear-gradient(110deg,#282e38,#151a22 75%)!important;border-color:#8593a8!important}
+#app .plc.msr-podium-card-3{background:linear-gradient(110deg,#302720,#151a22 75%)!important;border-color:#916e53!important}
+#app .msr-match-expand,#app .msr-match-expand-head{background:#141b26!important;border-color:#303c4d!important}
+#app .hl-card{background-color:#141820!important}
+#app .hl-list{background:#0e131de8!important;border-color:#344359!important}
+#app .hl-grid .msr-stat-tile{background-color:#141c29!important;border-color:#3d5f87!important}
+#app .ap-btn{background:#2865b2!important;border-color:#528bd3!important}
+#msr-sponsors{background:#10151e!important;border-color:#2d3849!important}
+#msr-sponsors .msr-sponsor-empty{background:#141c28!important;border-color:#34445c!important}
+.mobile-dock .dock-tabs{background:#101721f7!important;border-color:#3a4a60!important}
+.mobile-dock .dock-tabs a.on{background:#1d3652!important;color:#a1d2ff!important}
+footer{background:#090c12!important}
+@media(max-width:650px){
+ #app .ph{gap:8px!important;margin-bottom:13px!important}
+ #app .ph h1{font-size:24px!important;margin-bottom:5px!important}
+ #app .ph p{font-size:11px!important;line-height:1.45!important;max-width:none!important}
+ #app .pl-grid{gap:8px!important}
+ #app .plc{padding:8px 10px!important;gap:6px!important;border-radius:11px!important;min-height:0!important}
+ #app .plc .top{gap:8px!important}
+ #app .plc .av.sg{width:34px!important;height:34px!important;min-width:34px!important;flex:0 0 34px!important}
+ #app .plc .nk{font-size:13px!important;line-height:1.2!important}
+ #app .plc .msr-player-identity .game-id{font-size:10px!important;line-height:1.15!important}
+ #app .plc .tm{font-size:10px!important;line-height:1.2!important}
+ #app .plc .tm .crest,#app .plc .tm img{width:12px!important;height:12px!important}
+ #app .plc .rank{font-size:11px!important;line-height:1.2!important}
+ #app .plc .row3{gap:5px!important}
+ #app .plc .s{padding:4px 6px!important;border-radius:6px!important;min-height:24px!important;gap:3px!important}
+ #app .plc .s .k{font-size:7px!important;letter-spacing:.025em!important;white-space:nowrap!important}
+ #app .plc .s .v{font-size:12px!important;line-height:1.15!important}
+}
