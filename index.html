@@ -5226,6 +5226,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
   V.match = function (id) {
     var m = MBY[id];
     if (!m) return V.results();
+    if (T[m.a] && T[m.b] && !window.__msrOldMatch) { setTimeout(function () { location.replace(msrMatchHref(m)); }, 0); }
     var s = series(m), live = m.state === 'live', soon = m.state === 'soon', done = m.state === 'done';
     var when = soon ? m.day + ' · ' + m.when : live ? 'Started today' : dlabel(m.date) + ', 2026';
     var head = h('div', { class: 'mh' },
@@ -5650,7 +5651,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       host.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:640px' },
         h('thead', null, h('tr', null, h('th', null, 'Date'), h('th', null, 'Opponent'), h('th', null, 'Map'), h('th', { class: 'n' }, 'K–D'), h('th', { class: 'n' }, 'ADR'), h('th', { class: 'n' }, 'KAST'), h('th', { class: 'n' }, 'Rating'))),
         h('tbody', null, recent.slice(0, 25).map(function (r) {
-          return h('tr', { class: r.ledger ? '' : 'clk', onclick: r.ledger ? null : go('#match/' + r.m.id) }, h('td', null, h('b', null, r.date ? dlabel(r.date) : '\u2014'), h('span', { style: 'font-size:12px;color:var(--dim);margin-left:8px' }, r.ledger ? '' : r.ev)),
+          return h('tr', { class: r.ledger ? '' : 'clk', onclick: r.ledger ? null : go(msrMatchHref(r.m)) }, h('td', null, h('b', null, r.date ? dlabel(r.date) : '\u2014'), h('span', { style: 'font-size:12px;color:var(--dim);margin-left:8px' }, r.ledger ? '' : r.ev)),
             h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'wl ' + (r.win ? 'w' : 'l') }, r.win ? 'W' : 'L'), crest(r.opp), (T[r.opp] || {}).n || '')), h('td', null, r.map),
             h('td', { class: 'n' }, r.k + '–' + r.d), h('td', { class: 'n' }, r.adr), h('td', { class: 'n' }, r.kast + '%'), h('td', { class: 'n' }, rt(r.rating)));
         }))))));
@@ -7145,7 +7146,13 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
 
   /* ================= match dialog ================= */
   var dlg = document.getElementById('dlg'), body = document.getElementById('dlg-b');
-  function openMatch(m) { closeDlg(); navTo('match/' + m.id); }
+  function msrMatchHref(m) {
+    if (!m || !T[m.a] || !T[m.b]) return '#match/' + (m && m.id);
+    var zg = /Zone ([A-H])/.exec(m.st || ''), grp = m.s2fix || zg ? 'S2-' + (zg ? zg[1] : '') : (m.group || '');
+    return '#mslmatch/' + m.a + '/' + m.b + '/' + (m.date || '') + '/' + grp;
+  }
+  window.msrMatchHref = msrMatchHref;
+  function openMatch(m) { closeDlg(); location.hash = msrMatchHref(m); }
   function openSwissTeam(code, p) {
     var t = swTeam(code), w = p.filter(function (x) { return x.me > x.op; }).length, l = p.length - w;
     var status = w >= 3 ? ['QUALIFIED', 'var(--tracer)'] : l >= 3 ? ['ELIMINATED', '#FF6B7A'] : ['STILL IN', 'var(--steel)'];
