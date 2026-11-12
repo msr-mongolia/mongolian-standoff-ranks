@@ -3088,6 +3088,13 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     var id = GAME_IDS[team + '|' + String(nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')];
     return id ? h('small', { class: 'game-id', style: 'display:block;font-size:12px;color:var(--muted);font-weight:500;line-height:1.7' }, 'ID: ' + id) : null;
   }
+  /* Name changes: key = team|nick (lower-case letters/digits), value = previous nickname shown on the profile. Same game ID. */
+  var MSR_FORMER_NICKS = { 'SIXL|mitsk': 'Merciless' };
+  function formerNickEl(nick, team) {
+    var k = String(team) + '|' + String(nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+    var f = MSR_FORMER_NICKS[k] || MSR_FORMER_NICKS[String(team).toUpperCase() + '|' + k.split('|')[1]];
+    return f ? h('small', { class: 'game-id msr-former-nick', style: 'display:block;font-size:12px;color:var(--muted);font-weight:500;line-height:1.7' }, 'Name change · formerly ' + f) : null;
+  }
   function playerHref(nick, team) { return '#player/' + encodeURIComponent(nick) + (team ? '/' + encodeURIComponent(team) : ''); }
   // Public, read-only player stats lookup for the signed-in account Stats tab.
   window.MSR_PLAYER_STATS_BY_ID = function(gameId) {
@@ -5600,7 +5607,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       h('a', { class: 'back', href: '#players', svg: ICON.back + '<span>Players</span>' }),
       h('div', { class: 'hl-head' + (team === 'TLNRS' ? ' msr-lunaris-back1-player' : team === 'ETXEN' ? ' msr-etxen-back1-player' : isOmvTeam(team) ? ' msr-omv-back1-player' : '') },
         h('div', { class: 'hl-card' },
-          h('div', { class: 'hl-top' }, avFrame(team, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120))), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
+          h('div', { class: 'hl-top' }, avFrame(team, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120))), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team), formerNickEl(p.nick, team)),
           h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag(playerCountry(p.nick, (T[team] && T[team].country) || 'Mongolia'))), li('Rating rank', '#' + rrank + ' of ' + PLAYERS.length))),
         statCard),
       flt, host);
