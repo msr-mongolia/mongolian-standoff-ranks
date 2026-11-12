@@ -7670,18 +7670,23 @@ function verifiedRanking(){document.getElementById('msr-verified-live-standings'
 
 const norm=s=>String(s||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
 // Shared clan media directory: automatically resolve logos for every finished-match team.
+const msrLocalClanLogos={"2990purple": "assets/img/8f8ef0a12af7.jpg", "p2990": "assets/img/8f8ef0a12af7.jpg", "2990white": "assets/img/e6f9c62da3d4.jpg", "w2990": "assets/img/e6f9c62da3d4.jpg", "sixlence": "assets/img/9fbf40d44c79.jpg", "sixl": "assets/img/9fbf40d44c79.jpg", "knightss": "assets/img/07af2dea7991.jpg", "kgtss": "assets/img/07af2dea7991.jpg", "teamlunaris": "assets/img/044821238a3f.jpg", "tlnrs": "assets/img/044821238a3f.jpg", "human4z": "assets/img/3446dfd92894.jpg", "humn7": "assets/img/3446dfd92894.jpg", "reign": "assets/img/005f781420d3.jpg", "rgn": "assets/img/005f781420d3.jpg", "omenesports": "assets/img/055886d9a033.jpg", "omen": "assets/img/055886d9a033.jpg", "starfirenirvanateam": "assets/img/e462a69ed752.jpg", "snt": "assets/img/e462a69ed752.jpg", "ulseratifcolitis": "assets/img/ebfa024c4b0f.jpg", "uclt": "assets/img/ebfa024c4b0f.jpg", "1nfinityx": "assets/img/d66c422721f8.jpg", "infyx": "assets/img/d66c422721f8.jpg", "1nfyx": "assets/img/d66c422721f8.jpg", "etxenmgl": "assets/img/b4c4e384b8b2.jpg", "etxen": "assets/img/b4c4e384b8b2.jpg", "silentr4ge": "assets/img/eae56f777f88.jpg", "r4ge7": "assets/img/eae56f777f88.jpg", "xiverion": "assets/img/41c9ff69ed8c.jpg", "xvrn": "assets/xvrn_profile1.jpg", "omegaforcez": "assets/img/46ee8b7ff3e3.jpg", "omgz": "assets/img/46ee8b7ff3e3.jpg", "0kz": "assets/img/46ee8b7ff3e3.jpg", "kingzz": "assets/img/fb1d23556338.jpg", "kngzz": "assets/img/fb1d23556338.jpg", "sixlencepurple": "assets/img/839729bc6bd4.jpg", "sixp": "assets/img/839729bc6bd4.jpg", "anotherlevel": "assets/img/ba92babfcbff.jpg", "anlvl": "assets/img/ba92babfcbff.jpg", "an0t": "assets/img/ba92babfcbff.jpg", "civilizationofruin": "assets/cior-dragon.jpg", "cor": "assets/cior-dragon.jpg", "cior": "assets/cior-dragon.jpg", "manai": "assets/img/3e1fbf30dab7.jpg", "8mna": "assets/img/3e1fbf30dab7.jpg", "elitekings": "assets/img/cf0648c8b07c.jpg", "elkng": "assets/img/cf0648c8b07c.jpg", "eks": "assets/img/cf0648c8b07c.jpg", "6lc": "assets/img/9fbf40d44c79.jpg", "xiveriondivine": "assets/xvrn_profile1.jpg", "omv": "assets/omv_profile.svg", "omnisover": "assets/omv_profile.svg", "woart": "assets/woart-logo.svg", "wonderart": "assets/woart-logo.svg", "imp4ct": "assets/impact-logo.jpg", "dsa4ccd6c33286b304e839a0bc": "assets/impact-logo.jpg", "mpct": "assets/impact-logo.jpg", "zxwbblack": "assets/zxwb-black.jpg", "ds5cdaaf806d7d39ac2c809ed3": "assets/zxwb-black.jpg", "zxwbwhite": "assets/zxwb-white.jpg", "dsa24136d1a99b5e5dfae15e9f": "assets/zxwb-white.jpg", "raintzy": "assets/rain-logo.jpg", "ds4561c74a8ef7ed8eba1eec28": "assets/rain-logo.jpg", "ra1in": "assets/rain-logo.jpg", "mnkteampurple": "assets/mnkt-purple.jpg", "ds779fbd131741477af32f9268": "assets/mnkt-purple.jpg", "mnkteamblue": "assets/mnkt-blue.jpg", "dsa92955a6312cc42137c3c7ea": "assets/mnkt-blue.jpg", "mnkteamred": "assets/mnkt-red.jpg", "dsa0b0110fc187c08be7637475": "assets/mnkt-red.jpg", "celestex": "assets/celestex.jpg", "ds7c03f1f6da5f993b4cc9bb28": "assets/celestex.jpg", "cel2x": "assets/celestex.jpg", "unitedelites": "assets/syroz.jpg", "dsbed22efe5176d46a905806cd": "assets/syroz.jpg", "syroz": "assets/syroz.jpg", "nameanotherlevel": "assets/img/ba92babfcbff.jpg", "6lcpurple": "assets/img/839729bc6bd4.jpg", "ciorred": "assets/cior-dragon.jpg"};
 let msrClanMedia=[];
 async function loadMsrClanMedia(){
+ let data=null;
  const config=window.MSR_CONFIG;
- if(!config?.SUPABASE_URL||!config?.SUPABASE_ANON_KEY)return;
  try{
-  const response=await fetch(config.SUPABASE_URL+'/rest/v1/msr_discord_teams?select=*&limit=1000',{headers:{apikey:config.SUPABASE_ANON_KEY,Authorization:'Bearer '+config.SUPABASE_ANON_KEY}});
-  if(!response.ok)return;
-  const data=await response.json();if(!Array.isArray(data))return;
-  msrClanMedia=data;
-  document.querySelectorAll('.msr-finished-side').forEach(updateFinishedClanMedia);
-  syncMsrResultCrests();
- }catch(error){console.warn('MSR clan media unavailable',error);}
+  if(config?.SUPABASE_URL&&config?.SUPABASE_ANON_KEY){
+   const response=await fetch(config.SUPABASE_URL+'/rest/v1/msr_discord_teams?select=*&limit=1000',{headers:{apikey:config.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(8000)});
+   if(response.ok)data=await response.json();
+  }
+ }catch(error){}
+ if(!Array.isArray(data)||!data.length){
+  try{const response=await fetch('assets/teams_snapshot.json',{cache:'no-cache'});if(response.ok)data=await response.json();}catch(error){}
+ }
+ if(Array.isArray(data))msrClanMedia=data;
+ document.querySelectorAll('.msr-finished-side').forEach(updateFinishedClanMedia);
+ syncMsrResultCrests();
 }
 loadMsrClanMedia();
 function syncMsrResultCrests(){
@@ -7766,7 +7771,8 @@ function updateFinishedClanMedia(side){
  };
  const img=side.querySelector('.msr-finished-logo');
  if(img){
-  let url=clan?.logo_url?clan.logo_url.replace('/team-logos/ds_','/team-logos/thumb/ds_'):clan?.logo_url;
+  const localLogo=msrLocalClanLogos[key]||msrLocalClanLogos[normKey(clan?.id)]||keys.map(k=>msrLocalClanLogos[k]).find(Boolean);
+  let url=localLogo||(clan?.logo_url?clan.logo_url.replace('/team-logos/ds_','/team-logos/thumb/ds_'):clan?.logo_url);
   if(url&&clan.source_timestamp&&url.indexOf('?')<0)url+='?v='+encodeURIComponent(clan.source_timestamp);
   if(!url){
    const matching=[...document.querySelectorAll('#app img')].find(el=>
@@ -8048,6 +8054,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
  const filters=app.querySelector('.results-filter-shell,.flt');
  if(filters?.parentElement)filters.parentElement.insertBefore(section,filters);
  else heading.parentElement?.after(section);
+ section.querySelectorAll('.msr-finished-side').forEach(updateFinishedClanMedia);
  // The old filter bar and its empty-list message are not used any more: finished matches are listed above by day.
  {const shell=app.querySelector('.results-filter-shell');if(shell){shell.style.setProperty('display','none','important');const nx=shell.nextElementSibling;if(nx&&/No results match/i.test(nx.textContent||''))nx.style.setProperty('display','none','important');}}
 }
