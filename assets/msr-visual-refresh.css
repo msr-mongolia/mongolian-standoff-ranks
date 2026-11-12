@@ -153,3 +153,20 @@ html body{background:radial-gradient(ellipse at 8% 0%,#32275026,transparent 48%)
  #app .pl-grid{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
  #app .plc .s{flex-direction:row!important;align-items:baseline!important;justify-content:space-between!important}
 }
+
+/* Symmetric match layout with event metadata beneath the two teams. */
+#app .msr-match-expand-head{
+ display:grid!important;grid-template-columns:minmax(0,1fr) 80px minmax(0,1fr)!important;
+ position:relative!important;gap:12px!important;
+}
+#app .msr-match-expand-head .msr-hltv-summary-team{
+ width:100%!important;flex-direction:column!important;align-items:center!important;
+ justify-content:center!important;gap:5px!important;
+}
+#app .msr-match-expand-head .msr-hltv-summary-team strong{text-align:center!important}
+#app .msr-match-expand-head small{grid-column:1/-1!important;width:100%!important;text-align:center!important;padding:3px 20px!important}
+#app .msr-match-expand-head::after{position:absolute;right:16px;bottom:12px;color:#7896b5!important}
+#app .msr-hltv-result-score{text-align:center!important}
+@media(max-width:650px){
+ #app .msr-match-expand-head{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)!important;gap:8px!important}
+}
