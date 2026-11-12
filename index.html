@@ -7807,7 +7807,7 @@ function verifiedResultsDetail(){
  const intro=document.createElement('p');intro.className='msr-results-intro';intro.textContent='Finished matches · Tap a match to see maps, player stats and ELO';section.appendChild(intro);
  const msrMatchSchedule=window.msrMatchSchedule;
  results.forEach((match,matchIndex)=>{
- const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);const _sd=msrMatchSchedule(match.a,match.b);matchPanel.dataset.day=_sd?String(_sd.date):'';
+ const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);const _sd=msrMatchSchedule(match.a,match.b);matchPanel.dataset.day=match.stage2?String(+((/NOV (\d+)/.exec(match.s2date||'')||[0,12])[1])):_sd?String(_sd.date):'';
  const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=msrMatchSchedule(match.a,match.b);event.textContent=match.stage2?'MSL MAJOR S2 · STAGE 2 · ZONE '+match.zone+' · '+(match.s2date||'NOV 13')+' · BO3':(sched?'MSL MAJOR · GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL MAJOR · ')+'BO3';if(sched)event.title='Group '+sched.group+' · played Nov '+sched.date;const summaryLogo=(team,position)=>{
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
  const logo=document.createElement('img');logo.className='msr-hltv-summary-logo';logo.alt=team+' logo';logo.hidden=true;
@@ -7996,12 +7996,15 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
   const dates=[...new Set([...section.querySelectorAll('.msr-match-expand')].map(e=>+e.dataset.day).filter(Boolean))].sort((a,b)=>a-b);
   if(dates.length){
    const now=new Date(),todayD=now.getMonth()===10?now.getDate():0;
-   let sel=(todayD>=4&&todayD<=10)?todayD:0,center=sel||dates[dates.length-1];
+   const lastD=dates[dates.length-1],maxD=Math.max(lastD,todayD),minD=dates[0];
+   // Newest day first, like the page intro says; open on the latest day that has results.
+   {const cards=[...section.querySelectorAll('.msr-match-expand')],anchor=cards[0]?.previousSibling;const byDay=cards.map((e,i)=>[e,i]).sort((a,b)=>(+b[0].dataset.day||0)-(+a[0].dataset.day||0)||a[1]-b[1]);const host=cards[0]?.parentNode;if(host){const after=cards[cards.length-1].nextSibling;byDay.forEach(x=>host.insertBefore(x[0],after));}}
+   let sel=dates.includes(todayD)?todayD:lastD,center=sel;
    const strip=document.createElement('div');strip.className='ap-days msr-res-days';
    const draw=()=>{
     strip.textContent='';
     const mk=(txt,fn,cls,label)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=txt;if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b;};
-    strip.appendChild(mk('‹',()=>{center=Math.max(4,center-1);draw();},'ap-arrow','Earlier'));
+    strip.appendChild(mk('‹',()=>{center=Math.max(minD,center-1);draw();},'ap-arrow','Earlier'));
     [-2,-1,0,1,2].map(k=>center+k).forEach(n=>{
      const dd=new Date(2026,10,n),wd=['SUN','MON','TUE','WED','THU','FRI','SAT'][dd.getDay()];
      const b=document.createElement('button');b.type='button';b.className='ap-day'+(n===sel?' on':'');
@@ -8009,7 +8012,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
      
      b.append(bb,sp);b.addEventListener('click',()=>{sel=(sel===n)?0:n;center=n;draw();});strip.appendChild(b);
     });
-    strip.appendChild(mk('›',()=>{center=Math.min(10,center+1);draw();},'ap-arrow','Later'));
+    strip.appendChild(mk('›',()=>{center=Math.min(maxD,center+1);draw();},'ap-arrow','Later'));
     let shown=0;section.querySelectorAll('.msr-match-expand').forEach(e=>{const ok=!sel||+e.dataset.day===sel;e.style.display=ok?'':'none';if(ok)shown++;});
     let empty=section.querySelector('.msr-res-empty');if(!empty){empty=document.createElement('p');empty.className='msr-results-intro msr-res-empty';empty.textContent='No finished matches on this day yet.';section.appendChild(empty);}
     empty.style.display=shown?'none':'';
