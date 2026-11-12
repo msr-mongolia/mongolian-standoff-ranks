@@ -2634,12 +2634,12 @@ a,button,summary,label,[role="button"],[role="link"],.msr-hl-row,.ap-day,.msr-re
 </style>
 <style id="msr-events-compact">
 #app .msr-rank-event-chip.tier-S:not(.out){color:#ffd166!important;background:#ffd16626!important;border-color:#f5c451!important}
-#app .msr-rank-event-chip.tier-A:not(.out){color:#e3c8ff!important;background:#7b3fe433!important;border-color:#a56bff!important}
-#app .msr-rank-event-chip.tier-B:not(.out){color:#9fd4ff!important;background:#2b8cff33!important;border-color:#4aa8ff!important}
+#app .msr-rank-event-chip.tier-A:not(.out){color:#ffb3b3!important;background:#e0303033!important;border-color:#ff5c5c!important}
+#app .msr-rank-event-chip.tier-B:not(.out){color:#e3c8ff!important;background:#7b3fe433!important;border-color:#a56bff!important}
 #app .ap-ev .ap-tpmax{font-weight:800;font-size:12px}
 #app .ap-ev .ap-tpmax.t-S{color:#ffd166;background:#ffd16622}
-#app .ap-ev .ap-tpmax.t-A{color:#b7bec7;background:#7fd0ff22}
-#app .ap-ev .ap-tpmax.t-B{color:#9fe8b0;background:#9fe8b022}
+#app .ap-ev .ap-tpmax.t-A{color:#ff9a9a;background:#ff4d4d22}
+#app .ap-ev .ap-tpmax.t-B{color:#d2a9ff;background:#b77aff22}
 #app .ap-ev .top{gap:10px;padding:10px 12px 6px}
 #app .ap-ev .top .tt b{font-size:15px}
 #app .ap-ev .top .tt{gap:2px;font-size:12px}
@@ -6134,7 +6134,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
 
   /* ---- Events ---- */
   function eventsApp() {
-    if (!document.getElementById('msr-tier-css')) { var tc2 = document.createElement('style'); tc2.id = 'msr-tier-css'; tc2.textContent = '.ap-tier{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;font-weight:900;font-size:14px;letter-spacing:.08em;border:1.5px solid;white-space:nowrap}.ap-tier.t-S{color:#ffd36b;border-color:#ffc440;background:linear-gradient(135deg,rgba(255,196,64,.28),rgba(255,140,40,.12));box-shadow:0 0 14px rgba(255,196,64,.3)}.ap-tier.t-A{color:#d2a9ff;border-color:#b77aff;background:rgba(183,122,255,.16)}.ap-tier.t-B{color:#7fd0ff;border-color:#28baf2;background:rgba(40,186,242,.14)}.ap-tier.t-C{color:#8ff0b8;border-color:#35db75;background:rgba(53,219,117,.14)}'; document.head.appendChild(tc2); }
+    if (!document.getElementById('msr-tier-css')) { var tc2 = document.createElement('style'); tc2.id = 'msr-tier-css'; tc2.textContent = '.ap-tier{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;font-weight:900;font-size:14px;letter-spacing:.08em;border:1.5px solid;white-space:nowrap}.ap-tier.t-S{color:#ffd36b;border-color:#ffc440;background:linear-gradient(135deg,rgba(255,196,64,.28),rgba(255,140,40,.12));box-shadow:0 0 14px rgba(255,196,64,.3)}.ap-tier.t-A{color:#ff9a9a;border-color:#ff4d4d;background:rgba(255,77,77,.16)}.ap-tier.t-B{color:#d2a9ff;border-color:#b77aff;background:rgba(183,122,255,.16)}.ap-tier.t-C{color:#8ff0b8;border-color:#35db75;background:rgba(53,219,117,.14)}'; document.head.appendChild(tc2); }
     function tierChip(e) { return e.tier ? h('span', { class: 'ap-tier t-' + e.tier, title: e.tier + ' tier tournament' }, '★ ' + e.tier + ' TIER') : null; }
     function tpMaxChip(e) {
       var w = e.tier && window.MSR_TP_TIER_WEIGHT && window.MSR_TP_TIER_WEIGHT[e.tier], p1 = window.MSR_TP_PLACEMENT && window.MSR_TP_PLACEMENT[1];
@@ -8708,7 +8708,7 @@ html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-
 }
 </style>
 
-<link rel="stylesheet" href="assets/msr-visual-refresh.css?v=20261113-14" id="msr-visual-refresh">
+<link rel="stylesheet" href="assets/msr-visual-refresh.css?v=20261113-15" id="msr-visual-refresh">
 </body>
 </html>
 
