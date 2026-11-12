@@ -5582,11 +5582,12 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     return { pts: pts, vip: vip, cap: vip ? null : 500 };
   };
   V.tpranking = function () {
+    if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
     var rows = RANK.map(function (r) { var tp = window.msrTP(r[0]); return { code: r[0], elo: r[1], tp: tp }; });
     rows.sort(function (x, y) { return y.tp.pts - x.tp.pts || y.elo - x.elo; });
     return h('div', { class: 'tp-wrap' },
       h('a', { class: 'back', href: '#ranking', svg: ICON.back + '<span>Ranking</span>' }),
-      h('h2', { style: 'margin:10px 0 4px' }, 'Tournament points'),
+      rankingViewTabs('tpranking'),
       h('div', { class: 'tp-note' }, 'Points from tournament placements (separate from ELO). Cap 500, no cap for VIP teams. Ties are ordered by ELO.'),
       rows.map(function (r, i) {
         return h('a', { class: 'tp-row', href: teamHref(r.code) }, h('span', { class: 'n' }, i + 1), crest(r.code, 34), h('span', { class: 'nm' }, T[r.code].n),
@@ -5915,6 +5916,11 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     }));
   }
 
+  function rankingViewTabs(active){
+    return h('nav',{class:'msr-ranking-view-tabs','aria-label':'Ranking views'},
+      h('a',{href:'#ranking',class:active==='ranking'?'on':'','aria-current':active==='ranking'?'page':null},'MSR Ranking'),
+      h('a',{href:'#tpranking',class:active==='tpranking'?'on':'','aria-current':active==='tpranking'?'page':null},'Tournament'));
+  }
   function rankApp() {
     if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
     var open = APR.open, cards = [];
@@ -5967,7 +5973,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     apMore.addEventListener('click', function () { apAll = !apAll; apDraw(); });
     apDraw();
     return h('div', { class: 'ap' },
-      h('div', { class: 'ap-sub' }, h('h2', null, 'MSR Ranking'), h('span', { class: 'ap-date' }, dt)),
+      h('div', { class: 'ap-sub msr-ranking-tab-header' }, rankingViewTabs('ranking'), h('span', { class: 'ap-date' }, dt)),
       list, apMore);
   }
   V.ranking = function () { return RANK.length ? rankApp() : emptyPage('Ranking', 'Teams will be ranked here once they are added.', 'No teams yet.'); };
@@ -7062,14 +7068,14 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.svg';T[code].c='#ff344c';}});
       window.MSR_ROSTER_LOAD_STATE='ready';
-      if (/^(ranking|team|players|player|stats|event|events|matches|live)(\/|$)/.test(H)) route();
+      if (/^(ranking|tpranking|team|players|player|stats|event|events|matches|live)(\/|$)/.test(H)) route();
       try{
         var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
       }catch(_relError){}
       if (/^(team|stats|event|events|matches|live)(\/|$)/.test(H)) route();
 
-    } catch (e) { console.warn('MSR teams sync error',e); if(window.MSR_ROSTER_LOAD_STATE!=='ready'){window.MSR_ROSTER_LOAD_STATE='error';if(/^(ranking|players|player)(\/|$)/.test(H))route();} }
+    } catch (e) { console.warn('MSR teams sync error',e); if(window.MSR_ROSTER_LOAD_STATE!=='ready'){window.MSR_ROSTER_LOAD_STATE='error';if(/^(ranking|tpranking|players|player)(\/|$)/.test(H))route();} }
   }
   document.addEventListener('DOMContentLoaded', loadDiscordTeams);
   window.addEventListener('pageshow',function(e){if(e.persisted)loadDiscordTeams();});
@@ -7177,7 +7183,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     window.addEventListener('resize', placeControls);
     function updateDock() {
       var page = (location.hash.slice(1).split('/')[0] || 'news');
-      page=({player:'players',team:'ranking',match:'matches',event:'events',article:'news'})[page]||page;
+      page=({player:'players',team:'ranking',tpranking:'ranking',match:'matches',event:'events',article:'news'})[page]||page;
       dock.querySelectorAll('a').forEach(function(a) { var on = a.dataset.r === page; a.classList.toggle('on', on); if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
     }
     updateDock(); window.addEventListener('hashchange', updateDock);
@@ -8678,7 +8684,7 @@ html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-
 }
 </style>
 
-<link rel="stylesheet" href="assets/msr-visual-refresh.css?v=20261113-8" id="msr-visual-refresh">
+<link rel="stylesheet" href="assets/msr-visual-refresh.css?v=20261113-9" id="msr-visual-refresh">
 </body>
 </html>
 
