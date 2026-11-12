@@ -8592,6 +8592,13 @@ html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-
   }catch(e){}
 })();
 </script>
+
+<style id="msr-single-results-list">
+/* Verified result cards replace the legacy duplicate list. */
+#app:has(.msr-finished-detail) .msr-result-date-heading,
+#app:has(.msr-finished-detail) .results-match-group,
+#app:has(.msr-finished-detail) .results-match-expand{display:none!important}
+</style>
 </body>
 </html>
 
