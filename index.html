@@ -7837,6 +7837,9 @@ function verifiedResultsDetail(){
  const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);const _sd=msrMatchSchedule(match.a,match.b);matchPanel.dataset.day=match.stage2?String(+((/NOV (\d+)/.exec(match.s2date||'')||[0,12])[1])):_sd?String(_sd.date):'';
  const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=msrMatchSchedule(match.a,match.b);event.textContent=match.stage2?'MSL MAJOR S2 · STAGE 2 · ZONE '+match.zone+' · '+(match.s2date||'NOV 13')+' · BO3':(sched?'MSL MAJOR · GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL MAJOR · ')+'BO3';if(sched)event.title='Group '+sched.group+' · played Nov '+sched.date;const summaryLogo=(team,position)=>{
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
+ wrap.dataset.back1Label=team==='SIXP'?'6LC Purple':team;
+ let tint=0;for(const ch of team)tint=(tint*31+ch.charCodeAt(0))>>>0;
+ wrap.style.setProperty('--msr-back1-hue',String(tint%360));
  const logo=document.createElement('img');logo.className='msr-hltv-summary-logo';logo.alt=team+' logo';logo.hidden=true;
  const title=document.createElement('strong');title.textContent=team==='SIXP'?'6LC Purple':team;
  const won=match.winner===team;wrap.classList.add(won?'msr-team-won':'msr-team-lost');const stamp=document.createElement('em');stamp.textContent=won?'WIN':(((match.auto||{}).a||0)+((match.auto||{}).b||0)?'AUTO':'LOSS');stamp.className='msr-stamp '+(won?'msr-stamp-win':(stamp.textContent==='AUTO'?'msr-stamp-auto':'msr-stamp-loss'));
@@ -8630,6 +8633,25 @@ html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-
  #app .msr-match-expand-head .msr-hltv-summary-logo:not([hidden]){
   width:40px!important;height:40px!important;min-width:40px!important;
  }
+}
+</style>
+
+<style id="msr-results-back1-fallback">
+#app .msr-match-expand-head .msr-hltv-summary-team{
+ background-color:#111b2a;isolation:isolate;
+ box-shadow:inset 0 0 0 1px rgba(160,185,220,.12);
+}
+#app .msr-match-expand-head .msr-hltv-summary-team:not([data-has-back1="true"]){
+ background-image:linear-gradient(135deg,hsla(var(--msr-back1-hue,220),48%,28%,.8),rgba(8,14,24,.94) 70%)!important;
+}
+#app .msr-match-expand-head .msr-hltv-summary-team:not([data-has-back1="true"])::before{
+ content:attr(data-back1-label);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ padding:5px;font:900 clamp(22px,5vw,50px)/1 system-ui,sans-serif;letter-spacing:-.04em;
+ color:rgba(220,235,255,.11);overflow-wrap:anywhere;transform:rotate(-12deg) scale(1.08);
+ pointer-events:none;z-index:-1;
+}
+#app .msr-match-expand-head .msr-hltv-summary-team strong{
+ color:#fff;text-shadow:0 2px 5px #000,0 0 8px #000;
 }
 </style>
 </body>
