@@ -4825,17 +4825,26 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     }).filter(Boolean);
   }
   // Series result from the verified match ledger (map wins + forfeit map wins). Returns {a,b} oriented to ka/kb, or null.
-  function msrRelResult(ka,kb){
+  function msrRelResult(ka,kb,st){
     var L=window.MSR_SCREENSHOT_MATCHES;
     if(!ka||!kb||ka===kb||!L||!window.msrTagToCode)return null;
     for(var i=L.length-1;i>=0;i--){
       var e=L[i],ca=window.msrTagToCode(e.a),cb=window.msrTagToCode(e.b);
       if(!((ca===ka&&cb===kb)||(ca===kb&&cb===ka)))continue;
+      if(!!e.stage2!==(st==='s2'))continue;
       var aw=(e.auto&&e.auto.a)||0,bw=(e.auto&&e.auto.b)||0;
       (e.maps||[]).forEach(function(m){if(m.aScore>m.bScore)aw++;else if(m.bScore>m.aScore)bw++;});
       if(aw===bw)return null;
       var ms=(e.maps||[]).map(function(m){return {map:m.map,a:ca===ka?m.aScore:m.bScore,b:ca===ka?m.bScore:m.aScore};});
       return ca===ka?{a:aw,b:bw,maps:ms}:{a:bw,b:aw,maps:ms};
+    }
+    var SR=st==='s2'?(window.MSR_S2_RESULTS||[]):[];
+    for(var j=SR.length-1;j>=0;j--){
+      var r=SR[j];if(!r.auto)continue;
+      var ra=window.msrTagToCode(r.a),rb=window.msrTagToCode(r.b);
+      if(!((ra===ka&&rb===kb)||(ra===kb&&rb===ka)))continue;
+      var x=r.auto.a||0,y=r.auto.b||0;if(x===y)return null;
+      return ra===ka?{a:x,b:y,maps:[]}:{a:y,b:x,maps:[]};
     }
     return null;
   }
@@ -4854,15 +4863,15 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     return out;
   }
   function msrRelMatchCard(row){
-    var rk=[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=msrRelResult(rk[0],rk[1]);
+    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=msrRelResult(rk[0],rk[1],row._keys?'s2':undefined);
     function team(name,mine){
-      var key=msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
+      var key=row._keys?(mine?rk[0]:rk[1]):msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
       return h('div',{class:'msr-hl-t'+(res?(won?' win':' loss'):'')},
         key?h('a',{class:'msr-hl-tl',href:teamHref(key),title:label},crest(key,'sm'),h('span',{class:'msr-hl-n'},label)):h('span',{class:'msr-hl-tl'},crest(null,'sm'),h('span',{class:'msr-hl-n'},label)),
         res?h('span',{class:'msr-hl-s'},String(mine?res.a:res.b)):null);
     }
     var time=row.time_label||'';
-    var href=(rk[0]&&rk[1])?('#mslmatch/'+rk[0]+'/'+rk[1]+'/'+(1104+(row.day||0))+'/'+(row.group||'')):null;
+    var href=row._href||((rk[0]&&rk[1])?('#mslmatch/'+rk[0]+'/'+rk[1]+'/'+(1104+(row.day||0))+'/'+(row.group||'')):null);
     var rowEl=h('div',{class:'msr-hl-row',role:href?'link':null,tabindex:href?'0':null},
       h('div',{class:'msr-hl-time'},h('b',null,time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):(res?'Final':'TBA')),h('small',null,'Bo3')),
       h('i',{class:'msr-hl-sep'}),
@@ -4880,7 +4889,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     var pp=String(arg||'').split('/'),ka=pp[0],kb=pp[1],dn=+pp[2]||0,grp=pp[3]||'';
     if(!T[ka]||!T[kb])return V.matches();
     var known=msrRelUpcoming().find(function(r){var x=msrRelTeamKey(r.team_a),y=msrRelTeamKey(r.team_b);return (x===ka&&y===kb)||(x===kb&&y===ka);})||null;
-    var res=msrRelResult(ka,kb),time=known&&known.time_label?known.time_label:'';
+    var isS2=/^S2-/.test(grp),res=msrRelResult(ka,kb,isS2?'s2':undefined),time=known&&known.time_label?known.time_label:'';
     var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var dateTxt=dn?(('0'+(dn%100)).slice(-2)+' '+MON[Math.floor(dn/100)-1]+' '+YEAR):'';
     function headTeam(k){return h('a',{class:'msr-mm-ht',href:teamHref(k)},crest(k,'lg'),h('b',null,T[k].n));}
@@ -4894,6 +4903,11 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
           h('span',{class:'msr-mm-sc'+(win===ka?' w':'')},crest(ka,'xs'),sc?String(sc.a):''),
           h('span',{class:'msr-mm-sc'+(win===kb?' w':'')},sc?String(sc.b):'',crest(kb,'xs'))));
     }
+    function s2InfoText(zn,a,b){
+      var z=(window.msrS2Zones||[]).filter(function(q){return q[0]===zn;})[0],slot='';
+      if(z)[0,2].forEach(function(r0){var c0=window.msrS2Team(z[1][r0]),c1=window.msrS2Team(z[1][r0+1]);if((c0===a&&c1===b)||(c0===b&&c1===a))slot=' · Upper R1 · M'+(r0/2+1);});
+      return 'MSL Major S2 · Stage 2 · Zone '+zn+slot;
+    }
     var cards=[];
     if(known&&(known.picks||[]).length){
       known.picks.forEach(function(p){var pk=msrRelTeamKey(p.team);cards.push(mmCard((pk&&T[pk]?T[pk].tag||T[pk].n:p.team)+' pick',p.map,pk));});
@@ -4903,10 +4917,18 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     }else{cards=[mmCard('Pick 1','TBA'),mmCard('Pick 2','TBA'),mmCard('Decider','TBA')];}
     function lineup(k){
       // Top 5: best ratings among players with a real sample (at least half of the team's most-played player); fill from the rest if fewer than 5.
+      var playedSet=null;
+      if(isS2){(window.MSR_SCREENSHOT_MATCHES||[]).forEach(function(e){
+        if(!e.stage2)return;var ca=window.msrTagToCode(e.a),cb=window.msrTagToCode(e.b);
+        if(!((ca===ka&&cb===kb)||(ca===kb&&cb===ka)))return;
+        var side=ca===k?'a':cb===k?'b':null;if(!side)return;playedSet={};
+        e.maps.forEach(function(m){(m[side]||[]).forEach(function(q){playedSet[String(q[0]).toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')]=1;});});
+      });}
       var all=PLAYERS.filter(function(p){return p.team===k;}),mx=all.reduce(function(m,p){return Math.max(m,p.maps||0);},0);
       var core=all.filter(function(p){return (p.maps||0)>0&&(p.maps||0)>=Math.ceil(mx/2);}).sort(function(a,b){return b.rating-a.rating;});
       var rest=all.filter(function(p){return core.indexOf(p)<0;}).sort(function(a,b){return (b.maps||0)-(a.maps||0)||b.rating-a.rating;});
       var list=core.concat(rest).slice(0,5);
+      if(playedSet){var pl=all.filter(function(p){return playedSet[String(p.nick||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')];}).sort(function(a,b){return b.rating-a.rating;});if(pl.length)list=pl.slice(0,6);}
       return h('section',{class:'msr-mm-sec'},
         h('h2',null,T[k].n+(res?' Lineup':' Expected Lineup')),
         h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){
@@ -4922,7 +4944,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       h('a',{class:'back',href:'#matches',svg:ICON.back+'<span>Matches</span>'}),
       h('div',{class:'msr-mm-head'},headTeam(ka),center,headTeam(kb)),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'BO3')),
-        h('div',{class:'msr-mm-info'},'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
+        h('div',{class:'msr-mm-info'},/^S2-/.test(grp)?s2InfoText(grp.slice(3),ka,kb):'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards)),
       lineup(ka),lineup(kb),
       msrMatchH2H(ka,kb),msrMatchMapStats(ka,kb),msrMatchForm(ka,kb));
@@ -5955,7 +5977,37 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         }
         box.appendChild(mslPanel);
       }
-      var list = ALLM.filter(function (m) { return (m.state !== 'done' || m.s2fix) && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
+      if (YEAR === 2026 && APM.sel === 1112 && window.msrS2Zones && window.msrS2Team) {
+        var s2Rows = function (zi) {
+          var z = window.msrS2Zones[zi], out = [];
+          [0, 2].forEach(function (r0) {
+            if (!window.msrS2Res(z[0], 'Upper R1 · M' + (r0 / 2 + 1))) return;
+            var c0 = window.msrS2Team(z[1][r0]), c1 = window.msrS2Team(z[1][r0 + 1]);
+            if (!c0 || !c1 || !T[c0] || !T[c1]) return;
+            if (APM.fav && !isFav(c0) && !isFav(c1)) return;
+            out.push({ team_a: T[c0].n, team_b: T[c1].n, _keys: [c0, c1], _href: '#mslmatch/' + c0 + '/' + c1 + '/1112/S2-' + z[0] });
+          });
+          return out;
+        };
+        var s2Panel = h('section', { class: 'ap-card msr-rel-tournament' }), s2Open = APM.s2Open !== false;
+        s2Panel.appendChild(h('button', { type: 'button', class: 'ap-gh', 'aria-expanded': String(s2Open), onclick: function () { APM.s2Open = !s2Open; if (s2Open) APM.s2Zone = null; draw(); } },
+          evLogo('MSL Major S2'), h('b', null, 'MSL Major S2 · Stage 2'), h('span', { class: 'ct' }, '8 zones'), h('i', { class: 'chv', svg: APIC.chev })));
+        if (s2Open) {
+          var s2Body = h('div', { class: 'msr-rel-group-panel' });
+          s2Body.appendChild(h('div', { class: 'msr-rel-group-buttons', 'aria-label': 'Stage 2 zones' }, window.msrS2Zones.map(function (z, zi) {
+            return h('button', { type: 'button', class: 'msr-rel-group-button' + (APM.s2Zone === zi ? ' on' : ''), 'aria-pressed': String(APM.s2Zone === zi), onclick: function () { APM.s2Zone = zi; draw(); } },
+              h('b', null, 'Zone ' + z[0]), h('small', null, s2Rows(zi).length + ' matches'));
+          })));
+          if (APM.s2Zone != null) {
+            var zr = s2Rows(APM.s2Zone);
+            s2Body.appendChild(h('h2', { class: 'msr-rel-group-heading' }, 'Zone ' + window.msrS2Zones[APM.s2Zone][0]));
+            s2Body.appendChild(zr.length ? h('div', { class: 'msr-rel-match-list' }, zr.map(msrRelMatchCard)) : h('div', { class: 'ap-empty' }, 'No Stage 2 matches played in this zone yet.'));
+          }
+          s2Panel.appendChild(s2Body);
+        }
+        box.appendChild(s2Panel);
+      }
+      var list = ALLM.filter(function (m) { return m.state !== 'done' && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
       list.forEach(function (m) { if (!seen[m.ev]) { seen[m.ev] = []; groups.push([m.ev, seen[m.ev]]); } seen[m.ev].push(m); });
       groups.forEach(function (g, gi) {
@@ -5972,7 +6024,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         }) : null;
         box.appendChild(h('div', { class: 'ap-card ap-grp' + (isOpen ? ' open' : '') }, head, rows ? h('div', { class: 'ap-rows' }, rows) : null));
       });
-      if (!groups.length && !(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110)) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
+      if (!groups.length && !(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110) && APM.sel!==1112) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
       favBtn.setAttribute('aria-pressed', APM.fav ? 'true' : 'false'); favBtn.innerHTML = starSvg(APM.fav);
     }
     draw();
