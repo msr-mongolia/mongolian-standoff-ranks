@@ -2728,6 +2728,7 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
     <a href="#results" data-r="results">Results</a>
     <a href="#stats" data-r="stats">Stats</a>
     <a href="#gold" data-r="gold">Gold</a>
+    <a href="#freeagents" data-r="freeagents">Free agents</a>
     <a href="#vip" data-r="vip">VIP Clan</a>
     
       <div id="msr-language-switch" class="msr-language-switch" style="display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:12px;padding:14px 12px;border-top:1px solid #394555;color:#e5ebf6">
@@ -4014,6 +4015,16 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     else box.appendChild(h('div',{class:'msr-loading-skeleton','aria-hidden':'true'},h('i'),h('i'),h('i')));
     return box;
   }
+  function msrFreeAgentsBox(margin) {
+    var fa = window.MSR_FREE_AGENTS || [];
+    if (!fa.length) return null;
+    return h('div', { id: 'free-agents', style: margin || 'margin-top:34px' }, h('div', { class: 'grp-h' }, 'Free Agents (' + fa.length + ')'),
+      h('p', { style: 'font-size:12.5px;color:var(--dim);margin:0 0 12px' }, 'Players without a team. Teams can pick them up.'),
+      h('div', { class: 'pl-grid' }, fa.map(function (f) {
+        return h('a', { class: 'plc', href: playerHref(f.nick, f.team || '') }, h('div', { class: 'top' }, h('span', { title: f.nick, style: 'width:54px;height:54px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);font-weight:800;font-size:20px;color:var(--gold)' }, f.nick.charAt(0).toUpperCase()),
+          h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, f.nick), f.id ? h('div', { class: 'tm' }, 'ID ' + f.id) : null, h('div', { class: 'tm' }, 'Free agent' + (f.from ? ' · ex-' + f.from : '')))));
+      })));
+  }
   V.players = function () {
     if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
     var showAll = false;
@@ -4049,13 +4060,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       more.setAttribute('aria-expanded', showAll ? 'true' : 'false');
     }
     draw();
-    var fa = window.MSR_FREE_AGENTS || [], faBox = null;
-    if (fa.length) faBox = h('div', { style: 'margin-top:34px' }, h('div', { class: 'grp-h' }, 'Free Agents (' + fa.length + ')'),
-      h('p', { style: 'font-size:12.5px;color:var(--dim);margin:0 0 12px' }, 'Players without a team. Teams can pick them up.'),
-      h('div', { class: 'pl-grid' }, fa.map(function (f) {
-        return h('a', { class: 'plc', href: playerHref(f.nick, f.team || '') }, h('div', { class: 'top' }, h('span', { title: f.nick, style: 'width:54px;height:54px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);font-weight:800;font-size:20px;color:var(--gold)' }, f.nick.charAt(0).toUpperCase()),
-          h('div', { class: 'msr-player-identity' }, h('div', { class: 'nk' }, f.nick), f.id ? h('div', { class: 'tm' }, 'ID ' + f.id) : null, h('div', { class: 'tm' }, 'Free agent' + (f.from ? ' · ex-' + f.from : '')))));
-      })));
+    var faBox = msrFreeAgentsBox();
     return h('div', null, pageHead('Players', PLAYERS.filter(function (p) { return p.team && T[p.team]; }).length + ' registered players. Statistics start at zero until verified match screenshots are added.'), wrap, more, faBox);
   };
 
@@ -4137,6 +4142,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
   function emptyPage(title, desc, msg) { return h('div', null, pageHead(title, desc), h('div', { class: 'empty' }, msg)); }
   var _ranking = V.ranking, _players = V.players, _live = V.live;
   V.ranking = function () { return RANK.length ? _ranking() : emptyPage('Ranking', 'Teams will be ranked here once they are added.', 'No teams yet.'); };
+  V.freeagents = function () { var b = msrFreeAgentsBox('margin-top:0'); return h('div', null, pageHead('Free agents', (window.MSR_FREE_AGENTS || []).length + ' players without a team.'), b || h('div', { class: 'empty' }, 'No free agents right now.')); };
   V.players = function () { return PLAYERS.length ? _players() : emptyPage('Players', 'Players will be listed here once teams are added.', 'No players yet.'); };
   /* Scheduled broadcasts. Put the YouTube / Facebook / Twitch link into `stream` and it plays on the site.
      Times are Ulaanbaatar (UTC+8). */
