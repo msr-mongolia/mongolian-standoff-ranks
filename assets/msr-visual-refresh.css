@@ -2,14 +2,14 @@
 :root{
  --bg:#0f1114!important;--surface:#1a1d22!important;--raised:#24292f!important;--sunk:#101316!important;
  --line:#343c46!important;--line-soft:#2b3038!important;
- --text:#f5f6f8!important;--muted:#6bdfa9!important;--dim:#4cd896!important;
+ --text:#f5f6f8!important;--muted:#a973e7!important;--dim:#9551e1!important;
  --tracer:#43d9dc!important;--neon-cyan:#43d9dc!important;--neon-pink:#c1c6ce!important;
  --steel:#b5bcc5!important;--bar:#b0b7c1!important;--gold:#e6bf70!important;
 }
 html{scroll-padding-bottom:130px}
 body{
- background:radial-gradient(ellipse at 9% 0%,rgba(47,188,122,.16),transparent 48%),
- radial-gradient(ellipse at 100% 24%,rgba(47,188,122,.09),transparent 46%),#0f1114!important;
+ background:radial-gradient(ellipse at 9% 0%,rgba(118,42,205,.16),transparent 48%),
+ radial-gradient(ellipse at 100% 24%,rgba(118,42,205,.09),transparent 46%),#0f1114!important;
  color:var(--text)!important;font-family:"Geologica","Golos Text",system-ui,sans-serif;
  line-height:1.55;
 }
@@ -25,59 +25,59 @@ nav.main a.on::after{height:2px;background:#43d9dc!important;box-shadow:none!imp
 #app{padding-top:30px;padding-bottom:140px}
 #app h1,#app h2,#app h3,.ph h1,.msc{ text-shadow:none!important }
 .ph h1{font-family:"Geologica",system-ui,sans-serif!important;font-weight:700!important;letter-spacing:-.045em!important}
-.ph p,.mini{color:#62dda4!important}
+.ph p,.mini{color:#a369e5!important}
 #app .box,#app .ncard,#app .evc,#app .tile,#app .hl-card,#app .sw-g,#app .sw-info{
  border-color:#333a44!important;border-radius:16px!important;
  box-shadow:0 8px 24px -18px #000b!important;
 }
 #app .ncard:hover,#app .evc:hover,#app .tile:hover{
- border-color:#2fbc7a!important;box-shadow:0 10px 26px -16px #000!important;
+ border-color:#762acd!important;box-shadow:0 10px 26px -16px #000!important;
 }
-#app .grp-h{color:#68dea7!important;letter-spacing:.08em;font-size:11px}
+#app .grp-h{color:#a770e6!important;letter-spacing:.08em;font-size:11px}
 #app .ap-card{
  background:#1a1d22!important;border:1px solid #333a44!important;border-radius:16px!important;
  box-shadow:0 8px 26px -20px #000d!important;overflow:hidden;margin-bottom:12px!important;
 }
-#app .ap-card.open{border-color:#2fbc7a!important;background:#1f2329!important;box-shadow:0 0 0 1px #43d9dc14!important}
+#app .ap-card.open{border-color:#762acd!important;background:#1f2329!important;box-shadow:0 0 0 1px #43d9dc14!important}
 #app .ap-rk{
  padding:16px!important;gap:13px!important;min-height:92px!important;
  background:transparent!important;color:#f5f6f7!important;
 }
-#app .ap-rk .no{min-width:28px!important;font:700 20px/1.1 "Geologica",sans-serif!important;color:#5cdba0!important}
+#app .ap-rk .no{min-width:28px!important;font:700 20px/1.1 "Geologica",sans-serif!important;color:#9f63e4!important}
 #app .ap-rk .nm{gap:4px!important;min-width:0}
 #app .ap-rk .nm b{font-family:"Geologica",sans-serif!important;font-size:17px!important;font-weight:650!important;letter-spacing:-.02em!important;text-shadow:none!important}
-#app .ap-rk .nm small{font-size:12px!important;color:#67dda6!important;text-shadow:none!important}
+#app .ap-rk .nm small{font-size:12px!important;color:#a66fe5!important;text-shadow:none!important}
 #app .ap-rk .crest,#app .ap-rk img.crest{width:44px!important;height:44px!important;min-width:44px!important;border-radius:10px!important}
 #app .ap-rk .mv{min-width:62px!important}
 #app .ap-rk .msr-mv-pts{font-size:14px!important;font-variant-numeric:tabular-nums}
 #app .ap-rk .msr-mv-badge{background:#333a43!important;font-size:11px!important;border-radius:5px!important;box-shadow:none!important}
 #app .msr-rank-event-chip{
  font-size:10px!important;border-radius:5px!important;letter-spacing:.025em;padding:2px 7px!important;
- border-color:#2fbc7a!important;background:#21252b!important;color:#91ddd9!important;line-height:1.5!important;
+ border-color:#762acd!important;background:#21252b!important;color:#91ddd9!important;line-height:1.5!important;
 }
 #app .msr-rank-event-chip.tier-S{background:#322b1e!important;border-color:#74623e!important;color:#e6c98c!important}
 #app .msr-rank-event-chip.tier-B{background:#2a1f43!important;border-color:#6a4fa3!important;color:#d2bff5!important}
-#app .msr-rank-event-chip.out{background:#23282f!important;border-color:#2fbc7a!important;color:#eaa9ba!important}
+#app .msr-rank-event-chip.out{background:#23282f!important;border-color:#762acd!important;color:#eaa9ba!important}
 #app .ap-body{padding:16px!important;border-top:1px solid #353c46!important}
 #app .msr-ba{background:#15181c!important;border:1px solid #363d47!important;border-radius:12px!important}
 #app .msr-ba .big{font-size:28px!important}
 #app .msr-ba .lbl{background:#2f363f!important;font-size:10px!important;letter-spacing:.1em}
-#app .ap-btn{background:#30c17d!important;border:1px solid #4cd896!important;border-radius:10px!important;box-shadow:none!important;font-size:14px!important}
-#app .ap-btn:hover{background:#4cd896!important}
+#app .ap-btn{background:#792bd2!important;border:1px solid #9551e1!important;border-radius:10px!important;box-shadow:none!important;font-size:14px!important}
+#app .ap-btn:hover{background:#9551e1!important}
 #app .pl-grid{gap:12px!important}
 #app .plc{
  background:#1a1d22!important;border:1px solid #353d47!important;border-radius:15px!important;
  box-shadow:0 7px 24px -19px #000!important;padding:16px!important;gap:14px!important;
 }
-#app .plc:hover{border-color:#2fbc7a!important;box-shadow:0 0 0 1px #43d9dc22!important}
+#app .plc:hover{border-color:#762acd!important;box-shadow:0 0 0 1px #43d9dc22!important}
 #app .plc .top{gap:12px!important;align-items:center!important}
 #app .plc .av.sg{width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important}
 #app .plc .nk{font-size:16px!important;font-family:"Geologica",sans-serif!important;letter-spacing:-.02em!important}
-#app .plc .msr-player-identity .game-id{font-size:11px!important;line-height:1.4!important;color:#4dd897!important}
-#app .plc .tm{font-size:11px!important;color:#68dea7!important}
+#app .plc .msr-player-identity .game-id{font-size:11px!important;line-height:1.4!important;color:#9553e1!important}
+#app .plc .tm{font-size:11px!important;color:#a770e6!important}
 #app .plc .row3{gap:7px!important}
 #app .plc .s{background:#121518!important;border:1px solid #2e353e!important;border-radius:8px!important;padding:7px 9px!important;gap:6px!important}
-#app .plc .s .k{font-size:9px!important;letter-spacing:.07em!important;color:#52d89a!important}
+#app .plc .s .k{font-size:9px!important;letter-spacing:.07em!important;color:#9858e1!important}
 #app .plc .s .v{font-size:16px!important;line-height:1.25!important;font-variant-numeric:tabular-nums}
 #app .plc.msr-podium-card-1{background:linear-gradient(120deg,#322b1c,#1c1f24 70%)!important;border-color:#9c8145!important}
 #app .plc.msr-podium-card-2{background:linear-gradient(120deg,#2e353e,#1c1f24 70%)!important;border-color:#73859d!important}
@@ -85,8 +85,8 @@ nav.main a.on::after{height:2px;background:#43d9dc!important;box-shadow:none!imp
 #app .msr-match-expand{background:#1a1e23!important;border:1px solid #373f49!important;border-radius:16px!important;margin:14px 0!important;box-shadow:0 7px 24px -20px #000!important}
 #app .msr-match-expand-head{background:#1d2127!important;padding:14px!important;gap:12px!important;align-items:center!important}
 #app .msr-hltv-result-score{font-family:"Geologica",sans-serif!important;font-size:30px!important;letter-spacing:-.05em;font-variant-numeric:tabular-nums;white-space:nowrap}
-#app .msr-hltv-result-score .msr-vs{font-size:12px!important;color:#4cd896!important;margin:0 6px!important;letter-spacing:0}
-#app .msr-match-expand-head small{font-size:10px!important;letter-spacing:.055em;color:#66dda5!important;line-height:1.6!important}
+#app .msr-hltv-result-score .msr-vs{font-size:12px!important;color:#9551e1!important;margin:0 6px!important;letter-spacing:0}
+#app .msr-match-expand-head small{font-size:10px!important;letter-spacing:.055em;color:#a66ee5!important;line-height:1.6!important}
 #app .msr-match-expand-head .msr-hltv-summary-team{border-radius:9px!important;box-shadow:inset 0 0 0 1px #b8d2f51a!important}
 #app .msr-match-expand-head .msr-hltv-summary-team strong{font-size:14px!important}
 #app .msr-match-expand-content{padding:16px!important;border-top:1px solid #363d47}
@@ -96,19 +96,19 @@ nav.main a.on::after{height:2px;background:#43d9dc!important;box-shadow:none!imp
 #app .hl-top h1{font-family:"Geologica",sans-serif!important;letter-spacing:-.035em!important}
 #app .hl-list{background:#0b1523e6!important;border:1px solid #383f4a!important;border-radius:12px!important;padding:6px 18px!important}
 #app .hl-list li{border-color:#30363f!important;padding-top:14px!important;padding-bottom:14px!important}
-#app .hl-list .k{color:#5cdba0!important;font-size:11px!important;letter-spacing:.08em!important}
+#app .hl-list .k{color:#9f63e4!important;font-size:11px!important;letter-spacing:.08em!important}
 #app .hl-h{padding:18px!important;border-bottom:1px solid #333a44!important}
 #app .hl-h>span{font-size:17px!important;letter-spacing:.06em!important}
 #app .hl-grid{gap:12px!important;padding:18px!important}
-#app .hl-grid .msr-stat-tile{border-radius:12px!important;border:1px solid #2fbc7a!important;background-color:#1c1f24!important;box-shadow:none!important}
-#app table th{color:#5fdca1!important;font-size:10px!important;letter-spacing:.07em!important}
+#app .hl-grid .msr-stat-tile{border-radius:12px!important;border:1px solid #762acd!important;background-color:#1c1f24!important;box-shadow:none!important}
+#app table th{color:#a166e5!important;font-size:10px!important;letter-spacing:.07em!important}
 #app table td{border-color:#303740!important;font-variant-numeric:tabular-nums}
 #app .flt,#app select,#app input{border-color:#3d4551!important;border-radius:9px}
 #msr-sponsors{border-color:#333a44!important;background:#171a1e!important;border-radius:16px!important;box-shadow:none!important}
 #msr-sponsors h2{font-family:"Geologica",sans-serif!important;font-size:17px!important;text-shadow:none!important;letter-spacing:.01em}
-#msr-sponsors .msr-sponsor-empty{border-color:#2fbc7a!important;border-radius:10px!important;background:#1c2026!important}
-footer{background:#101215!important;border-color:#2e343d!important;color:#4cd896!important}
-.mobile-dock .dock-tabs{background:rgba(25,29,34,.97)!important;border-color:#2fbc7a!important;box-shadow:0 10px 30px #0006!important}
+#msr-sponsors .msr-sponsor-empty{border-color:#762acd!important;border-radius:10px!important;background:#1c2026!important}
+footer{background:#101215!important;border-color:#2e343d!important;color:#9551e1!important}
+.mobile-dock .dock-tabs{background:rgba(25,29,34,.97)!important;border-color:#762acd!important;box-shadow:0 10px 30px #0006!important}
 .mobile-dock .dock-tabs a{font-size:11px!important;color:#c5cad2!important}
 .mobile-dock .dock-tabs a.on{background:#353c46!important;color:#8ff0eb!important}
 @media(max-width:650px){
@@ -165,7 +165,7 @@ html body{background:radial-gradient(ellipse at 8% 0%,#32275026,transparent 48%)
 }
 #app .msr-match-expand-head .msr-hltv-summary-team strong{text-align:center!important}
 #app .msr-match-expand-head small{grid-column:1/-1!important;width:100%!important;text-align:center!important;padding:3px 20px!important}
-#app .msr-match-expand-head::after{position:absolute;right:16px;bottom:12px;color:#4cd896!important}
+#app .msr-match-expand-head::after{position:absolute;right:16px;bottom:12px;color:#9551e1!important}
 #app .msr-hltv-result-score{text-align:center!important}
 @media(max-width:650px){
  #app .msr-match-expand-head{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)!important;gap:8px!important}
@@ -175,8 +175,8 @@ html body{background:radial-gradient(ellipse at 8% 0%,#32275026,transparent 48%)
 :root{
  --bg:#0b0c0e!important;--surface:#16191e!important;--raised:#20252b!important;--sunk:#0a0b0d!important;
  --line:#303947!important;--line-soft:#282e36!important;--text:#f2f3f4!important;
- --muted:#a5aebc!important;--dim:#7f8c9f!important;--tracer:#4fe9a2!important;
- --neon-cyan:#4fe9a2!important;--neon-pink:#4cd896!important;--steel:#b2b9c3!important;--bar:#50d899!important;
+ --muted:#a5aebc!important;--dim:#7f8c9f!important;--tracer:#9f56f2!important;
+ --neon-cyan:#9f56f2!important;--neon-pink:#9551e1!important;--steel:#b2b9c3!important;--bar:#9756e1!important;
 }
 html body{background:#0b0c0e!important;color:#f2f3f4!important}
 #sky{background:radial-gradient(ellipse at 85% 0%,#16426c1c,transparent 55%),linear-gradient(#0b0c0e,#0f1215)!important}
@@ -186,11 +186,11 @@ html body{background:#0b0c0e!important;color:#f2f3f4!important}
 #snow{opacity:.08!important}
 header.top{background:#0b0e15f5!important;border-color:#303947!important}
 nav.main,nav.main a{background-color:transparent!important}
-nav.main a.on{color:#cacfd5!important;background:#23282f!important;box-shadow:inset 0 -2px #4fe9a2!important}
-nav.main a.on::after{background:#4fe9a2!important}
+nav.main a.on{color:#cacfd5!important;background:#23282f!important;box-shadow:inset 0 -2px #9f56f2!important}
+nav.main a.on::after{background:#9f56f2!important}
 #app .box,#app .ncard,#app .evc,#app .tile,#app .hl-card,#app .sw-g,#app .sw-info{border-color:#303947!important}
 #app .ap-card,#app .plc{background:#16191e!important;border-color:#303947!important}
-#app .ap-card.open{background:#1c2026!important;border-color:#2fbc7a!important}
+#app .ap-card.open{background:#1c2026!important;border-color:#762acd!important}
 #app .ap-rk .no,#app .ap-rk .nm small,#app .plc .tm{color:#a0acbe!important}
 #app .ap-rk .nm b,#app .plc .nk{color:#f4f5f7!important}
 #app .ctag,#app .plc .ctag{color:#b3bac3!important}
@@ -204,11 +204,11 @@ nav.main a.on::after{background:#4fe9a2!important}
 #app .msr-match-expand,#app .msr-match-expand-head{background:#191c21!important;border-color:#363d47!important}
 #app .hl-card{background-color:#16191e!important}
 #app .hl-list{background:#0e131de8!important;border-color:#3d4550!important}
-#app .hl-grid .msr-stat-tile{background-color:#1a1e23!important;border-color:#2fbc7a!important}
-#app .ap-btn{background:#2fbc7a!important;border-color:#4cd896!important}
+#app .hl-grid .msr-stat-tile{background-color:#1a1e23!important;border-color:#762acd!important}
+#app .ap-btn{background:#762acd!important;border-color:#9551e1!important}
 #msr-sponsors{background:#14161a!important;border-color:#333a43!important}
 #msr-sponsors .msr-sponsor-empty{background:#1a1d22!important;border-color:#3e4652!important}
-.mobile-dock .dock-tabs{background:#101721f7!important;border-color:#2fbc7a!important}
+.mobile-dock .dock-tabs{background:#101721f7!important;border-color:#762acd!important}
 .mobile-dock .dock-tabs a.on{background:#30363f!important;color:#cacfd6!important}
 footer{background:#0c0d0f!important}
 @media(max-width:650px){
@@ -319,14 +319,14 @@ footer{background:#0c0d0f!important}
 #msr-sponsors.msr-sponsors-compact .msr-sponsor-empty{
  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
  margin:0!important;padding:9px 12px!important;border:1px solid #343b44!important;border-radius:9px!important;
- background:#16191e!important;color:#50d899!important;font-size:11px!important;line-height:1.4!important;
+ background:#16191e!important;color:#9756e1!important;font-size:11px!important;line-height:1.4!important;
 }
 #msr-sponsors.msr-sponsors-compact .msr-sponsor-contact{margin:0!important;color:#cbd0d6!important;white-space:nowrap!important;font-size:11px!important}
 .msr-roster-loading{padding:30px 16px;max-width:760px;margin:16px auto;text-align:center;background:#15181c;border:1px solid #383f4a;border-radius:14px}
 .msr-roster-loading h2{font:600 18px/1.4 "Geologica",sans-serif;color:#f5f6f7;margin:14px 0 8px}
-.msr-roster-loading p{font-size:12px;color:#62dda4;margin:0}
+.msr-roster-loading p{font-size:12px;color:#a369e5;margin:0}
 .msr-loading-icon{display:block;width:26px;height:26px;margin:auto;border:2px solid #3c4450;border-top-color:#b1b8c1;border-radius:50%;animation:msrLoadingTurn 1s linear infinite}
-.msr-loading-icon:not(:empty){animation:none;border-color:#bb8352;color:#81d4ad}
+.msr-loading-icon:not(:empty){animation:none;border-color:#bb8352;color:#b08adc}
 .msr-loading-skeleton{display:grid;gap:10px;margin-top:22px}
 .msr-loading-skeleton i{display:block;height:60px;border-radius:9px;background:linear-gradient(100deg,#1f242a,#2f353e,#1f242a);background-size:220% 100%;animation:msrLoadingShimmer 1.8s ease-in-out infinite}
 .msr-roster-loading .btn{margin-top:16px}
@@ -338,8 +338,8 @@ footer{background:#0c0d0f!important}
 
 /* Switch between the existing ELO ranking and tournament placement points. */
 .msr-ranking-view-tabs{display:inline-flex;align-items:center;gap:4px;padding:4px;border:1px solid #3a424e;border-radius:10px;background:#15171b;max-width:100%;margin:4px 0 12px}
-.msr-ranking-view-tabs a{display:block;padding:9px 14px;border-radius:7px;color:#64dda5;font:600 15px/1.25 "Geologica",sans-serif;text-decoration:none;white-space:nowrap}
-.msr-ranking-view-tabs a.on{background:#3c444f;color:#f5f6f8;box-shadow:inset 0 0 0 1px #31c37f}
+.msr-ranking-view-tabs a{display:block;padding:9px 14px;border-radius:7px;color:#a46ce5;font:600 15px/1.25 "Geologica",sans-serif;text-decoration:none;white-space:nowrap}
+.msr-ranking-view-tabs a.on{background:#3c444f;color:#f5f6f8;box-shadow:inset 0 0 0 1px #7b2dd4}
 .msr-ranking-view-tabs a:hover{color:#e7eaed}
 #app .msr-ranking-tab-header{align-items:center!important;gap:10px!important;flex-wrap:wrap!important}
 @media(max-width:650px){
