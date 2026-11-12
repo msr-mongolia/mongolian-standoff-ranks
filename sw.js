@@ -7,6 +7,11 @@ self.addEventListener('activate', e => e.waitUntil(
 self.addEventListener('fetch', e => {
   const r = e.request, u = new URL(r.url);
   if (r.method !== 'GET' || u.origin !== location.origin) return;
+  // Content-hashed images never change: serve from cache first, fetch once.
+  if (u.pathname.indexOf('/assets/img/') !== -1) {
+    e.respondWith(caches.match(r).then(m => m || fetch(r).then(res => { if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(r, copy)); } return res; })));
+    return;
+  }
   e.respondWith(
     fetch(r, { cache: 'no-cache' }).then(res => {
       if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(r, copy)); }
