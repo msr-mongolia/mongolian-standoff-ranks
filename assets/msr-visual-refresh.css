@@ -250,3 +250,24 @@ footer{background:#090c12!important}
  #app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-rel-group-button small{font-size:10px!important;margin-top:3px!important}
  #app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-zone-match-word{display:none!important}
 }
+
+/* Compact Results cards on phones; retain full map and player details when opened. */
+@media(max-width:650px){
+ #app .msr-finished-detail{padding:8px!important;border-radius:12px!important}
+ #app .msr-click-to-expand .msr-results-intro{font-size:10px!important;line-height:1.4!important;margin:4px 0 8px!important}
+ #app .msr-match-expand{margin:8px 0!important;border-radius:11px!important}
+ #app .msr-match-expand-head{padding:7px!important;gap:5px 6px!important;grid-template-columns:minmax(0,1fr) 50px minmax(0,1fr)!important}
+ #app .msr-match-expand-head .msr-hltv-summary-team{
+  height:64px!important;min-height:64px!important;max-height:64px!important;
+  padding:5px 3px!important;gap:2px!important;border-radius:7px!important;
+ }
+ #app .msr-match-expand-head .msr-hltv-summary-logo:not([hidden]){
+  width:27px!important;height:27px!important;min-width:27px!important;border-radius:4px!important;
+ }
+ #app .msr-match-expand-head .msr-hltv-summary-team strong{font-size:10px!important;line-height:1.15!important}
+ #app .msr-match-expand-head .msr-hltv-summary-team .msr-stamp{font-size:7px!important;padding:1px 4px!important;margin-top:-9px!important}
+ #app .msr-hltv-result-score{font-size:21px!important;line-height:1.2!important}
+ #app .msr-hltv-result-score .msr-vs{font-size:9px!important;margin:0 3px!important}
+ #app .msr-match-expand-head small{font-size:7px!important;letter-spacing:0!important;line-height:1.35!important;padding:2px 12px!important}
+ #app .msr-match-expand-head::after{right:9px!important;bottom:8px!important;font-size:10px!important}
+}
