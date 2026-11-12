@@ -139,3 +139,17 @@ footer{background:#080f1d!important;border-color:#223149!important;color:#8798b1
  .mobile-dock{left:12px!important;right:12px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important}
 }
 @media(prefers-reduced-motion:reduce){#snow{display:none!important}*{scroll-behavior:auto!important}}
+
+/* Keep player names readable rather than squeezing five cards across desktop. */
+html body{background:radial-gradient(ellipse at 8% 0%,#32275026,transparent 48%),radial-gradient(ellipse at 100% 20%,#17687918,transparent 46%),#080e1b!important}
+#app .pl-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}
+#app .plc .msr-player-identity{flex:1;min-width:0}
+#app .plc .row3{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#app .plc .s{display:flex!important;flex-direction:column!important;align-items:flex-start!important}
+#app .plc.msr-podium-card-1,#app .plc.msr-podium-card-2,#app .plc.msr-podium-card-3{box-shadow:0 8px 22px -18px #000!important}
+@media(min-width:951px){#app .plc{min-height:160px}}
+@media(min-width:651px) and (max-width:950px){#app .pl-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:650px){
+ #app .pl-grid{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ #app .plc .s{flex-direction:row!important;align-items:baseline!important;justify-content:space-between!important}
+}
