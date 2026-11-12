@@ -347,3 +347,22 @@ footer{background:#090c12!important}
  .msr-ranking-view-tabs a{padding:8px 10px;font-size:13px}
  #app .msr-ranking-tab-header .ap-date{display:none!important}
 }
+
+/* Compact overflow menu; Rankings and Players are direct dock destinations. */
+@media(max-width:760px){
+ header.top.open #mmenu,body.msr-menu-open #mmenu{
+  display:flex!important;flex-direction:column!important;gap:0!important;
+  left:auto!important;right:14px!important;width:min(290px,calc(100vw - 28px))!important;
+  top:auto!important;bottom:calc(78px + env(safe-area-inset-bottom))!important;
+  height:auto!important;min-height:0!important;max-height:65dvh!important;overflow-y:auto!important;
+  padding:8px 12px!important;border-radius:16px!important;background:#141d28!important;
+ }
+ header.top.open #mmenu>a,body.msr-menu-open #mmenu>a{
+  display:flex!important;align-items:center!important;flex:none!important;
+  padding:10px 8px!important;min-height:38px!important;margin:0!important;
+  font-size:12px!important;line-height:1.3!important;letter-spacing:0!important;
+ }
+ #mmenu #msr-language-switch{padding:10px 8px!important;gap:10px!important;margin-top:5px!important}
+ #mmenu .msr-language-label{font-size:12px!important}
+ #mmenu .msr-language-options button{min-width:40px!important;min-height:32px!important;padding:6px 8px!important;font-size:11px!important;border-radius:8px!important}
+}
