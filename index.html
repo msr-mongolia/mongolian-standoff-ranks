@@ -2907,6 +2907,9 @@ window.MSR_FREE_AGENTS=[{nick:'Tmk',id:'258065102',from:'imp4ct',team:'DS_A4CCD6
   EVENTS.splice(1, 0, { n: 'VOID Tournament', st: 'soon', dt: 'Nov 15, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=2', discord: 'https://discord.gg/fH3w2wYYs',
     notes: ['⭐ MVP 20 000₮', '🎟️ Entry fee 15 000₮'] });
   EVENTS[1].tier = 'B'; // VOID Tournament
+  // VOID Tournament participants (team codes). Add more codes here to show the VOID chip in the ranking.
+  window.MSR_VOID_TEAMS = window.MSR_VOID_TEAMS || ['DS_A4CCD6C33286B304E839A0BC']; // imp4ct
+  EVENTS.forEach(function (e) { if (e.n === 'VOID Tournament') { e.short = 'VOID'; e.participants = window.MSR_VOID_TEAMS; } });
   (function () { var i = EVENTS.findIndex(function (e) { return e.n === 'SPS'; }); if (i > 2) EVENTS.splice(2, 0, EVENTS.splice(i, 1)[0]); })(); // SPS is next: show 3rd
   EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = ['🥇 600 000₮', '🥈 400 000₮', '🥉 200 000₮'];
   var STREAMS = [];
@@ -5749,7 +5752,7 @@ window.MSR_FREE_AGENTS=[{nick:'Tmk',id:'258065102',from:'imp4ct',team:'DS_A4CCD6
       var out=event.id==='msl'&&([].concat(SWISS.e03||[],SWISS.e13||[]).indexOf(code)!==-1||msrGroupEliminated(code));
       return h('a',{class:'msr-ranking-event'+(out?' is-eliminated':''),href:'#event/'+encodeURIComponent(event.id),title:event.n+' · '+(out?'Eliminated':'Тэмцээний бүрэлдэхүүнд')},
         event.img?h('img',{src:event.img,alt:'',loading:'lazy',decoding:'async'}):h('span',{'aria-hidden':'true',svg:APIC.cup}),
-        h('span',{class:'msr-ranking-event-name'},event.n),
+        h('span',{class:'msr-ranking-event-name'},event.short||event.n),
         h('span',{class:'msr-ranking-event-state'},out?'Eliminated':'Оролцож буй'));
     }));
   }
