@@ -229,3 +229,24 @@ footer{background:#090c12!important}
  #app .plc .s .k{font-size:7px!important;letter-spacing:.025em!important;white-space:nowrap!important}
  #app .plc .s .v{font-size:12px!important;line-height:1.15!important}
 }
+
+/* Stage 2 A-H: all eight zone selectors fit on one row. */
+#app .msr-rel-group-buttons[aria-label="Stage 2 zones"]{
+ display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;gap:6px!important;
+}
+#app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-rel-group-button{
+ min-width:0!important;padding:9px 3px!important;text-align:center!important;border-radius:8px!important;
+}
+#app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-rel-group-button b{
+ font-size:12px!important;white-space:nowrap!important;line-height:1.25!important;
+}
+#app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-rel-group-button small{
+ font-size:10px!important;margin-top:4px!important;white-space:nowrap!important;
+}
+@media(max-width:650px){
+ #app .msr-rel-group-buttons[aria-label="Stage 2 zones"]{gap:3px!important}
+ #app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-rel-group-button{padding:8px 1px!important;border-radius:6px!important}
+ #app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-rel-group-button b{font-size:8px!important;letter-spacing:-.02em!important}
+ #app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-rel-group-button small{font-size:10px!important;margin-top:3px!important}
+ #app .msr-rel-group-buttons[aria-label="Stage 2 zones"] .msr-zone-match-word{display:none!important}
+}
