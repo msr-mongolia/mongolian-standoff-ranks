@@ -1,0 +1,141 @@
+/* MSR visual refresh. Presentation only; remove this stylesheet to restore the previous design. */
+:root{
+ --bg:#080e1b!important;--surface:#111a2b!important;--raised:#19243a!important;--sunk:#080f1e!important;
+ --line:#2a3750!important;--line-soft:#202d43!important;
+ --text:#eef4ff!important;--muted:#a1afc5!important;--dim:#798ba6!important;
+ --tracer:#43d9dc!important;--neon-cyan:#43d9dc!important;--neon-pink:#a995fa!important;
+ --steel:#a4b7d6!important;--bar:#809df1!important;--gold:#e6bf70!important;
+}
+html{scroll-padding-bottom:130px}
+body{
+ background:radial-gradient(ellipse at 9% 0%,rgba(91,70,155,.16),transparent 48%),
+ radial-gradient(ellipse at 100% 24%,rgba(32,114,135,.09),transparent 46%),#080e1b!important;
+ color:var(--text)!important;font-family:"Geologica","Golos Text",system-ui,sans-serif;
+ line-height:1.55;
+}
+body::before,body::after{opacity:.2!important}
+#snow{opacity:.18!important}
+header.top{background:rgba(8,15,30,.94)!important;border-bottom:1px solid #24314a!important;box-shadow:0 4px 24px #0003!important;backdrop-filter:blur(16px)}
+.top-in{height:66px;max-width:1200px}
+.brand .nm{letter-spacing:.11em!important}
+nav.main a{font-size:12px!important;letter-spacing:.04em}
+nav.main a.on{color:#72e5e3!important}
+nav.main a.on::after{height:2px;background:#43d9dc!important;box-shadow:none!important}
+.search input{border-color:#2d3a52!important;background:#101a2a!important;border-radius:10px!important}
+#app{padding-top:30px;padding-bottom:140px}
+#app h1,#app h2,#app h3,.ph h1,.msc{ text-shadow:none!important }
+.ph h1{font-family:"Geologica",system-ui,sans-serif!important;font-weight:700!important;letter-spacing:-.045em!important}
+.ph p,.mini{color:#9aaac1!important}
+#app .box,#app .ncard,#app .evc,#app .tile,#app .hl-card,#app .sw-g,#app .sw-info{
+ border-color:#29364e!important;border-radius:16px!important;
+ box-shadow:0 8px 24px -18px #000b!important;
+}
+#app .ncard:hover,#app .evc:hover,#app .tile:hover{
+ border-color:#4b6d91!important;box-shadow:0 10px 26px -16px #000!important;
+}
+#app .grp-h{color:#9baec8!important;letter-spacing:.08em;font-size:11px}
+#app .ap-card{
+ background:#111a2b!important;border:1px solid #29364e!important;border-radius:16px!important;
+ box-shadow:0 8px 26px -20px #000d!important;overflow:hidden;margin-bottom:12px!important;
+}
+#app .ap-card.open{border-color:#4a718e!important;background:#142034!important;box-shadow:0 0 0 1px #43d9dc14!important}
+#app .ap-rk{
+ padding:16px!important;gap:13px!important;min-height:92px!important;
+ background:transparent!important;color:#edf4ff!important;
+}
+#app .ap-rk .no{min-width:28px!important;font:700 20px/1.1 "Geologica",sans-serif!important;color:#91a4c1!important}
+#app .ap-rk .nm{gap:4px!important;min-width:0}
+#app .ap-rk .nm b{font-family:"Geologica",sans-serif!important;font-size:17px!important;font-weight:650!important;letter-spacing:-.02em!important;text-shadow:none!important}
+#app .ap-rk .nm small{font-size:12px!important;color:#9dacc3!important;text-shadow:none!important}
+#app .ap-rk .crest,#app .ap-rk img.crest{width:44px!important;height:44px!important;min-width:44px!important;border-radius:10px!important}
+#app .ap-rk .mv{min-width:62px!important}
+#app .ap-rk .msr-mv-pts{font-size:14px!important;font-variant-numeric:tabular-nums}
+#app .ap-rk .msr-mv-badge{background:#263750!important;font-size:11px!important;border-radius:5px!important;box-shadow:none!important}
+#app .msr-rank-event-chip{
+ font-size:10px!important;border-radius:5px!important;letter-spacing:.025em;padding:2px 7px!important;
+ border-color:#38646e!important;background:#12333a!important;color:#91ddd9!important;line-height:1.5!important;
+}
+#app .msr-rank-event-chip.tier-S{background:#322b1e!important;border-color:#74623e!important;color:#e6c98c!important}
+#app .msr-rank-event-chip.tier-B{background:#182b43!important;border-color:#385b80!important;color:#9ec8ee!important}
+#app .msr-rank-event-chip.out{background:#351d29!important;border-color:#704052!important;color:#eaa9ba!important}
+#app .ap-body{padding:16px!important;border-top:1px solid #2a3951!important}
+#app .msr-ba{background:#0c1525!important;border:1px solid #2a3a53!important;border-radius:12px!important}
+#app .msr-ba .big{font-size:28px!important}
+#app .msr-ba .lbl{background:#24334a!important;font-size:10px!important;letter-spacing:.1em}
+#app .ap-btn{background:#3975cd!important;border:1px solid #518cde!important;border-radius:10px!important;box-shadow:none!important;font-size:14px!important}
+#app .ap-btn:hover{background:#4583dd!important}
+#app .pl-grid{gap:12px!important}
+#app .plc{
+ background:#111a2b!important;border:1px solid #2b3851!important;border-radius:15px!important;
+ box-shadow:0 7px 24px -19px #000!important;padding:16px!important;gap:14px!important;
+}
+#app .plc:hover{border-color:#54849e!important;box-shadow:0 0 0 1px #43d9dc22!important}
+#app .plc .top{gap:12px!important;align-items:center!important}
+#app .plc .av.sg{width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important}
+#app .plc .nk{font-size:16px!important;font-family:"Geologica",sans-serif!important;letter-spacing:-.02em!important}
+#app .plc .msr-player-identity .game-id{font-size:11px!important;line-height:1.4!important;color:#899ab5!important}
+#app .plc .tm{font-size:11px!important;color:#9baec8!important}
+#app .plc .row3{gap:7px!important}
+#app .plc .s{background:#0a1220!important;border:1px solid #233149!important;border-radius:8px!important;padding:7px 9px!important;gap:6px!important}
+#app .plc .s .k{font-size:9px!important;letter-spacing:.07em!important;color:#899dbb!important}
+#app .plc .s .v{font-size:16px!important;line-height:1.25!important;font-variant-numeric:tabular-nums}
+#app .plc.msr-podium-card-1{background:linear-gradient(120deg,#322b1c,#141d2c 70%)!important;border-color:#9c8145!important}
+#app .plc.msr-podium-card-2{background:linear-gradient(120deg,#2b3341,#141d2c 70%)!important;border-color:#73859d!important}
+#app .plc.msr-podium-card-3{background:linear-gradient(120deg,#352821,#141d2c 70%)!important;border-color:#91694f!important}
+#app .msr-match-expand{background:#111b2c!important;border:1px solid #2b3c55!important;border-radius:16px!important;margin:14px 0!important;box-shadow:0 7px 24px -20px #000!important}
+#app .msr-match-expand-head{background:#131f31!important;padding:14px!important;gap:12px!important;align-items:center!important}
+#app .msr-hltv-result-score{font-family:"Geologica",sans-serif!important;font-size:30px!important;letter-spacing:-.05em;font-variant-numeric:tabular-nums;white-space:nowrap}
+#app .msr-hltv-result-score .msr-vs{font-size:12px!important;color:#7890aa!important;margin:0 6px!important;letter-spacing:0}
+#app .msr-match-expand-head small{font-size:10px!important;letter-spacing:.055em;color:#9bacc4!important;line-height:1.6!important}
+#app .msr-match-expand-head .msr-hltv-summary-team{border-radius:9px!important;box-shadow:inset 0 0 0 1px #b8d2f51a!important}
+#app .msr-match-expand-head .msr-hltv-summary-team strong{font-size:14px!important}
+#app .msr-match-expand-content{padding:16px!important;border-top:1px solid #2a3a53}
+#app .msr-hltv-tab-bar{gap:7px!important}
+#app .hl-card{background-color:#111a2b!important}
+#app .hl-top{padding:30px 24px!important}
+#app .hl-top h1{font-family:"Geologica",sans-serif!important;letter-spacing:-.035em!important}
+#app .hl-list{background:#0b1523e6!important;border:1px solid #2b4057!important;border-radius:12px!important;padding:6px 18px!important}
+#app .hl-list li{border-color:#25354a!important;padding-top:14px!important;padding-bottom:14px!important}
+#app .hl-list .k{color:#91a4c2!important;font-size:11px!important;letter-spacing:.08em!important}
+#app .hl-h{padding:18px!important;border-bottom:1px solid #29394e!important}
+#app .hl-h>span{font-size:17px!important;letter-spacing:.06em!important}
+#app .hl-grid{gap:12px!important;padding:18px!important}
+#app .hl-grid .msr-stat-tile{border-radius:12px!important;border:1px solid #35576b!important;background-color:#101f30!important;box-shadow:none!important}
+#app table th{color:#91a6c5!important;font-size:10px!important;letter-spacing:.07em!important}
+#app table td{border-color:#26344a!important;font-variant-numeric:tabular-nums}
+#app .flt,#app select,#app input{border-color:#31425d!important;border-radius:9px}
+#msr-sponsors{border-color:#29384e!important;background:#0d1728!important;border-radius:16px!important;box-shadow:none!important}
+#msr-sponsors h2{font-family:"Geologica",sans-serif!important;font-size:17px!important;text-shadow:none!important;letter-spacing:.01em}
+#msr-sponsors .msr-sponsor-empty{border-color:#3b4d68!important;border-radius:10px!important;background:#111e31!important}
+footer{background:#080f1d!important;border-color:#223149!important;color:#8798b1!important}
+.mobile-dock .dock-tabs{background:rgba(15,26,44,.97)!important;border-color:#3a4c69!important;box-shadow:0 10px 30px #0006!important}
+.mobile-dock .dock-tabs a{font-size:11px!important;color:#b9c8de!important}
+.mobile-dock .dock-tabs a.on{background:#243c57!important;color:#8ff0eb!important}
+@media(max-width:650px){
+ #app{padding:22px 14px calc(150px + env(safe-area-inset-bottom))!important}
+ .ph{margin-bottom:22px!important}.ph h1{font-size:28px!important}
+ #app .ap-rk{padding:14px 12px!important;gap:9px!important;min-height:92px!important}
+ #app .ap-rk .no{font-size:17px!important;min-width:22px!important}
+ #app .ap-rk .nm b{font-size:15px!important}
+ #app .ap-rk .crest,#app .ap-rk img.crest{width:36px!important;height:36px!important;min-width:36px!important}
+ #app .ap-rk .mv{min-width:51px!important}
+ #app .ap-rk .msr-mv-pts{font-size:12px!important}
+ #app .msr-rank-event-chip{font-size:9px!important;padding:2px 5px!important;white-space:normal!important}
+ #app .ap-body{padding:12px!important}
+ #app .plc{padding:13px 12px!important;gap:11px!important}
+ #app .plc .nk{font-size:15px!important}
+ #app .plc .av.sg{width:44px!important;height:44px!important;min-width:44px!important;flex:0 0 44px!important}
+ #app .plc .s{padding:6px 7px!important}
+ #app .plc .s .k{font-size:8px!important}
+ #app .plc .s .v{font-size:14px!important}
+ #app .msr-match-expand-head{padding:10px!important;gap:8px!important}
+ #app .msr-hltv-result-score{font-size:25px!important}
+ #app .msr-match-expand-head .msr-hltv-summary-team{height:100px!important;min-height:100px!important;max-height:100px!important}
+ #app .msr-match-expand-head .msr-hltv-summary-team strong{font-size:12px!important}
+ #app .msr-match-expand-head small{font-size:9px!important;letter-spacing:.025em!important}
+ #app .hl-top{padding:26px 16px!important}
+ #app .hl-grid{padding:12px!important;gap:9px!important}
+ #app .hl-list{padding:4px 12px!important}
+ .mobile-dock{left:12px!important;right:12px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important}
+}
+@media(prefers-reduced-motion:reduce){#snow{display:none!important}*{scroll-behavior:auto!important}}
