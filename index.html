@@ -3568,7 +3568,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
           var a = s2ZoneTeam(d[1]), b = s2ZoneTeam(d[2]);
           if (!a || !b || a === b || !T[a] || !T[b]) return;
           var rs = window.msrS2Res(z[0], d[0]);
-          out.push({ zone: z[0], slot: d[0], a: a, b: b, refA: d[1], refB: d[2], res: rs, date: rs ? (rs.date || 1112) : TODAY,
+          out.push({ zone: z[0], slot: d[0], a: a, b: b, refA: d[1], refB: d[2], res: rs, date: rs ? (rs.date || 1112) : (d[0] === 'Lower Final' ? 1114 : d[0] === 'Upper Final' || d[0] === 'Lower R1' ? 1113 : 1112),
             info: (S2_INFO[z[0]] || []).filter(function (x) { return x.label.indexOf(d[0]) === 0; })[0] || null });
         });
       });
@@ -5976,8 +5976,9 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     (window.msrS2Slots ? window.msrS2Slots() : []).forEach(function (sl) {
         var a = sl.a, b = sl.b, inf = sl.info;
         while (MBY[nid]) nid++;
-        var m = { id: nid, s2fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Stage 2 · Zone ' + sl.zone + ' · ' + sl.slot + ' · Bo3', state: 'soon', day: 'Today', date: TODAY, when: inf && inf.time ? inf.time : 'TBA', bo: 3,
+        var m = { id: nid, s2fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Stage 2 · Zone ' + sl.zone + ' · ' + sl.slot + ' · Bo3', state: 'soon', day: 'Today', date: sl.date, when: inf && inf.time ? inf.time : 'TBA', bo: 3,
           maps: inf ? inf.maps.map(function (x, i) { return [x[0], null, null, 'soon', i === 2 ? 'Decider' : x[1]]; }) : [] };
+        if (sl.date !== TODAY) m.day = ('0' + Math.floor(sl.date / 100)).slice(-2) + '/' + ('0' + sl.date % 100).slice(-2) + ' \u00b7 ' + ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(YEAR, Math.floor(sl.date / 100) - 1, sl.date % 100).getDay()];
         var rs = sl.res;
         if (rs) {
           var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
@@ -6031,7 +6032,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         }
         box.appendChild(mslPanel);
       }
-      var s2Shown = YEAR === 2026 && (APM.sel === 1112 || APM.sel === TODAY) && window.msrS2Zones && window.msrS2Team;
+      var s2Shown = YEAR === 2026 && (APM.sel >= 1112 && APM.sel <= 1114) && window.msrS2Zones && window.msrS2Team;
       if (s2Shown) {
         var s2Rows = function (zi) {
           var z = window.msrS2Zones[zi], out = [];
