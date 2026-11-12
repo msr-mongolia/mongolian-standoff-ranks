@@ -300,3 +300,36 @@ footer{background:#090c12!important}
  #app .ap-body .ap-acts .ap-btn{font-size:11px!important;min-height:34px!important;padding:7px 8px!important;border-radius:8px!important}
  #app .ap-body .ap-star{width:34px!important;height:34px!important;min-width:34px!important;padding:6px!important;border-radius:8px!important}
 }
+
+/* Five direct mobile destinations with room for the full menu. */
+@media(max-width:760px){
+ .mobile-dock{height:58px!important;gap:6px!important}
+ .mobile-dock .dock-tabs{padding:4px!important;border-radius:20px!important}
+ .mobile-dock .dock-tabs a{min-width:0!important;gap:3px!important;font-size:9px!important;line-height:1.15!important;border-radius:15px!important;padding:2px 0!important}
+ .mobile-dock .dock-tabs a svg{width:19px!important;height:19px!important}
+ #mobile-burger-slot{flex:0 0 48px!important;display:flex!important;align-items:center!important}
+ #mobile-burger-slot button{width:48px!important;height:58px!important;min-width:48px!important;margin:0!important;border-radius:18px!important;padding:10px!important}
+}
+/* Keep an empty sponsorship invitation small; paid sponsor layouts stay unchanged. */
+#msr-sponsor-top:has(>.msr-sp-1:empty):has(>.msr-sp-row:empty){display:none!important}
+#msr-sponsors.msr-sponsors-compact{margin:8px auto!important;padding:0 14px!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#msr-sponsors.msr-sponsors-compact .msr-sponsor-panel{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+#msr-sponsors.msr-sponsors-compact .msr-sponsor-heading{display:none!important}
+#msr-sponsors.msr-sponsors-compact #msr-sponsor-grid{display:none!important}
+#msr-sponsors.msr-sponsors-compact .msr-sponsor-empty{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;
+ margin:0!important;padding:9px 12px!important;border:1px solid #2d394b!important;border-radius:9px!important;
+ background:#111823!important;color:#8d9db5!important;font-size:11px!important;line-height:1.4!important;
+}
+#msr-sponsors.msr-sponsors-compact .msr-sponsor-contact{margin:0!important;color:#a2cbff!important;white-space:nowrap!important;font-size:11px!important}
+.msr-roster-loading{padding:30px 16px;max-width:760px;margin:16px auto;text-align:center;background:#111820;border:1px solid #2e3e54;border-radius:14px}
+.msr-roster-loading h2{font:600 18px/1.4 "Geologica",sans-serif;color:#edf4ff;margin:14px 0 8px}
+.msr-roster-loading p{font-size:12px;color:#99aac2;margin:0}
+.msr-loading-icon{display:block;width:26px;height:26px;margin:auto;border:2px solid #344258;border-top-color:#73b8ff;border-radius:50%;animation:msrLoadingTurn 1s linear infinite}
+.msr-loading-icon:not(:empty){animation:none;border-color:#bb8352;color:#e4bd8e}
+.msr-loading-skeleton{display:grid;gap:10px;margin-top:22px}
+.msr-loading-skeleton i{display:block;height:60px;border-radius:9px;background:linear-gradient(100deg,#172232,#23344a,#172232);background-size:220% 100%;animation:msrLoadingShimmer 1.8s ease-in-out infinite}
+.msr-roster-loading .btn{margin-top:16px}
+@keyframes msrLoadingTurn{to{transform:rotate(360deg)}}
+@keyframes msrLoadingShimmer{to{background-position:-220% 0}}
+@media(prefers-reduced-motion:reduce){.msr-loading-icon,.msr-loading-skeleton i{animation:none}}
