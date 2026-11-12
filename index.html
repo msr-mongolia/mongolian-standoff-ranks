@@ -5242,7 +5242,7 @@ window.MSR_FREE_AGENTS=[{nick:'Chronic',id:'224804199',from:'EVERLASTED',team:'D
   function playerRowsFor(nick, team) {
     ensureLedgerRows();
     var seen = {}, out = [];
-    var pk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, nkey = pk(nick), NA = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'] }, nkeys = [nkey].concat(NA[nkey] || []);
+    var pk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, nkey = pk(nick), NA = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'] }, nkeys = [nkey].concat(NA[nkey] || []);
     (PROWS[nick] || []).concat(PMROWS.filter(function (r) { return r.ledger && (r.nick === nick || (nkey && nkeys.indexOf(pk(r.nick)) !== -1)); })).forEach(function (r) {
       if (team && r.team && r.team !== team) return;
       var k = [r.team, r.map, r.k, r.d, r.a].join('|'); if (seen[k]) return; seen[k] = 1; out.push(r);
