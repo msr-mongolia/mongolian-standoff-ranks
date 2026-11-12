@@ -333,3 +333,5 @@ footer{background:#090c12!important}
 @keyframes msrLoadingTurn{to{transform:rotate(360deg)}}
 @keyframes msrLoadingShimmer{to{background-position:-220% 0}}
 @media(prefers-reduced-motion:reduce){.msr-loading-icon,.msr-loading-skeleton i{animation:none}}
+
+@media(min-width:761px){#msr-sponsors.msr-sponsors-compact{margin-top:48px!important}}
