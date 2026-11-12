@@ -6051,7 +6051,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
           var s2Body = h('div', { class: 'msr-rel-group-panel' });
           s2Body.appendChild(h('div', { class: 'msr-rel-group-buttons', 'aria-label': 'Stage 2 zones' }, window.msrS2Zones.map(function (z, zi) {
             return h('button', { type: 'button', class: 'msr-rel-group-button' + (APM.s2Zone === zi ? ' on' : ''), 'aria-pressed': String(APM.s2Zone === zi), onclick: function () { APM.s2Zone = zi; draw(); } },
-              h('b', null, 'Zone ' + z[0]), h('small', null, s2Rows(zi).length + ' matches'));
+              h('b', null, 'Zone ' + z[0]), h('small', null, h('span', { class: 'msr-zone-match-count' }, String(s2Rows(zi).length)), h('span', { class: 'msr-zone-match-word' }, ' matches')));
           })));
           if (APM.s2Zone != null) {
             var zr = s2Rows(APM.s2Zone);
@@ -8659,7 +8659,7 @@ html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-
 }
 </style>
 
-<link rel="stylesheet" href="assets/msr-visual-refresh.css?v=20261113-3" id="msr-visual-refresh">
+<link rel="stylesheet" href="assets/msr-visual-refresh.css?v=20261113-4" id="msr-visual-refresh">
 </body>
 </html>
 
