@@ -5940,7 +5940,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
           var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
           var sameA = kk(rs.a) === z[1][p[0]][1];
           var scA = sameA ? rs.aw : rs.bw, scB = sameA ? rs.bw : rs.aw;
-          m.state = 'done'; m.date = 1112; m.autoWin = rs.auto;
+          m.state = 'done'; m.date = 1112; m.day = '11/12 · ' + ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(YEAR, 10, 12).getDay()]; m.autoWin = rs.auto;
           if (rs.auto) { m.when = 'AUTO WIN'; var wa = scA > scB; m.maps = [['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win'], ['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win']]; }
           else { m.when = 'FINAL'; m.maps = rs.maps.map(function (x) { return [x.map, sameA ? x.aScore : x.bScore, sameA ? x.bScore : x.aScore, 'done', x.map]; }); }
         }
