@@ -8606,6 +8606,32 @@ html body #app .sg.msr-vamp-sig.msr-vamp-sig.msr-vamp-sig .sigtxt::after{border-
 #app:has(.msr-finished-detail) .results-match-group,
 #app:has(.msr-finished-detail) .results-match-expand{display:none!important}
 </style>
+
+<style id="msr-results-uniform-back1">
+/* Keep every Results team panel the same size, including teams without media. */
+#app .msr-match-expand-head .msr-hltv-summary-team{
+ height:112px!important;min-height:112px!important;max-height:112px!important;
+ box-sizing:border-box!important;padding:12px 8px!important;
+ flex:1 1 0!important;min-width:0!important;
+ justify-content:center!important;position:relative;overflow:hidden;
+ border-radius:4px;background-size:cover!important;background-position:center!important;
+ background-repeat:no-repeat!important;
+}
+#app .msr-match-expand-head .msr-hltv-summary-logo:not([hidden]){
+ width:48px!important;height:48px!important;min-width:48px!important;flex-shrink:0;object-fit:contain;
+}
+#app .msr-match-expand-head .msr-results-back1-video{
+ inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;
+}
+@media(max-width:650px){
+ #app .msr-match-expand-head .msr-hltv-summary-team{
+  height:96px!important;min-height:96px!important;max-height:96px!important;padding:10px 5px!important;
+ }
+ #app .msr-match-expand-head .msr-hltv-summary-logo:not([hidden]){
+  width:40px!important;height:40px!important;min-width:40px!important;
+ }
+}
+</style>
 </body>
 </html>
 
