@@ -5160,6 +5160,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         var heading=h('div',{class:'grp-h msr-result-date-heading'},h('span',{class:'msr-result-date'},g[0]),badge), rows=h('div',{class:'box results-match-group'+(event&&event.img?' msr-result-event-background':'')});
         if(event&&event.img)rows.style.setProperty('--msr-result-event-image','url("'+String(event.img).replace(/"/g,'%22')+'")');
         matches.forEach(function(m,i){var row=matchRow(m);if(i>=3)row.classList.add('results-extra-match');rows.appendChild(row);});
+        heading.dataset.d=String(g[1][0].date);rows.dataset.d=String(g[1][0].date);
         box.appendChild(heading);box.appendChild(rows);
         if(matches.length>3){
           rows.classList.add('results-match-collapsed');
@@ -5170,7 +5171,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
             expand.setAttribute('aria-expanded',String(opened));
             expand.firstChild.textContent=opened?'Show less':'Show '+(matches.length-3)+' more matches';
           });
-          box.appendChild(expand);
+          expand.dataset.d=String(g[1][0].date);box.appendChild(expand);
         }
         });
       });
@@ -8035,6 +8036,8 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
     let shown=0;section.querySelectorAll('.msr-match-expand').forEach(e=>{const ok=!sel||+e.dataset.day===sel;e.style.display=ok?'':'none';if(ok)shown++;});
     let empty=section.querySelector('.msr-res-empty');if(!empty){empty=document.createElement('p');empty.className='msr-results-intro msr-res-empty';empty.textContent='No finished matches on this day yet.';section.appendChild(empty);}
     empty.style.display=shown?'none':'';
+    // The older per-day list below the strip follows the selected day too.
+    app.querySelectorAll('[data-d]').forEach(e=>{e.style.display=(!sel||+e.dataset.d===1100+sel)?'':'none';});
    };
    section.insertBefore(strip,section.querySelector('.msr-match-expand'));
    draw();
