@@ -5907,7 +5907,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
           var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
           var sameA = kk(rs.a) === z[1][p[0]][1];
           var scA = sameA ? rs.aw : rs.bw, scB = sameA ? rs.bw : rs.aw;
-          m.state = 'done'; m.date = TODAY; m.autoWin = rs.auto;
+          m.state = 'done'; m.date = 1112; m.autoWin = rs.auto;
           if (rs.auto) { m.when = 'AUTO WIN'; var wa = scA > scB; m.maps = [['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win'], ['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win']]; }
           else { m.when = 'FINAL'; m.maps = rs.maps.map(function (x) { return [x.map, sameA ? x.aScore : x.bScore, sameA ? x.bScore : x.aScore, 'done', x.map]; }); }
         }
@@ -5955,7 +5955,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         }
         box.appendChild(mslPanel);
       }
-      var list = ALLM.filter(function (m) { return m.state !== 'done' && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
+      var list = ALLM.filter(function (m) { return (m.state !== 'done' || m.s2fix) && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
       list.forEach(function (m) { if (!seen[m.ev]) { seen[m.ev] = []; groups.push([m.ev, seen[m.ev]]); } seen[m.ev].push(m); });
       groups.forEach(function (g, gi) {
@@ -7251,7 +7251,7 @@ screenshotMatches.forEach(m=>{
 (window.MSR_S2_RESULTS||[]).forEach(m=>{
  const au=m.auto||{a:0,b:0},aw=au.a||0,bw=au.b||0;
  if(aw===bw)return;
- results.push({group:'',stage2:true,zone:m.zone,slot:m.slot,s2date:'NOV 13',a:m.a,b:m.b,winner:aw>bw?m.a:m.b,score:aw+'–'+bw,maps:[],screenshotMaps:[],auto:au});
+ results.push({group:'',stage2:true,zone:m.zone,slot:m.slot,s2date:'NOV 12',a:m.a,b:m.b,winner:aw>bw?m.a:m.b,score:aw+'–'+bw,maps:[],screenshotMaps:[],auto:au});
 });
 const verifiedStats={};
 const additionalMatchStats={};
