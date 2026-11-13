@@ -2979,10 +2979,11 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
   // Rvurz–Chingis Warriors, MNKT purple–MNKT blue, Four zest assault–EknZ, Dxvil13–KnightSS.
   window.MSR_VOID_R1 = window.MSR_VOID_R1 || [['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3'],['DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28'],['SIXL','DS_A0B0110FC187C08BE7637475'],['DS_7C03F1F6DA5F993B4CC9BB28','DS_BED22EFE5176D46A905806CD'],['DS_D1764CAF48B74A2D0B7B3E59','DS_4559C7E779F302E917B1A414'],['DS_779FBD131741477AF32F9268','DS_A92955A6312CC42137C3C7EA'],['DS_9FEDE81820B36BB7889B86BA','DS_VOID_EKNZ_20261113'],['DS_5E67C1B8721D736CA5B5A960','KGTSS']];
   window.MSR_VOID_DAY = 1113; // Matches page shows the VOID Round 1 block on this day
-  // VOID results (kept apart from MSL: no ELO, no MSL standings). a/b = team codes, as/bs = series score, auto = forfeit.
+  // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
-    { a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', as: 1, bs: 0, auto: true, round: 1, date: 1113 } // R1: KnightSS auto win vs Dxvil13
+    { a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 1, bs: 0, auto: true, round: 1, date: 1113 } // R1: KnightSS auto win vs Dxvil13 (= DXIII)
   ];
+  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : null, maps: [] }; }); };
   window.msrVoidRes = function (x, y) {
     var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); })[0];
     if (!r) return null; var same = U(r.a) === U(x);
@@ -7131,7 +7132,7 @@ MSR_ROSTER_UPDATES.ds_47546cb9c5d6818be10f3e88 = {"roster":["Peace","wL","Genius
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
     // The first 10 ledger matches are already in the baseline above; every later ledger match is chained in order.
-    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[]};})).filter(function(m){
+    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[]};})).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
       return true;
     }).forEach(function(m){
       // Auto-wins (forfeited maps) count as map wins but carry no round score.
@@ -7161,7 +7162,7 @@ MSR_ROSTER_UPDATES.ds_47546cb9c5d6818be10f3e88 = {"roster":["Peace","wL","Genius
 
     // Real form: last results per team, in ledger order (w = won the series, l = lost it).
     var formByTag={};
-    (window.MSR_SCREENSHOT_MATCHES||[]).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[]};})).forEach(function(m){
+    (window.MSR_SCREENSHOT_MATCHES||[]).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[]};})).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).forEach(function(m){
       var au=m.auto||{a:0,b:0},mp=m.maps||[];
       var aw=mp.filter(function(x){return x.aScore>x.bScore;}).length+(au.a||0),bw=mp.filter(function(x){return x.bScore>x.aScore;}).length+(au.b||0);
       if(aw===bw)return;
