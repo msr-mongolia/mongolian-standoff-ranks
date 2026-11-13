@@ -3011,6 +3011,14 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       ] }
   ];
   window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : null, maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }) }; }); };
+  /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
+  window.msrVoidR2 = function () {
+    var r1 = window.MSR_VOID_R1 || [], up = [], down = [];
+    r1.forEach(function (p) { var rr = window.msrVoidRes(p[0], p[1]); if (!rr || rr.a === rr.b) return; up.push(rr.a > rr.b ? p[0] : p[1]); down.push(rr.a > rr.b ? p[1] : p[0]); });
+    var pair = function (l, rec) { var o = []; for (var i = 0; i + 1 < l.length; i += 2) o.push([l[i], l[i + 1], rec]); return o; };
+    if (Array.isArray(window.MSR_VOID_R2) && window.MSR_VOID_R2.length) return { up: up, down: down, pairs: window.MSR_VOID_R2, official: true };
+    return { up: up, down: down, pairs: pair(up, '1/0').concat(pair(down, '0/1')), official: false };
+  };
   window.msrVoidRes = function (x, y) {
     var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); })[0];
     if (!r) return null; var same = U(r.a) === U(x);
@@ -6266,9 +6274,10 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       if (YEAR === 2026 && APM.sel >= vdStart && APM.sel <= vdEnd && Array.isArray(window.MSR_VOID_R1)) {
         /* VOID runs over several days: Round 1 on the first day; later days list their round once its pairs are entered
            (window.MSR_VOID_ROUNDS = { 1114: { label: 'Round 2', pairs: [[codeA, codeB], ...] } }), otherwise show what comes next. */
-        var vdDay = APM.sel === vdStart ? { label: 'Round 1 \u00b7 0/0', pairs: window.MSR_VOID_R1 } : ((window.MSR_VOID_ROUNDS || {})[APM.sel] || null);
+        var vdR2 = window.msrVoidR2 ? window.msrVoidR2() : null;
+        var vdDay = APM.sel === vdStart ? { label: 'Round 1 \u00b7 0/0', pairs: window.MSR_VOID_R1 } : ((window.MSR_VOID_ROUNDS || {})[APM.sel] || (APM.sel === vdStart + 1 && vdR2 && vdR2.pairs.length ? { label: 'Round 2 \u00b7 1/0 & 0/1', pairs: vdR2.pairs } : null));
         var vdRows = (vdDay ? vdDay.pairs : []).filter(function (p) { return T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
-          return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: 'Swiss', time_label: p[2] || '', _href: '#event/void' };
+          return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: /^\d{1,2}:\d{2}$/.test(p[2] || '') ? 'Swiss' : (p[2] || 'Swiss'), time_label: /^\d{1,2}:\d{2}$/.test(p[2] || '') ? p[2] : '', _href: '#event/void' };
         });
         if (vdRows.length || !APM.fav) {
           var vdPanel = h('section', { class: 'ap-card msr-rel-tournament msr-void-day' }), vdOpen = APM.vdOpen !== false;
@@ -6367,12 +6376,9 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, '0/0')), rows);
       }
       /* Round 1 winners move up to 1/0 and losers down to 0/1 as soon as each result is in (pairs follow once the round is drawn). */
-      var adv = { '1-0': [], '0-1': [] };
-      if (draw && window.msrVoidRes) draw.forEach(function (p) {
-        var rr = p && p[0] && p[1] ? window.msrVoidRes(p[0], p[1]) : null;
-        if (!rr || rr.a === rr.b) return;
-        adv['1-0'].push(rr.a > rr.b ? p[0] : p[1]); adv['0-1'].push(rr.a > rr.b ? p[1] : p[0]);
-      });
+      var adv = { '1-0': [], '0-1': [] }, r2 = window.msrVoidR2 ? window.msrVoidR2() : null;
+      if (r2 && r2.official) r2.pairs.forEach(function (p) { var k = p[2] === '0/1' ? '0-1' : '1-0'; adv[k].push(p[0], p[1]); });
+      else if (r2) { adv['1-0'] = r2.up; adv['0-1'] = r2.down; }
       function tbd(rec, n) {
         var fill = adv[rec] || [], rows = [];
         for (var i = 0; i < n; i++) rows.push(h('div', { class: 'sw-m' }, slot(fill[2 * i]), h('span', { class: 'sw-vs' }, 'VS'), slot(fill[2 * i + 1])));
