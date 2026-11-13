@@ -3047,7 +3047,13 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       var options=Object.keys(sums).filter(function(key){return key.indexOf(team+'|')===0;}).map(function(key){
         var candidate=key.slice(team.length+1),d=distance(nick,candidate);
         return {key:key,nick:candidate,d:d};
-      }).filter(function(v){return nick.length>=4&&v.nick.length>=4&&v.d<=Math.min(2,Math.floor(Math.max(nick.length,v.nick.length)/4));}).sort(function(a,b){return a.d-b.d;});
+      }).filter(function(v){
+        // Close names count as the same player: small edit distance, or one name starting with / containing the other.
+        var lo=Math.min(nick.length,v.nick.length),hi=Math.max(nick.length,v.nick.length);
+        if(lo<3)return false;
+        var near=v.nick.indexOf(nick)===0||nick.indexOf(v.nick)===0||(lo>=4&&(v.nick.indexOf(nick)>=0||nick.indexOf(v.nick)>=0));
+        return near||v.d<=Math.max(1,Math.min(3,Math.floor(hi/3)));
+      }).sort(function(a,b){return a.d-b.d;});
       if(options.length&&(!options[1]||options[0].d<options[1].d)){
         var selected=options[0],others=PLAYERS.filter(function(other){return other!==p&&other.team===p.team;});
         var collision=others.some(function(other){
