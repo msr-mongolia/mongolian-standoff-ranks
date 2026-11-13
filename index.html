@@ -3107,8 +3107,34 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     var opponentFactor = weightTotal ? weighted / weightTotal : 1;
     return (1 + (raw - 1) * sample) * opponentFactor;
   }
+  function rememberFormerPlayer(player, oldTeam) {
+    if (!oldTeam) return;
+    var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+    var archived=Object.assign({},player,{team:oldTeam,freeAgent:true,rank:0});
+    var prior=(window.MSR_FREE_AGENTS||[]).find(function(f){return nk(f.nick)===nk(player.nick)&&(f.team===oldTeam||nk(f.from)===nk((T[oldTeam]||{}).n));});
+    archived.gameId=String((GAME_IDS||{})[oldTeam+'|'+nk(player.nick)]||(prior||{}).id||'');
+    window.MSR_FORMER_PLAYERS=window.MSR_FORMER_PLAYERS||{};
+    window.MSR_FORMER_PLAYERS[oldTeam+'|'+nk(player.nick)]=archived;
+  }
+  function syncFreeAgentMembership() {
+    if (!GAME_IDS) return;
+    var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+    PLAYERS.forEach(function(p){
+      p.freeAgent=!!p.screenshotOnly||!(ROSTER[p.team]||[]).some(function(n){return nk(n)===nk(p.nick);});
+      if(p.freeAgent)rememberFormerPlayer(p,p.team);
+    });
+    var active=PLAYERS.filter(function(p){return !p.freeAgent&&p.team&&T[p.team];});
+    var entries=(window.MSR_FREE_AGENTS||[]).concat(Object.values(window.MSR_FORMER_PLAYERS||{}).map(function(p){return {nick:p.nick,id:p.gameId||'',from:(T[p.team]||{}).n||p.team,team:p.team};}));
+    var seen=new Set();
+    window.MSR_FREE_AGENTS=entries.filter(function(f){
+      var joined=active.some(function(p){var id=String(GAME_IDS[p.team+'|'+nk(p.nick)]||'');return f.id&&id?String(f.id)===id:nk(f.nick)===nk(p.nick)&&(f.team===p.team||nk(f.from)===nk(T[p.team].n));});
+      var identity=f.id?'id:'+f.id:'name:'+nk(f.nick)+'|'+nk(f.from||f.team);
+      if(joined||seen.has(identity))return false;seen.add(identity);return true;
+    });
+  }
   function sortPlayerRanking() {
     applyVerifiedPlayerStats();
+    syncFreeAgentMembership();
     // Cards, ranking, team lineup and profiles must use the same verified map rows.
     // Wait until ledger/team resolution and the row indexes have initialized.
     if (window.msrTagToCode && Array.isArray(PMROWS) && PROWS && Array.isArray(EVOPT) && typeof LEDGER_KEY === 'string') {
@@ -3132,13 +3158,13 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         (Number(b.maps) || 0) - (Number(a.maps) || 0);
     });
     var activeRank = 0;
-    PLAYERS.forEach(function (p, i) { p.rank = p.team && T[p.team] ? ++activeRank : 0; p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
+    PLAYERS.forEach(function (p, i) { p.rank = !p.freeAgent && p.team && T[p.team] ? ++activeRank : 0; p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
   }
   sortPlayerRanking();
   // Registered roster names only; screenshot-only temporary entries are excluded.
-  window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(PLAYERS.filter(p=>!p.screenshotOnly).map(p=>String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')))];
+  window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(PLAYERS.filter(p=>!p.freeAgent&&!p.screenshotOnly).map(p=>String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')))];
   // Build roster after game IDs initialize; referencing GAME_IDS here crashed the app.
-  window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(p=>!p.screenshotOnly).map(p=>({
+  window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(p=>!p.freeAgent&&!p.screenshotOnly).map(p=>({
     nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,gameId:''
   }));
 
@@ -4080,7 +4106,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     }
     draw();
     var faBox = null; // Free agents now live on their own page (#freeagents)
-    return h('div', null, pageHead('Players', PLAYERS.filter(function (p) { return p.team && T[p.team]; }).length + ' registered players. Statistics start at zero until verified match screenshots are added.'), wrap, more, faBox);
+    return h('div', null, pageHead('Players', PLAYERS.filter(function (p) { return !p.freeAgent && p.team && T[p.team]; }).length + ' registered players. Statistics start at zero until verified match screenshots are added.'), wrap, more, faBox);
   };
 
   V.live = function () {
@@ -4161,7 +4187,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
   function emptyPage(title, desc, msg) { return h('div', null, pageHead(title, desc), h('div', { class: 'empty' }, msg)); }
   var _ranking = V.ranking, _players = V.players, _live = V.live;
   V.ranking = function () { return RANK.length ? _ranking() : emptyPage('Ranking', 'Teams will be ranked here once they are added.', 'No teams yet.'); };
-  V.freeagents = function () { var b = msrFreeAgentsBox('margin-top:0'); return h('div', null, pageHead('Free agents', (window.MSR_FREE_AGENTS || []).length + ' players without a team.'), b || h('div', { class: 'empty' }, 'No free agents right now.')); };
+  V.freeagents = function () { if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView(); var b = msrFreeAgentsBox('margin-top:0'); return h('div', null, pageHead('Free agents', (window.MSR_FREE_AGENTS || []).length + ' players without a team.'), b || h('div', { class: 'empty' }, 'No free agents right now.')); };
   V.players = function () { return PLAYERS.length ? _players() : emptyPage('Players', 'Players will be listed here once teams are added.', 'No players yet.'); };
   /* Scheduled broadcasts. Put the YouTube / Facebook / Twitch link into `stream` and it plays on the site.
      Times are Ulaanbaatar (UTC+8). */
@@ -4370,7 +4396,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     idIn.addEventListener('input', function () { state.id = idIn.value; draw(); });
     draw();
 
-    var top20 = PLAYERS.filter(function(p){return p.team && T[p.team];}).slice().sort(function(a,b){return a.rank-b.rank;}).slice(0,20);
+    var top20 = PLAYERS.filter(function(p){return !p.freeAgent && p.team && T[p.team];}).slice().sort(function(a,b){return a.rank-b.rank;}).slice(0,20);
     return h('div', null,
       pageHead('Gold', 'Buy Standoff 2 gold from partner sellers. Pay by bank transfer or QPay and write the code you are given in the payment reference.'),
 
@@ -5699,7 +5725,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     var msrNk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9\u00c0-\uffff]/g, ''); };
     var msrGone = {}; (window.MSR_FREE_AGENTS || []).forEach(function (f) { if (f.team === code || (f.from && T[code] && String(f.from).toLowerCase() === String(T[code].n || '').toLowerCase())) msrGone[msrNk(f.nick)] = 1; }); // departed players leave the lineup
     var msrCur = {}; (ROSTER[code] || []).forEach(function (n) { msrCur[msrNk(n)] = 1; }); // names on the current roster are never hidden
-    var roster = PLAYERS.filter(function (p) { return p.team === code && (msrCur[msrNk(p.nick)] || !msrGone[msrNk(p.nick)]); }).sort(function (a, b) { return Number(b.nick===teamCaptain(code))-Number(a.nick===teamCaptain(code)) || b.rating-a.rating; });
+    var roster = PLAYERS.filter(function (p) { return !p.freeAgent && p.team === code && (msrCur[msrNk(p.nick)] || !msrGone[msrNk(p.nick)]); }).sort(function (a, b) { return Number(b.nick===teamCaptain(code))-Number(a.nick===teamCaptain(code)) || b.rating-a.rating; });
     var mine = ALLM.filter(function (m) { return m.a === code || m.b === code; });
     var upcoming = mine.filter(function (m) { return m.state !== 'done'; }), past = doneList().filter(function (m) { return m.a === code || m.b === code; });
     var titles = EVENTS.filter(function (e) { return e.win === code; });
@@ -5757,10 +5783,15 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
   V.player = function (nick, teamCode) {
     if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
     var p = teamCode ? (PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) || statsPlayer(nick, teamCode)) : PBY[nick];
+    if (!p) {
+      var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+      p=(window.MSR_FORMER_PLAYERS||{})[teamCode+'|'+nk(nick)];
+      if(!p){var f=(window.MSR_FREE_AGENTS||[]).find(function(f){return nk(f.nick)===nk(nick)&&(!teamCode||f.team===teamCode);});if(f)p={nick:f.nick,team:f.team||'',gameId:f.id||'',freeAgent:true,maps:0,kills:0,deaths:0,rating:0,kd:0};}
+    }
     if (!p) return V.players();
     var team = p.team, F = { days: 'all', ev: 'all', map: 'all' }, host = h('div', null);
     if(team==='KNGZZ' && /^r1sk$/i.test(p.nick) && T[team] && T[team].img){var riskLogo=String(T[team].img).replace(/["\\]/g,''); document.documentElement.style.setProperty('--msr-risk-team-logo','url("'+riskLogo+'")');}
-    var mates = PLAYERS.filter(function (x) { return x.team === team && x.nick !== p.nick; });
+    var mates = PLAYERS.filter(function (x) { return !p.freeAgent && !x.freeAgent && x.team === team && x.nick !== p.nick; });
     var ranked = PLAYERS.filter(function (p) { return p.team && T[p.team] && p.rank > 0; }).slice().sort(function (a, b) { return a.rank - b.rank; }), rrank = ranked.indexOf(p) + 1;
     var sb = h('div', { class: 'hl-grid' });
     var statIcons = {
@@ -5821,8 +5852,8 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       h('a', { class: 'back', href: '#players', svg: ICON.back + '<span>Players</span>' }),
       h('div', { class: 'hl-head' + (team === 'TLNRS' ? ' msr-lunaris-back1-player' : team === 'ETXEN' ? ' msr-etxen-back1-player' : isOmvTeam(team) ? ' msr-omv-back1-player' : '') },
         h('div', { class: 'hl-card' },
-          h('div', { class: 'hl-top' }, avFrame(team, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120))), h('h1', null, tagEl(team), p.nick), gameIdEl(p.nick, team)),
-          h('ul', { class: 'hl-list' }, li('Team', h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag(playerCountry(p.nick, (T[team] && T[team].country) || 'Mongolia'))), li('Rating rank', (rrank > 0 ? '#' + rrank : 'Unranked') + ' of ' + ranked.length))),
+          h('div', { class: 'hl-top' }, avFrame(team, h('span', { class: 'bigav sg hl' + tc(p) + (team==='KNGZZ' && /^r1sk$/i.test(p.nick)?' msr-risk-mongol-sticker':'') , 'aria-hidden': 'true' }, team==='KNGZZ' && /^r1sk$/i.test(p.nick) ? h('span',{class:'msr-risk-vertical-script',lang:'mn-Mong'},'ᠷᠢᠰᠻᠦ᠋ᠯ') : sig(p.nick, 120))), h('h1', null, p.freeAgent ? null : tagEl(team), p.nick), p.freeAgent&&p.gameId?h('small',{class:'game-id'},'ID: '+p.gameId):gameIdEl(p.nick, team)),
+          h('ul', { class: 'hl-list' }, li('Team', p.freeAgent ? h('span',null,'Free agent · ex-'+((T[team]||{}).n||team||'—')) : h('a', { class: 'tl', href: teamHref(team) }, crest(team), h('b', null, (T[team] || {n:'Free agent'}).n))), li('Country', withFlag(playerCountry(p.nick, (T[team] && T[team].country) || 'Mongolia'))), li('Rating rank', (rrank > 0 ? '#' + rrank : 'Unranked') + ' of ' + ranked.length))),
         statCard),
       flt, host);
   };
@@ -6828,8 +6859,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       // Name Another Level (aNOT) and the static Another Level are one team.
       if (row.id === 'ds_34794a02bac83461450702bc') {
         code = 'ANLVL';
-        var anSeen = new Set(), anRoster = (ROSTER.ANLVL || []).concat(row.roster || []).filter(function (n) { var k = key(n); if (anSeen.has(k)) return false; anSeen.add(k); return true; });
-        row.roster = anRoster;
+        // Keep only the newest submitted roster; former members become free agents.
       }
       code = code || row.id.toUpperCase();
       // Correct Manai's submitted list numbers without changing the players' game IDs.
@@ -6912,7 +6942,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       });
       PLAYERS.forEach(function(p) {
         if(p.team===code && !row.roster.some(function(n){return key(n)===key(p.nick);})) {
-          p.previousTeam=code; p.team='';
+          rememberFormerPlayer(p,code); p.previousTeam=code; p.team='';
         }
       });
       ROSTER[code] = row.roster.slice();
@@ -6935,7 +6965,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     // This does not delete user accounts or archived match statistics.
     for (var playerIndex = PLAYERS.length - 1; playerIndex >= 0; playerIndex--) {
       var player = PLAYERS[playerIndex];
-      if (!player.team || !T[player.team] || !(ROSTER[player.team] || []).some(function (nick) { return nick === player.nick; })) PLAYERS.splice(playerIndex, 1);
+      if (!player.team || !T[player.team] || !(ROSTER[player.team] || []).some(function (nick) { return nick === player.nick; })) { rememberFormerPlayer(player,player.team||player.previousTeam); PLAYERS.splice(playerIndex, 1); }
     }
     Object.keys(PBY).forEach(function (nick) { delete PBY[nick]; });
     var activeGameKeys = new Set();
@@ -7168,7 +7198,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       mergeDiscordTeams(rows);
       applyConfirmedScreenshotTags();
       sortPlayerRanking();
-      window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(function(p){return !p.screenshotOnly;}).map(function(p){
+      window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(function(p){return !p.freeAgent && !p.screenshotOnly;}).map(function(p){
         var key=p.team+'|'+String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
         return {nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,gameId:GAME_IDS[key]||''};
       });
@@ -7176,7 +7206,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.svg';T[code].c='#ff344c';}});
       window.MSR_ROSTER_LOAD_STATE='ready';
-      if (/^(ranking|tpranking|team|players|player|stats|event|events|matches|live)(\/|$)/.test(H)) route();
+      if (/^(ranking|tpranking|team|players|player|freeagents|stats|event|events|matches|live)(\/|$)/.test(H)) route();
       try{
         var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
