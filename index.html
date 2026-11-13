@@ -3111,7 +3111,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     applyVerifiedPlayerStats();
     // Cards, ranking, team lineup and profiles must use the same verified map rows.
     // Wait until ledger/team resolution and the row indexes have initialized.
-    if (window.msrTagToCode && Array.isArray(PMROWS) && PROWS) {
+    if (window.msrTagToCode && Array.isArray(PMROWS) && PROWS && Array.isArray(EVOPT) && typeof LEDGER_KEY === 'string') {
       PLAYERS.forEach(function (p) {
         var rows = playerRowsFor(p.nick, p.team);
         if (!rows.length) return; // Preserve confirmed totals without linked map history.
