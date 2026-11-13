@@ -2689,6 +2689,7 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 #app .ap-ev.locked{opacity:.78}#app .ap-ev.locked .top .tt b{color:var(--muted)}#app .ap-ev.locked .ap-evlg{color:var(--dim);background:var(--sunk)!important}#app .ap-locked{display:inline-flex;align-items:center;gap:5px;color:var(--dim);font-size:12px;font-weight:800;letter-spacing:.08em}#app .ap-ev.locked .ap-tier,#app .ap-ev.locked .ap-tpmax{filter:saturate(.55)}#app .ap-ev.locked .ap-dc{opacity:.9}
 .msr-mm-pf{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}.msr-mm-pf-r{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--line-soft);font-size:13px}.msr-mm-pf-r:last-child{border-bottom:0}.msr-mm-pf-r span{color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;text-align:center}.msr-mm-pf-r b{font-weight:700;color:var(--muted)}.msr-mm-pf-r b:last-child{text-align:right}.msr-mm-pf-r b.w{color:var(--win)}
 </style>
+<style id="msr-void-res-css">.sw-t.sw-lose{opacity:.35;filter:grayscale(1)}.sw-t.sw-win{box-shadow:0 0 0 2px #3ddc84;border-radius:12px}.sw-m.done .sw-vs{color:#3ddc84;font-weight:800}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -2978,6 +2979,15 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
   // Rvurz–Chingis Warriors, MNKT purple–MNKT blue, Four zest assault–EknZ, Dxvil13–KnightSS.
   window.MSR_VOID_R1 = window.MSR_VOID_R1 || [['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3'],['DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28'],['SIXL','DS_A0B0110FC187C08BE7637475'],['DS_7C03F1F6DA5F993B4CC9BB28','DS_BED22EFE5176D46A905806CD'],['DS_D1764CAF48B74A2D0B7B3E59','DS_4559C7E779F302E917B1A414'],['DS_779FBD131741477AF32F9268','DS_A92955A6312CC42137C3C7EA'],['DS_9FEDE81820B36BB7889B86BA','DS_VOID_EKNZ_20261113'],['DS_5E67C1B8721D736CA5B5A960','KGTSS']];
   window.MSR_VOID_DAY = 1113; // Matches page shows the VOID Round 1 block on this day
+  // VOID results (kept apart from MSL: no ELO, no MSL standings). a/b = team codes, as/bs = series score, auto = forfeit.
+  window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
+    { a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', as: 1, bs: 0, auto: true, round: 1, date: 1113 } // R1: KnightSS auto win vs Dxvil13
+  ];
+  window.msrVoidRes = function (x, y) {
+    var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); })[0];
+    if (!r) return null; var same = U(r.a) === U(x);
+    return { a: same ? r.as : r.bs, b: same ? r.bs : r.as, auto: !!r.auto };
+  };
   EVENTS.forEach(function (e) { if (e.n === 'VOID Tournament') { e.short = 'VOID'; e.participants = window.MSR_VOID_TEAMS; } });
   (function () { var i = EVENTS.findIndex(function (e) { return e.n === 'SPS'; }); if (i > 2) EVENTS.splice(2, 0, EVENTS.splice(i, 1)[0]); })(); // SPS is next: show 3rd
   EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = ['🥇 600 000₮', '🥈 400 000₮', '🥉 200 000₮'];
@@ -5013,7 +5023,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     return out;
   }
   function msrRelMatchCard(row){
-    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?null:msrRelResult(rk[0],rk[1],row._keys?'s2':undefined);
+    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?(window.msrVoidRes?window.msrVoidRes(rk[0],rk[1]):null):msrRelResult(rk[0],rk[1],row._keys?'s2':undefined);
     function team(name,mine){
       var key=row._keys?(mine?rk[0]:rk[1]):msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
       return h('div',{class:'msr-hl-t'+(res?(won?' win':' loss'):'')},
@@ -5023,7 +5033,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     var time=row.time_label||'';
     var href=row._href||((rk[0]&&rk[1])?('#mslmatch/'+rk[0]+'/'+rk[1]+'/'+(1104+(row.day||0))+'/'+(row.group||'')):null);
     var rowEl=h('div',{class:'msr-hl-row',role:href?'link':null,tabindex:href?'0':null},
-      h('div',{class:'msr-hl-time'},h('b',null,time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):(res?'Final':'TBA')),h('small',null,row._bo||'Bo3')),
+      h('div',{class:'msr-hl-time'},h('b',null,res&&res.auto?'AUTO':time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):(res?'Final':'TBA')),h('small',null,row._bo||'Bo3')),
       h('i',{class:'msr-hl-sep'}),
       h('div',{class:'msr-hl-teams'},team(row.team_a,true),team(row.team_b,false)),
       href?h('span',{class:'msr-hl-chev','aria-hidden':'true'},'\u203A'):null);
@@ -6322,7 +6332,9 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         var rows = [];
         for (var i = 0; i < 8; i++) {
           var p = draw ? (draw[i] || []) : [codes[2 * i], codes[2 * i + 1]];
-          rows.push(h('div', { class: 'sw-m' }, slot(p[0]), h('span', { class: 'sw-vs' }, 'VS'), slot(p[1])));
+          var rr = p[0] && p[1] && window.msrVoidRes ? window.msrVoidRes(p[0], p[1]) : null, sa = slot(p[0]), sb = slot(p[1]);
+          if (rr) { (rr.a > rr.b ? sb : sa).classList.add('sw-lose'); (rr.a > rr.b ? sa : sb).classList.add('sw-win'); }
+          rows.push(h('div', { class: 'sw-m' + (rr ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, rr ? (rr.auto ? 'W/O' : rr.a + ':' + rr.b) : 'VS'), sb));
         }
         return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, '0/0')), rows);
       }
