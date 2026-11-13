@@ -25,7 +25,7 @@ else:
     if A != B: fail.append('the two ledger copies differ')
     seen = {}
     for i, e in enumerate(A):
-        key = frozenset([e['a'].lower(), e['b'].lower()])
+        key = (frozenset([e['a'].lower(), e['b'].lower()]), e.get('slot') or '')
         if key in seen: fail.append('duplicate pair %s vs %s (entries %d, %d)' % (e['a'], e['b'], seen[key], i))
         seen[key] = i
         if not e.get('maps') and not e.get('auto'): fail.append('entry %d (%s-%s) has no maps/auto' % (i, e['a'], e['b']))
