@@ -5227,7 +5227,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         var msl=PLAYERS.filter(function(p){return p.team===k;}),ros=(T[k].roster||[]).map(String);
         ros.concat(msl.map(function(p){return p.nick;})).forEach(function(n){if(list.length>=5||have[nk(n)])return;have[nk(n)]=1;var mp=msl.find(function(p){return nk(p.nick)===nk(n);});list.push({nick:n,rating:mp&&mp.maps?mp.rating:0});});}
       return h('section',{class:'msr-mm-sec'},h('h2',null,T[k].n+(res?' Lineup':' Expected Lineup')),
-        h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){return h('a',{class:'msr-mm-pl',href:playerHref(p.nick,k)},h('span',{class:'bigav sg','aria-hidden':'true'},sig(p.nick,52)),h('b',null,p.nick),h('small',null,p.rating?rt(p.rating):'—'));}):h('div',{class:'empty'},'Roster not available.')));
+        h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){return h('a',{class:'msr-mm-pl',href:playerHref(p.nick,k)},h('span',{class:'bigav sg'+tc({team:k}),'aria-hidden':'true'},sig(p.nick,52)),h('b',null,p.nick),h('small',null,p.rating?rt(p.rating):'—'));}):h('div',{class:'empty'},'Roster not available.')));
     }
     var center=res?h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},res.a+' – '+res.b),h('small',null,(res.auto?'Auto win':'Final')+(dateTxt?' · '+dateTxt:'')))
       :h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},'TBA'),h('small',null,dateTxt||'Not announced yet'));
@@ -6900,6 +6900,8 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       var nick=label.getAttribute('data-nick'),avatar=label.closest('.sg');
       var teamClass=avatar && /(?:^|\s)t-(\S+)/.exec(avatar.className);
       var p=(teamClass && PLAYERS.find(function(x){return x.nick===nick && x.team===teamClass[1];})) || PBY[nick] || PLAYERS.find(function(x){return x.nick===nick;});
+      // A player whose nick is not on the registered roster (ledger-only / old nick) still carries the team of the avatar it sits in.
+      if(!p&&avatar&&teamClass&&T[teamClass[1]])p={nick:nick,team:teamClass[1]};
       if(!avatar||!p||!p.team||!T[p.team])return;
       var clan=T[p.team],logo=clan.img;
       avatar.style.setProperty('--signature-color',signatureFallback(clan));
