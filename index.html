@@ -6933,7 +6933,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       'SCLAT':'Scarlet','ACCA':'AccaciN','UCLT':'Ulseratif Colitis',
       'OMV':'Omnis Over','OTR':'Clan-One True Reign',
       'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
-      '2990':'2990 RED','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
+      '2990':'2990 RED','2990 White':'2990 White','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
     };
     // VIP teams may grow past 300. Non-VIP teams stop gaining at 300 but are never pulled down to it.
     function vipTagActive(tag){
@@ -6947,6 +6947,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       var name=exactTeamNames[tag],code=name&&Object.keys(T).find(function(c){return String(T[c].n||'').trim().toLowerCase()===name.toLowerCase();});
       if(!code&&tag==='SIXP'&&T.SIXP)code='SIXP';
       if(!code&&tag==='XvrN'&&T.XVRN)code='XVRN';
+      if(!code&&tag==='2990 White'&&T.W2990)code='W2990';
       if(!code&&tag==='EKS'&&T.ELKNG)code='ELKNG';
       if(!code&&tag==='-aN0T'&&T.ANLVL)code='ANLVL';
       if(!code&&tag==='6LC'&&T.SIXL)code='SIXL';
@@ -7020,6 +7021,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       // clan tags to select the first arbitrary team.
       if(!match&&item.tag==='SIXP'&&T.SIXP)match='SIXP';
       if(!match&&item.tag==='XvrN'&&T.XVRN)match='XVRN';
+      if(!match&&item.tag==='2990 White'&&T.W2990)match='W2990';
       if(!match&&item.tag==='EKS'&&T.ELKNG)match='ELKNG';
       if(!match&&item.tag==='-aN0T'&&T.ANLVL)match='ANLVL';
       if(!match&&item.tag==='6LC'&&T.SIXL)match='SIXL';
