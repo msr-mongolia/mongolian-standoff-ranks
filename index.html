@@ -5459,7 +5459,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         var R = (x.aScore || 0) + (x.bScore || 0), mo = { id: 100000 + li, ledger: true, a: ca, b: cb };
         [[ca, x.a, x.aScore > x.bScore, cb, m.a], [cb, x.b, x.bScore > x.aScore, ca, m.b]].forEach(function (t) {
           if (!t[0]) return;
-          (t[1] || []).forEach(function (p) { if ((window.MSR_RESULTS_ONLY || {})[t[4] + '|' + String(p[0]).toLowerCase()]) return; var mc1 = window.msrCalc ? window.msrCalc(p[1], p[2], p[3], R) : null; PMROWS.push({ ledger: true, m: mo, mi: mi, map: x.map, nick: (statsPlayer(p[0], t[0]) || {nick:p[0]}).nick, team: t[0], opp: t[3], win: t[2], ev: ev, date: ldate, ago: ldate ? ago(ldate) : 0, R: R, k: p[1], d: p[2], a: p[3], adr: mc1 ? Math.round(mc1.adr) : 0, kast: mc1 ? Math.round(mc1.kast) : 0, rating: mc1 ? mc1.rating : 0 }); });
+          (t[1] || []).forEach(function (p) { if ((window.MSR_RESULTS_ONLY || {})[t[4] + '|' + String(p[0]).toLowerCase()]) return; var mc1 = window.msrCalc ? window.msrCalc(p[1], p[2], p[3], R) : null; PMROWS.push({ ledger: true, m: mo, mi: mi, map: x.map, nick: (statsPlayer(window.msrFixLedgerNick ? window.msrFixLedgerNick(t[4], p[0]) : p[0], t[0]) || {nick:p[0]}).nick, team: t[0], opp: t[3], win: t[2], ev: ev, date: ldate, ago: ldate ? ago(ldate) : 0, R: R, k: p[1], d: p[2], a: p[3], adr: mc1 ? Math.round(mc1.adr) : 0, kast: mc1 ? Math.round(mc1.kast) : 0, rating: mc1 ? mc1.rating : 0 }); });
         });
       });
     });
@@ -7555,6 +7555,7 @@ function resolveMsrTeam(value){
 // Same player written differently on some scoreboards: count them under the roster nick (player stats only, ledger text is untouched).
 const MSR_NICK_FIX={'2990 purple':{'softKENBE':'kenbe.scb'},'warkz':{'УЙЛАНХАЙТvT':'УЙЛАНХАЙ'},'1nfyx':{'sueño':'sueno','UrTp In Da House':'UrTp_p'},'cior':{'Listt':'List'},'6lc':{'heavy7':'Heavyqqq','Merciless':'Merciless'},'sixp':{'makimalfu':'Makima'},'dxiii':{'nuubmiuu':'miuu','XAIS2':'xaise','aise':'xaise','.....Revi':'Revi'},'rvurz':{'マスターマインド':'Mastermind'}};
 const msrFixNick=(team,nick)=>((MSR_NICK_FIX[String(team).toLowerCase()]||{})[nick])||nick;
+window.msrFixLedgerNick=msrFixNick;
 function verifiedPlayerRows(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick:msrFixNick(team,nick),map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
 // MSR custom rating (not an official Standoff 2 rating). 1.00 represents
@@ -8357,7 +8358,7 @@ function apply(){
  verifiedResultsDetail();
  groupResultStamps();
  scheduleVerifiedGroupStandings();
- verifiedPlayerStats();
+ // Shared profile rows already include confirmed nickname fixes; retain active filters.
  verifiedTeamProfiles();
  verifiedRanking();
 }
