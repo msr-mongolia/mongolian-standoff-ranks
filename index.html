@@ -5050,13 +5050,26 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         h('div',{class:'msr-mm-info'},/^S2-/.test(grp)?s2InfoText(grp.slice(3),ka,kb):'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards)),
       lineup(ka),lineup(kb),
-      msrMatchH2H(ka,kb),msrMatchMapStats(ka,kb),msrMatchForm(ka,kb));
+      res?null:msrMatchWinProb(ka,kb),msrMatchH2H(ka,kb),msrMatchMapStats(ka,kb),msrMatchForm(ka,kb));
   };
 
   function msrCurIdx(ka,kb){
     var L=window.MSR_SCREENSHOT_MATCHES||[];
     for(var i=L.length-1;i>=0;i--){var ca=window.msrTagToCode(L[i].a),cb=window.msrTagToCode(L[i].b);if((ca===ka&&cb===kb)||(ca===kb&&cb===ka))return i;}
     return -1;
+  }
+  /* Win probability from team ELO (same expectation formula as the ELO engine; BO3 series = p^2(3-2p)). */
+  function msrMatchWinProb(ka,kb){
+    function elo(k){var r=RANK.find(function(x){return x[0]===k;});return r?Number(r[1])||50:50;}
+    var ea=elo(ka),eb=elo(kb),p=1/(1+Math.pow(10,(eb-ea)/150)),sa=p*p*(3-2*p),pa=Math.round(sa*100),pb=100-pa;
+    var fav=pa===pb?null:pa>pb?ka:kb;
+    return h('section',{class:'msr-mm-sec'},h('h2',null,'Win probability',h('span',{class:'msr-mm-pill'},'ELO')),
+      h('div',{class:'msr-mm-card msr-mm-prob'},
+        h('div',{class:'msr-mm-bar'},h('i',{style:'width:'+pa+'%'}),h('u',{style:'width:'+pb+'%'})),
+        h('div',{class:'msr-mm-h2h'},
+          h('div',null,crest(ka,'sm'),h('b',null,pa+'%'),h('small',null,'ELO '+ea)),
+          h('div',{class:'mid'},h('b',null,fav?(T[fav]&&T[fav].tag||T[fav].n):'Even'),h('small',null,fav?'Favourite':'50 / 50')),
+          h('div',null,h('b',null,pb+'%'),h('small',null,'ELO '+eb),crest(kb,'sm')))));
   }
   function msrMatchH2H(ka,kb){
     var cur=msrCurIdx(ka,kb);
