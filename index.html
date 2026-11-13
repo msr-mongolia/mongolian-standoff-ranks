@@ -6123,11 +6123,30 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     return arr; // one Swiss of 32: these 30 plus the 2 invited teams
   }
   window.msrStage2Draw = msrStage2Draw;
+  // A VOID-registered team is only shown in MSL if it is actually in MSL (a Stage 1 group, a Stage 2 zone or the Swiss).
+  var MSR_MSL_SET = null;
+  function msrInMsl(code) {
+    var nk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+    function add(c) { if (!c) return; MSR_MSL_SET[c] = 1; var t = T[c]; if (t && t.n) MSR_MSL_SET['~' + nk(t.n)] = 1; }
+    if (!MSR_MSL_SET) {
+      MSR_MSL_SET = {};
+      try { Object.keys(MSR_REL_GROUP_TEAMS).forEach(function (g) { MSR_REL_GROUP_TEAMS[g].forEach(function (en) { add(msrGrpTeamCode(g, en[0])); }); }); } catch (e) {}
+      try { (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) { if (m.stage2) { add(window.msrTagToCode(m.a)); add(window.msrTagToCode(m.b)); } }); } catch (e) {}
+      try { SWISS.rounds.forEach(function (rd) { rd.groups.forEach(function (gr) { gr.ms.forEach(function (m) { add(m[0]); add(m[1]); }); }); }); } catch (e) {}
+    }
+    var t = T[code];
+    return !!(MSR_MSL_SET[code] || (t && t.n && MSR_MSL_SET['~' + nk(t.n)]));
+  }
+  window.msrInMsl = msrInMsl;
+  function msrVoidOnly(code) {
+    var U = String(code || '').toUpperCase();
+    return (window.MSR_VOID_TEAMS || []).some(function (x) { return String(x).toUpperCase() === U; }) && !msrInMsl(code);
+  }
   function rankingEventBadges(code) {
     var entries=EVENTS.filter(function(event){
       if(event.st!=='now' && event.st!=='soon')return false;
       // Every currently registered ranking team is participating in MSL.
-      if(event.id==='msl')return !(T[code]&&T[code].eventOnly);
+      if(event.id==='msl')return !(T[code]&&T[code].eventOnly) && !msrVoidOnly(code);
       var listed=[event.participants,event.teamCodes,event.registeredTeams].some(function(rows){
         return Array.isArray(rows)&&rows.some(function(row){return (typeof row==='string'?row:row.code||row.team_id)===code;});
       });
