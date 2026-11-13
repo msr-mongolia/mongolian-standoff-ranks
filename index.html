@@ -5802,6 +5802,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       p=(window.MSR_FORMER_PLAYERS||{})[teamCode+'|'+nk(nick)];
       if(!p){var f=(window.MSR_FREE_AGENTS||[]).find(function(f){return nk(f.nick)===nk(nick)&&(!teamCode||f.team===teamCode);});if(f)p={nick:f.nick,team:f.team||'',gameId:f.id||'',freeAgent:true,maps:0,kills:0,deaths:0,rating:0,kd:0};}
     }
+    if (!p && teamCode) { try { var lr=playerRowsFor(nick,teamCode),lg=agg(lr); if(lr.length) p={nick:nick,team:teamCode,previousTeam:teamCode,gameId:'',maps:lr.length,kills:lg.k,deaths:lg.d,assists:lg.a,kd:lg.kd||0,rating:lg.rating||0,freeAgent:true,rank:0}; } catch (e) {} }
     if (!p) return V.players();
     var team = p.team, F = { days: 'all', ev: 'all', map: 'all' }, host = h('div', null);
     if(team==='KNGZZ' && /^r1sk$/i.test(p.nick) && T[team] && T[team].img){var riskLogo=String(T[team].img).replace(/["\\]/g,''); document.documentElement.style.setProperty('--msr-risk-team-logo','url("'+riskLogo+'")');}
