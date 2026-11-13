@@ -3109,6 +3109,18 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
   }
   function sortPlayerRanking() {
     applyVerifiedPlayerStats();
+    // Cards, ranking, team lineup and profiles must use the same verified map rows.
+    // Wait until ledger/team resolution and the row indexes have initialized.
+    if (window.msrTagToCode && Array.isArray(PMROWS) && PROWS) {
+      PLAYERS.forEach(function (p) {
+        var rows = playerRowsFor(p.nick, p.team);
+        if (!rows.length) return; // Preserve confirmed totals without linked map history.
+        var g = agg(rows);
+        p.maps = rows.length; p.kills = g.k; p.deaths = g.d; p.assists = g.a;
+        p.rounds = rows.reduce(function (total, row) { return total + (Number(row.R) || 0); }, 0);
+        p.kd = g.kd; p.rating = g.rating; p.verifiedMSR = true;
+      });
+    }
     PLAYERS.sort(function (a, b) {
       var aPlayed=a.verifiedMSR&&Number(a.maps)>0?1:0;
       var bPlayed=b.verifiedMSR&&Number(b.maps)>0?1:0;
@@ -3165,7 +3177,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       return String(GAME_IDS[k] || '') === id;
     });
     if (matches.length !== 1) return null;
-    var p = matches[0], rows = (PROWS[p.nick] || []).filter(function(r){return !r.team || r.team === p.team;});
+    var p = matches[0], rows = playerRowsFor(p.nick, p.team);
     var g = agg(rows);
     return { nick:p.nick, team:(T[p.team] && (T[p.team] || {n:'Free agent'}).n) || p.team, id:id,
       rating:g.rating, kd:g.kd, adr:g.adr, kast:g.kast,
@@ -7156,6 +7168,11 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       mergeDiscordTeams(rows);
       applyConfirmedScreenshotTags();
       sortPlayerRanking();
+      window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(function(p){return !p.screenshotOnly;}).map(function(p){
+        var key=p.team+'|'+String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
+        return {nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,gameId:GAME_IDS[key]||''};
+      });
+      window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(window.MSR_REGISTERED_PLAYER_ROSTER.map(function(p){return String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');}))];
       applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.svg';T[code].c='#ff344c';}});
       window.MSR_ROSTER_LOAD_STATE='ready';
