@@ -3111,23 +3111,25 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     if (!oldTeam) return;
     var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
     var archived=Object.assign({},player,{team:oldTeam,freeAgent:true,rank:0});
-    var prior=(window.MSR_FREE_AGENTS||[]).find(function(f){return nk(f.nick)===nk(player.nick)&&(f.team===oldTeam||nk(f.from)===nk((T[oldTeam]||{}).n));});
-    archived.gameId=String((GAME_IDS||{})[oldTeam+'|'+nk(player.nick)]||(prior||{}).id||'');
+    var prior=(window.MSR_FREE_AGENT_RECORDS||window.MSR_FREE_AGENTS||[]).find(function(f){return nk(f.nick)===nk(player.nick)&&(f.team===oldTeam||nk(f.from)===nk((T[oldTeam]||{}).n));});
+    archived.gameId=String((GAME_IDS||{})[oldTeam+'|'+nk(player.nick)]||(prior||{}).id||player.gameId||'');
+    player.gameId=archived.gameId;
     window.MSR_FORMER_PLAYERS=window.MSR_FORMER_PLAYERS||{};
     window.MSR_FORMER_PLAYERS[oldTeam+'|'+nk(player.nick)]=archived;
   }
   function syncFreeAgentMembership() {
     if (!GAME_IDS) return;
+    window.MSR_FREE_AGENT_RECORDS=window.MSR_FREE_AGENT_RECORDS||((window.MSR_FREE_AGENTS||[]).slice());
     var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
     PLAYERS.forEach(function(p){
       p.freeAgent=!!p.screenshotOnly||!(ROSTER[p.team]||[]).some(function(n){return nk(n)===nk(p.nick);});
       if(p.freeAgent)rememberFormerPlayer(p,p.team);
     });
     var active=PLAYERS.filter(function(p){return !p.freeAgent&&p.team&&T[p.team];});
-    var entries=(window.MSR_FREE_AGENTS||[]).concat(Object.values(window.MSR_FORMER_PLAYERS||{}).map(function(p){return {nick:p.nick,id:p.gameId||'',from:(T[p.team]||{}).n||p.team,team:p.team};}));
+    var entries=(window.MSR_FREE_AGENT_RECORDS||[]).concat(Object.values(window.MSR_FORMER_PLAYERS||{}).map(function(p){return {nick:p.nick,id:p.gameId||'',from:(T[p.team]||{}).n||p.team,team:p.team};}));
     var seen=new Set();
     window.MSR_FREE_AGENTS=entries.filter(function(f){
-      var joined=active.some(function(p){var id=String(GAME_IDS[p.team+'|'+nk(p.nick)]||'');return f.id&&id?String(f.id)===id:nk(f.nick)===nk(p.nick)&&(f.team===p.team||nk(f.from)===nk(T[p.team].n));});
+      var joined=active.some(function(p){var id=String(GAME_IDS[p.team+'|'+nk(p.nick)]||'');return f.id?(!!id&&String(f.id)===id):nk(f.nick)===nk(p.nick)&&(f.team===p.team||nk(f.from)===nk(T[p.team].n));});
       var identity=f.id?'id:'+f.id:'name:'+nk(f.nick)+'|'+nk(f.from||f.team);
       if(joined||seen.has(identity))return false;seen.add(identity);return true;
     });
