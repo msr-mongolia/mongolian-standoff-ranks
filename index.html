@@ -2994,6 +2994,19 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         { map: 'Dune', aScore: 13, bScore: 8,
           a: [['saD',17,13,4],['Zet良',17,12,4],['Kl6pse',12,13,2],['XiQQ',17,14,3],['Ashura',14,16,4]],
           b: [['ssleeepppy',18,15,3],['Majesta',16,18,2],['Macro',13,14,2],['JUST',13,17,2],['BATILO prime',6,13,2]] }
+      ] },
+    // R1: Rain tzy (RA1IN) 2-1 Zx_WB White. Rust 5-13, Dune 13-5, Province 13-9.
+    { a: 'DS_4561C74A8EF7ED8EBA1EEC28', b: 'DS_A24136D1A99B5E5DFAE15E9F', ea: 'RA1IN', eb: 'Zx_WB White', as: 2, bs: 1, round: 1, date: 1113,
+      maps: [
+        { map: 'Rust', aScore: 5, bScore: 13,
+          a: [['M4D-120Hz',18,15,4],['Sainc',17,16,2],['Ch.',9,14,3],['Hse#',11,16,2],['kazui',3,8,3]],
+          b: [['Asd',19,10,3],['ice D',15,12,2],['Kenshi',15,12,0],['Ylalt x 165hz',8,13,6],['Xeno is love!?!',9,12,1]] },
+        { map: 'Dune', aScore: 13, bScore: 5,
+          a: [['n9ppxs',19,6,4],['Sainc',22,13,3],['kazui',13,8,4],['Hse#',10,15,3],['Psychopath',4,15,3]],
+          b: [['Kenshi',19,14,1],['Ylalt x 165hz',15,15,2],['ice D',11,15,3],['Xeno is love!?!',6,15,1],['Sleepy',5,10,2]] },
+        { map: 'Province', aScore: 13, bScore: 9,
+          a: [['M4D-120Hz',23,12,6],['n9ppxs',14,14,1],['Sainc',17,17,1],['Ch.',17,18,2],['Psychopath',13,17,5]],
+          b: [['ice D',20,19,1],['Ylalt x 165hz',15,16,3],['Sleepy',15,16,3],['Asd',11,15,5],['Kenshi',14,19,2]] }
       ] }
   ];
   window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : null, maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }) }; }); };
@@ -7104,7 +7117,7 @@ MSR_ROSTER_UPDATES.ds_47546cb9c5d6818be10f3e88 = {"roster":["Peace","wL","Genius
       'OMV':'Omnis Over','OTR':'Clan-One True Reign',
       'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
       '2990':'2990 RED','2990 White':'2990 White','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
-    ,'MNKT Red':'MNKTeam-(red)','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)'};
+    ,'MNKT Red':'MNKTeam-(red)','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)','RA1IN':'Rain tzy','Zx_WB White':'Zx_WB White','Zx_WB Black':'Zx_WB Black'};
     // VIP teams may grow past 300. Non-VIP teams stop gaining at 300 but are never pulled down to it.
     function vipTagActive(tag){
       var name=exactTeamNames[tag],code=name&&Object.keys(T).find(function(c){return String(T[c].n||'').trim().toLowerCase()===name.toLowerCase();});
