@@ -5057,6 +5057,15 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       var maps=(e.maps||[]).map(function(m){if(m.aScore>m.bScore)aw++;else if(m.bScore>m.aScore)bw++;return {map:m.map,mine:mine?m.aScore:m.bScore,theirs:mine?m.bScore:m.aScore};});
       out.push({idx:idx,opp:mine?cb:ca,mine:mine?aw:bw,theirs:mine?bw:aw,maps:maps,auto:((e.auto&&((e.auto.a||0)+(e.auto.b||0)))||0)>0,fullAuto:!(e.maps||[]).length});
     });
+    // VOID Tournament results count as the team's series too (after the MSL ledger, in entry order).
+    (window.MSR_VOID_RESULTS||[]).forEach(function(r,vi){
+      var ca=String(r.a||'').toUpperCase(),cb=String(r.b||'').toUpperCase(),K=String(k).toUpperCase();
+      if((ca!==K&&cb!==K)||r.as===r.bs)return;
+      var mine=ca===K,ra=r.as||0,rb=r.bs||0;
+      var maps=(r.maps||[]).map(function(m){return {map:m.map,mine:mine?m.aScore:m.bScore,theirs:mine?m.bScore:m.aScore};});
+      var opp=mine?cb:ca;opp=T[opp]?opp:(Object.keys(T).find(function(c){return c.toUpperCase()===opp;})||opp);
+      out.push({idx:100000+vi,void:true,date:r.date||0,opp:opp,mine:mine?ra:rb,theirs:mine?rb:ra,maps:maps,auto:!!r.auto,fullAuto:!!r.auto&&!(r.maps||[]).length});
+    });
     return out;
   }
   function msrRelMatchCard(row){
@@ -5188,9 +5197,16 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         h('tbody',null,rows.map(function(o){var df=o.k-o.d;return h('tr',null,h('td',null,h('a',{href:playerHref(o.nick,k)},o.nick)),h('td',{class:'n'},o.k+'–'+o.d),h('td',{class:'n '+(df>0?'pos':df<0?'neg':'z')},(df>0?'+':'')+df),h('td',{class:'n'},String(o.a)),h('td',{class:'n'},o.rt?Number(o.rt).toFixed(2):'—'));}))));
     }
     function lineup(k){
-      var ros=(T[k].roster||[]).map(function(n){return String(n);}),list=ros.length?ros:PLAYERS.filter(function(p){return p.team===k;}).map(function(p){return p.nick;});
-      return h('section',{class:'msr-mm-sec'},h('h2',null,T[k].n+' Roster'),
-        h('div',{class:'msr-mm-lineup'},list.length?list.slice(0,8).map(function(n){return h('a',{class:'msr-mm-pl',href:playerHref(n,k)},h('span',{class:'bigav sg','aria-hidden':'true'},sig(n,52)),h('b',null,n));}):h('div',{class:'empty'},'Roster not available.')));
+      /* Ratings from this team's VOID maps (falls back to MSL ratings, then the registered roster). Top 5 shown, like the MSL match page. */
+      var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');},acc={},K=String(k).toUpperCase();
+      (window.MSR_VOID_RESULTS||[]).forEach(function(r){var side=String(r.a).toUpperCase()===K?'a':String(r.b).toUpperCase()===K?'b':null;if(!side)return;
+        (r.maps||[]).forEach(function(m){var R=(m.aScore||0)+(m.bScore||0);(m[side]||[]).forEach(function(q){var x=nk(q[0]),o=acc[x]||(acc[x]={nick:q[0],k:0,d:0,a:0,R:0,n:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.R+=R;o.n++;});});});
+      var list=Object.keys(acc).map(function(x){var o=acc[x],c=window.msrCalc?window.msrCalc(o.k,o.d,o.a,o.R):null;o.rating=c?c.rating:0;return o;}).sort(function(a,b){return b.n-a.n||b.rating-a.rating;}).slice(0,5).sort(function(a,b){return b.rating-a.rating;});
+      if(list.length<5){var have={};list.forEach(function(o){have[nk(o.nick)]=1;});
+        var msl=PLAYERS.filter(function(p){return p.team===k;}),ros=(T[k].roster||[]).map(String);
+        ros.concat(msl.map(function(p){return p.nick;})).forEach(function(n){if(list.length>=5||have[nk(n)])return;have[nk(n)]=1;var mp=msl.find(function(p){return nk(p.nick)===nk(n);});list.push({nick:n,rating:mp&&mp.maps?mp.rating:0});});}
+      return h('section',{class:'msr-mm-sec'},h('h2',null,T[k].n+(res?' Lineup':' Expected Lineup')),
+        h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){return h('a',{class:'msr-mm-pl',href:playerHref(p.nick,k)},h('span',{class:'bigav sg','aria-hidden':'true'},sig(p.nick,52)),h('b',null,p.nick),h('small',null,p.rating?rt(p.rating):'—'));}):h('div',{class:'empty'},'Roster not available.')));
     }
     var center=res?h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},res.a+' – '+res.b),h('small',null,(res.auto?'Auto win':'Final')+(dateTxt?' · '+dateTxt:'')))
       :h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},'TBA'),h('small',null,dateTxt||'Not announced yet'));
@@ -5201,7 +5217,8 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'Swiss')),
         h('div',{class:'msr-mm-info'},'VOID Tournament · Stage 1 · Swiss'+(rlab?' · '+rlab:'')+' · ',h('a',{href:'#event/void'},'Open bracket ›'))),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Maps'),h('div',{class:'msr-mm-maps'},cards)),
-      stats,lineup(ka),lineup(kb));
+      stats,lineup(ka),lineup(kb),
+      res?null:msrMatchWinProb(ka,kb),msrMatchH2H(ka,kb),msrMatchMapStats(ka,kb),msrMatchForm(ka,kb));
   };
 
   function msrCurIdx(ka,kb){
@@ -5341,7 +5358,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       var last=msrLedgerSeries(k).filter(function(x){return x.idx!==cur;}).slice(-3).reverse();
       return h('div',{class:'msr-mm-form-col'},last.length?last.map(function(x){
         var w=x.mine>x.theirs,slot=msrFindSlot(k,x.opp);
-        var href=T[x.opp]?'#mslmatch/'+k+'/'+x.opp+'/'+(slot?(1104+slot.day)+'/'+slot.group:''):teamHref(k);
+        var href=x.void&&T[x.opp]?'#voidmatch/'+k+'/'+x.opp+'/'+(x.date||''):T[x.opp]?'#mslmatch/'+k+'/'+x.opp+'/'+(slot?(1104+slot.day)+'/'+slot.group:''):teamHref(k);
         return h('a',{class:'msr-mm-form-row',href:href,title:(T[x.opp]?T[x.opp].n:'')+(x.auto?' · auto win':'')},crest(k,'xs'),h('span',{class:'msr-mm-fp '+(x.auto?'a':(w?'w':'l'))},x.fullAuto?'A':(x.mine+'-'+x.theirs+(x.auto?' A':''))),crest(x.opp,'xs'));
       }):h('div',{class:'msr-mm-empty'},'No results yet'));
     }
