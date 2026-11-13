@@ -2981,9 +2981,22 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
   window.MSR_VOID_DAY = 1113; // Matches page shows the VOID Round 1 block on this day
   // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
-    { a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 1, bs: 0, auto: true, round: 1, date: 1113 } // R1: KnightSS auto win vs Dxvil13 (= DXIII)
+    { a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 1, bs: 0, auto: true, round: 1, date: 1113 }, // R1: KnightSS auto win vs Dxvil13 (= DXIII)
+    // R1: MNKT blue 2-1 MNKT purple. Breeze: purple won; the SS shows 12-10 mid-map (final score to confirm), Rust 13-6 and Dune 13-8 blue.
+    { a: 'DS_A92955A6312CC42137C3C7EA', b: 'DS_779FBD131741477AF32F9268', ea: 'MNKT Blue', eb: 'MNKT Purple', as: 2, bs: 1, round: 1, date: 1113,
+      maps: [
+        { map: 'Breeze', aScore: 10, bScore: 12, partial: true,
+          a: [['Kl6pse',23,16,5],['Ashura',16,17,0],['УЙТГАРТАЙ',14,15,2],['Zet良',13,15,3],['saD',9,17,4]],
+          b: [['Majesta',24,15,4],['Macro',17,14,2],['vtpzz999',15,13,2],['JUST',12,20,5],['ssleeepppy',9,13,2]] },
+        { map: 'Rust', aScore: 13, bScore: 6,
+          a: [['Kl6pse',17,10,4],['XiQQ',19,13,6],['Zet良',17,11,2],['Ashura',15,11,1],['zyx',8,12,4]],
+          b: [['ssleeepppy',21,14,2],['Majesta',12,19,3],['JUST',9,15,4],['Macro',9,14,1],['vtpzz999',5,16,1]] },
+        { map: 'Dune', aScore: 13, bScore: 8,
+          a: [['saD',17,13,4],['Zet良',17,12,4],['Kl6pse',12,13,2],['XiQQ',17,14,3],['Ashura',14,16,4]],
+          b: [['ssleeepppy',18,15,3],['Majesta',16,18,2],['Macro',13,14,2],['JUST',13,17,2],['BATILO prime',6,13,2]] }
+      ] }
   ];
-  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : null, maps: [] }; }); };
+  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : null, maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }) }; }); };
   window.msrVoidRes = function (x, y) {
     var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); })[0];
     if (!r) return null; var same = U(r.a) === U(x);
@@ -7091,7 +7104,7 @@ MSR_ROSTER_UPDATES.ds_47546cb9c5d6818be10f3e88 = {"roster":["Peace","wL","Genius
       'OMV':'Omnis Over','OTR':'Clan-One True Reign',
       'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
       '2990':'2990 RED','2990 White':'2990 White','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
-    };
+    ,'MNKT Red':'MNKTeam-(red)','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)'};
     // VIP teams may grow past 300. Non-VIP teams stop gaining at 300 but are never pulled down to it.
     function vipTagActive(tag){
       var name=exactTeamNames[tag],code=name&&Object.keys(T).find(function(c){return String(T[c].n||'').trim().toLowerCase()===name.toLowerCase();});
