@@ -5145,6 +5145,9 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       cards.push(mmCard('Decider',known.decider||'TBA'));
     }else if(res&&res.maps&&res.maps.length){
       res.maps.forEach(function(m,i){cards.push(mmCard('Map '+(i+1),m.map));});
+    }else if(res){
+      // Decided without maps (auto win): no map picks to show.
+      cards=[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) \u00b7 no maps played')];
     }else{cards=[mmCard('Pick 1','TBA'),mmCard('Pick 2','TBA'),mmCard('Decider','TBA')];}
     function lineup(k){
       // Top 5: best ratings among players with a real sample (at least half of the team's most-played player); fill from the rest if fewer than 5.
