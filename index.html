@@ -5652,10 +5652,16 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     if (!matches.length) matches = PLAYERS.filter(function (p) { return p.team === team && !p.screenshotOnly && ((aliases[name] || []).indexOf(norm(p.nick)) >= 0 || (aliases[norm(p.nick)] || []).indexOf(name) >= 0); });
     return matches.length === 1 ? matches[0] : null;
   }
+  var MSR_PK_CACHE = Object.create(null);
+  function msrPkMemo(v) {
+    var k = v ? String(v) : '', c = MSR_PK_CACHE[k];
+    if (c === undefined) c = MSR_PK_CACHE[k] = k.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+    return c;
+  }
   function playerRowsFor(nick, team) {
     ensureLedgerRows();
     var seen = {}, out = [];
-    var pk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, nkey = pk(nick), NA = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'], tengrion: ['tengri'], tengri: ['tengrion'], kkasuee: ['kasuee'], kasuee: ['kkasuee'], sarnarn: ['sarnar'], sarnar: ['sarnarn'] }, nkeys = [nkey].concat(NA[nkey] || []);
+    var pk = msrPkMemo, nkey = pk(nick), NA = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'], tengrion: ['tengri'], tengri: ['tengrion'], kkasuee: ['kasuee'], kasuee: ['kkasuee'], sarnarn: ['sarnar'], sarnar: ['sarnarn'] }, nkeys = [nkey].concat(NA[nkey] || []);
     // A transferred player's profile on the new team also lists his maps for the old team.
     var trFrom = null; (window.MSR_PLAYER_TRANSFERS || []).forEach(function (t) { if (team && String(t.to).toUpperCase() === String(team).toUpperCase() && pk(t.toNick || t.nick) === nkey) { trFrom = window.msrTagToCode ? window.msrTagToCode(t.from) : null; if (trFrom) nkeys.push(pk(t.nick)); } });
     (PROWS[nick] || []).concat(PMROWS.filter(function (r) { return r.ledger && !r.resultsOnly && (r.nick === nick || (nkey && nkeys.indexOf(pk(r.nick)) !== -1)); })).forEach(function (r) {
