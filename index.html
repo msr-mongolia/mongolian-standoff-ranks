@@ -5083,7 +5083,13 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       if(playedList){list=playedList.map(function(q){
         var nk=function(v){return String(v||'').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
         var hit=all.find(function(p){return nk(p.nick)===q.nk;})||all.find(function(p){var r=nk(p.nick);return r.length>=3&&q.nk.length>=3&&(q.nk.indexOf(r)===0||r.indexOf(q.nk)===0);})||all.find(function(p){var r=nk(p.nick);return r.length>=4&&q.nk.length>=4&&(q.nk.indexOf(r)>=0||r.indexOf(q.nk)>=0);});
-        return hit||{nick:q.nick,team:k,maps:0,rating:0};
+        if(hit)return hit;
+        // Ledger-only player (left the roster or never matched): link to a real profile built from ledger rows.
+        try{
+          var fk=k+'|'+q.nk,fp=(window.MSR_FORMER_PLAYERS||{})[fk],rows=playerRowsFor(q.nick,k),g=agg(rows);
+          if(!fp){window.MSR_FORMER_PLAYERS=window.MSR_FORMER_PLAYERS||{};fp=window.MSR_FORMER_PLAYERS[fk]={nick:q.nick,team:k,previousTeam:k,gameId:'',maps:0,kills:0,deaths:0,assists:0,kd:0,rating:0,freeAgent:true,rank:0};}
+          return {nick:fp.nick||q.nick,team:k,previousTeam:k,maps:rows.length,rating:g.rating||0,gameId:fp.gameId||''};
+        }catch(e){return {nick:q.nick,team:k,maps:0,rating:0};}
       });}
       return h('section',{class:'msr-mm-sec'},
         h('h2',null,T[k].n+(res?' Lineup':' Expected Lineup')),
