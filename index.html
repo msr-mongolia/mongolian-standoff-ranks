@@ -3011,6 +3011,10 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
           b: [['ice D',20,19,1],['Ylalt x 165hz',15,16,3],['Sleepy',15,16,3],['Asd',11,15,5],['Kenshi',14,19,2]] }
       ] }
   ];
+  // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
+  window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
+    { nick: 'Zet良', from: 'WOART', to: 'DS_A92955A6312CC42137C3C7EA', toNick: 'Zet良.', date: 1114 } // WoArt -> MNKT Blue (same Game ID 174981510)
+  ];
   window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : null, maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }) }; }); };
   /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
   window.msrVoidR2 = function () {
@@ -3119,6 +3123,8 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     (function(){
       var acc={},dist=function(a,b){var prev=Array.from({length:b.length+1},function(_,i){return i;});for(var i=1;i<=a.length;i++){var next=[i];for(var j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=next;}return prev[b.length];};
       var codeOf=function(c){c=String(c||'');return T[c]?c:(Object.keys(T).find(function(k){return k.toUpperCase()===c.toUpperCase();})||null);};
+      // Transferred players: their verified MSL maps from the old team move to their profile on the new team.
+      (window.MSR_PLAYER_TRANSFERS||[]).forEach(function(t){var x=sums[t.from+'|'+normVerified(t.nick)],to=codeOf(t.to);if(!x||!to)return;var key=to+'|'+normVerified(t.toNick||t.nick),o=acc[key]||(acc[key]={team:to,nick:t.toNick||t.nick,k:0,d:0,a:0,maps:0,rounds:0});o.k+=x.k;o.d+=x.d;o.a+=x.a;o.maps+=x.maps;o.rounds+=x.rounds;});
       (window.MSR_VOID_RESULTS||[]).forEach(function(r){(r.maps||[]).forEach(function(m){var R=(m.aScore||0)+(m.bScore||0);[['a',codeOf(r.a)],['b',codeOf(r.b)]].forEach(function(sd){if(!sd[1])return;(m[sd[0]]||[]).forEach(function(q){var key=sd[1]+'|'+normVerified(q[0]),o=acc[key]||(acc[key]={team:sd[1],nick:q[0],k:0,d:0,a:0,maps:0,rounds:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.maps++;o.rounds+=R;});});});});
       PLAYERS.forEach(function(p){if(p._vd&&p._run!==runId){p.maps-=p._vd.maps;p.kills-=p._vd.k;p.deaths-=p._vd.d;p.assists-=p._vd.a;p.rounds-=p._vd.rounds;}p._vd=null;});
       Object.keys(acc).forEach(function(key){
@@ -5650,8 +5656,10 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     ensureLedgerRows();
     var seen = {}, out = [];
     var pk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, nkey = pk(nick), NA = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'], tengrion: ['tengri'], tengri: ['tengrion'], kkasuee: ['kasuee'], kasuee: ['kkasuee'], sarnarn: ['sarnar'], sarnar: ['sarnarn'] }, nkeys = [nkey].concat(NA[nkey] || []);
+    // A transferred player's profile on the new team also lists his maps for the old team.
+    var trFrom = null; (window.MSR_PLAYER_TRANSFERS || []).forEach(function (t) { if (team && String(t.to).toUpperCase() === String(team).toUpperCase() && pk(t.toNick || t.nick) === nkey) { trFrom = window.msrTagToCode ? window.msrTagToCode(t.from) : null; if (trFrom) nkeys.push(pk(t.nick)); } });
     (PROWS[nick] || []).concat(PMROWS.filter(function (r) { return r.ledger && !r.resultsOnly && (r.nick === nick || (nkey && nkeys.indexOf(pk(r.nick)) !== -1)); })).forEach(function (r) {
-      if (team && r.team && r.team !== team) return;
+      if (team && r.team && r.team !== team && !(trFrom && r.team === trFrom)) return;
       if (!r.m && PMROWS.some(function (x) { return x.ledger && x.team === r.team && x.map === r.map && x.k === r.k && x.d === r.d && x.a === r.a && nkeys.indexOf(pk(x.nick)) >= 0; })) return;
       var k = r.m ? [r.team, r.m.id, r.mi].join('|') : [r.team, r.map, r.k, r.d, r.a].join('|'); if (seen[k]) return; seen[k] = 1; out.push(r);
     });
