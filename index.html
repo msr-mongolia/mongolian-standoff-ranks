@@ -2802,7 +2802,7 @@ window.MSR_SCREENSHOT_MATCHES = [{"a":"CioR","b":"0kz","maps":[{"map":"Rust","aS
 window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 /* MSL Major S2 - Stage 2 results (kept apart from the Stage 1 ledger, where a pair can only meet once).
    zone/slot identify the bracket match; auto = series score given by an auto win. Counts for ELO and form like any other match. */
-window.MSR_S2_RESULTS=[{zone:'B',slot:'Upper R1 · M1',a:'6LC',b:'0kz',auto:{a:2,b:0}},{zone:'C',slot:'Upper R1 · M1',a:'Mpct',b:'ACCA',auto:{a:2,b:0}},{zone:'G',slot:'Lower R1',a:'KGTSS',b:'DRDRX',auto:{a:2,b:0}}];
+window.MSR_S2_RESULTS=[{zone:'B',slot:'Upper R1 · M1',a:'6LC',b:'0kz',auto:{a:2,b:0}},{zone:'C',slot:'Upper R1 · M1',a:'Mpct',b:'ACCA',auto:{a:2,b:0}},{zone:'G',slot:'Lower R1',a:'KGTSS',b:'DRDRX',auto:{a:2,b:0},date:1113}];
 /* Stage 1 round-robin schedule lookup (group + played day) shared by Results and player history. */
 window.msrMatchSchedule=function(ta,tb){
   const G={"A":["uclt","IMTLL","ACCA","SCLAT","OTR","OMV","AIM4R","RESKK"],"B":["2990","EknZ","CioR","B2Di","EVKZ","MSDTP","NNRDS","Humn7"],"C":["KngZz","Mpct","7ADD","ETXEN","UxrN","Rvurz","4zi","WarKz"],"D":["0kz","CioR","DXIII","TLnrs","DL340","6LC","R4GE7","XvrN"],"E":["INFYX","METAS","DRDRX","SNT","SIXP","MANAI","OMEN"],"F":["2990 Purple","R6","KGTSS","WOART","-aN0T","6vmp6","EKS"]};
@@ -2827,7 +2827,7 @@ window.msrS2Res=function(zone,slot){
   var L=(window.MSR_SCREENSHOT_MATCHES||[]).filter(function(m){return m.stage2&&m.zone===zone&&m.slot===slot;})[0];
   if(L){var au=L.auto||{a:0,b:0},aw=L.maps.filter(function(x){return x.aScore>x.bScore;}).length+(au.a||0),bw=L.maps.filter(function(x){return x.bScore>x.aScore;}).length+(au.b||0);var dm=/NOV (\d+)/.exec(L.date||'');return {a:L.a,b:L.b,aw:aw,bw:bw,maps:L.maps,auto:false,date:dm?1100+ +dm[1]:1112};}
   var R=(window.MSR_S2_RESULTS||[]).filter(function(r){return r.zone===zone&&r.slot===slot;})[0];
-  if(R&&R.auto)return {a:R.a,b:R.b,aw:R.auto.a||0,bw:R.auto.b||0,maps:[],auto:true,date:1112};
+  if(R&&R.auto)return {a:R.a,b:R.b,aw:R.auto.a||0,bw:R.auto.b||0,maps:[],auto:true,date:R.date||1112};
   return null;
 };
 // Players shown on the results scoreboard only; excluded from rosters, player stats, rankings and Stats.
