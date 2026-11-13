@@ -8105,6 +8105,12 @@ function syncMsrResultCrests(){
   });
  });
 }
+// One document-wide query is shared by every side processed in the same tick (it was re-run ~1400 times per Results visit).
+const msrQAMemoCache={};
+function msrQAMemo(sel){
+ if(!msrQAMemoCache[sel]){msrQAMemoCache[sel]=[...document.querySelectorAll(sel)];setTimeout(()=>{delete msrQAMemoCache[sel];},0);}
+ return msrQAMemoCache[sel];
+}
 function updateFinishedClanMedia(side){
  const normKey=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const key=normKey(side.dataset.team);
@@ -8170,7 +8176,7 @@ function updateFinishedClanMedia(side){
   let url=localLogo||(clan?.logo_url?clan.logo_url.replace('/team-logos/ds_','/team-logos/thumb/ds_'):clan?.logo_url);
   if(url&&clan&&clan.source_timestamp&&url.indexOf('?')<0)url+='?v='+encodeURIComponent(clan.source_timestamp);
   if(!url){
-   const matching=[...document.querySelectorAll('#app img')].find(el=>
+   const matching=msrQAMemo('#app img').find(el=>
     el!==img&&el.src&&!el.src.includes('placeholder')&&
     keys.some(k=>normKey(el.alt||'')===k||
      normKey(el.closest('[data-team],[data-clan],[data-tag]')?.dataset.team||'')===k||
@@ -8207,7 +8213,7 @@ function updateFinishedClanMedia(side){
   });
  }
  const names=[side.dataset.team,clan?.name,clan?.tag].filter(Boolean).map(normKey);
- const source=[...document.querySelectorAll('[data-back1],[data-team-back1],[data-clan-back1]')].find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&names.includes(normKey(v))));
+ const source=msrQAMemo('[data-back1],[data-team-back1],[data-clan-back1]').find(el=>[el.dataset.team,el.dataset.clan,el.dataset.tag].some(v=>v&&names.includes(normKey(v))));
  const back1=source?.dataset.back1||source?.dataset.teamBack1||source?.dataset.clanBack1;
  if(back1)setBack1(back1);
  // No BACK1 of its own (and no video one): use the team's logo as the row background instead.
