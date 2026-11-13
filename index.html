@@ -2969,7 +2969,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
   EVENTS.forEach(function (e) { if (e.n === 'SPS') { e.img = 'assets/sps_logo.jpg'; e.discord = 'https://discord.gg/fExHtF3xk'; } }); // Standoff Pro Series
   EVENTS[0].tier = 'S';
   EVENTS.forEach(function (e) { if (e.st === 'soon' && e.dt === 'Coming soon' && !e.id && e.n !== 'SPS') e.locked = true; }); // announced but not open yet
-  EVENTS.splice(1, 0, { id: 'void', n: 'VOID Tournament', st: 'soon', dt: 'Nov 15, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=2', discord: 'https://discord.gg/fH3w2wYYs',
+  EVENTS.splice(1, 0, { id: 'void', n: 'VOID Tournament', st: 'now', dt: 'Nov 13, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=2', discord: 'https://discord.gg/fH3w2wYYs',
     notes: ['⭐ MVP 20 000₮', '🎟️ Entry fee 15 000₮'] });
   EVENTS[1].tier = 'B'; // VOID Tournament
   // VOID Tournament participants (team codes). Add more codes here to show the VOID chip in the ranking.
@@ -2977,7 +2977,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
   // VOID Round 1 draw (confirmed by the organiser, Nov 13): imp4ct–Zx_WB Black, Zx_WB White–Rain tzy, Six Lence–MNKT red, Celestex–United elites,
   // Rvurz–Chingis Warriors, MNKT purple–MNKT blue, Four zest assault–EknZ, Dxvil13–KnightSS.
   window.MSR_VOID_R1 = window.MSR_VOID_R1 || [['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3'],['DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28'],['SIXL','DS_A0B0110FC187C08BE7637475'],['DS_7C03F1F6DA5F993B4CC9BB28','DS_BED22EFE5176D46A905806CD'],['DS_D1764CAF48B74A2D0B7B3E59','DS_4559C7E779F302E917B1A414'],['DS_779FBD131741477AF32F9268','DS_A92955A6312CC42137C3C7EA'],['DS_9FEDE81820B36BB7889B86BA','DS_VOID_EKNZ_20261113'],['DS_5E67C1B8721D736CA5B5A960','KGTSS']];
-  window.MSR_VOID_DAY = 1115; // Matches page shows the VOID Round 1 block on this day
+  window.MSR_VOID_DAY = 1113; // Matches page shows the VOID Round 1 block on this day
   EVENTS.forEach(function (e) { if (e.n === 'VOID Tournament') { e.short = 'VOID'; e.participants = window.MSR_VOID_TEAMS; } });
   (function () { var i = EVENTS.findIndex(function (e) { return e.n === 'SPS'; }); if (i > 2) EVENTS.splice(2, 0, EVENTS.splice(i, 1)[0]); })(); // SPS is next: show 3rd
   EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = ['🥇 600 000₮', '🥈 400 000₮', '🥉 200 000₮'];
