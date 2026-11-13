@@ -3096,7 +3096,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     if (!maps) return 0;
     var raw = rating > 0 ? rating : kd;
     var sample = maps / (maps + 8);
-    var rows = typeof PROWS !== 'undefined' && PROWS[p.nick] || [];
+    var rows = (typeof PROWS !== 'undefined' && PROWS[p.nick] || []).filter(function (row) { return row.team === p.team; });
     var weighted = 0, weightTotal = 0;
     rows.forEach(function (row) {
       var opp = RANK.filter(function (x) { return x[0] === row.opp; })[0];
@@ -4786,7 +4786,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     });
   })();
   PLAYERS.forEach(function (p) {
-    var g = agg(PROWS[p.nick] || []);
+    var g = agg((PROWS[p.nick] || []).filter(function (row) { return row.team === p.team; }));
     if (g.n) { p.maps = g.n; p.kills = g.k; p.deaths = g.d; p.kd = +g.kd.toFixed(2); }
     if (!p.verifiedMSR) { p.rating = g.n ? g.rating : 0; p.assists = g.a || 0; p.adr = g.adr || 0; p.kast = g.kast || 0; }
   });
@@ -5447,10 +5447,17 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
         var R = (x.aScore || 0) + (x.bScore || 0), mo = { id: 100000 + li, ledger: true, a: ca, b: cb };
         [[ca, x.a, x.aScore > x.bScore, cb, m.a], [cb, x.b, x.bScore > x.aScore, ca, m.b]].forEach(function (t) {
           if (!t[0]) return;
-          (t[1] || []).forEach(function (p) { if ((window.MSR_RESULTS_ONLY || {})[t[4] + '|' + String(p[0]).toLowerCase()]) return; var mc1 = window.msrCalc ? window.msrCalc(p[1], p[2], p[3], R) : null; PMROWS.push({ ledger: true, m: mo, mi: mi, map: x.map, nick: p[0], team: t[0], opp: t[3], win: t[2], ev: ev, date: ldate, ago: ldate ? ago(ldate) : 0, R: R, k: p[1], d: p[2], a: p[3], adr: mc1 ? Math.round(mc1.adr) : 0, kast: mc1 ? Math.round(mc1.kast) : 0, rating: mc1 ? mc1.rating : 0 }); });
+          (t[1] || []).forEach(function (p) { if ((window.MSR_RESULTS_ONLY || {})[t[4] + '|' + String(p[0]).toLowerCase()]) return; var mc1 = window.msrCalc ? window.msrCalc(p[1], p[2], p[3], R) : null; PMROWS.push({ ledger: true, m: mo, mi: mi, map: x.map, nick: (statsPlayer(p[0], t[0]) || {nick:p[0]}).nick, team: t[0], opp: t[3], win: t[2], ev: ev, date: ldate, ago: ldate ? ago(ldate) : 0, R: R, k: p[1], d: p[2], a: p[3], adr: mc1 ? Math.round(mc1.adr) : 0, kast: mc1 ? Math.round(mc1.kast) : 0, rating: mc1 ? mc1.rating : 0 }); });
         });
       });
     });
+  }
+  function statsPlayer(nick, team) {
+    var norm = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); };
+    var aliases = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'], tengrion: ['tengri'], tengri: ['tengrion'], kkasuee: ['kasuee'], kasuee: ['kkasuee'], sarnarn: ['sarnar'], sarnar: ['sarnarn'] }, name = norm(nick);
+    var matches = PLAYERS.filter(function (p) { return p.team === team && !p.screenshotOnly && norm(p.nick) === name; });
+    if (!matches.length) matches = PLAYERS.filter(function (p) { return p.team === team && !p.screenshotOnly && ((aliases[name] || []).indexOf(norm(p.nick)) >= 0 || (aliases[norm(p.nick)] || []).indexOf(name) >= 0); });
+    return matches.length === 1 ? matches[0] : null;
   }
   function playerRowsFor(nick, team) {
     ensureLedgerRows();
@@ -5458,14 +5465,15 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     var pk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, nkey = pk(nick), NA = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'], tengrion: ['tengri'], tengri: ['tengrion'], kkasuee: ['kasuee'], kasuee: ['kkasuee'], sarnarn: ['sarnar'], sarnar: ['sarnarn'] }, nkeys = [nkey].concat(NA[nkey] || []);
     (PROWS[nick] || []).concat(PMROWS.filter(function (r) { return r.ledger && (r.nick === nick || (nkey && nkeys.indexOf(pk(r.nick)) !== -1)); })).forEach(function (r) {
       if (team && r.team && r.team !== team) return;
-      var k = [r.team, r.map, r.k, r.d, r.a].join('|'); if (seen[k]) return; seen[k] = 1; out.push(r);
+      if (!r.m && PMROWS.some(function (x) { return x.ledger && x.team === r.team && x.map === r.map && x.k === r.k && x.d === r.d && x.a === r.a && nkeys.indexOf(pk(x.nick)) >= 0; })) return;
+      var k = r.m ? [r.team, r.m.id, r.mi].join('|') : [r.team, r.map, r.k, r.d, r.a].join('|'); if (seen[k]) return; seen[k] = 1; out.push(r);
     });
     return out;
   }
   function playerAggs(f) {
     ensureLedgerRows();
-    var by = {}; filterRows(PMROWS, f).forEach(function (r) { (by[r.nick] = by[r.nick] || []).push(r); });
-    return Object.keys(by).map(function (n) { var g = agg(by[n]); g.nick = n; g.team = by[n][0].team || (PBY[n] || {}).team; g.maps = by[n].length; g.diff = g.k - g.d; return g; });
+    var by = {}; filterRows(PMROWS, f).forEach(function (r) { var identity = JSON.stringify([r.team, r.nick]); (by[identity] = by[identity] || []).push(r); });
+    return Object.keys(by).map(function (identity) { var rows = by[identity], g = agg(rows); g.nick = rows[0].nick; g.team = rows[0].team; g.maps = rows.length; g.diff = g.k - g.d; return g; });
   }
   function mapKey(r) { return r.m.id + ':' + r.mi; }
   function sidesOf(m, i, code) {
@@ -5688,7 +5696,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
     var rosterTbl = h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:420px' },
       h('thead', null, h('tr', null, h('th', null, 'Player'), h('th', { class: 'n' }, 'Maps'), h('th', { class: 'n' }, 'K/D'), h('th', { class: 'n' }, 'ADR'), h('th', { class: 'n' }, 'KAST'), h('th', { class: 'n' }, 'Rating'))),
       h('tbody', null, roster.map(function (p) {
-        var g = agg(PROWS[p.nick] || []);
+        var g = agg((PROWS[p.nick] || []).filter(function (row) { return row.team === p.team; }));
         return h('tr', { class: 'clk', onclick: go(playerHref(p.nick, p.team)) }, h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'bigav sg' + tc(p) + (code === 'ETXEN' ? ' msr-etxen-member-hat' : ''), style: 'width:30px;height:30px', 'aria-hidden': 'true' }, sig(p.nick, 30)),
           h('div', null, h('a', { class: 'tl', href: playerHref(p.nick, p.team) }, h('b', null, (function () { var nick = String(p.nick || '').replace(/^\s*ign\s*:\s*/i, '').trim(); if (p.team === 'COR') nick = nick.replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim(); return nick; })()))))),
           h('td', { class: 'n' }, p.maps), h('td', { class: 'n' }, p.kd.toFixed(2)), h('td', { class: 'n' }, g.adr.toFixed(1)), h('td', { class: 'n' }, g.kast.toFixed(1) + '%'), h('td', { class: 'n' }, rt(p.rating)));
@@ -5736,7 +5744,7 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
   /* ================= Player page ================= */
   V.player = function (nick, teamCode) {
     if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
-    var p = teamCode ? PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) : PBY[nick];
+    var p = teamCode ? (PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) || statsPlayer(nick, teamCode)) : PBY[nick];
     if (!p) return V.players();
     var team = p.team, F = { days: 'all', ev: 'all', map: 'all' }, host = h('div', null);
     if(team==='KNGZZ' && /^r1sk$/i.test(p.nick) && T[team] && T[team].img){var riskLogo=String(T[team].img).replace(/["\\]/g,''); document.documentElement.style.setProperty('--msr-risk-team-logo','url("'+riskLogo+'")');}
@@ -6924,6 +6932,8 @@ window.MSR_FREE_AGENTS=[{nick:'URNU',id:'188314521',from:'CHINGIS WARRIORS',team
       activeGameKeys.add(player.team + '|' + key(player.nick));
     });
     Object.keys(GAME_IDS).forEach(function (gameKey) { if (!activeGameKeys.has(gameKey)) delete GAME_IDS[gameKey]; });
+    // Roster/name changes must refresh ledger identity even when team and match counts stay unchanged.
+    LEDGER_KEY = '';
     // Keep rankings consistent after async Discord roster changes. Exclude inactive roster entries.
     PLAYERS.forEach(function (p) { p.msrRating = playerRankScore(p); p.provisional = (Number(p.maps) || 0) < 5; });
     sortPlayerRanking();
