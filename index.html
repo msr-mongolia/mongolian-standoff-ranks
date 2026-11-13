@@ -2690,6 +2690,7 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 .msr-mm-pf{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}.msr-mm-pf-r{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--line-soft);font-size:13px}.msr-mm-pf-r:last-child{border-bottom:0}.msr-mm-pf-r span{color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;text-align:center}.msr-mm-pf-r b{font-weight:700;color:var(--muted)}.msr-mm-pf-r b:last-child{text-align:right}.msr-mm-pf-r b.w{color:var(--win)}
 </style>
 <style id="msr-void-res-css">.sw-t.sw-lose{opacity:.35;filter:grayscale(1)}.sw-t.sw-win{box-shadow:0 0 0 2px #3ddc84;border-radius:12px}.sw-m.done .sw-vs{color:#3ddc84;font-weight:800}</style>
+<style id="msr-res-ev-css">#app .msr-res-ev{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px auto 4px;max-width:820px}#app .msr-res-ev button{background:#1c2027;border:1px solid #34404b;color:#aab4c2;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}#app .msr-res-ev button.on{background:#2fbc7a22;border-color:#3ddc84;color:#fff}</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -7627,6 +7628,11 @@ screenshotMatches.forEach(m=>{
  if(aw===bw)return;
  results.push({group:'',stage2:true,zone:m.zone,slot:m.slot,s2date:'NOV 12',a:m.a,b:m.b,winner:aw>bw?m.a:m.b,score:aw+'–'+bw,maps:[],screenshotMaps:[],auto:au});
 });
+// VOID Tournament results (own event: shown on Results under the VOID filter, ELO via the same chain).
+(window.MSR_VOID_RESULTS||[]).forEach(r=>{
+ if(!r.ea||!r.eb||r.as===r.bs)return;
+ results.push({group:'',void:true,round:r.round||1,vdate:r.date||1113,a:r.ea,b:r.eb,winner:r.as>r.bs?r.ea:r.eb,score:r.as+'–'+r.bs,maps:(r.maps||[]).map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:r.maps||[],auto:r.auto?{a:r.as,b:r.bs}:{a:0,b:0}});
+});
 const verifiedStats={};
 const additionalMatchStats={};
 // MSR ELO v3: expected outcome by opponent pre-match ELO, round difference, map count and result.
@@ -8095,8 +8101,8 @@ function verifiedResultsDetail(){
  const intro=document.createElement('p');intro.className='msr-results-intro';intro.textContent='Finished matches · Tap a match to see maps, player stats and ELO';section.appendChild(intro);
  const msrMatchSchedule=window.msrMatchSchedule;
  results.forEach((match,matchIndex)=>{
- const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);const _sd=msrMatchSchedule(match.a,match.b);matchPanel.dataset.day=match.stage2?String(+((/NOV (\d+)/.exec(match.s2date||'')||[0,12])[1])):_sd?String(_sd.date):'';
- const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=msrMatchSchedule(match.a,match.b);event.textContent=match.stage2?'MSL MAJOR S2 · STAGE 2 · ZONE '+match.zone+' · '+(match.s2date||'NOV 13')+' · BO3':(sched?'MSL MAJOR · GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL MAJOR · ')+'BO3';if(sched)event.title='Group '+sched.group+' · played Nov '+sched.date;const summaryLogo=(team,position)=>{
+ const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);const _sd=msrMatchSchedule(match.a,match.b);matchPanel.dataset.ev=match.void?'void':'msl';matchPanel.dataset.day=match.void?String(match.vdate-1100):match.stage2?String(+((/NOV (\d+)/.exec(match.s2date||'')||[0,12])[1])):_sd?String(_sd.date):'';
+ const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=msrMatchSchedule(match.a,match.b);event.textContent=match.void?'VOID TOURNAMENT · SWISS · ROUND '+match.round+' · NOV '+(match.vdate-1100):match.stage2?'MSL MAJOR S2 · STAGE 2 · ZONE '+match.zone+' · '+(match.s2date||'NOV 13')+' · BO3':(sched?'MSL MAJOR · GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL MAJOR · ')+'BO3';if(sched)event.title='Group '+sched.group+' · played Nov '+sched.date;const summaryLogo=(team,position)=>{
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
  wrap.dataset.back1Label=team==='SIXP'?'6LC Purple':team;
  let tint=0;for(const ch of team)tint=(tint*31+ch.charCodeAt(0))>>>0;
@@ -8109,7 +8115,7 @@ function verifiedResultsDetail(){
 summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b'),event);matchPanel.appendChild(summary);
  const content=document.createElement('div');content.className='msr-match-expand-content';matchPanel.appendChild(content);
  const finishedDisplayName=(tag)=>tag==='SIXP'?'6LC Purple':tag;
- const title=document.createElement('h2');title.textContent='MSL S2 · Finished match · '+finishedDisplayName(match.a)+' '+match.score+' '+finishedDisplayName(match.b);
+ const title=document.createElement('h2');title.textContent=(match.void?'VOID':'MSL S2')+' · Finished match · '+finishedDisplayName(match.a)+' '+match.score+' '+finishedDisplayName(match.b);
  const subtitle=document.createElement('p');const em=eloMatches[matchIndex];subtitle.textContent='Verified map scores and player K/D/A · '+match.maps.map(m=>m[0]+' '+m[1]+'–'+m[2]).join(' · ')+(((match.auto||{}).a||0)+((match.auto||{}).b||0)?' · +'+(((match.auto||{}).a||0)+((match.auto||{}).b||0))+' auto-win map (no round score)':'')+' · RD '+(em.roundDiff>=0?'+':'')+em.roundDiff+' · '+em.mapCount+' maps · ELO '+finishedDisplayName(match.a)+' '+(em.aChange>=0?'+':'')+em.aChange+' / '+finishedDisplayName(match.b)+' '+(em.bChange>=0?'+':'')+em.bChange;
  const card=document.createElement('div');card.className='msr-finished-teams';
  [[match.a,'WIN · '+match.score.split('–')[0]],[match.b,'LOSS · '+match.score.split('–')[1]]].forEach(([name,status])=>{
@@ -8290,8 +8296,11 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
    const lastD=dates[dates.length-1],maxD=Math.max(lastD,todayD),minD=dates[0];
    // Newest day first, like the page intro says; open on the latest day that has results.
    {const cards=[...section.querySelectorAll('.msr-match-expand')],anchor=cards[0]?.previousSibling;const byDay=cards.map((e,i)=>[e,i]).sort((a,b)=>(+b[0].dataset.day||0)-(+a[0].dataset.day||0)||a[1]-b[1]);const host=cards[0]?.parentNode;if(host){const after=cards[cards.length-1].nextSibling;byDay.forEach(x=>host.insertBefore(x[0],after));}}
-   let sel=dates.includes(todayD)?todayD:lastD,center=sel;
+   let sel=dates.includes(todayD)?todayD:lastD,center=sel,evSel='all';
    const strip=document.createElement('div');strip.className='ap-days msr-res-days';
+   // Event filter: MSL or VOID results (All = both).
+   const evBar=document.createElement('div');evBar.className='msr-res-ev';evBar.setAttribute('role','tablist');
+   const evBtns=[['all','All'],['msl','MSL Major S2'],['void','VOID Tournament']].map(([k,t])=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.dataset.k=k;b.addEventListener('click',()=>{evSel=k;draw();});evBar.appendChild(b);return b;});
    const draw=()=>{
     strip.textContent='';
     const mk=(txt,fn,cls,label)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=txt;if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b;};
@@ -8304,13 +8313,14 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
      b.append(bb,sp);b.addEventListener('click',()=>{sel=(sel===n)?0:n;center=n;draw();});strip.appendChild(b);
     });
     strip.appendChild(mk('›',()=>{center=Math.min(maxD,center+1);draw();},'ap-arrow','Later'));
-    let shown=0;section.querySelectorAll('.msr-match-expand').forEach(e=>{const ok=!sel||+e.dataset.day===sel;e.style.display=ok?'':'none';if(ok)shown++;});
+    evBtns.forEach(b=>{const on=b.dataset.k===evSel;b.classList.toggle('on',on);b.setAttribute('aria-selected',String(on));});
+    let shown=0;section.querySelectorAll('.msr-match-expand').forEach(e=>{const ok=(!sel||+e.dataset.day===sel)&&(evSel==='all'||e.dataset.ev===evSel);e.style.display=ok?'':'none';if(ok)shown++;});
     let empty=section.querySelector('.msr-res-empty');if(!empty){empty=document.createElement('p');empty.className='msr-results-intro msr-res-empty';empty.textContent='No finished matches on this day yet.';section.appendChild(empty);}
     empty.style.display=shown?'none':'';
     // The older per-day list below the strip follows the selected day too.
-    app.querySelectorAll('[data-d]').forEach(e=>{e.style.display=(!sel||+e.dataset.d===1100+sel)?'':'none';});
+    app.querySelectorAll('[data-d]').forEach(e=>{e.style.display=(!sel||+e.dataset.d===1100+sel)&&evSel!=='void'?'':'none';});
    };
-   section.insertBefore(strip,section.querySelector('.msr-match-expand'));
+   section.insertBefore(evBar,section.querySelector('.msr-match-expand'));section.insertBefore(strip,section.querySelector('.msr-match-expand'));
    draw();
   }
  }
