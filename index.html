@@ -6215,15 +6215,21 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         }
         box.appendChild(s2Panel);
       }
-      if (YEAR === 2026 && APM.sel === (window.MSR_VOID_DAY || 1115) && Array.isArray(window.MSR_VOID_R1)) {
-        var vdRows = window.MSR_VOID_R1.filter(function (p) { return T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
-          return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: 'Swiss', time_label: '', _href: '#event/void' };
+      var vdStart = window.MSR_VOID_DAY || 1113, vdEnd = window.MSR_VOID_END || 1116;
+      if (YEAR === 2026 && APM.sel >= vdStart && APM.sel <= vdEnd && Array.isArray(window.MSR_VOID_R1)) {
+        /* VOID runs over several days: Round 1 on the first day; later days list their round once its pairs are entered
+           (window.MSR_VOID_ROUNDS = { 1114: { label: 'Round 2', pairs: [[codeA, codeB], ...] } }), otherwise show what comes next. */
+        var vdDay = APM.sel === vdStart ? { label: 'Round 1 \u00b7 0/0', pairs: window.MSR_VOID_R1 } : ((window.MSR_VOID_ROUNDS || {})[APM.sel] || null);
+        var vdRows = (vdDay ? vdDay.pairs : []).filter(function (p) { return T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
+          return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: 'Swiss', time_label: p[2] || '', _href: '#event/void' };
         });
-        if (vdRows.length) {
+        if (vdRows.length || !APM.fav) {
           var vdPanel = h('section', { class: 'ap-card msr-rel-tournament msr-void-day' }), vdOpen = APM.vdOpen !== false;
           vdPanel.appendChild(h('button', { type: 'button', class: 'ap-gh', 'aria-expanded': String(vdOpen), onclick: function () { APM.vdOpen = !vdOpen; draw(); } },
-            evLogo('VOID Tournament'), h('b', null, 'VOID Tournament \u00b7 Swiss'), h('span', { class: 'ct' }, vdRows.length + ' matches'), h('i', { class: 'chv', svg: APIC.chev })));
-          if (vdOpen) vdPanel.appendChild(h('div', { class: 'msr-rel-group-panel' }, h('h2', { class: 'msr-rel-group-heading' }, 'Round 1 \u00b7 0/0'), h('div', { class: 'msr-rel-match-list' }, vdRows.map(msrRelMatchCard))));
+            evLogo('VOID Tournament'), h('b', null, 'VOID Tournament \u00b7 Swiss'), h('span', { class: 'ct' }, vdRows.length ? vdRows.length + ' matches' : 'Day ' + (APM.sel - vdStart + 1)), h('i', { class: 'chv', svg: APIC.chev })));
+          if (vdOpen) vdPanel.appendChild(h('div', { class: 'msr-rel-group-panel' },
+            vdRows.length ? [h('h2', { class: 'msr-rel-group-heading' }, vdDay.label), h('div', { class: 'msr-rel-match-list' }, vdRows.map(msrRelMatchCard))]
+              : h('a', { class: 'ap-empty', href: '#event/void', style: 'display:block;text-decoration:none' }, 'Day ' + (APM.sel - vdStart + 1) + ' \u00b7 next Swiss round pairs appear here once the previous round\u2019s results are in. Open the bracket \u203A')));
           box.appendChild(vdPanel);
         }
       }
