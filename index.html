@@ -2974,6 +2974,10 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
   EVENTS[1].tier = 'B'; // VOID Tournament
   // VOID Tournament participants (team codes). Add more codes here to show the VOID chip in the ranking.
   window.MSR_VOID_TEAMS = window.MSR_VOID_TEAMS || ["DS_A4CCD6C33286B304E839A0BC","DS_5CDAAF806D7D39AC2C809ED3","DS_A24136D1A99B5E5DFAE15E9F","DS_4561C74A8EF7ED8EBA1EEC28","SIXL","DS_A0B0110FC187C08BE7637475","DS_7C03F1F6DA5F993B4CC9BB28","DS_BED22EFE5176D46A905806CD","DS_D1764CAF48B74A2D0B7B3E59","DS_4559C7E779F302E917B1A414","DS_779FBD131741477AF32F9268","DS_A92955A6312CC42137C3C7EA","DS_9FEDE81820B36BB7889B86BA","DS_VOID_EKNZ_20261113","DS_5E67C1B8721D736CA5B5A960","KGTSS"]; // imp4ct, Zx_WB Black, Zx_WB White, Six Lence, MNKT red, Celestex, United elites, Rvurz, Chingis Warriors
+  // VOID Round 1 draw (confirmed by the organiser, Nov 13): imp4ct–Zx_WB Black, Zx_WB White–Rain tzy, Six Lence–MNKT red, Celestex–United elites,
+  // Rvurz–Chingis Warriors, MNKT purple–MNKT blue, Four zest assault–EknZ, Dxvil13–KnightSS.
+  window.MSR_VOID_R1 = window.MSR_VOID_R1 || [['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3'],['DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28'],['SIXL','DS_A0B0110FC187C08BE7637475'],['DS_7C03F1F6DA5F993B4CC9BB28','DS_BED22EFE5176D46A905806CD'],['DS_D1764CAF48B74A2D0B7B3E59','DS_4559C7E779F302E917B1A414'],['DS_779FBD131741477AF32F9268','DS_A92955A6312CC42137C3C7EA'],['DS_9FEDE81820B36BB7889B86BA','DS_VOID_EKNZ_20261113'],['DS_5E67C1B8721D736CA5B5A960','KGTSS']];
+  window.MSR_VOID_DAY = 1115; // Matches page shows the VOID Round 1 block on this day
   EVENTS.forEach(function (e) { if (e.n === 'VOID Tournament') { e.short = 'VOID'; e.participants = window.MSR_VOID_TEAMS; } });
   (function () { var i = EVENTS.findIndex(function (e) { return e.n === 'SPS'; }); if (i > 2) EVENTS.splice(2, 0, EVENTS.splice(i, 1)[0]); })(); // SPS is next: show 3rd
   EVENTS[0].prize = '1 200 000₮'; EVENTS[0].dist = ['🥇 600 000₮', '🥈 400 000₮', '🥉 200 000₮'];
@@ -5007,7 +5011,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     return out;
   }
   function msrRelMatchCard(row){
-    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=msrRelResult(rk[0],rk[1],row._keys?'s2':undefined);
+    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?null:msrRelResult(rk[0],rk[1],row._keys?'s2':undefined);
     function team(name,mine){
       var key=row._keys?(mine?rk[0]:rk[1]):msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
       return h('div',{class:'msr-hl-t'+(res?(won?' win':' loss'):'')},
@@ -5017,7 +5021,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     var time=row.time_label||'';
     var href=row._href||((rk[0]&&rk[1])?('#mslmatch/'+rk[0]+'/'+rk[1]+'/'+(1104+(row.day||0))+'/'+(row.group||'')):null);
     var rowEl=h('div',{class:'msr-hl-row',role:href?'link':null,tabindex:href?'0':null},
-      h('div',{class:'msr-hl-time'},h('b',null,time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):(res?'Final':'TBA')),h('small',null,'Bo3')),
+      h('div',{class:'msr-hl-time'},h('b',null,time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):(res?'Final':'TBA')),h('small',null,row._bo||'Bo3')),
       h('i',{class:'msr-hl-sep'}),
       h('div',{class:'msr-hl-teams'},team(row.team_a,true),team(row.team_b,false)),
       href?h('span',{class:'msr-hl-chev','aria-hidden':'true'},'\u203A'):null);
@@ -6210,6 +6214,18 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
           s2Panel.appendChild(s2Body);
         }
         box.appendChild(s2Panel);
+      }
+      if (YEAR === 2026 && APM.sel === (window.MSR_VOID_DAY || 1115) && Array.isArray(window.MSR_VOID_R1)) {
+        var vdRows = window.MSR_VOID_R1.filter(function (p) { return T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
+          return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: 'Swiss', time_label: '', _href: '#event/void' };
+        });
+        if (vdRows.length) {
+          var vdPanel = h('section', { class: 'ap-card msr-rel-tournament msr-void-day' }), vdOpen = APM.vdOpen !== false;
+          vdPanel.appendChild(h('button', { type: 'button', class: 'ap-gh', 'aria-expanded': String(vdOpen), onclick: function () { APM.vdOpen = !vdOpen; draw(); } },
+            evLogo('VOID Tournament'), h('b', null, 'VOID Tournament \u00b7 Swiss'), h('span', { class: 'ct' }, vdRows.length + ' matches'), h('i', { class: 'chv', svg: APIC.chev })));
+          if (vdOpen) vdPanel.appendChild(h('div', { class: 'msr-rel-group-panel' }, h('h2', { class: 'msr-rel-group-heading' }, 'Round 1 \u00b7 0/0'), h('div', { class: 'msr-rel-match-list' }, vdRows.map(msrRelMatchCard))));
+          box.appendChild(vdPanel);
+        }
       }
       var list = ALLM.filter(function (m) { return m.state !== 'done' && !m.s2fix && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
