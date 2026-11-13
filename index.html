@@ -6366,8 +6366,16 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         }
         return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, '0/0')), rows);
       }
+      /* Round 1 winners move up to 1/0 and losers down to 0/1 as soon as each result is in (pairs follow once the round is drawn). */
+      var adv = { '1-0': [], '0-1': [] };
+      if (draw && window.msrVoidRes) draw.forEach(function (p) {
+        var rr = p && p[0] && p[1] ? window.msrVoidRes(p[0], p[1]) : null;
+        if (!rr || rr.a === rr.b) return;
+        adv['1-0'].push(rr.a > rr.b ? p[0] : p[1]); adv['0-1'].push(rr.a > rr.b ? p[1] : p[0]);
+      });
       function tbd(rec, n) {
-        var rows = []; for (var i = 0; i < n; i++) rows.push(h('div', { class: 'sw-m' }, h('span', { class: 'sw-q' }, '?'), h('span', { class: 'sw-vs' }, 'VS'), h('span', { class: 'sw-q' }, '?')));
+        var fill = adv[rec] || [], rows = [];
+        for (var i = 0; i < n; i++) rows.push(h('div', { class: 'sw-m' }, slot(fill[2 * i]), h('span', { class: 'sw-vs' }, 'VS'), slot(fill[2 * i + 1])));
         return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/'))), rows);
       }
       function list(title, n, ok) {
