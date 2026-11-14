@@ -3035,6 +3035,11 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     if (Array.isArray(window.MSR_VOID_R2) && window.MSR_VOID_R2.length) return { up: up, down: down, pairs: window.MSR_VOID_R2, official: true };
     return { up: up, down: down, pairs: pair(up, '1/0').concat(pair(down, '0/1')), official: false };
   };
+  // VOID match schedule: date (MMDD), time, Bo and maps (pick order, last = decider) per pair.
+  window.MSR_VOID_SCHEDULE = window.MSR_VOID_SCHEDULE || [
+    { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', date: 1114, time: '18:00', bo: 'Bo3', maps: ['Rust', 'Dune', 'Hanami'] } // R1 United elites (Syroz) vs Celestex (Cel2x)
+  ];
+  window.msrVoidSched = function (x, y) { var U = function (v) { return String(v || '').toUpperCase(); }; return (window.MSR_VOID_SCHEDULE || []).find(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); }) || null; };
   window.msrVoidRes = function (x, y) {
     var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); })[0];
     if (!r) return null; var same = U(r.a) === U(x);
@@ -5214,7 +5219,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(win===ka?' w':'')},crest(ka,'xs'),String(m.a)),h('span',{class:'msr-mm-sc'+(win===kb?' w':'')},String(m.b),crest(kb,'xs'))));
     }
     var am=raw&&raw.autoMaps?{a:flip?raw.autoMaps.b:raw.autoMaps.a,b:flip?raw.autoMaps.a:raw.autoMaps.b}:null;
-    var cards=maps.length?maps.map(mapCard).concat(am&&(am.a||am.b)?[h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top'},h('b',null,'Auto win'),h('small',null,'Map '+(maps.length+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(am.a>am.b?' w':'')},crest(ka,'xs'),am.a>am.b?'W':'–'),h('span',{class:'msr-mm-sc'+(am.b>am.a?' w':'')},am.b>am.a?'W':'–',crest(kb,'xs'))))]:[]):res&&res.auto?[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) · no maps played')]:[h('div',{class:'msr-mm-info'},'Maps will appear here once the match is played.')];
+    var cards=maps.length?maps.map(mapCard).concat(am&&(am.a||am.b)?[h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top'},h('b',null,'Auto win'),h('small',null,'Map '+(maps.length+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(am.a>am.b?' w':'')},crest(ka,'xs'),am.a>am.b?'W':'–'),h('span',{class:'msr-mm-sc'+(am.b>am.a?' w':'')},am.b>am.a?'W':'–',crest(kb,'xs'))))]:[]):res&&res.auto?[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) · no maps played')]:(function(){var sc=window.msrVoidSched?window.msrVoidSched(ka,kb):null;if(!sc||!sc.maps||!sc.maps.length)return [h('div',{class:'msr-mm-info'},'Maps will appear here once the match is played.')];return sc.maps.map(function(m,i){var photo=MSR_MAP_PHOTOS[String(m).toLowerCase()];return h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top',style:photo?'background-image:linear-gradient(0deg,rgba(22,25,29,.7),rgba(22,25,29,.3)),'+photo:null},h('b',null,m),h('small',null,i===sc.maps.length-1&&sc.maps.length>2?'Decider':'Map '+(i+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'},crest(ka,'xs'),'–'),h('span',{class:'msr-mm-sc'},'–',crest(kb,'xs'))));});})();
     function statTable(k,side){
       var tot={};maps.forEach(function(m){var R=(m.a||0)+(m.b||0);(m[side]||[]).forEach(function(q){var key=String(q[0]).toLowerCase();var o=tot[key]||(tot[key]={nick:q[0],k:0,d:0,a:0,R:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.R+=R;});});
       var rows=Object.keys(tot).map(function(x){var o=tot[x],c=window.msrCalc?window.msrCalc(o.k,o.d,o.a,o.R):null;o.rt=c?c.rating:0;return o;}).sort(function(a,b){return b.rt-a.rt||b.k-a.k;});
@@ -5236,7 +5241,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){return h('a',{class:'msr-mm-pl',href:playerHref(p.nick,k)},h('span',{class:'bigav sg'+tc({team:k}),'aria-hidden':'true'},sig(p.nick,52)),h('b',null,p.nick),h('small',null,p.rating?rt(p.rating):'—'));}):h('div',{class:'empty'},'Roster not available.')));
     }
     var center=res?h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},res.a+' – '+res.b),h('small',null,(res.auto?'Auto win':'Final')+(dateTxt?' · '+dateTxt:'')))
-      :h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},'TBA'),h('small',null,dateTxt||'Not announced yet'));
+      :(function(){var sc=window.msrVoidSched?window.msrVoidSched(ka,kb):null,sd=sc&&sc.date?(('0'+(sc.date%100)).slice(-2)+' '+MON[Math.floor(sc.date/100)-1]+' '+YEAR):dateTxt;return h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},sc&&sc.time?sc.time:'TBA'),h('small',null,sd||'Not announced yet'));})();
     var stats=maps.length?h('section',{class:'msr-mm-sec'},h('h2',null,'Player stats'),h('div',{class:'msr-finished-stats two'},statTable(ka,'pa'),statTable(kb,'pb'))):null;
     return h('div',{class:'msr-mm'},
       h('a',{class:'back',href:'#matches',svg:ICON.back+'<span>Matches</span>'}),
@@ -6400,17 +6405,25 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       if (YEAR === 2026 && APM.sel >= vdStart && APM.sel <= vdEnd && Array.isArray(window.MSR_VOID_R1)) {
         /* VOID runs over several days: Round 1 on the first day; later days list their round once its pairs are entered
            (window.MSR_VOID_ROUNDS = { 1114: { label: 'Round 2', pairs: [[codeA, codeB], ...] } }), otherwise show what comes next. */
-        var vdR2 = window.msrVoidR2 ? window.msrVoidR2() : null;
-        var vdDay = APM.sel === vdStart ? { label: 'Round 1 \u00b7 0/0', pairs: window.MSR_VOID_R1 } : ((window.MSR_VOID_ROUNDS || {})[APM.sel] || (APM.sel === vdStart + 1 && vdR2 && vdR2.pairs.length ? { label: 'Round 2 \u00b7 1/0 & 0/1', pairs: vdR2.pairs } : null));
-        var vdRows = (vdDay ? vdDay.pairs : []).filter(function (p) { return T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
-          return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: /^\d{1,2}:\d{2}$/.test(p[2] || '') ? 'Swiss' : (p[2] || 'Swiss'), time_label: /^\d{1,2}:\d{2}$/.test(p[2] || '') ? p[2] : '', _href: '#voidmatch/' + p[0] + '/' + p[1] + '/' + APM.sel + '/' + encodeURIComponent(vdDay.label.split(' \u00b7 ')[0]) };
-        });
+        var vdR2 = window.msrVoidR2 ? window.msrVoidR2() : null, vdSched = window.msrVoidSched || function () { return null; };
+        /* Each match shows on its scheduled day (MSR_VOID_SCHEDULE), else Round 1 on day 1 and Round 2 on day 2. */
+        var vdRounds = [{ n: 1, label: 'Round 1 \u00b7 0/0', pairs: window.MSR_VOID_R1 || [], day: vdStart }].concat(vdR2 && vdR2.pairs.length ? [{ n: 2, label: 'Round 2 \u00b7 1/0 & 0/1', pairs: vdR2.pairs, day: vdStart + 1 }] : []);
+        Object.keys(window.MSR_VOID_ROUNDS || {}).forEach(function (d) { var r = window.MSR_VOID_ROUNDS[d]; vdRounds.push({ n: r.n || 3, label: r.label, pairs: r.pairs || [], day: +d }); });
+        var vdGroups = vdRounds.map(function (rd) {
+          var rows = rd.pairs.filter(function (p) { var sc = vdSched(p[0], p[1]), res = window.msrVoidRes ? window.msrVoidRes(p[0], p[1]) : null, rr = res ? (window.MSR_VOID_RESULTS || []).find(function (x) { var U = function (v) { return String(v).toUpperCase(); }; return (U(x.a) === U(p[0]) && U(x.b) === U(p[1])) || (U(x.a) === U(p[1]) && U(x.b) === U(p[0])); }) : null;
+            var day = (sc && sc.date) || (rr && rr.date) || rd.day; return day === APM.sel && T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
+            var sc = vdSched(p[0], p[1]) || {}, tm = sc.time || (/^\d{1,2}:\d{2}$/.test(p[2] || '') ? p[2] : '');
+            return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: /^\d{1,2}:\d{2}$/.test(p[2] || '') || !p[2] ? (sc.bo || 'Swiss') : p[2], time_label: tm, _href: '#voidmatch/' + p[0] + '/' + p[1] + '/' + APM.sel + '/' + encodeURIComponent('Round ' + rd.n) };
+          });
+          return { label: rd.label, rows: rows };
+        }).filter(function (g) { return g.rows.length; });
+        var vdRows = [].concat.apply([], vdGroups.map(function (g) { return g.rows; })), vdDay = vdGroups[0] || null;
         if (vdRows.length || !APM.fav) {
           var vdPanel = h('section', { class: 'ap-card msr-rel-tournament msr-void-day' }), vdOpen = APM.vdOpen !== false;
           vdPanel.appendChild(h('button', { type: 'button', class: 'ap-gh', 'aria-expanded': String(vdOpen), onclick: function () { APM.vdOpen = !vdOpen; draw(); } },
             evLogo('VOID Tournament'), h('b', null, 'VOID Tournament \u00b7 Swiss'), h('span', { class: 'ct' }, vdRows.length ? vdRows.length + ' matches' : 'Day ' + (APM.sel - vdStart + 1)), h('i', { class: 'chv', svg: APIC.chev })));
           if (vdOpen) vdPanel.appendChild(h('div', { class: 'msr-rel-group-panel' },
-            vdRows.length ? [h('h2', { class: 'msr-rel-group-heading' }, vdDay.label), h('div', { class: 'msr-rel-match-list' }, vdRows.map(msrRelMatchCard))]
+            vdRows.length ? vdGroups.map(function (g) { return [h('h2', { class: 'msr-rel-group-heading' }, g.label), h('div', { class: 'msr-rel-match-list' }, g.rows.map(msrRelMatchCard))]; })
               : h('a', { class: 'ap-empty', href: '#event/void', style: 'display:block;text-decoration:none' }, 'Day ' + (APM.sel - vdStart + 1) + ' \u00b7 next Swiss round pairs appear here once the previous round\u2019s results are in. Open the bracket \u203A')));
           box.appendChild(vdPanel);
         }
