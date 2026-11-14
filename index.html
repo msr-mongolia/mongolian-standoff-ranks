@@ -7895,7 +7895,12 @@ function resolveMsrTeam(value){
 const MSR_NICK_FIX={'2990 purple':{'softKENBE':'kenbe.scb'},'warkz':{'УЙЛАНХАЙТvT':'УЙЛАНХАЙ'},'1nfyx':{'sueño':'sueno','UrTp In Da House':'UrTp_p'},'cior':{'Listt':'List'},'6lc':{'heavy7':'Heavyqqq','Merciless':'Merciless'},'sixp':{'makimalfu':'Makima'},'dxiii':{'nuubmiuu':'miuu','XAIS2':'xaise','aise':'xaise','.....Revi':'Revi'},'rvurz':{'マスターマインド':'Mastermind'}};
 const msrFixNick=(team,nick)=>((MSR_NICK_FIX[String(team).toLowerCase()]||{})[nick])||nick;
 window.msrFixLedgerNick=msrFixNick;
-function verifiedPlayerRows(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick:msrFixNick(team,nick),map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
+function verifiedPlayerRows(team){var base=verifiedPlayerRowsMSL(team),t=resolveMsrTeam(team);
+ // VOID Tournament maps count too (same teams play both events). Match on the ELO tag or the team code.
+ var same=function(tag,code){try{return (tag&&resolveMsrTeam(tag)===t)||(code&&(String(code).toUpperCase()===String(team).toUpperCase()||resolveMsrTeam(code)===t));}catch(_e){return false;}};
+ var extra=[];(window.MSR_VOID_RESULTS||[]).forEach(function(r){(r.maps||[]).forEach(function(x){var side=same(r.ea,r.a)?'a':same(r.eb,r.b)?'b':null;if(!side)return;(x[side]||[]).forEach(function(q){extra.push({nick:msrFixNick(t,q[0]),map:x.map,k:q[1],d:q[2],a:q[3],rounds:(x.aScore||0)+(x.bScore||0),void:true});});});});
+ return base.concat(extra);}
+function verifiedPlayerRowsMSL(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick:msrFixNick(team,nick),map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
 // MSR custom rating (not an official Standoff 2 rating). 1.00 represents
 // approximately one kill per round, 0.7 deaths per round and 0.2 assists per round.
@@ -7992,7 +7997,10 @@ function verifiedTeamProfiles(){
   if(title.includes('white'))return;
  }
  const sharedTag=/^2990/.test(title)?(title.includes('purple')?'2990 Purple':'2990'):null;
- const code=title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
+ const code0=title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
+ const hashCode=(/^#team\/([^/?]+)/.exec(location.hash)||[])[1];
+ // VOID-only teams have no MSL ledger tag: fall back to the team code in the URL so their VOID maps still fill the lineup.
+ const code=code0||(hashCode&&(window.MSR_VOID_RESULTS||[]).some(r=>[r.a,r.b].some(c=>String(c).toUpperCase()===decodeURIComponent(hashCode).toUpperCase()))?decodeURIComponent(hashCode):'');
  if(!code)return;
  const teamMatches=results.filter(r=>r.a===code||r.b===code);
  // Screenshot series already carries verified map results. Use it when the
