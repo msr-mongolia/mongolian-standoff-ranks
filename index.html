@@ -2805,7 +2805,7 @@ window.MSR_SCREENSHOT_MATCHES = [{"a":"CioR","b":"0kz","maps":[{"map":"Rust","aS
 window.MSR_SCREENSHOT_MATCHES_ARCHIVED=[];
 /* MSL Major S2 - Stage 2 results (kept apart from the Stage 1 ledger, where a pair can only meet once).
    zone/slot identify the bracket match; auto = series score given by an auto win. Counts for ELO and form like any other match. */
-window.MSR_S2_RESULTS=[{zone:'B',slot:'Upper R1 · M1',a:'6LC',b:'0kz',auto:{a:2,b:0}},{zone:'C',slot:'Upper R1 · M1',a:'Mpct',b:'ACCA',auto:{a:2,b:0}},{zone:'G',slot:'Lower R1',a:'KGTSS',b:'DRDRX',auto:{a:2,b:0},date:1113}];
+window.MSR_S2_RESULTS=[{zone:'B',slot:'Upper R1 · M1',a:'6LC',b:'0kz',auto:{a:2,b:0}},{zone:'C',slot:'Upper R1 · M1',a:'Mpct',b:'ACCA',auto:{a:2,b:0}},{zone:'G',slot:'Lower R1',a:'KGTSS',b:'DRDRX',auto:{a:2,b:0},date:1113},{zone:'D',slot:'Lower R1',a:'R6',b:'MetaS',auto:{a:2,b:1},date:1113}];
 /* Stage 1 round-robin schedule lookup (group + played day) shared by Results and player history. */
 window.msrMatchSchedule=function(ta,tb){
   const G={"A":["uclt","IMTLL","ACCA","SCLAT","OTR","OMV","AIM4R","RESKK"],"B":["2990","EknZ","CioR","B2Di","EVKZ","MSDTP","NNRDS","Humn7"],"C":["KngZz","Mpct","7ADD","ETXEN","UxrN","Rvurz","4zi","WarKz"],"D":["0kz","CioR","DXIII","TLnrs","DL340","6LC","R4GE7","XvrN"],"E":["INFYX","METAS","DRDRX","SNT","SIXP","MANAI","OMEN"],"F":["2990 Purple","R6","KGTSS","WOART","-aN0T","6vmp6","EKS"]};
@@ -5147,7 +5147,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       res.maps.forEach(function(m,i){cards.push(mmCard('Map '+(i+1),m.map));});
     }else if(res){
       // Decided without maps (auto win): no map picks to show.
-      cards=[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) \u00b7 no maps played')];
+      cards=[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+(res.a>0&&res.b>0?' won '+Math.max(res.a,res.b)+'\u2013'+Math.min(res.a,res.b)+' \u00b7 map details not recorded':' won by forfeit (auto win) \u00b7 no maps played'))];
     }else{cards=[mmCard('Pick 1','TBA'),mmCard('Pick 2','TBA'),mmCard('Decider','TBA')];}
     function lineup(k){
       // Top 5: best ratings among players with a real sample (at least half of the team's most-played player); fill from the rest if fewer than 5.
