@@ -4992,6 +4992,15 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       keys.find(function(k){return norm(T[k].tag)===n;})||null;
   }
 
+  // Veto posts write the plain tag "cior" for Civilization of Ruin (CioR White is a separate team): resolve those first.
+  function msrVetoCode(name){
+    var n=String(name||'').toLowerCase().replace(/[^a-z0-9]/g,''),fx={cior:'COR',ciorred:'COR',ciorwhite:'CIORWHITE'};
+    if(fx[n]&&T[fx[n]])return fx[n];
+    return msrRelTeamKey(name);
+  }
+  function msrVetoFor(ka,kb){
+    return msrRelUpcoming().find(function(r){var x=msrVetoCode(r.team_a),y=msrVetoCode(r.team_b);return (x===ka&&y===kb)||(x===kb&&y===ka);})||null;
+  }
   var MSR_REL_GROUP_TEAMS={"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","0TR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR","Cior red"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN","XvrN divine"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T","-aNOT"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]],"E":[["1nfinityX","1NFYx"],["METAS","MetaS"],["DRDRX","DRDRX"],["Starfire Nirvana Team","SNT"],["SIX LENCE PURPLE","6LC purple"],["MANAI","8MNA"],["OMEN ESPORTS","OMEN"]]};
   function msrRelGroup(row){
     var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
@@ -5126,7 +5135,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
   V.mslmatch=function(arg){
     var pp=String(arg||'').split('/'),ka=pp[0],kb=pp[1],dn=+pp[2]||0,grp=pp[3]||'';
     if(!T[ka]||!T[kb])return V.matches();
-    var known=msrRelUpcoming().find(function(r){var x=msrRelTeamKey(r.team_a),y=msrRelTeamKey(r.team_b);return (x===ka&&y===kb)||(x===kb&&y===ka);})||null;
+    var known=msrVetoFor(ka,kb);
     var isS2=/^S2-/.test(grp),s2q=isS2?(function(){var c=(window.msrS2Slots?window.msrS2Slots():[]).filter(function(q){return q.zone===grp.slice(3)&&((q.a===ka&&q.b===kb)||(q.a===kb&&q.b===ka));});return c.filter(function(q){return q.date===dn;})[0]||c[0]||null;})():null,res=msrRelResult(ka,kb,isS2?'s2':undefined,s2q?{zone:s2q.zone,slot:s2q.slot}:undefined),time=known&&known.time_label?known.time_label:'';
     var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var dateTxt=dn?(('0'+(dn%100)).slice(-2)+' '+MON[Math.floor(dn/100)-1]+' '+YEAR):'';
@@ -6323,6 +6332,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         while (MBY[nid]) nid++;
         var m = { id: nid, s2fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Stage 2 · Zone ' + sl.zone + ' · ' + sl.slot + ' · Bo3', state: 'soon', day: 'Today', date: sl.date, when: inf && inf.time ? inf.time : 'TBA', bo: 3,
           maps: inf ? inf.maps.map(function (x, i) { return [x[0], null, null, 'soon', i === 2 ? 'Decider' : x[1]]; }) : [] };
+        if (!inf && !sl.res) { var vt = msrVetoFor(a, b); if (vt) { if (vt.time_label) m.when = /^\d{1,2}:\d{2}$/.test(vt.time_label) ? vt.time_label : vt.time_label + '?'; if ((vt.picks || []).length) m.maps = vt.picks.map(function (pk, i) { var pc = pk.team ? msrVetoCode(pk.team) : null; return [pk.map, null, null, 'soon', pk.team ? (pc && T[pc] ? (T[pc].tag || T[pc].n) : pk.team) + ' pick' : 'Map ' + (i + 1)]; }).concat(vt.decider ? [[vt.decider, null, null, 'soon', 'Decider']] : []); } }
         if (sl.date !== TODAY) m.day = ('0' + Math.floor(sl.date / 100)).slice(-2) + '/' + ('0' + sl.date % 100).slice(-2) + ' \u00b7 ' + ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(YEAR, Math.floor(sl.date / 100) - 1, sl.date % 100).getDay()];
         var rs = sl.res;
         if (rs) {
@@ -6384,7 +6394,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
           window.msrS2Slots().forEach(function (sl) {
             if (sl.zone !== z[0] || sl.date !== APM.sel) return;
             if (APM.fav && !isFav(sl.a) && !isFav(sl.b)) return;
-            out.push({ team_a: T[sl.a].n, team_b: T[sl.b].n, _keys: [sl.a, sl.b], _sl: { zone: sl.zone, slot: sl.slot }, time_label: sl.info && sl.info.time ? sl.info.time : '', _href: '#mslmatch/' + sl.a + '/' + sl.b + '/' + APM.sel + '/S2-' + z[0] });
+            out.push({ team_a: T[sl.a].n, team_b: T[sl.b].n, _keys: [sl.a, sl.b], _sl: { zone: sl.zone, slot: sl.slot }, time_label: sl.info && sl.info.time ? sl.info.time : (!sl.res && (msrVetoFor(sl.a, sl.b) || {}).time_label) || '', _href: '#mslmatch/' + sl.a + '/' + sl.b + '/' + APM.sel + '/S2-' + z[0] });
           });
           return out;
         };
@@ -7466,7 +7476,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
         var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,bans,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
       }catch(_relError){}
-      if (/^(team|stats|event|events|matches|live)(\/|$)/.test(H)) route();
+      if (/^(team|stats|event|events|matches|live|mslmatch)(\/|$)/.test(H)) route();
 
     } catch (e) { console.warn('MSR teams sync error',e); if(window.MSR_ROSTER_LOAD_STATE!=='ready'){window.MSR_ROSTER_LOAD_STATE='error';if(/^(ranking|tpranking|players|player)(\/|$)/.test(H))route();} }
   }
