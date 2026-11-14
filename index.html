@@ -3009,13 +3009,24 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         { map: 'Province', aScore: 13, bScore: 9,
           a: [['M4D-120Hz',23,12,6],['n9ppxs',14,14,1],['Sainc',17,17,1],['Ch.',17,18,2],['Psychopath',13,17,5]],
           b: [['ice D',20,19,1],['Ylalt x 165hz',15,16,3],['Sleepy',15,16,3],['Asd',11,15,5],['Kenshi',14,19,2]] }
+      ] },
+    // R1: EliteKingZz (VOID, "EknZ DIVA") 2-1 Four zest assault. Dune 13-9 EknZ, Rust 7-13; map 3 awarded to EknZ as an auto win
+    // (Hanami had to be replayed and the rematch could not take place; the 10-13 Hanami scoreboard is not counted).
+    { a: 'DS_VOID_EKNZ_20261113', b: 'DS_9FEDE81820B36BB7889B86BA', ea: 'EknZ VOID', eb: '4zA', as: 2, bs: 1, autoMaps: { a: 1, b: 0 }, round: 1, date: 1113,
+      maps: [
+        { map: 'Dune', aScore: 13, bScore: 9,
+          a: [['mei',27,17,4],['minnie',20,16,1],['misu',13,16,2],['Zyaazz',11,15,3],['miuu',13,20,3]],
+          b: [['good',23,16,2],['Tuwshuu',22,15,2],['f3rgod',16,19,7],['lytic',10,17,5],['solid',11,17,1]] },
+        { map: 'Rust', aScore: 7, bScore: 13,
+          a: [['miuu',20,18,4],['mlue',13,19,3],['Zyaazz',14,15,2],['misu',10,15,2],['minnie',7,20,2]],
+          b: [['wrath',36,13,1],['kanto',16,14,3],['lytic',14,11,5],['f3rgod',11,13,5],['good',10,15,6]] }
       ] }
   ];
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
   window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
     { nick: 'Zet良', from: 'WOART', to: 'DS_A92955A6312CC42137C3C7EA', toNick: 'Zet良.', date: 1114 } // WoArt -> MNKT Blue (same Game ID 174981510)
   ];
-  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : null, maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }) }; }); };
+  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }) }; }); };
   /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
   window.msrVoidR2 = function () {
     var r1 = window.MSR_VOID_R1 || [], up = [], down = [];
@@ -5202,7 +5213,8 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         h('div',{class:'msr-mm-map-top',style:photo?'background-image:linear-gradient(0deg,rgba(22,25,29,.7),rgba(22,25,29,.3)),'+photo:null},h('b',null,m.map||'TBA'),h('small',null,'Map '+(i+1))),
         h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(win===ka?' w':'')},crest(ka,'xs'),String(m.a)),h('span',{class:'msr-mm-sc'+(win===kb?' w':'')},String(m.b),crest(kb,'xs'))));
     }
-    var cards=maps.length?maps.map(mapCard):res&&res.auto?[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) · no maps played')]:[h('div',{class:'msr-mm-info'},'Maps will appear here once the match is played.')];
+    var am=raw&&raw.autoMaps?{a:flip?raw.autoMaps.b:raw.autoMaps.a,b:flip?raw.autoMaps.a:raw.autoMaps.b}:null;
+    var cards=maps.length?maps.map(mapCard).concat(am&&(am.a||am.b)?[h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top'},h('b',null,'Auto win'),h('small',null,'Map '+(maps.length+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(am.a>am.b?' w':'')},crest(ka,'xs'),am.a>am.b?'W':'–'),h('span',{class:'msr-mm-sc'+(am.b>am.a?' w':'')},am.b>am.a?'W':'–',crest(kb,'xs'))))]:[]):res&&res.auto?[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) · no maps played')]:[h('div',{class:'msr-mm-info'},'Maps will appear here once the match is played.')];
     function statTable(k,side){
       var tot={};maps.forEach(function(m){var R=(m.a||0)+(m.b||0);(m[side]||[]).forEach(function(q){var key=String(q[0]).toLowerCase();var o=tot[key]||(tot[key]={nick:q[0],k:0,d:0,a:0,R:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.R+=R;});});
       var rows=Object.keys(tot).map(function(x){var o=tot[x],c=window.msrCalc?window.msrCalc(o.k,o.d,o.a,o.R):null;o.rt=c?c.rating:0;return o;}).sort(function(a,b){return b.rt-a.rt||b.k-a.k;});
@@ -7249,7 +7261,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
       'OMV':'Omnis Over','OTR':'Clan-One True Reign',
       'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
       '2990':'2990 RED','2990 White':'2990 White','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
-    ,'MNKT Red':'MNKTeam-(red)','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)','RA1IN':'Rain tzy','Zx_WB White':'Zx_WB White','Zx_WB Black':'Zx_WB Black'};
+    ,'EknZ VOID':'EliteKingZz (VOID)','4zA':'Four zest assault','MNKT Red':'MNKTeam-(red)','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)','RA1IN':'Rain tzy','Zx_WB White':'Zx_WB White','Zx_WB Black':'Zx_WB Black'};
     // VIP teams may grow past 300. Non-VIP teams stop gaining at 300 but are never pulled down to it.
     function vipTagActive(tag){
       var name=exactTeamNames[tag],code=name&&Object.keys(T).find(function(c){return String(T[c].n||'').trim().toLowerCase()===name.toLowerCase();});
@@ -7762,7 +7774,7 @@ screenshotMatches.forEach(m=>{
 // VOID Tournament results (own event: shown on Results under the VOID filter, ELO via the same chain).
 (window.MSR_VOID_RESULTS||[]).forEach(r=>{
  if(!r.ea||!r.eb||r.as===r.bs)return;
- results.push({group:'',void:true,round:r.round||1,vdate:r.date||1113,a:r.ea,b:r.eb,winner:r.as>r.bs?r.ea:r.eb,score:r.as+'–'+r.bs,maps:(r.maps||[]).map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:r.maps||[],auto:r.auto?{a:r.as,b:r.bs}:{a:0,b:0}});
+ results.push({group:'',void:true,round:r.round||1,vdate:r.date||1113,a:r.ea,b:r.eb,winner:r.as>r.bs?r.ea:r.eb,score:r.as+'–'+r.bs,maps:(r.maps||[]).map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:r.maps||[],auto:r.auto?{a:r.as,b:r.bs}:(r.autoMaps||{a:0,b:0})});
 });
 const verifiedStats={};
 const additionalMatchStats={};
