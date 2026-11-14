@@ -2985,6 +2985,29 @@ window.MSR_FREE_AGENTS=[{nick:'Koldxn',id:'11268973',from:'Omega ForceZ',team:'O
   // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
     { a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 1, bs: 0, auto: true, round: 1, date: 1113 },
+    // R1: United elites (Syroz) 2-1 Celestex (Cel2x). Rust 13-3 Syroz, Dune 9-13, Hanami 13-8 Syroz. 'FuturePhan' (Rust) is not on the registered roster.
+    { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', ea: 'Syroz', eb: 'Cel2x', as: 2, bs: 1, round: 1, date: 1114,
+      maps: [
+        { map: 'Rust', aScore: 13, bScore: 3,
+          a: [['Tk.Aim.Danger?',25,9,2],['Urumt',15,10,3],['moak',13,10,3],['dream.',13,10,0],['FuturePhan',7,12,2]],
+          b: [['Weso',16,15,4],['ShoX.!.back',10,15,2],['enjyy_',9,14,4],['Haise',9,14,3],['60kkscerato',7,15,1]] },
+        { map: 'Dune', aScore: 9, bScore: 13,
+          a: [['moak',22,16,4],['Urumt',19,20,4],['Tk.Aim.Danger?',16,17,3],['Wu 。',17,17,2],['dream.',8,16,4]],
+          b: [['Haise',24,16,1],['ShoX.!.back',20,17,8],['60kkscerato',19,14,1],['Weso',14,19,4],['Zyron',8,19,4]] },
+        { map: 'Hanami', aScore: 13, bScore: 8,
+          a: [['Tk.Aim.Danger?',29,13,1],['Wu 。',18,14,8],['Urumt',13,13,2],['fml',16,13,3],['dream.',9,14,6]],
+          b: [['ShoX.!.back',19,17,2],['Yori',15,16,2],['Gosu',12,17,2],['60kkscerato',11,17,4],['Haise',10,18,3]] }
+      ] },
+    // R1: Six Lence 2-0 MNKTeam-(red). Dune 13-3, Province 13-1. 'Mercilles' in game = Mitsk.
+    { a: 'SIXL', b: 'DS_A0B0110FC187C08BE7637475', ea: '6LC', eb: 'MNKT Red', as: 2, bs: 0, round: 1, date: 1114,
+      maps: [
+        { map: 'Dune', aScore: 13, bScore: 3,
+          a: [['VorK1ng',28,4,1],['Muck',13,11,3],['Mitsk',15,11,5],['Coldshi',15,12,1],['Ryo',3,9,3]],
+          b: [['miracle',14,14,1],['MICKY',14,16,1],['paris',10,15,4],['rose',3,15,3],['En IS',3,15,5]] },
+        { map: 'Province', aScore: 13, bScore: 1,
+          a: [['VorK1ng',18,8,5],['Ryo',17,4,2],['Muck',13,9,2],['Coldshi',11,9,2],['Mitsk',8,10,2]],
+          b: [['MICKY',14,13,0],['miracle',8,13,1],['En IS',6,14,4],['rose',7,14,2],['paris',5,14,1]] }
+      ] },
     { a: 'DS_5CDAAF806D7D39AC2C809ED3', b: 'DS_A4CCD6C33286B304E839A0BC', ea: 'Zx_WB Black', eb: 'Mpct', as: 1, bs: 0, auto: true, round: 1, date: 1113 }, // R1: Zx_WB Black auto win vs imp4ct // R1: KnightSS auto win vs Dxvil13 (= DXIII)
     // R1: MNKT blue 2-1 MNKT purple. Breeze 13-10 purple (K/D/A from a 12-10 mid-map SS), Rust 13-6 and Dune 13-8 blue.
     { a: 'DS_A92955A6312CC42137C3C7EA', b: 'DS_779FBD131741477AF32F9268', ea: 'MNKT Blue', eb: 'MNKT Purple', as: 2, bs: 1, round: 1, date: 1113,
@@ -7294,7 +7317,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
       'OMV':'Omnis Over','OTR':'Clan-One True Reign',
       'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
       '2990':'2990 RED','2990 White':'2990 White','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
-    ,'EknZ VOID':'EliteKingZz (VOID)','4zA':'Four zest assault','MNKT Red':'MNKTeam-(red)','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)','RA1IN':'Rain tzy','Zx_WB White':'Zx_WB White','Zx_WB Black':'Zx_WB Black'};
+    ,'EknZ VOID':'EliteKingZz (VOID)','4zA':'Four zest assault','MNKT Red':'MNKTeam-(red)','Syroz':'United elites','Cel2x':'Celestex','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)','RA1IN':'Rain tzy','Zx_WB White':'Zx_WB White','Zx_WB Black':'Zx_WB Black'};
     // VIP teams may grow past 300. Non-VIP teams stop gaining at 300 but are never pulled down to it.
     function vipTagActive(tag){
       var name=exactTeamNames[tag],code=name&&Object.keys(T).find(function(c){return String(T[c].n||'').trim().toLowerCase()===name.toLowerCase();});
