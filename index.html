@@ -5961,6 +5961,8 @@ window.MSR_FREE_AGENTS=[{nick:'reka',id:'205882281',from:'AIM4R',team:'DS_3648C2
       h('thead', null, h('tr', null, h('th', null, 'Player'), h('th', { class: 'n' }, 'Maps'), h('th', { class: 'n' }, 'K/D'), h('th', { class: 'n' }, 'ADR'), h('th', { class: 'n' }, 'KAST'), h('th', { class: 'n' }, 'Rating'))),
       h('tbody', null, roster.map(function (p) {
         var g = agg((PROWS[p.nick] || []).filter(function (row) { return row.team === p.team; }));
+        // Verified totals without per-map rows (e.g. confirmed Stage 1 totals): estimate ADR / KAST from the totals.
+        if (!(g.adr > 0) && p.rounds > 0 && window.msrCalc) { var mc = window.msrCalc(p.kills || 0, p.deaths || 0, p.assists || 0, p.rounds); g = { adr: mc.adr, kast: mc.kast }; }
         return h('tr', { class: 'clk', onclick: go(playerHref(p.nick, p.team)) }, h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'bigav sg' + tc(p) + (code === 'ETXEN' ? ' msr-etxen-member-hat' : ''), style: 'width:30px;height:30px', 'aria-hidden': 'true' }, sig(p.nick, 30)),
           h('div', null, h('a', { class: 'tl', href: playerHref(p.nick, p.team) }, h('b', null, (function () { var nick = String(p.nick || '').replace(/^\s*ign\s*:\s*/i, '').trim(); if (p.team === 'COR') nick = nick.replace(/\s*\(.*$/s, '').replace(/\s*:\s*.*$/s, '').trim(); return nick; })()))))),
           h('td', { class: 'n' }, p.maps), h('td', { class: 'n' }, p.kd.toFixed(2)), h('td', { class: 'n' }, g.adr.toFixed(1)), h('td', { class: 'n' }, g.kast.toFixed(1) + '%'), h('td', { class: 'n' }, rt(p.rating)));
@@ -7898,7 +7900,9 @@ window.msrFixLedgerNick=msrFixNick;
 function verifiedPlayerRows(team){var base=verifiedPlayerRowsMSL(team),t=resolveMsrTeam(team);
  // VOID Tournament maps count too (same teams play both events). Match on the ELO tag or the team code.
  var same=function(tag,code){try{return (tag&&resolveMsrTeam(tag)===t)||(code&&(String(code).toUpperCase()===String(team).toUpperCase()||resolveMsrTeam(code)===t));}catch(_e){return false;}};
- var extra=[];(window.MSR_VOID_RESULTS||[]).forEach(function(r){(r.maps||[]).forEach(function(x){var side=same(r.ea,r.a)?'a':same(r.eb,r.b)?'b':null;if(!side)return;(x[side]||[]).forEach(function(q){extra.push({nick:msrFixNick(t,q[0]),map:x.map,k:q[1],d:q[2],a:q[3],rounds:(x.aScore||0)+(x.bScore||0),void:true});});});});
+ var U=function(v){return String(v||'').toUpperCase();},hm=/^#(?:team|player\/[^/]+)\/([^/?]+)/.exec(location.hash||''),hc=hm?U(decodeURIComponent(hm[1])):'';
+ var VR=window.MSR_VOID_RESULTS||[],hcVoid=!!hc&&VR.some(function(r){return U(r.a)===hc||U(r.b)===hc;});
+ var extra=[];VR.forEach(function(r){(r.maps||[]).forEach(function(x){var side=hcVoid?(U(r.a)===hc?'a':U(r.b)===hc?'b':null):(same(r.ea,r.a)?'a':same(r.eb,r.b)?'b':null);if(!side)return;(x[side]||[]).forEach(function(q){extra.push({nick:msrFixNick(t,q[0]),map:x.map,k:q[1],d:q[2],a:q[3],rounds:(x.aScore||0)+(x.bScore||0),void:true});});});});
  return base.concat(extra);}
 function verifiedPlayerRowsMSL(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick:msrFixNick(team,nick),map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
 const estimatedAdr=(k,a,rounds)=>rounds?Math.round(Math.max(30,22+80*k/rounds+55*a/rounds)):null;
@@ -7994,9 +7998,8 @@ function verifiedTeamProfiles(){
  const profileTeam=msrClanMedia.find(t=>[t.name,t.tag].some(v=>norm(v)===title));
  // 2990 white / RED / Purple share the DB tag "2990": pick the ledger tag by clan name.
  if(/^2990/.test(title)){
-  if(title.includes('white'))return;
  }
- const sharedTag=/^2990/.test(title)?(title.includes('purple')?'2990 Purple':'2990'):null;
+ const sharedTag=/2990/.test(title)?(title.includes('purple')?'2990 Purple':title.includes('white')?'2990 White':'2990'):null;
  const code0=title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  const hashCode=(/^#team\/([^/?]+)/.exec(location.hash)||[])[1];
  // VOID-only teams have no MSL ledger tag: fall back to the team code in the URL so their VOID maps still fill the lineup.
@@ -8035,7 +8038,13 @@ function verifiedTeamProfiles(){
   rows.forEach(row=>{
    if(row.classList.contains('msr-verified-participant')||/\s·\s*match\s*$/i.test(row.cells[0]?.textContent||'')){row.remove();return;}
    const nick=norm(row.cells[0]?.querySelector('a.tl b')?.textContent||row.cells[0]?.querySelector('a.tl')?.textContent||row.cells[0]?.textContent||'');
-   const key=Object.prototype.hasOwnProperty.call(all,nick)?nick:norm(aliases[nick]||'');
+   let key=Object.prototype.hasOwnProperty.call(all,nick)?nick:norm(aliases[nick]||'');
+   if(!all[key]&&nick.length>=2){ // same player written a bit differently on the scoreboard (e.g. 'Roll' / 'rolll', 'Jeffrey' / 'Jeffrey Epstien')
+    const ed=(a,b)=>{let pr=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const nx=[i];for(let j=1;j<=b.length;j++)nx[j]=Math.min(nx[j-1]+1,pr[j]+1,pr[j-1]+(a[i-1]===b[j-1]?0:1));pr=nx;}return pr[b.length];};
+    const rosterNicks=rows.map(r=>norm(r.cells[0]?.querySelector('a.tl b')?.textContent||r.cells[0]?.querySelector('a.tl')?.textContent||''));
+    const c=Object.keys(all).filter(k=>!rosterNicks.includes(k)).map(k=>({k,d:ed(nick,k),pre:Math.min(k.length,nick.length)>=3&&(k.indexOf(nick)===0||nick.indexOf(k)===0)})).filter(x=>x.pre||x.d<=Math.max(1,Math.min(3,Math.floor(Math.max(x.k.length,nick.length)/3)))).sort((a,b)=>(b.pre-a.pre)||a.d-b.d);
+    if(c.length&&(!c[1]||c[0].d<c[1].d||c[0].pre&&!c[1].pre))key=c[0].k;
+   }
    const x=all[key];
    if(!x)return;
    const set=(i,v)=>{if(!row.cells[i])return;const target=row.cells[i].querySelector('.v')||row.cells[i];if(target.children.length&&target===row.cells[i])return;if(target.textContent!==v)target.textContent=v;};
