@@ -3806,6 +3806,7 @@ window.MSR_FREE_AGENTS=[{nick:'reka',id:'205882281',from:'AIM4R',team:'DS_3648C2
         });
         function lg(ref) { var c = s2ZoneTeam(ref); return c ? h('a', { class: 's2p-lg', href: teamHref(c), title: T[c].n }, crest(c, 'md')) : h('span', { class: 's2p-ph' }, '?'); }
         function ph(txt) { return h('span', { class: 's2p-ph' }, txt); }
+        function lgR(ref, res) { var el = lg(ref); if (res && el.classList) el.classList.add(res.w === ref ? 'msr-lg-win' : (res.auto ? 'msr-lg-auto' : 'msr-lg-loss')); return el; }
         var kk2 = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
         function s2adv(slot, r0, refsIn) {
           var rs = window.msrS2Res(z[0], slot);
@@ -3837,11 +3838,11 @@ window.MSR_FREE_AGENTS=[{nick:'reka',id:'205882281',from:'AIM4R',team:'DS_3648C2
         var board = h('div', { class: 's2p' }, svg,
           h('div', { class: 's2p-cols' }, h('span', null, 'Round 1'), h('span', null, 'Round 2'), h('span', null, 'Round 3'), h('span', null, 'Result')),
           h('div', { class: 's2p-grid' },
-            pc('n', r1 ? 'M1 · ' + (r1.auto ? 'AUTO' : r1.sc) : 'M1 · Bo3', lg(z[1][0]), lg(z[1][1]), 1, 1),
-            pc('n', r2 ? 'M2 · ' + (r2.auto ? 'AUTO' : r2.sc) : 'M2 · Bo3', lg(z[1][2]), lg(z[1][3]), 1, 3),
-            pc('up', uf ? 'Upper Final · ' + sct(uf) : 'Upper Final', r1 ? lg(r1.w) : ph('W1'), r2 ? lg(r2.w) : ph('W2'), 2, 2),
-            pc('lo', lr ? 'Lower R1 · ' + sct(lr) : 'Lower R1', r1 ? lg(r1.l) : ph('L1'), r2 ? lg(r2.l) : ph('L2'), 2, 5),
-            pc('lo', lf ? 'Lower Final · ' + sct(lf) : 'Lower Final', uf ? lg(uf.l) : ph('LUF'), lr ? lg(lr.w) : ph('WLR'), 3, 3),
+            pc('n', r1 ? 'M1 · ' + (r1.auto ? 'AUTO' : r1.sc) : 'M1 · Bo3', lgR(z[1][0], r1), lgR(z[1][1], r1), 1, 1),
+            pc('n', r2 ? 'M2 · ' + (r2.auto ? 'AUTO' : r2.sc) : 'M2 · Bo3', lgR(z[1][2], r2), lgR(z[1][3], r2), 1, 3),
+            pc('up', uf ? 'Upper Final · ' + sct(uf) : 'Upper Final', r1 ? lgR(r1.w, uf) : ph('W1'), r2 ? lgR(r2.w, uf) : ph('W2'), 2, 2),
+            pc('lo', lr ? 'Lower R1 · ' + sct(lr) : 'Lower R1', r1 ? lgR(r1.l, lr) : ph('L1'), r2 ? lgR(r2.l, lr) : ph('L2'), 2, 5),
+            pc('lo', lf ? 'Lower Final · ' + sct(lf) : 'Lower Final', uf ? lgR(uf.l, lf) : ph('LUF'), lr ? lgR(lr.w, lf) : ph('WLR'), 3, 3),
             pc('ok', 'Qualified', uf ? lg(uf.w) : ph('WUF'), lf ? lg(lf.w) : ph('WLF'), 4, 1),
             pc('no', 'Eliminated', lr ? lg(lr.l) : ph('LLR'), lf ? lg(lf.l) : ph('LLF'), 4, 5)));
         panel.innerHTML = '';
@@ -4081,8 +4082,8 @@ window.MSR_FREE_AGENTS=[{nick:'reka',id:'205882281',from:'AIM4R',team:'DS_3648C2
       if (m[2] == null) return;
       [[m[0], m[1], m[2], m[3]], [m[1], m[0], m[3], m[2]]].forEach(function (x) { (paths[x[0]] = paths[x[0]] || []).push({ r: r.n, day: r.day, opp: x[1], me: x[2], op: x[3] }); });
     }); }); });
-    function chip(code, lost) {
-      return h('span', { class: 'sw-t' + (lost ? ' lost' : ''), 'data-team': code, title: swTeam(code).n, role: 'button', tabindex: '0', 'aria-label': swTeam(code).n }, swCrest(code));
+    function chip(code, lost, won) {
+      return h('span', { class: 'sw-t' + (lost ? ' lost msr-lg-loss' : '') + (won ? ' msr-lg-win' : ''), 'data-team': code, title: swTeam(code).n, role: 'button', tabindex: '0', 'aria-label': swTeam(code).n }, swCrest(code));
     }
     function grp(round, rec) {
       var rr = R[round - 1], g = rr && rr.groups.filter(function (x) { return x.rec === rec; })[0], day = rr ? rr.day : ({ 1: 1, 2: 1, 3: 2, 4: 3 })[round];
@@ -4091,9 +4092,9 @@ window.MSR_FREE_AGENTS=[{nick:'reka',id:'205882281',from:'AIM4R',team:'DS_3648C2
         h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/')), h('span', null, 'BO3'), h('i', null, 'Day ' + day)),
         g.ms.map(function (m) {
           var played = m[2] != null;
-          return h('div', { class: 'sw-m' }, chip(m[0], played && m[2] < m[3]),
+          return h('div', { class: 'sw-m' }, chip(m[0], played && m[2] < m[3], played && m[2] > m[3]),
             played ? h('span', { class: 'sw-sc' }, m[2] + ':' + m[3]) : h('span', { class: 'sw-vs' }, 'VS'),
-            chip(m[1], played && m[3] < m[2]));
+            chip(m[1], played && m[3] < m[2], played && m[3] > m[2]));
         }));
     }
     function tbdGrp(rec, day, n) {
@@ -6561,7 +6562,7 @@ window.MSR_FREE_AGENTS=[{nick:'reka',id:'205882281',from:'AIM4R',team:'DS_3648C2
         for (var i = 0; i < 8; i++) {
           var p = draw ? (draw[i] || []) : [codes[2 * i], codes[2 * i + 1]];
           var rr = p[0] && p[1] && window.msrVoidRes ? window.msrVoidRes(p[0], p[1]) : null, sa = slot(p[0]), sb = slot(p[1]);
-          if (rr) { (rr.a > rr.b ? sb : sa).classList.add('sw-lose'); (rr.a > rr.b ? sa : sb).classList.add('sw-win'); }
+          if (rr) { var wE = rr.a > rr.b ? sa : sb, lE = rr.a > rr.b ? sb : sa; lE.classList.add('sw-lose', rr.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
           rows.push(h('div', { class: 'sw-m' + (rr ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, rr ? (rr.auto ? 'W/O' : rr.a + ':' + rr.b) : 'VS'), sb));
         }
         return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, '0/0')), rows);
@@ -9261,6 +9262,18 @@ html body #mobile-burger-slot>*{border-radius:20px!important;-webkit-backdrop-fi
 html body nav.main.mob{background:rgba(14,14,17,.96)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)!important;border-radius:18px!important}
 html body nav.main.mob a{font-family:var(--b)!important;text-transform:none!important;letter-spacing:0!important;font-weight:500!important;border-radius:12px!important}
 }
+</style>
+<style id="msr-logo-stamps">
+#app .msr-lg-win,#app .msr-lg-loss,#app .msr-lg-auto{position:relative!important;overflow:visible!important}
+#app .msr-lg-win::after,#app .msr-lg-loss::after,#app .msr-lg-auto::after{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%) rotate(-10deg);font:900 8.5px/1 var(--b,system-ui);letter-spacing:.1em;padding:2px 4px 1px;border:1.5px solid;border-radius:3px;background:rgba(8,9,11,.88);z-index:3;pointer-events:none;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.55)}
+#app .msr-lg-win::after{content:"WIN";color:#60dc63;border-color:#60dc63}
+#app .msr-lg-loss::after{content:"LOSS";color:#ff4d4d;border-color:#ff4d4d}
+#app .msr-lg-auto::after{content:"AUTO";color:#ffc933;border-color:#ffc933}
+#app .sw-t.sw-lose.msr-lg-loss,#app .sw-t.sw-lose.msr-lg-auto{opacity:1!important;filter:none!important}
+#app .sw-t.sw-lose>*,#app .sw-t.lost>*{opacity:.4;filter:grayscale(1)}
+#app .s2p-lg.msr-lg-win::after,#app .s2p-lg.msr-lg-loss::after,#app .s2p-lg.msr-lg-auto::after{font-size:6.5px;padding:1px 3px 0;bottom:-3px;border-width:1px}
+#app .s2p-lg.msr-lg-loss>*,#app .s2p-lg.msr-lg-auto>*{opacity:.45;filter:grayscale(1)}
+#app .s2p-cb{row-gap:6px}
 </style>
 </body>
 </html>
