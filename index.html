@@ -5051,13 +5051,14 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     }).filter(Boolean);
   }
   // Series result from the verified match ledger (map wins + forfeit map wins). Returns {a,b} oriented to ka/kb, or null.
-  function msrRelResult(ka,kb,st){
+  function msrRelResult(ka,kb,st,sl){
     var L=window.MSR_SCREENSHOT_MATCHES;
     if(!ka||!kb||ka===kb||!L||!window.msrTagToCode)return null;
     for(var i=L.length-1;i>=0;i--){
       var e=L[i],ca=window.msrTagToCode(e.a),cb=window.msrTagToCode(e.b);
       if(!((ca===ka&&cb===kb)||(ca===kb&&cb===ka)))continue;
       if(!!e.stage2!==(st==='s2'))continue;
+      if(sl&&(e.zone!==sl.zone||e.slot!==sl.slot))continue;
       var aw=(e.auto&&e.auto.a)||0,bw=(e.auto&&e.auto.b)||0;
       (e.maps||[]).forEach(function(m){if(m.aScore>m.bScore)aw++;else if(m.bScore>m.aScore)bw++;});
       if(aw===bw)return null;
@@ -5067,6 +5068,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     var SR=st==='s2'?(window.MSR_S2_RESULTS||[]):[];
     for(var j=SR.length-1;j>=0;j--){
       var r=SR[j];if(!r.auto)continue;
+      if(sl&&(r.zone!==sl.zone||r.slot!==sl.slot))continue;
       var ra=window.msrTagToCode(r.a),rb=window.msrTagToCode(r.b);
       if(!((ra===ka&&rb===kb)||(ra===kb&&rb===ka)))continue;
       var x=r.auto.a||0,y=r.auto.b||0;if(x===y)return null;
@@ -5098,7 +5100,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     return out;
   }
   function msrRelMatchCard(row){
-    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?(window.msrVoidRes?window.msrVoidRes(rk[0],rk[1]):null):msrRelResult(rk[0],rk[1],row._keys?'s2':undefined);
+    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?(window.msrVoidRes?window.msrVoidRes(rk[0],rk[1]):null):msrRelResult(rk[0],rk[1],row._keys?'s2':undefined,row._sl);
     function team(name,mine){
       var key=row._keys?(mine?rk[0]:rk[1]):msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
       return h('div',{class:'msr-hl-t'+(res?(won?' win':' loss'):'')},
@@ -5124,7 +5126,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     var pp=String(arg||'').split('/'),ka=pp[0],kb=pp[1],dn=+pp[2]||0,grp=pp[3]||'';
     if(!T[ka]||!T[kb])return V.matches();
     var known=msrRelUpcoming().find(function(r){var x=msrRelTeamKey(r.team_a),y=msrRelTeamKey(r.team_b);return (x===ka&&y===kb)||(x===kb&&y===ka);})||null;
-    var isS2=/^S2-/.test(grp),res=msrRelResult(ka,kb,isS2?'s2':undefined),time=known&&known.time_label?known.time_label:'';
+    var isS2=/^S2-/.test(grp),s2q=isS2?(function(){var c=(window.msrS2Slots?window.msrS2Slots():[]).filter(function(q){return q.zone===grp.slice(3)&&((q.a===ka&&q.b===kb)||(q.a===kb&&q.b===ka));});return c.filter(function(q){return q.date===dn;})[0]||c[0]||null;})():null,res=msrRelResult(ka,kb,isS2?'s2':undefined,s2q?{zone:s2q.zone,slot:s2q.slot}:undefined),time=known&&known.time_label?known.time_label:'';
     var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var dateTxt=dn?(('0'+(dn%100)).slice(-2)+' '+MON[Math.floor(dn/100)-1]+' '+YEAR):'';
     function headTeam(k){return h('a',{class:'msr-mm-ht',href:teamHref(k)},crest(k,'lg'),h('b',null,T[k].n));}
@@ -5138,7 +5140,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
           h('span',{class:'msr-mm-sc'+(win===ka?' w':'')},crest(ka,'xs'),sc?String(sc.a):''),
           h('span',{class:'msr-mm-sc'+(win===kb?' w':'')},sc?String(sc.b):'',crest(kb,'xs'))));
     }
-    function s2Find(zn,a,b){return (window.msrS2Slots?window.msrS2Slots():[]).filter(function(q){return q.zone===zn&&((q.a===a&&q.b===b)||(q.a===b&&q.b===a));})[0]||null;}
+    function s2Find(zn,a,b){var c=(window.msrS2Slots?window.msrS2Slots():[]).filter(function(q){return q.zone===zn&&((q.a===a&&q.b===b)||(q.a===b&&q.b===a));});return c.filter(function(q){return q.date===dn;})[0]||c[0]||null;}
     function s2InfoText(zn,a,b){
       var q=s2Find(zn,a,b);
       return 'MSL Major S2 · Stage 2 · Zone '+zn+(q?' · '+q.slot:'');
@@ -6380,7 +6382,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
           window.msrS2Slots().forEach(function (sl) {
             if (sl.zone !== z[0] || sl.date !== APM.sel) return;
             if (APM.fav && !isFav(sl.a) && !isFav(sl.b)) return;
-            out.push({ team_a: T[sl.a].n, team_b: T[sl.b].n, _keys: [sl.a, sl.b], time_label: sl.info && sl.info.time ? sl.info.time : '', _href: '#mslmatch/' + sl.a + '/' + sl.b + '/' + APM.sel + '/S2-' + z[0] });
+            out.push({ team_a: T[sl.a].n, team_b: T[sl.b].n, _keys: [sl.a, sl.b], _sl: { zone: sl.zone, slot: sl.slot }, time_label: sl.info && sl.info.time ? sl.info.time : '', _href: '#mslmatch/' + sl.a + '/' + sl.b + '/' + APM.sel + '/S2-' + z[0] });
           });
           return out;
         };
