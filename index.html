@@ -3013,8 +3013,9 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       ] },
     // R1: EliteKingZz (VOID, "EknZ DIVA") 2-1 Four zest assault. Dune 13-9 EknZ, Rust 7-13; map 3 awarded to EknZ as an auto win
     // (Hanami had to be replayed and the rematch could not take place; the 10-13 Hanami scoreboard is not counted).
-    { a: 'DS_VOID_EKNZ_20261113', b: 'DS_9FEDE81820B36BB7889B86BA', ea: 'EknZ VOID', eb: '4zA', as: 2, bs: 1, autoMaps: { a: 1, b: 0 }, round: 1, date: 1113,
-      maps: [
+    { a: 'DS_VOID_EKNZ_20261113', b: 'DS_9FEDE81820B36BB7889B86BA', ea: 'EknZ VOID', eb: '4zA', as: 2, bs: 1, auto: true, round: 1, date: 1113,
+      // Admin ruling (Nov 14): counted as an auto win for EknZ / auto loss for 4zA — ELO by the auto rule only; the played maps below do not count for K/D or ELO.
+      playedMaps: [
         { map: 'Dune', aScore: 13, bScore: 9,
           a: [['mei',27,17,4],['minnie',20,16,1],['misu',13,16,2],['Zyaazz',11,15,3],['miuu',13,20,3]],
           b: [['good',23,16,2],['Tuwshuu',22,15,2],['f3rgod',16,19,7],['lytic',10,17,5],['solid',11,17,1]] },
@@ -5222,6 +5223,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     var U=function(v){return String(v||'').toUpperCase();};
     var raw=(window.MSR_VOID_RESULTS||[]).filter(function(m){return (U(m.a)===U(ka)&&U(m.b)===U(kb))||(U(m.a)===U(kb)&&U(m.b)===U(ka));})[0]||null;
     var flip=raw&&U(raw.a)!==U(ka),res=raw?{a:flip?raw.bs:raw.as,b:flip?raw.as:raw.bs,auto:!!raw.auto}:null;
+    var shown=raw?(raw.maps&&raw.maps.length?raw.maps:[]):[],played=raw&&raw.playedMaps?raw.playedMaps:[];
     var maps=raw?(raw.maps||[]).map(function(m){return {map:m.map,a:flip?m.bScore:m.aScore,b:flip?m.aScore:m.bScore,pa:flip?m.b:m.a,pb:flip?m.a:m.b};}):[];
     var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var dateTxt=dn?(('0'+(dn%100)).slice(-2)+' '+MON[Math.floor(dn/100)-1]+' '+YEAR):'';
@@ -5233,7 +5235,8 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
         h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(win===ka?' w':'')},crest(ka,'xs'),String(m.a)),h('span',{class:'msr-mm-sc'+(win===kb?' w':'')},String(m.b),crest(kb,'xs'))));
     }
     var am=raw&&raw.autoMaps?{a:flip?raw.autoMaps.b:raw.autoMaps.a,b:flip?raw.autoMaps.a:raw.autoMaps.b}:null;
-    var cards=maps.length?maps.map(mapCard).concat(am&&(am.a||am.b)?[h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top'},h('b',null,'Auto win'),h('small',null,'Map '+(maps.length+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(am.a>am.b?' w':'')},crest(ka,'xs'),am.a>am.b?'W':'–'),h('span',{class:'msr-mm-sc'+(am.b>am.a?' w':'')},am.b>am.a?'W':'–',crest(kb,'xs'))))]:[]):res&&res.auto?[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) · no maps played')]:(function(){var sc=window.msrVoidSched?window.msrVoidSched(ka,kb):null;if(!sc||!sc.maps||!sc.maps.length)return [h('div',{class:'msr-mm-info'},'Maps will appear here once the match is played.')];return sc.maps.map(function(m,i){var photo=MSR_MAP_PHOTOS[String(m).toLowerCase()];return h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top',style:photo?'background-image:linear-gradient(0deg,rgba(22,25,29,.7),rgba(22,25,29,.3)),'+photo:null},h('b',null,m),h('small',null,i===sc.maps.length-1&&sc.maps.length>2?'Decider':'Map '+(i+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'},crest(ka,'xs'),'–'),h('span',{class:'msr-mm-sc'},'–',crest(kb,'xs'))));});})();
+    var pm=played.map(function(m){return {map:m.map,a:flip?m.bScore:m.aScore,b:flip?m.aScore:m.bScore};});
+    var cards=!maps.length&&pm.length?pm.map(mapCard).concat([h('div',{class:'msr-mm-info'},'Ruled an auto win for '+(res&&res.a>res.b?T[ka].n:T[kb].n)+'. These maps were played but do not count for K/D or ELO.')]):maps.length?maps.map(mapCard).concat(am&&(am.a||am.b)?[h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top'},h('b',null,'Auto win'),h('small',null,'Map '+(maps.length+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'+(am.a>am.b?' w':'')},crest(ka,'xs'),am.a>am.b?'W':'–'),h('span',{class:'msr-mm-sc'+(am.b>am.a?' w':'')},am.b>am.a?'W':'–',crest(kb,'xs'))))]:[]):res&&res.auto?[h('div',{class:'msr-mm-info'},(res.a>res.b?T[ka].n:T[kb].n)+' won by forfeit (auto win) · no maps played')]:(function(){var sc=window.msrVoidSched?window.msrVoidSched(ka,kb):null;if(!sc||!sc.maps||!sc.maps.length)return [h('div',{class:'msr-mm-info'},'Maps will appear here once the match is played.')];return sc.maps.map(function(m,i){var photo=MSR_MAP_PHOTOS[String(m).toLowerCase()];return h('div',{class:'msr-mm-map'},h('div',{class:'msr-mm-map-top',style:photo?'background-image:linear-gradient(0deg,rgba(22,25,29,.7),rgba(22,25,29,.3)),'+photo:null},h('b',null,m),h('small',null,i===sc.maps.length-1&&sc.maps.length>2?'Decider':'Map '+(i+1))),h('div',{class:'msr-mm-map-bot'},h('span',{class:'msr-mm-sc'},crest(ka,'xs'),'–'),h('span',{class:'msr-mm-sc'},'–',crest(kb,'xs'))));});})();
     function statTable(k,side){
       var tot={};maps.forEach(function(m){var R=(m.a||0)+(m.b||0);(m[side]||[]).forEach(function(q){var key=String(q[0]).toLowerCase();var o=tot[key]||(tot[key]={nick:q[0],k:0,d:0,a:0,R:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.R+=R;});});
       var rows=Object.keys(tot).map(function(x){var o=tot[x],c=window.msrCalc?window.msrCalc(o.k,o.d,o.a,o.R):null;o.rt=c?c.rating:0;return o;}).sort(function(a,b){return b.rt-a.rt||b.k-a.k;});
