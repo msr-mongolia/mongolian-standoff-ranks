@@ -5121,6 +5121,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     return card;
   }
 
+  function mmCol(k){var c=T[k]&&T[k].c;return /^#[0-9a-fA-F]{6}$/.test(c||'')?c:'#3b82f6';}
   // Match page (HLTV-style preview/result) for a scheduled MSL group match: #mslmatch/<codeA>/<codeB>/<MMDD>/<group>
   V.mslmatch=function(arg){
     var pp=String(arg||'').split('/'),ka=pp[0],kb=pp[1],dn=+pp[2]||0,grp=pp[3]||'';
@@ -5196,7 +5197,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       :h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},time?(/^\d{1,2}:\d{2}$/.test(time)?time:time+'?'):'TBA'),h('small',null,dateTxt||'Not announced yet'));
     return h('div',{class:'msr-mm'},
       h('a',{class:'back',href:'#matches',svg:ICON.back+'<span>Matches</span>'}),
-      h('div',{class:'msr-mm-head'},headTeam(ka),center,headTeam(kb)),
+      h('div',{class:'msr-mm-head',style:'--ca:'+mmCol(ka)+';--cb:'+mmCol(kb)},headTeam(ka),center,headTeam(kb)),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'BO3')),
         h('div',{class:'msr-mm-info'},/^S2-/.test(grp)?s2InfoText(grp.slice(3),ka,kb):'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards)),
@@ -5248,7 +5249,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     var stats=maps.length?h('section',{class:'msr-mm-sec'},h('h2',null,'Player stats'),h('div',{class:'msr-finished-stats two'},statTable(ka,'pa'),statTable(kb,'pb'))):null;
     return h('div',{class:'msr-mm'},
       h('a',{class:'back',href:'#matches',svg:ICON.back+'<span>Matches</span>'}),
-      h('div',{class:'msr-mm-head'},headTeam(ka),center,headTeam(kb)),
+      h('div',{class:'msr-mm-head',style:'--ca:'+mmCol(ka)+';--cb:'+mmCol(kb)},headTeam(ka),center,headTeam(kb)),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'Swiss')),
         h('div',{class:'msr-mm-info'},'VOID Tournament · Stage 1 · Swiss'+(rlab?' · '+rlab:'')+' · ',h('a',{href:'#event/void'},'Open bracket ›'))),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Maps'),h('div',{class:'msr-mm-maps'},cards)),
@@ -8688,6 +8689,32 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #app .msr-rr-table th:nth-child(5),#app .msr-rr-table td:nth-child(5){color:#ff5468!important;font-weight:800}
 </style>
 <style id="msr-corner-fix">/* iOS/WebKit can leak square corners from composited video/blend children and square box-shadows: clip the children themselves and draw the glow with a shape-following drop-shadow. */#app .msr-knight-video-panel .msr-knight-back1-video,#app .msr-knight-video-panel .msr-knight-video-shade,#app .msr-knight-video-panel .msr-clan-panel-header-video,.msr-fx-video,.msr-fx-canvas{border-radius:inherit;-webkit-clip-path:inset(0 round 15px);clip-path:inset(0 round 15px)}#app.msr-clan-profile .prof.msr-knight-video-panel{box-shadow:none!important;-webkit-filter:drop-shadow(0 0 10px var(--clan-glow));filter:drop-shadow(0 0 10px var(--clan-glow))}</style>
+<style id="msr-mm-polish">
+#app .msr-mm-head{margin:8px 0 12px;padding:12px 10px;gap:6px;border:1px solid rgba(255,255,255,.07);background:#1b2028;background:linear-gradient(100deg,color-mix(in srgb,var(--ca,#3b82f6) 38%,#1b2028) 0%,#1b2028 42%,#1b2028 58%,color-mix(in srgb,var(--cb,#ef4444) 38%,#1b2028) 100%)}
+#app .msr-mm-ht{gap:6px}
+#app .msr-mm-ht .crest{width:46px!important;height:46px!important;border-radius:11px!important;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+#app .msr-mm-ht b{font-size:13px;line-height:1.2}
+#app .msr-mm-score{font-size:24px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+#app .msr-mm-mid small{font-size:11px;margin-top:2px;color:#a8b3c2}
+#app .msr-mm-sec{margin:0 0 14px}
+#app .msr-mm-sec>h2{font-size:15px;gap:8px;margin:0 0 7px;letter-spacing:.01em}
+#app .msr-mm-sec>h2::before{content:"";width:3px;height:15px;border-radius:2px;background:linear-gradient(#30c07d,#2f9bd6)}
+#app .msr-mm-pill{font-size:10px;padding:2px 7px;color:#7fe0b0;background:rgba(48,192,125,.14);border:1px solid rgba(48,192,125,.3)}
+#app .msr-mm-info{padding:9px 12px;font-size:13px;color:#b9c3d0;background:linear-gradient(90deg,rgba(48,192,125,.12),#222831 55%);border-left:3px solid #30c07d;border-radius:8px}
+#app .msr-mm-maps,#app .msr-mm-lineup{gap:8px}
+#app .msr-mm-map{flex:0 0 min(60%,210px);background:#222831;border-color:#2f3742;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+#app .msr-mm-map-top{height:56px}
+#app .msr-mm-map-top b{font-size:15px}
+#app .msr-mm-map-bot{padding:7px 10px}
+#app .msr-mm-sc{font-size:14px;gap:5px}
+#app .msr-mm-sc.w{color:#4ade80}
+#app .msr-mm-sc .crest{width:20px!important;height:20px!important}
+#app .msr-mm-pl{flex:0 0 88px;gap:4px;padding:10px 6px;border-radius:10px;background:linear-gradient(180deg,#262d37,#1f252d);border-color:#2f3742}
+#app .msr-mm-pl .bigav{width:40px!important;height:40px!important;font-size:16px}
+#app .msr-mm-pl b{font-size:12px}
+#app .msr-mm-pl small{font-size:12px;font-weight:700}
+#app .msr-mm-card{padding:11px;border-radius:10px}
+</style>
 <style id="msr-mm-radar-css">#app .msr-mm-radar{margin:4px 0 12px}#app .msr-mm-radar-svg svg{display:block;width:100%;max-width:340px;margin:0 auto;height:auto}#app .msr-mm-radar-lg{display:flex;gap:16px;justify-content:center;font-size:12px;color:#9aa4b2;margin-top:2px}#app .msr-mm-radar-lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}</style>
 <style id="msr-team-effect-css">.msr-fx-host{position:relative}.msr-fx-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:screen;pointer-events:none;z-index:6;opacity:0;transition:opacity .5s}.msr-fx-video.on{opacity:1}.msr-fx-canvas{position:absolute!important;inset:0;width:100%;height:100%;pointer-events:none;z-index:7!important;opacity:0;mix-blend-mode:screen}.msr-fx-canvas.on{opacity:1}</style>
 <style id="msr-avatar-frame-css">.msr-avf-wrap{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;margin:calc((var(--avf-s,1.5) - 1) * 56px) 0}.msr-avf-wrap .msr-clan-avatar-item::before,.msr-avf-wrap .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-own{overflow:visible!important}.msr-avf-own .msr-clan-avatar-item::before,.msr-avf-own .msr-clan-avatar-item::after{display:none!important;animation:none!important}html body #app .sg.msr-clan-avatar .msr-clan-avatar-tag{color:var(--avf-tag,inherit)!important;border-color:var(--avf-tag,currentColor)!important}.msr-avf-own>.msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);max-width:none;transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}.msr-avf-wrap .msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}</style>
