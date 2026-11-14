@@ -5200,7 +5200,8 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
       h('div',{class:'msr-mm-head',style:'--ca:'+mmCol(ka)+';--cb:'+mmCol(kb)},headTeam(ka),center,headTeam(kb)),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'BO3')),
         h('div',{class:'msr-mm-info'},/^S2-/.test(grp)?s2InfoText(grp.slice(3),ka,kb):'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
-      h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards)),
+      h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards),
+        known&&(known.bans||[]).length?h('div',{class:'msr-mm-bans'},h('b',null,'Bans'),(known.bans||[]).map(function(x){var bk=msrRelTeamKey(x.team);return h('span',{class:'msr-mm-ban'},(bk&&T[bk]?T[bk].tag||T[bk].n:x.team)+' \u00b7 ',h('s',null,x.map));})):null),
       lineup(ka),lineup(kb),
       res?null:msrMatchWinProb(ka,kb),msrMatchH2H(ka,kb),msrMatchMapStats(ka,kb),msrMatchForm(ka,kb));
   };
@@ -7462,7 +7463,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
       window.MSR_ROSTER_LOAD_STATE='ready';
       if (/^(ranking|tpranking|team|players|player|freeagents|stats|event|events|matches|live|voidmatch|mslmatch)(\/|$)/.test(H)) route();
       try{
-        var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
+        var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,bans,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
       }catch(_relError){}
       if (/^(team|stats|event|events|matches|live)(\/|$)/.test(H)) route();
@@ -8715,6 +8716,7 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
 #app .msr-mm-pl small{font-size:12px;font-weight:700}
 #app .msr-mm-card{padding:11px;border-radius:10px}
 </style>
+<style id="msr-mm-bans-css">.msr-mm-bans{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}.msr-mm-bans b{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#f87171}.msr-mm-ban{font-size:12px;padding:4px 9px;border-radius:999px;border:1px solid #7f1d1d;background:#2a1215;color:#fecaca}.msr-mm-ban s{text-decoration-color:#f87171}</style>
 <style id="msr-mm-radar-css">#app .msr-mm-radar{margin:4px 0 12px}#app .msr-mm-radar-svg svg{display:block;width:100%;max-width:340px;margin:0 auto;height:auto}#app .msr-mm-radar-lg{display:flex;gap:16px;justify-content:center;font-size:12px;color:#9aa4b2;margin-top:2px}#app .msr-mm-radar-lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}</style>
 <style id="msr-team-effect-css">.msr-fx-host{position:relative}.msr-fx-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:screen;pointer-events:none;z-index:6;opacity:0;transition:opacity .5s}.msr-fx-video.on{opacity:1}.msr-fx-canvas{position:absolute!important;inset:0;width:100%;height:100%;pointer-events:none;z-index:7!important;opacity:0;mix-blend-mode:screen}.msr-fx-canvas.on{opacity:1}</style>
 <style id="msr-avatar-frame-css">.msr-avf-wrap{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;margin:calc((var(--avf-s,1.5) - 1) * 56px) 0}.msr-avf-wrap .msr-clan-avatar-item::before,.msr-avf-wrap .msr-clan-avatar-item::after{display:none!important;animation:none!important}.msr-avf-own{overflow:visible!important}.msr-avf-own .msr-clan-avatar-item::before,.msr-avf-own .msr-clan-avatar-item::after{display:none!important;animation:none!important}html body #app .sg.msr-clan-avatar .msr-clan-avatar-tag{color:var(--avf-tag,inherit)!important;border-color:var(--avf-tag,currentColor)!important}.msr-avf-own>.msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);max-width:none;transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}.msr-avf-wrap .msr-avf-img{position:absolute;left:50%;top:50%;width:calc(var(--avf-s,1.5) * 100%);height:calc(var(--avf-s,1.5) * 100%);transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:4}</style>
