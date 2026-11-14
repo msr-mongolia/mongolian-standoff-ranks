@@ -4370,7 +4370,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     };
     var slots = [];
     if (veto) {
-      (veto.picks || []).forEach(function (pk) { slots.push({ map: pk.map, tag: 'PICK', by: pickName(pk.team) }); });
+      (veto.picks || []).forEach(function (pk, i) { slots.push({ map: pk.map, tag: pk.team ? 'PICK' : 'MAP ' + (i + 1), by: pk.team ? pickName(pk.team) : '' }); });
       if (veto.decider) slots.push({ map: veto.decider, tag: 'DECIDER', by: '' });
     }
     if (!slots.length && led) led.maps.forEach(function (x) { slots.push({ map: x.map, tag: '', by: '' }); });
@@ -5152,7 +5152,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     var cards=[];
     if(s2Inf&&s2Inf.maps&&s2Inf.maps.length){s2Inf.maps.forEach(function(m){cards.push(mmCard(m[1],m[0]));});}
     else if(known&&(known.picks||[]).length){
-      known.picks.forEach(function(p){var pk=msrRelTeamKey(p.team);cards.push(mmCard((pk&&T[pk]?T[pk].tag||T[pk].n:p.team)+' pick',p.map,pk));});
+      known.picks.forEach(function(p,i){var pk=p.team?msrRelTeamKey(p.team):null;cards.push(mmCard(p.team?(pk&&T[pk]?T[pk].tag||T[pk].n:p.team)+' pick':'Map '+(i+1),p.map,pk));});
       cards.push(mmCard('Decider',known.decider||'TBA'));
     }else if(res&&res.maps&&res.maps.length){
       res.maps.forEach(function(m,i){cards.push(mmCard('Map '+(i+1),m.map));});
@@ -5859,7 +5859,7 @@ window.MSR_FREE_AGENTS=[{nick:'Kons',id:'170879947',from:'AIM4R',team:'DS_3648C2
     return h('div',{class:'msr-rel-details'},
       time?h('b',null,/^\d{1,2}:\d{2}$/.test(time)?'Time · '+time:'Time · '+time+' (confirm)'):null,
       h('div',{class:'msr-rel-match-maps msr-rel-mini'},
-        (detail.picks||[]).map(function(p){return msrRelMapCard(p.team+' pick',p.map);}),
+        (detail.picks||[]).map(function(p){return msrRelMapCard(p.team?p.team+' pick':'Map',p.map);}),
         msrRelMapCard('Decider',detail.decider||'TBA')));
   }
 
