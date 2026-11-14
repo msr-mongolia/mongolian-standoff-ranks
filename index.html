@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Mongolian Standoff Ranks (MSR) — Монголын Standoff 2 багуудын чансаа, тоглогчдын рейтинг, тэмцээн болон тоглолтын мэдээлэл.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://msr-mongolia.github.io/mongolian-standoff-ranks/">
@@ -8816,6 +8816,16 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
   }catch(e){}
 })();
 </script>
+<style id="msr-app-mode-css">
+/* App mode (installed from "Add to Home Screen"): no browser bars, so respect the notch/status bar and behave like a native app. */
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+@media (display-mode:standalone){
+ html,body{overscroll-behavior-y:none}
+ body{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+ input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text}
+ header.top{padding-top:env(safe-area-inset-top)!important}
+}
+</style>
 <style id="msr-install-css">
 #msr-install{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:9998;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(22,25,30,.97);border:1px solid #2fbc7a;box-shadow:0 12px 34px rgba(0,0,0,.55);color:#eceef0;font:600 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 #msr-install img{width:40px;height:40px;border-radius:10px;flex:none}
