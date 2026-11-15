@@ -3016,7 +3016,8 @@ window.MSR_FREE_AGENTS=[{nick:'Zyx',id:'251421844',from:'MNKTeam-(blue)',team:'D
           b: [['kanto',27,18,1],['ravn666',15,18,9],['f3rgod',13,15,4],['good',12,18,6],['wrath',12,19,2]] }
       ] },
     // R2 (1-0 pool): MNKTeam-(blue) 2-1 CHINGIS WARRIORS. Breeze 17-19, Dune 13-8, Sandstone 13-6. 'resugod' / 'Thorfinn' (Sandstone) are not on Chingis' registered roster.
-    { a: 'DS_A92955A6312CC42137C3C7EA', b: 'DS_4559C7E779F302E917B1A414', ea: 'MNKT Blue', eb: 'MSDTP', as: 2, bs: 1, round: 2, date: 1115,
+    // Admin ruling (Nov 16): MNKT Blue replaced 7 players against the rules -> its ELO is reset to 0 and counted again only from this match.
+    { a: 'DS_A92955A6312CC42137C3C7EA', b: 'DS_4559C7E779F302E917B1A414', ea: 'MNKT Blue', eb: 'MSDTP', as: 2, bs: 1, round: 2, date: 1115, eloReset: 'a',
       maps: [
         { map: 'Breeze', aScore: 17, bScore: 19,
           a: [['Hexor',33,27,4],['Adios',24,27,13],['saD',28,26,3],['Ruse',24,25,2],['Keinn',22,32,5]],
@@ -3132,7 +3133,7 @@ window.MSR_FREE_AGENTS=[{nick:'Zyx',id:'251421844',from:'MNKTeam-(blue)',team:'D
     { nick: 'force', from: 'IMTLL', to: 'DS_A92955A6312CC42137C3C7EA', toNick: 'forcez', date: 1116 }, // IMTLL -> MNKT Blue (same Game ID 248992022)
     { nick: 'Panda4k', from: 'UxrN', to: 'DS_CD3641F18D306E725A580C82', toNick: 'Панда4к〄', date: 1115 } // Unioquiste -> NeonRiderSS (same Game ID 86102030, confirmed roster Nov 15)
   ];
-  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }) }; }); };
+  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).map(function (r, i) { return [r, i]; }).sort(function (x, y) { return ((x[0].round || 1) - (y[0].round || 1)) || ((x[0].date || 0) - (y[0].date || 0)) || (y[1] - x[1]); }).map(function (x) { return x[0]; }) /* chronological: round, then date, then entry order (older entries sit lower in the list) */.filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }), resetA: r.eloReset === 'a', resetB: r.eloReset === 'b' }; }); };
   /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
   window.msrVoidR2 = function () {
     var r1 = window.MSR_VOID_R1 || [], up = [], down = [];
@@ -7483,6 +7484,8 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
       // ELO is chained: start from each team's latest confirmed points (50 for a new team)
       // and use the opponent's ELO for the expected result, same as the Results page.
       var lastAdj=function(tag){for(var i=adjustments.length-1;i>=0;i--)if(adjustments[i].tag===tag)return adjustments[i];return null;};
+      // Admin penalty: a team's ELO is wiped to 0 right before this match (e.g. roster rule broken); it is rebuilt from this match on.
+      [[m.resetA,m.a],[m.resetB,m.b]].forEach(function(z){if(!z[0])return;var pz=lastAdj(z[1]),bz=pz?pz.points:50;adjustments.push({tag:z[1],points:0,change:-bz,w:pz?pz.w:0,l:pz?pz.l:0,penalty:true});});
       var pa=lastAdj(m.a),pb=lastAdj(m.b),ra=pa?pa.points:50,rb=pb?pb.points:50;
       var ex=1/(1+Math.pow(10,(rb-ra)/150));
       var fullAuto=!m.maps.length;
