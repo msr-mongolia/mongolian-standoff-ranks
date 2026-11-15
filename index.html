@@ -3783,12 +3783,12 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     function fill() {
     var r1 = []; for (var i = 0; i < 8; i++) r1.push(h('div', { class: 's3n-m' }, tm(seeds[i], i), h('span', { class: 's3n-vs' }, 'VS'), tm(seeds[15 - i], 15 - i)));
     box.replaceChildren.apply(box, [
-      h('div', { class: 's3n-h' }, h('b', null, 'БАГУУДЫН САНАЛ'), h('span', null, '8 баг · өөрөөсөө бусад 15 багийг эрэмбэлсэн')),
+      h('div', { class: 's3n-h' }, h('b', null, 'TEAM VOTES'), h('span', null, '8 teams · each ranked the other 15')),
       h('div', { class: 's3n-imgs' }, ['assets/msl-s2-s3-votes-1.jpg', 'assets/msl-s2-s3-votes-2.jpg'].map(function (src, k) { return h('a', { href: src, target: '_blank', rel: 'noopener' }, h('img', { src: src, alt: 'MSL S2 Stage 3 seeding votes ' + (k + 1), loading: 'lazy', decoding: 'async' })); })),
       h('div', { class: 's3n-bal' }, (window.MSR_S3_BALLOTS || []).map(function (bl) { var vc = window.msrS3Code(bl[0]);
-        return h('div', { class: 's3n-card' }, h('div', { class: 's3n-ch' }, vc && T[vc] ? crest(vc, 'md') : null, h('b', null, vc && T[vc] ? T[vc].n : bl[0]), h('small', null, 'санал')),
+        return h('div', { class: 's3n-card' }, h('div', { class: 's3n-ch' }, vc && T[vc] ? crest(vc, 'md') : null, h('b', null, vc && T[vc] ? T[vc].n : bl[0]), h('small', null, 'vote')),
           h('ol', null, bl[1].map(function (t, k) { var c = window.msrS3Code(t); return h('li', null, h('span', { class: 's3n-n' }, k + 1), c && T[c] ? crest(c, 'md') : null, h('span', null, c && T[c] ? T[c].n : t)); }))); })),
-      h('a', { class: 's3n-go', href: '#event/msl' }, 'Bracket үзэх ›')]);
+      h('a', { class: 's3n-go', href: '#event/msl' }, 'View bracket ›')]);
     // Team data may still be loading when the post opens directly: refill once every seed resolves to a team.
     if (seeds.some(function (t) { var c = window.msrS3Code(t); return !c || !T[c]; }) && tries++ < 120) setTimeout(function () { if (box.isConnected || tries < 6) fill(); }, 500);
     }
@@ -4979,10 +4979,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
-      { id: 2026111601, g: 'MSL MAJOR S2', t: '11-р сарын 16', c: 0, s3seed: true, h: 'Stage 3 Seeding ба Swiss Round 1 хуваарь', lead: 'MSL Major S2-ын Stage 3-т шалгарсан 16 багийн seed гарлаа. Seed-ийг 8 багийн саналаар (баг бүр өөрөөсөө бусад 15 багийг эрэмбэлсэн) дундаж байраар нь тогтоосон. Swiss Round 1 нь 11-р сарын 17-нд #1 vs #16, #2 vs #15 … #8 vs #9 зарчмаар явагдана.',
+      { id: 2026111601, g: 'MSL MAJOR S2', t: 'Nov 16', c: 0, s3seed: true, h: 'Stage 3 seeding and Swiss Round 1 schedule', lead: 'The seeding for the 16 teams that qualified for MSL Major S2 Stage 3 is out. Seeds were set by the votes of 8 teams (each team ranked the other 15) using the average place. Swiss Round 1 is played on Nov 17 as #1 vs #16, #2 vs #15 … #8 vs #9.',
         body: [
-          'Формат: Swiss · 16 баг · Bo3 · 3 хожил = шалгарна · 3 хожигдол = хасагдана. Round 1 — 11/17, Round 5 — 11/21.',
-          'Дараагийн тойргуудын хослолыг ижил оноотой багуудын дунд seed-ийн дарааллаар хийнэ. Үр дүн, bracket MSR сайтын MSL Major S2 → Stage 3 хэсэгт шууд шинэчлэгдэнэ.',
+          'Format: Swiss · 16 teams · Bo3 · 3 wins = qualified · 3 losses = eliminated. Round 1 — Nov 17, Round 5 — Nov 21.',
+          'Later rounds pair teams with the same record in seed order. Results and the bracket update live on the MSR site under MSL Major S2 → Stage 3.',
           '— MSR Administration'
         ] },
       { id: 2026111203, g: 'MSR OFFICIAL', t: '11-р сарын 12', c: 0, h: 'Шинэ журам: давхар тэмцээний бүртгэл ба тоглогчийн шилжилт', lead: 'Баг өөрийн бүрэлдэхүүнээрээ олон тэмцээнд зэрэг оролцож болно. Харин тэмцээнээс хасагдаагүй багийн тоглогч багаа орхиж, өөр багаар өөр тэмцээнд оролцохыг хориглоно.',
