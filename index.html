@@ -3141,6 +3141,18 @@ window.MSR_FREE_AGENTS=[{nick:'Temka',id:'106191346',from:'reveurs inc',team:'DS
     if (Array.isArray(window.MSR_VOID_R2) && window.MSR_VOID_R2.length) return { up: up, down: down, pairs: window.MSR_VOID_R2, official: true };
     return { up: up, down: down, pairs: pair(up, '1/0').concat(pair(down, '0/1')), official: false };
   };
+  /* Swiss round n (3..5) pairs, auto: records from results of rounds < n, pooled by record (w/l), paired in result-entry order.
+     Day = the day after the last result of round n-1. Override with window.MSR_VOID_ROUNDS when the organiser posts the draw. */
+  window.msrVoidAutoRound = function (n) {
+    var U = function (v) { return String(v || '').toUpperCase(); }, rec = {}, last = 0, pools = {}, order = [];
+    (window.MSR_VOID_RESULTS || []).forEach(function (r) { if ((r.round || 1) >= n || !(r.as > r.bs || r.bs > r.as)) return; if ((r.round || 1) === n - 1) last = Math.max(last, r.date || 0);
+      [r.a, r.b].forEach(function (c) { if (!rec[U(c)]) { rec[U(c)] = { w: 0, l: 0, code: c }; order.push(U(c)); } }); rec[U(r.as > r.bs ? r.a : r.b)].w++; rec[U(r.as > r.bs ? r.b : r.a)].l++; });
+    order.forEach(function (k) { var x = rec[k]; if (x.w + x.l !== n - 1 || x.w >= 3 || x.l >= 3) return; var key = x.w + '-' + x.l; (pools[key] = pools[key] || []).push(x.code); });
+    var pairs = [];
+    Object.keys(pools).sort(function (a, b) { return (+b.split('-')[0]) - (+a.split('-')[0]); }).forEach(function (k) { var l = pools[k]; for (var i = 0; i + 1 < l.length; i += 2) pairs.push([l[i], l[i + 1], k.replace('-', '/')]); });
+    var d = last ? last + 1 : 0; if (d && d % 100 > 30) d = d - d % 100 + 101;
+    return { pools: pools, pairs: pairs, day: d };
+  };
   // VOID match schedule: date (MMDD), time, Bo and maps (pick order, last = decider) per pair.
   window.MSR_VOID_SCHEDULE = window.MSR_VOID_SCHEDULE || [
     { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', date: 1114, time: '18:00', bo: 'Bo3', maps: ['Rust', 'Dune', 'Hanami'] } // R1 United elites (Syroz) vs Celestex (Cel2x)
@@ -6543,14 +6555,17 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         }
         box.appendChild(s2Panel);
       }
-      var vdStart = window.MSR_VOID_DAY || 1113, vdEnd = window.MSR_VOID_END || 1116;
+      var vdStart = window.MSR_VOID_DAY || 1113, vdEnd = Math.max(window.MSR_VOID_END || 1116, [3, 4, 5].reduce(function (m, n) { var ar = window.msrVoidAutoRound ? window.msrVoidAutoRound(n) : null; return Math.max(m, ar && ar.pairs.length ? ar.day : 0); }, 0));
       if (YEAR === 2026 && APM.sel >= vdStart && APM.sel <= vdEnd && Array.isArray(window.MSR_VOID_R1)) {
         /* VOID runs over several days: Round 1 on the first day; later days list their round once its pairs are entered
            (window.MSR_VOID_ROUNDS = { 1114: { label: 'Round 2', pairs: [[codeA, codeB], ...] } }), otherwise show what comes next. */
         var vdR2 = window.msrVoidR2 ? window.msrVoidR2() : null, vdSched = window.msrVoidSched || function () { return null; };
         /* Each match shows on its scheduled day (MSR_VOID_SCHEDULE), else Round 1 on day 1 and Round 2 on day 2. */
         var vdRounds = [{ n: 1, label: 'Round 1 \u00b7 0/0', pairs: window.MSR_VOID_R1 || [], day: vdStart }].concat(vdR2 && vdR2.pairs.length ? [{ n: 2, label: 'Round 2 \u00b7 1/0 & 0/1', pairs: vdR2.pairs, day: vdStart + 1 }] : []);
-        Object.keys(window.MSR_VOID_ROUNDS || {}).forEach(function (d) { var r = window.MSR_VOID_ROUNDS[d]; vdRounds.push({ n: r.n || 3, label: r.label, pairs: r.pairs || [], day: +d }); });
+        var vdManual = {}; Object.keys(window.MSR_VOID_ROUNDS || {}).forEach(function (d) { var r = window.MSR_VOID_ROUNDS[d]; vdManual[r.n || 3] = 1; vdRounds.push({ n: r.n || 3, label: r.label, pairs: r.pairs || [], day: +d }); });
+        /* Rounds 3-5 appear automatically as soon as both teams of a pair are known (Swiss records after the previous round). */
+        [3, 4, 5].forEach(function (n) { if (vdManual[n] || !window.msrVoidAutoRound) return; var ar = window.msrVoidAutoRound(n); if (!ar.pairs.length || !ar.day) return;
+          vdRounds.push({ n: n, label: 'Round ' + n + ' \u00b7 ' + Object.keys(ar.pools).sort().reverse().map(function (k) { return k.replace('-', '/'); }).join(' & '), pairs: ar.pairs.map(function (p) { return [p[0], p[1]]; }), day: ar.day }); });
         var vdGroups = vdRounds.map(function (rd) {
           var rows = rd.pairs.filter(function (p) { var sc = vdSched(p[0], p[1]), res = window.msrVoidRes ? window.msrVoidRes(p[0], p[1]) : null, rr = res ? (window.MSR_VOID_RESULTS || []).find(function (x) { var U = function (v) { return String(v).toUpperCase(); }; return (U(x.a) === U(p[0]) && U(x.b) === U(p[1])) || (U(x.a) === U(p[1]) && U(x.b) === U(p[0])); }) : null;
             var day = (sc && sc.date) || (rr && rr.date) || rd.day; return day === APM.sel && T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
@@ -6665,11 +6680,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         var U = function (v) { return String(v || '').toUpperCase(); }, rec = {}, upTo = {};
         (window.MSR_VOID_RESULTS || []).forEach(function (r) { if (!(r.as > r.bs || r.bs > r.as)) return; [r.a, r.b].forEach(function (c) { rec[U(c)] = rec[U(c)] || { w: 0, l: 0, code: c, rounds: 0 }; rec[U(c)].rounds = Math.max(rec[U(c)].rounds, r.round || 1); }); rec[U(r.as > r.bs ? r.a : r.b)].w++; rec[U(r.as > r.bs ? r.b : r.a)].l++; });
         // Pools for round 3 (2-0 / 1-1 / 0-2): only teams that already played round 2. Keep 1-0 / 0-1 pairing order for 1-1.
-        Object.keys(rec).forEach(function (k) { var x = rec[k]; if (x.w + x.l !== 2) return; var key = x.w + '-' + x.l; (upTo[key] = upTo[key] || []).push(x.code); });
-        ['2-0', '1-1', '0-2'].forEach(function (k) { if (upTo[k] && !adv[k]) adv[k] = upTo[k]; });
+        [3, 4, 5].forEach(function (n) { var ar = window.msrVoidAutoRound ? window.msrVoidAutoRound(n) : { pools: {} }; Object.keys(ar.pools).forEach(function (k) { if (!adv[k]) adv[k] = ar.pools[k]; }); });
       })();
       function tbd(rec, n) {
-        var fill = adv[rec] || [], rows = [], paired = rec === '1-0' || rec === '0-1';
+        var fill = adv[rec] || [], rows = [], paired = true;
         for (var i = 0; i < n; i++) {
           var A = fill[2 * i], B = fill[2 * i + 1], rr = paired && A && B && window.msrVoidRes ? window.msrVoidRes(A, B) : null, sa = slot(A), sb = slot(B);
           if (rr && rr.a !== rr.b) { var wE = rr.a > rr.b ? sa : sb, lE = rr.a > rr.b ? sb : sa; lE.classList.add('sw-lose', rr.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
