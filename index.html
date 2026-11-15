@@ -2706,6 +2706,7 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 .s3n-r1{display:flex;flex-direction:column;gap:6px}.s3n-m{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
 .s3n-vs{font-size:11px;font-weight:700;color:#6b7383}.s3n-m .s3n-tm:last-child{flex-direction:row-reverse;text-align:right}
 .s3n-go{align-self:flex-start;padding:9px 16px;border-radius:999px;background:#2f5bea;color:#fff;font-weight:700;font-size:13px;text-decoration:none}
+.s3n-imgs{display:flex;flex-direction:column;gap:8px}.s3n-imgs img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid rgba(255,255,255,.08)}
 .s3n-avg{margin-left:auto;flex:none;font-size:11px;font-weight:700;color:#8a93a3;font-variant-numeric:tabular-nums}
 .s3n-bal{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
 .s3n-card{scroll-snap-align:start;border-radius:14px;background:#1b1f27;border:1px solid rgba(255,255,255,.06);padding:10px}
@@ -3782,6 +3783,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       h('div', { class: 's3n-h' }, h('b', null, 'SWISS · ROUND 1'), h('span', null, '11/17 · Bo3')),
       h('div', { class: 's3n-r1' }, r1),
       h('div', { class: 's3n-h' }, h('b', null, 'БАГУУДЫН САНАЛ'), h('span', null, '8 баг · өөрөөсөө бусад 15 багийг эрэмбэлсэн')),
+      h('div', { class: 's3n-imgs' }, ['assets/msl-s2-s3-votes-1.jpg', 'assets/msl-s2-s3-votes-2.jpg'].map(function (src, k) { return h('a', { href: src, target: '_blank', rel: 'noopener' }, h('img', { src: src, alt: 'MSL S2 Stage 3 seeding votes ' + (k + 1), loading: 'lazy', decoding: 'async' })); })),
       h('div', { class: 's3n-bal' }, (window.MSR_S3_BALLOTS || []).map(function (bl) { var vc = window.msrTagToCode(bl[0]);
         return h('div', { class: 's3n-card' }, h('div', { class: 's3n-ch' }, vc && T[vc] ? crest(vc, 'md') : null, h('b', null, vc && T[vc] ? T[vc].n : bl[0]), h('small', null, 'санал')),
           h('ol', null, bl[1].map(function (t, k) { var c = window.msrTagToCode(t); return h('li', null, h('span', { class: 's3n-n' }, k + 1), c && T[c] ? crest(c, 'md') : null, h('span', null, c && T[c] ? T[c].n : t)); }))); })),
