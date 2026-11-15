@@ -6522,9 +6522,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
      Pairing (Valve Swiss style): R1 seed i vs seed i+8; later rounds pair inside each record group, highest seed vs lowest, no rematches.
      A group is paired only once every team of that record is known. Seeds: window.MSR_S3_SEEDS (16 tags, seed 1 first). */
   var MSR_S3_TAGS = ['6vmp6', 'OMV', '6LC', '0kz', 'KngZz', 'DXIII', '2990 Purple', 'SNT', 'EKS', '2990 White', 'EknZ', 'OTR', 'OMEN', '2990', 'EVKZ', 'UCLT'];
-  /* Seeds frozen by MSR ELO ranking on Nov 16 (after Stage 2): 0kz 197, EVKZ 194, KngZz 186, OMEN 175, 2990 Purple 174, 6LC 168, SNT 159, 2990 RED 151,
-     EknZ 143, OMV 137, 6vmp6 132, UCLT 130, EKS 129, OTR 114, DXIII 68, 2990 White 64. Round 1 = seed 1 vs 9, 2 vs 10 ... 8 vs 16. */
-  window.MSR_S3_SEEDS = window.MSR_S3_SEEDS || ['0kz', 'EVKZ', 'KngZz', 'OMEN', '2990 Purple', '6LC', 'SNT', '2990', 'EknZ', 'OMV', '6vmp6', 'UCLT', 'EKS', 'OTR', 'DXIII', '2990 White'];
+  /* Official seeding (organiser post, Nov 16): Round 1 = seed 1 vs 16, 2 vs 15 ... 8 vs 9. */
+  window.MSR_S3_SEEDS = ['2990 White', 'EknZ', '0kz', 'OMEN', 'SNT', '2990 Purple', 'EKS', '2990', 'EVKZ', 'UCLT', 'OTR', 'KngZz', '6LC', '6vmp6', 'DXIII', 'OMV'];
   var MSR_S3_DATES = { 1: 1117, 2: 1118, 3: 1119, 4: 1120, 5: 1121 };
   window.msrS3 = function () {
     var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
@@ -6549,7 +6548,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var groups = [];
       if (n === 1) {
         var ms = [];
-        for (var i = 0; i < 8; i++) ms.push(given ? mk(seeds[i], seeds[i + 8]) : { a: null, b: null, seedA: i + 1, seedB: i + 9, res: null });
+        for (var i = 0; i < 8; i++) ms.push(given ? mk(seeds[i], seeds[15 - i]) : { a: null, b: null, seedA: i + 1, seedB: 16 - i, res: null });
         groups.push({ rec: '0-0', matches: ms });
       } else {
         var recs = {}; Object.keys(rec).forEach(function (k) { var r = rec[k]; if (r.w < 3 && r.l < 3 && r.w + r.l === n - 1) (recs[r.w + '-' + r.l] = recs[r.w + '-' + r.l] || []).push(r); });
