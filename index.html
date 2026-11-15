@@ -3750,12 +3750,17 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
 
   /* MSL S2 Stage 3 seeding visuals for the News post: crest collage (card background) and seed list + Round 1 board (article). */
+  window.msrS3Code = function (t) {
+    var c = window.msrTagToCode ? window.msrTagToCode(t) : null; if (c && T[c]) return c;
+    var k = String(t || '').toLowerCase().replace(/[^a-z0-9]/g, ''), ks = Object.keys(T);
+    return ks.filter(function (x) { return String(T[x].tag || '').toLowerCase().replace(/[^a-z0-9]/g, '') === k; })[0] || ks.filter(function (x) { return String(T[x].n || '').toLowerCase().replace(/[^a-z0-9]/g, '') === k; })[0] || null;
+  };
   window.msrS3SeedArt = function () {
     var seeds = window.MSR_S3_SEEDS || [], box = h('div', { class: 's3n-art' }), tries = 0;
     (function fill() {
-      var cs = seeds.map(function (t) { var c = window.msrTagToCode(t); return c && T[c] ? c : null; });
+      var cs = seeds.map(function (t) { var c = window.msrS3Code(t); return c && T[c] ? c : null; });
       box.replaceChildren.apply(box, cs.map(function (c) { return c ? crest(c, 'md') : h('span', { class: 'crest md' }); }));
-      if (cs.indexOf(null) >= 0 && tries++ < 40) setTimeout(fill, 500);
+      if (cs.indexOf(null) >= 0 && tries++ < 120) setTimeout(fill, 500);
     })();
     return box;
   };
@@ -3771,25 +3776,21 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     ['EKS', ['2990 White', 'EknZ', 'OMEN', '0kz', 'SNT', 'EVKZ', '2990 Purple', 'KngZz', '2990', 'UCLT', 'DXIII', '6vmp6', 'OMV', '6LC', 'OTR']]
   ];
   window.msrS3SeedBoard = function () {
-    var seeds = window.MSR_S3_SEEDS || [], tm = function (t, k) { var c = window.msrTagToCode(t); return h(c ? 'a' : 'span', { class: 's3n-tm', href: c ? teamHref(c) : null }, h('span', { class: 's3n-sd' }, '#' + (k + 1)), c && T[c] ? crest(c, 'md') : null, h('b', null, c && T[c] ? T[c].n : t)); };
+    var seeds = window.MSR_S3_SEEDS || [], tm = function (t, k) { var c = window.msrS3Code(t); return h(c ? 'a' : 'span', { class: 's3n-tm', href: c ? teamHref(c) : null }, h('span', { class: 's3n-sd' }, '#' + (k + 1)), c && T[c] ? crest(c, 'md') : null, h('b', null, c && T[c] ? T[c].n : t)); };
     var box = h('div', { class: 's3n' }), tries = 0, kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }, sum = {};
     (window.MSR_S3_BALLOTS || []).forEach(function (bl) { bl[1].forEach(function (t, k) { var x = sum[kk(t)] = sum[kk(t)] || { s: 0, n: 0 }; x.s += k + 1; x.n++; }); });
     var avg = {}; Object.keys(sum).forEach(function (k) { avg[k] = { v: sum[k].s / sum[k].n, n: sum[k].n }; });
     function fill() {
     var r1 = []; for (var i = 0; i < 8; i++) r1.push(h('div', { class: 's3n-m' }, tm(seeds[i], i), h('span', { class: 's3n-vs' }, 'VS'), tm(seeds[15 - i], 15 - i)));
     box.replaceChildren.apply(box, [
-      h('div', { class: 's3n-h' }, h('b', null, 'STAGE 3 SEEDING'), h('span', null, 'багуудын саналын дундаж байр')),
-      h('div', { class: 's3n-list' }, seeds.map(function (t, k) { var el = tm(t, k), a = avg[kk(t)]; if (a) el.appendChild(h('span', { class: 's3n-avg', title: a.n + ' санал' }, a.v.toFixed(2))); return el; })),
-      h('div', { class: 's3n-h' }, h('b', null, 'SWISS · ROUND 1'), h('span', null, '11/17 · Bo3')),
-      h('div', { class: 's3n-r1' }, r1),
       h('div', { class: 's3n-h' }, h('b', null, 'БАГУУДЫН САНАЛ'), h('span', null, '8 баг · өөрөөсөө бусад 15 багийг эрэмбэлсэн')),
       h('div', { class: 's3n-imgs' }, ['assets/msl-s2-s3-votes-1.jpg', 'assets/msl-s2-s3-votes-2.jpg'].map(function (src, k) { return h('a', { href: src, target: '_blank', rel: 'noopener' }, h('img', { src: src, alt: 'MSL S2 Stage 3 seeding votes ' + (k + 1), loading: 'lazy', decoding: 'async' })); })),
-      h('div', { class: 's3n-bal' }, (window.MSR_S3_BALLOTS || []).map(function (bl) { var vc = window.msrTagToCode(bl[0]);
+      h('div', { class: 's3n-bal' }, (window.MSR_S3_BALLOTS || []).map(function (bl) { var vc = window.msrS3Code(bl[0]);
         return h('div', { class: 's3n-card' }, h('div', { class: 's3n-ch' }, vc && T[vc] ? crest(vc, 'md') : null, h('b', null, vc && T[vc] ? T[vc].n : bl[0]), h('small', null, 'санал')),
-          h('ol', null, bl[1].map(function (t, k) { var c = window.msrTagToCode(t); return h('li', null, h('span', { class: 's3n-n' }, k + 1), c && T[c] ? crest(c, 'md') : null, h('span', null, c && T[c] ? T[c].n : t)); }))); })),
+          h('ol', null, bl[1].map(function (t, k) { var c = window.msrS3Code(t); return h('li', null, h('span', { class: 's3n-n' }, k + 1), c && T[c] ? crest(c, 'md') : null, h('span', null, c && T[c] ? T[c].n : t)); }))); })),
       h('a', { class: 's3n-go', href: '#event/msl' }, 'Bracket үзэх ›')]);
     // Team data may still be loading when the post opens directly: refill once every seed resolves to a team.
-    if (seeds.some(function (t) { var c = window.msrTagToCode(t); return !c || !T[c]; }) && tries++ < 40) setTimeout(function () { if (box.isConnected || tries < 3) fill(); }, 500);
+    if (seeds.some(function (t) { var c = window.msrS3Code(t); return !c || !T[c]; }) && tries++ < 120) setTimeout(function () { if (box.isConnected || tries < 6) fill(); }, 500);
     }
     fill();
     return box;
