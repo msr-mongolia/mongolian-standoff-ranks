@@ -6259,6 +6259,22 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var U = String(code || '').toUpperCase();
     return (window.MSR_VOID_TEAMS || []).some(function (x) { return String(x).toUpperCase() === U; }) && !msrInMsl(code);
   }
+  /* MSL Stage 2 (double elimination): a team is out once it has lost Lower R1 or the Lower Final. */
+  function msrS2Out(code) {
+    var out = false;
+    try {
+      if (!window.msrS2Slots) zoneBracket();   // the Stage 2 bracket helpers are created lazily
+      (window.msrS2Slots ? window.msrS2Slots() : []).forEach(function (q) {
+        if (!q.res || (q.slot !== 'Lower R1' && q.slot !== 'Lower Final')) return;
+        var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+        var aIs0 = kk(q.res.a) === q.refA[1], a0 = aIs0 ? q.res.aw : q.res.bw, a1 = aIs0 ? q.res.bw : q.res.aw;
+        if (a0 === a1) return;
+        if ((a0 > a1 ? q.b : q.a) === code) out = true;
+      });
+    } catch (e) {}
+    return out;
+  }
+  window.msrS2Out = msrS2Out;
   function rankingEventBadges(code) {
     var entries=EVENTS.filter(function(event){
       if(event.st!=='now' && event.st!=='soon')return false;
@@ -6275,7 +6291,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     });
     if(!entries.length)return null;
     return h('div',{class:'msr-ranking-events','aria-label':'Tournament participation'},entries.map(function(event){
-      var out=event.id==='msl'&&([].concat(SWISS.e03||[],SWISS.e13||[]).indexOf(code)!==-1||msrGroupEliminated(code));
+      var out=event.id==='msl'&&([].concat(SWISS.e03||[],SWISS.e13||[]).indexOf(code)!==-1||msrGroupEliminated(code)||msrS2Out(code));
       return h('a',{class:'msr-ranking-event'+(out?' is-eliminated':''),'data-tier':event.tier||'',href:'#event/'+encodeURIComponent(event.id),title:event.n+' · '+(out?'Eliminated':'Тэмцээний бүрэлдэхүүнд')},
         event.img?h('img',{src:event.img,alt:'',loading:'lazy',decoding:'async'}):h('span',{'aria-hidden':'true',svg:APIC.cup}),
         h('span',{class:'msr-ranking-event-name'},event.short||event.n),
