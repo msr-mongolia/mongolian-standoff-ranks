@@ -3958,39 +3958,41 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var stage3 = (function () {
       var wrap = h('div', { class: 'sw2-wrap s3b' });
       function tname(tag) { var c = window.msrTagToCode ? window.msrTagToCode(tag) : null; return { c: c, n: c && T[c] ? T[c].n : tag }; }
-      function teamCell(tag, seedLbl, score, win) {
-        if (!tag) return h('div', { class: 's3b-t tba' }, h('span', null, seedLbl || 'TBA'));
-        var t = tname(tag);
-        return h('div', { class: 's3b-t' + (win === true ? ' win' : win === false ? ' loss' : '') }, t.c ? crest(t.c, 'sm') : null, h('span', null, t.n), score != null ? h('b', null, String(score)) : null);
+      function slot(tag, seed) {
+        var c = tag && window.msrTagToCode ? window.msrTagToCode(tag) : null;
+        return c && T[c] ? h('a', { class: 'sw-t', href: teamHref(c), title: T[c].n, 'aria-label': T[c].n }, swCrest(c)) : h('span', { class: 'sw-q', title: seed ? 'Seed ' + seed : '' }, seed ? String(seed) : '?');
       }
-      function matchRow(mt) {
-        var r = mt.res;
-        return h('div', { class: 's3b-m' + (r ? ' done' : '') },
-          teamCell(mt.a, mt.seedA ? 'Seed ' + mt.seedA : null, r ? r.aw : null, r ? r.aw > r.bw : null),
-          h('i', null, 'VS'),
-          teamCell(mt.b, mt.seedB ? 'Seed ' + mt.seedB : null, r ? r.bw : null, r ? r.bw > r.aw : null));
+      function row(mt) {
+        var r = mt.res, sa = slot(mt.a, mt.seedA), sb = slot(mt.b, mt.seedB);
+        if (r && r.aw !== r.bw) { var wE = r.aw > r.bw ? sa : sb, lE = r.aw > r.bw ? sb : sa; lE.classList.add('sw-lose', r.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
+        return h('div', { class: 'sw-m' + (r ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, r ? (r.auto ? 'W/O' : r.aw + ':' + r.bw) : 'VS'), sb);
       }
-      function colorOf(rec) { var w = Number(rec[0]), l = Number(rec[2]); if (!w && !l) return 'blue'; if (w >= 1 && l === 0) return 'green'; if (l >= 2 || (l > w && l >= 1 && w < l)) return 'red'; return 'yellow'; }
+      var EXPECT = { '0-0': 8, '1-0': 4, '0-1': 4, '2-0': 2, '1-1': 4, '0-2': 2, '2-1': 3, '1-2': 3, '2-2': 3 };
       function paint() {
         var st; try { st = window.msrS3(); } catch (e) { return; }
-        var cols = st.rounds.map(function (rd) {
-          var dd = rd.date, lbl = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Math.floor(dd / 100) - 1].toUpperCase() + ' ' + dd % 100;
-          return h('div', { class: 's3b-col' }, h('div', { class: 's3b-rl' }, 'ROUND ' + rd.n, h('small', null, lbl)),
-            rd.groups.map(function (g) {
-              var rr = g.rec.replace('-', ' – ');
-              return h('section', { class: 's3b-g ' + colorOf(g.rec) }, h('header', null, rr + ' (R' + rd.n + ')'),
-                g.matches.length ? g.matches.map(matchRow) : h('div', { class: 's3b-wait' }, 'Teams determined by results' + (g.size ? ' (' + g.have + '/' + g.size + ')' : '')));
-            }));
-        });
-        function list(title, cls, tags) {
-          return h('section', { class: 's3b-g ' + cls }, h('header', null, title), tags.length ? tags.map(function (t) { return teamCell(t); }) : h('div', { class: 's3b-wait' }, '—'));
+        var byRec = {}; st.rounds.forEach(function (rd) { rd.groups.forEach(function (g) { byRec[g.rec] = g; }); });
+        function grp(rec) {
+          var g = byRec[rec], rows = [];
+          if (g && g.matches.length) rows = g.matches.map(row);
+          else for (var i = 0; i < EXPECT[rec]; i++) rows.push(h('div', { class: 'sw-m' }, slot(), h('span', { class: 'sw-vs' }, 'VS'), slot()));
+          return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/'))), rows);
         }
-        cols.push(h('div', { class: 's3b-col' }, h('div', { class: 's3b-rl' }, 'RESULT', h('small', null, '3 WINS / 3 LOSSES')),
-          list('QUALIFIED · 3 WINS', 'green', st.qualified), list('ELIMINATED · 3 LOSSES', 'red', st.eliminated)));
+        function list(title, w, l, n, ok) {
+          var tags = st.rec ? Object.keys(st.rec).map(function (k) { return st.rec[k]; }).filter(function (r) { return r.w === w && r.l === l; }).map(function (r) { return r.tag; }) : [];
+          var items = tags.map(function (t) { return slot(t); }); while (items.length < n) items.push(h('span', { class: 'sw-q' }, '?'));
+          return h('div', { class: 'sw-list ' + (ok ? 'ok' : 'no') }, h('h4', null, title), h('div', { class: 'sl' }, items));
+        }
+        function col(title, date) { return h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, title + (date ? ' · ' + date : '')), h('div', { class: 'sw-body' }, [].slice.call(arguments, 2))); }
         wrap.replaceChildren(
-          h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 3 · Swiss Bracket'), h('span', null, '16 teams · Bo3 · 3 wins = qualified · 3 losses = eliminated · max 5 rounds · Nov 17–21')),
-          h('p', { class: 'msr-zone-note' }, st.given ? 'Round 1: seed 1 vs 9, 2 vs 10 … 8 vs 16. Next rounds are paired inside each record group (highest seed vs lowest seed, no rematches) once every team of that record is known.' : 'Seeds will be announced. Round 1: seed 1 vs 9, 2 vs 10 … 8 vs 16.'),
-          h('div', { class: 's3b-scroll', tabindex: '0', role: 'region', 'aria-label': 'Stage 3 Swiss bracket' }, h('div', { class: 's3b-board' }, cols)));
+          h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 3 · Swiss'), h('span', null, '16 teams · Bo3 · 3 wins = qualified · 3 losses = eliminated · Nov 17–21')),
+          h('div', { class: 'sw-wrap' }, h('div', { class: 'sw' },
+            col('Round 1', 'Nov 17', grp('0-0')),
+            col('Round 2', 'Nov 18', grp('1-0'), grp('0-1')),
+            col('Round 3', 'Nov 19', grp('2-0'), grp('1-1'), grp('0-2')),
+            col('Round 4', 'Nov 20', list('3/0 · QUALIFIED', 3, 0, 2, true), grp('2-1'), grp('1-2'), list('0/3 · ELIMINATED', 0, 3, 2, false)),
+            col('Round 5', 'Nov 21', list('3/1 · QUALIFIED', 3, 1, 3, true), grp('2-2'), list('1/3 · ELIMINATED', 1, 3, 3, false)),
+            col('Result', '', list('3/2 · QUALIFIED', 3, 2, 3, true), list('2/3 · ELIMINATED', 2, 3, 3, false)))),
+          h('p', { class: 'msr-zone-note' }, st.given ? 'Next rounds are paired inside each record group (highest seed vs lowest seed, no rematches) once every team of that record is known.' : 'Seeds will be announced. Round 1: seed 1 vs 9, 2 vs 10 … 8 vs 16.'));
       }
       paint();
       window.addEventListener('hashchange', function () { setTimeout(paint, 400); });
@@ -6516,17 +6518,17 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var seeds = given ? window.MSR_S3_SEEDS.slice() : MSR_S3_TAGS.slice();
     var idx = {}; seeds.forEach(function (t, i) { idx[kk(t)] = i; });
     var res = [];
-    function add(a, b, aw, bw, date) { if (aw !== bw && idx[kk(a)] != null && idx[kk(b)] != null) res.push({ a: a, b: b, aw: aw, bw: bw, date: date }); }
+    function add(a, b, aw, bw, date, auto) { if (aw !== bw && idx[kk(a)] != null && idx[kk(b)] != null) res.push({ a: a, b: b, aw: aw, bw: bw, date: date, auto: !!auto }); }
     (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) {
       if (!m.stage3) return;
       var au = m.auto || { a: 0, b: 0 }, mp = m.maps || [];
-      add(m.a, m.b, mp.filter(function (x) { return x.aScore > x.bScore; }).length + (au.a || 0), mp.filter(function (x) { return x.bScore > x.aScore; }).length + (au.b || 0), m.date);
+      add(m.a, m.b, mp.filter(function (x) { return x.aScore > x.bScore; }).length + (au.a || 0), mp.filter(function (x) { return x.bScore > x.aScore; }).length + (au.b || 0), m.date, !mp.length);
     });
-    (window.MSR_S3_RESULTS || []).forEach(function (r) { add(r.a, r.b, (r.auto && r.auto.a) || r.aw || 0, (r.auto && r.auto.b) || r.bw || 0, r.date); });
+    (window.MSR_S3_RESULTS || []).forEach(function (r) { add(r.a, r.b, (r.auto && r.auto.a) || r.aw || 0, (r.auto && r.auto.b) || r.bw || 0, r.date, !!r.auto); });
     var rec = {}; seeds.forEach(function (t) { rec[kk(t)] = { tag: t, w: 0, l: 0, opp: [] }; });
     res.forEach(function (r) { var A = rec[kk(r.a)], B = rec[kk(r.b)]; if (r.aw > r.bw) { A.w++; B.l++; } else { B.w++; A.l++; } A.opp.push(kk(r.b)); B.opp.push(kk(r.a)); });
     function found(a, b) { return res.filter(function (r) { return (kk(r.a) === kk(a) && kk(r.b) === kk(b)) || (kk(r.a) === kk(b) && kk(r.b) === kk(a)); })[0] || null; }
-    function mk(a, b) { var r = found(a, b); return { a: a, b: b, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw } : { aw: r.bw, bw: r.aw }) : null }; }
+    function mk(a, b) { var r = found(a, b); return { a: a, b: b, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw, auto: r.auto } : { aw: r.bw, bw: r.aw, auto: r.auto }) : null }; }
     var expect = { '1-0': 8, '0-1': 8, '2-0': 4, '1-1': 8, '0-2': 4, '2-1': 6, '1-2': 6, '2-2': 6 };
     var rounds = [];
     for (var n = 1; n <= 5; n++) {
@@ -9109,27 +9111,6 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
   }catch(e){}
 })();
 </script>
-<style id="msr-s3-bracket-css">
-.s3b-scroll{overflow-x:auto;padding:6px 2px 14px;-webkit-overflow-scrolling:touch}
-.s3b-board{display:flex;gap:14px;align-items:flex-start;min-width:max-content}
-.s3b-col{width:250px;flex:0 0 250px;display:flex;flex-direction:column;gap:12px}
-.s3b-rl{font-weight:800;letter-spacing:.06em;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}
-.s3b-rl small{font-weight:600;font-size:11px;color:var(--text)}
-.s3b-g{border:1px solid #3a4452;border-radius:12px;background:linear-gradient(160deg,#0f1722,#0a0f17);padding:0 0 8px;overflow:hidden}
-.s3b-g header{padding:7px 10px;font-weight:800;font-size:13px;text-align:center;letter-spacing:.03em;color:#fff}
-.s3b-g.blue{border-color:#2f7cff;box-shadow:0 0 14px -6px #2f7cff}.s3b-g.blue header{background:linear-gradient(90deg,#1b56c9,#2f7cff)}
-.s3b-g.green{border-color:#21e087;box-shadow:0 0 14px -6px #21e087}.s3b-g.green header{background:linear-gradient(90deg,#0f8a4c,#21b86b)}
-.s3b-g.yellow{border-color:#e8b923;box-shadow:0 0 14px -6px #e8b923}.s3b-g.yellow header{background:linear-gradient(90deg,#9a7508,#d9ac1c);color:#161100}
-.s3b-g.red{border-color:#ff4d4d;box-shadow:0 0 14px -6px #ff4d4d}.s3b-g.red header{background:linear-gradient(90deg,#a11d1d,#e03a3a)}
-.s3b-m{margin:8px 8px 0;border:1px solid #2c3644;border-radius:9px;background:#0b111a;padding:4px 6px;display:flex;flex-direction:column;align-items:stretch;gap:0;position:relative}
-.s3b-m i{align-self:center;font-style:normal;font-weight:800;font-size:10px;color:#e8b923;line-height:1;padding:1px 0}
-.s3b-t{display:flex;align-items:center;gap:8px;padding:4px 4px;font-size:13px;min-height:28px}
-.s3b-t span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.s3b-t b{font-size:14px}.s3b-t.tba{opacity:.6;font-style:italic}
-.s3b-t.win{color:#6ff2b0}.s3b-t.loss{opacity:.6}
-.s3b-g>.s3b-t{margin:6px 8px 0;border:1px solid #2c3644;border-radius:8px}
-.s3b-wait{margin:8px;padding:12px;text-align:center;font-size:12px;color:var(--muted);border:1px dashed #2c3644;border-radius:8px}
-</style>
 <style id="msr-app-mode-css">
 /* App mode (installed from "Add to Home Screen"): no browser bars, so respect the notch/status bar and behave like a native app. */
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
