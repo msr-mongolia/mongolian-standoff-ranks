@@ -2706,6 +2706,17 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 .s3n-r1{display:flex;flex-direction:column;gap:6px}.s3n-m{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
 .s3n-vs{font-size:11px;font-weight:700;color:#6b7383}.s3n-m .s3n-tm:last-child{flex-direction:row-reverse;text-align:right}
 .s3n-go{align-self:flex-start;padding:9px 16px;border-radius:999px;background:#2f5bea;color:#fff;font-weight:700;font-size:13px;text-decoration:none}
+.s3n-avg{margin-left:auto;flex:none;font-size:11px;font-weight:700;color:#8a93a3;font-variant-numeric:tabular-nums}
+.s3n-bal{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.s3n-card{scroll-snap-align:start;border-radius:14px;background:#1b1f27;border:1px solid rgba(255,255,255,.06);padding:10px}
+.s3n-ch{display:flex;align-items:center;gap:8px;padding:2px 2px 8px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:6px}
+.s3n-ch .crest{width:30px!important;height:30px!important;flex:none}.s3n-ch b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.s3n-ch small{margin-left:auto;font-size:11px;color:#7aa2ff;font-weight:700}
+.s3n-card ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.s3n-card li{display:flex;align-items:center;gap:7px;font-size:12.5px;color:#d9dce2;min-width:0}.s3n-card li span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s3n-card li .crest{width:20px!important;height:20px!important;flex:none}
+.s3n-n{flex:none;width:20px;height:20px;border-radius:6px;background:#2f5bea;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.s3n-card li:nth-child(n+9) .s3n-n{background:#323846;color:#c8ccd4}
+@media(min-width:900px){.s3n-bal{grid-auto-flow:row;grid-template-columns:repeat(4,1fr);overflow:visible}}
 @media(max-width:420px){.s3n-list{grid-template-columns:1fr}.s3n-tm b{font-size:12px}}
 </style>
 </head>
@@ -3747,16 +3758,33 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     })();
     return box;
   };
+  /* Stage 3 seeding votes: each of 8 teams ranked the other 15 (organiser images, Nov 16). The seed is the average place. */
+  window.MSR_S3_BALLOTS = [
+    ['2990 White', ['EknZ', '0kz', '2990 Purple', 'OMEN', '2990', 'SNT', 'EVKZ', 'KngZz', 'EKS', '6LC', 'UCLT', 'OTR', 'DXIII', '6vmp6', 'OMV']],
+    ['EknZ', ['2990 White', '0kz', 'OMEN', 'EKS', '2990 Purple', 'SNT', '6LC', 'UCLT', 'OTR', 'DXIII', 'EVKZ', '2990', '6vmp6', 'KngZz', 'OMV']],
+    ['OTR', ['2990 White', '0kz', 'EknZ', 'OMEN', '2990', '2990 Purple', 'SNT', 'EVKZ', 'EKS', '6vmp6', 'KngZz', '6LC', 'UCLT', 'OMV', 'DXIII']],
+    ['OMEN', ['2990 White', 'EKS', 'EknZ', '0kz', 'SNT', '2990', 'OTR', 'UCLT', '6LC', '2990 Purple', 'DXIII', 'KngZz', 'OMV', '6vmp6', 'EVKZ']],
+    ['DXIII', ['EknZ', '2990 White', '0kz', 'EKS', 'OMEN', '2990', 'SNT', 'OTR', '2990 Purple', 'UCLT', 'EVKZ', 'KngZz', '6LC', 'OMV', '6vmp6']],
+    ['2990 Purple', ['2990 White', 'EknZ', '0kz', 'OMEN', 'EVKZ', 'SNT', '2990', 'OTR', '6vmp6', 'UCLT', 'KngZz', 'EKS', 'DXIII', '6LC', 'OMV']],
+    ['SNT', ['2990 White', 'EknZ', 'OMEN', '0kz', '2990 Purple', 'EKS', '6LC', '2990', 'KngZz', 'EVKZ', 'UCLT', '6vmp6', 'OMV', 'DXIII', 'OTR']],
+    ['EKS', ['2990 White', 'EknZ', 'OMEN', '0kz', 'SNT', 'EVKZ', '2990 Purple', 'KngZz', '2990', 'UCLT', 'DXIII', '6vmp6', 'OMV', '6LC', 'OTR']]
+  ];
   window.msrS3SeedBoard = function () {
     var seeds = window.MSR_S3_SEEDS || [], tm = function (t, k) { var c = window.msrTagToCode(t); return h(c ? 'a' : 'span', { class: 's3n-tm', href: c ? teamHref(c) : null }, h('span', { class: 's3n-sd' }, '#' + (k + 1)), c && T[c] ? crest(c, 'md') : null, h('b', null, c && T[c] ? T[c].n : t)); };
-    var box = h('div', { class: 's3n' }), tries = 0;
+    var box = h('div', { class: 's3n' }), tries = 0, kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }, sum = {};
+    (window.MSR_S3_BALLOTS || []).forEach(function (bl) { bl[1].forEach(function (t, k) { var x = sum[kk(t)] = sum[kk(t)] || { s: 0, n: 0 }; x.s += k + 1; x.n++; }); });
+    var avg = {}; Object.keys(sum).forEach(function (k) { avg[k] = { v: sum[k].s / sum[k].n, n: sum[k].n }; });
     function fill() {
     var r1 = []; for (var i = 0; i < 8; i++) r1.push(h('div', { class: 's3n-m' }, tm(seeds[i], i), h('span', { class: 's3n-vs' }, 'VS'), tm(seeds[15 - i], 15 - i)));
     box.replaceChildren.apply(box, [
-      h('div', { class: 's3n-h' }, h('b', null, 'STAGE 3 SEEDING'), h('span', null, '16 teams')),
-      h('div', { class: 's3n-list' }, seeds.map(function (t, k) { return tm(t, k); })),
+      h('div', { class: 's3n-h' }, h('b', null, 'STAGE 3 SEEDING'), h('span', null, 'багуудын саналын дундаж байр')),
+      h('div', { class: 's3n-list' }, seeds.map(function (t, k) { var el = tm(t, k), a = avg[kk(t)]; if (a) el.appendChild(h('span', { class: 's3n-avg', title: a.n + ' санал' }, a.v.toFixed(2))); return el; })),
       h('div', { class: 's3n-h' }, h('b', null, 'SWISS · ROUND 1'), h('span', null, '11/17 · Bo3')),
       h('div', { class: 's3n-r1' }, r1),
+      h('div', { class: 's3n-h' }, h('b', null, 'БАГУУДЫН САНАЛ'), h('span', null, '8 баг · өөрөөсөө бусад 15 багийг эрэмбэлсэн')),
+      h('div', { class: 's3n-bal' }, (window.MSR_S3_BALLOTS || []).map(function (bl) { var vc = window.msrTagToCode(bl[0]);
+        return h('div', { class: 's3n-card' }, h('div', { class: 's3n-ch' }, vc && T[vc] ? crest(vc, 'md') : null, h('b', null, vc && T[vc] ? T[vc].n : bl[0]), h('small', null, 'санал')),
+          h('ol', null, bl[1].map(function (t, k) { var c = window.msrTagToCode(t); return h('li', null, h('span', { class: 's3n-n' }, k + 1), c && T[c] ? crest(c, 'md') : null, h('span', null, c && T[c] ? T[c].n : t)); }))); })),
       h('a', { class: 's3n-go', href: '#event/msl' }, 'Bracket үзэх ›')]);
     // Team data may still be loading when the post opens directly: refill once every seed resolves to a team.
     if (seeds.some(function (t) { var c = window.msrTagToCode(t); return !c || !T[c]; }) && tries++ < 40) setTimeout(function () { if (box.isConnected || tries < 3) fill(); }, 500);
@@ -4948,7 +4976,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
-      { id: 2026111601, g: 'MSL MAJOR S2', t: '11-р сарын 16', c: 0, s3seed: true, h: 'Stage 3 Seeding ба Swiss Round 1 хуваарь', lead: 'MSL Major S2-ын Stage 3-т шалгарсан 16 багийн албан ёсны seed гарлаа. Swiss Round 1 нь 11-р сарын 17-нд #1 vs #16, #2 vs #15 … #8 vs #9 зарчмаар явагдана.',
+      { id: 2026111601, g: 'MSL MAJOR S2', t: '11-р сарын 16', c: 0, s3seed: true, h: 'Stage 3 Seeding ба Swiss Round 1 хуваарь', lead: 'MSL Major S2-ын Stage 3-т шалгарсан 16 багийн seed гарлаа. Seed-ийг 8 багийн саналаар (баг бүр өөрөөсөө бусад 15 багийг эрэмбэлсэн) дундаж байраар нь тогтоосон. Swiss Round 1 нь 11-р сарын 17-нд #1 vs #16, #2 vs #15 … #8 vs #9 зарчмаар явагдана.',
         body: [
           'Формат: Swiss · 16 баг · Bo3 · 3 хожил = шалгарна · 3 хожигдол = хасагдана. Round 1 — 11/17, Round 5 — 11/21.',
           'Дараагийн тойргуудын хослолыг ижил оноотой багуудын дунд seed-ийн дарааллаар хийнэ. Үр дүн, bracket MSR сайтын MSL Major S2 → Stage 3 хэсэгт шууд шинэчлэгдэнэ.',
