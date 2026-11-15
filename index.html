@@ -6202,10 +6202,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var vm = 0;
     past.forEach(function (m) {
       m.maps.forEach(function (x, i) {
-        var d = detail(m, i); if (!d) return; var o = pool[x[0]], won = m.a === code ? x[1] > x[2] : x[2] > x[1]; o.played++; if (won) o.won++;
+        var d = detail(m, i); if (!d || !pool[x[0]]) return; var o = pool[x[0]], won = m.a === code ? x[1] > x[2] : x[2] > x[1]; o.played++; if (won) o.won++;
         var sd = sidesOf(m, i, code); o.ctW += sd.ctW; o.ctP += sd.ctP; o.tW += sd.tW; o.tP += sd.tP;
       });
-      vm++; vetoOf(m).forEach(function (v) { if (v.team === code) pool[v.map][v.t]++; });
+      vm++; vetoOf(m).forEach(function (v) { if (v.team === code && pool[v.map] && v.t in pool[v.map]) pool[v.map][v.t]++; }); // 'Auto win' / unknown maps are skipped
     });
     var poolRows = Object.keys(pool).map(function (n) { return pool[n]; }).sort(function (a, b) { return b.played - a.played; });
     var pc = function (a, b) { return b ? Math.round(a / b * 100) + '%' : '—'; };
