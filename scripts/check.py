@@ -39,6 +39,27 @@ else:
 if s.count('const results=[];') != 1 or s.count('const results=[,') != 0:
     fail.append('`const results=[];` must exist exactly once and stay empty')
 
+# 4. roster hygiene (warnings only): one game ID must live in exactly one team, and a free agent must not also be on a team
+m = re.search(r'MSR_ROSTER_UPDATES\s*=\s*\{\}', s)
+ids_by_team = {}
+for key, body in re.findall(r'MSR_ROSTER_UPDATES\.(ds_[0-9a-f]+)\s*=\s*(\{.*?\});', s):
+    try: d = json.loads(body)
+    except Exception: continue
+    ids_by_team[key] = d.get('ids', {})
+owner = {}
+for key, ids in ids_by_team.items():
+    for nick, gid in ids.items(): owner.setdefault(gid, []).append((key, nick))
+warn = []
+for gid, lst in owner.items():
+    if len(lst) > 1: warn.append('game ID %s is in several rosters: %s' % (gid, ', '.join('%s:%s' % (k[:11], n) for k, n in lst)))
+fa = re.search(r"MSR_FREE_AGENTS\s*=\s*\[(.*?)\];", s, re.S)
+if fa:
+    fids = re.findall(r"id:'(\d+)'", fa.group(1))
+    for gid in set(fids):
+        if fids.count(gid) > 1: warn.append('free agent ID %s listed %d times' % (gid, fids.count(gid)))
+        if gid in owner: warn.append('free agent ID %s is also on a roster: %s' % (gid, owner[gid][0][1]))
+for w in warn: print('WARN:', w)
+
 print('FAILED:' if fail else 'all checks passed')
 for f in fail: print(' -', f)
 sys.exit(1 if fail else 0)
