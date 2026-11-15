@@ -2985,6 +2985,26 @@ window.MSR_FREE_AGENTS=[{nick:'17',id:'169187948',from:'',team:''},{nick:'anyone
   // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
     { a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 1, bs: 0, auto: true, round: 1, date: 1113 },
+    // R2 (1-0 pool): Rain tzy 2-0 Zx_WB Black. Dune 13-9, Province 13-10.
+    { a: 'DS_4561C74A8EF7ED8EBA1EEC28', b: 'DS_5CDAAF806D7D39AC2C809ED3', ea: 'RA1IN', eb: 'Zx_WB Black', as: 2, bs: 0, round: 2, date: 1115,
+      maps: [
+        { map: 'Dune', aScore: 13, bScore: 9,
+          a: [['Sainc',28,16,3],['n9ppxs',12,13,5],['kazui',18,15,5],['psychopath',17,16,4],['M4D-120Hz',17,18,1]],
+          b: [['L1NEPEEK',24,17,2],['guessxnontop',16,19,2],['V1rtex.666',14,18,4],['s1lent',11,18,9],['Kevingodpeeek',12,20,3]] },
+        { map: 'Province', aScore: 13, bScore: 10,
+          a: [['Sainc',28,16,2],['kazui',22,15,3],['M4D-120Hz',19,15,3],['n9ppxs',11,16,6],['psychopath',12,19,5]],
+          b: [['L1NEPEEK',24,16,3],['V1rtex.666',18,18,1],['guessxnontop',16,18,4],['Kevingodpeeek',10,21,5],['s1lent',13,19,3]] }
+      ] },
+    // R2 (0-1 pool): reveurs inc 2-0 MNKTeam-(purple). Dune 13-2, Hanami 13-8.
+    { a: 'DS_D1764CAF48B74A2D0B7B3E59', b: 'DS_779FBD131741477AF32F9268', ea: 'Rvurz', eb: 'MNKT Purple', as: 2, bs: 0, round: 2, date: 1115,
+      maps: [
+        { map: 'Dune', aScore: 13, bScore: 2,
+          a: [['macropeek',20,10,5],['Saikonn',15,5,4],['Temka',14,6,4],['wakat4',13,10,4],['Chigiro',9,10,2]],
+          b: [['petisha',12,14,2],['Flexxpeek',8,14,3],['morriss',9,15,2],['sleppyyyy',7,14,2],['Henry',5,15,1]] },
+        { map: 'Hanami', aScore: 13, bScore: 8,
+          a: [['wakat4',18,15,4],['Chigiro',19,14,2],['macropeek',14,18,8],['Saikonn',15,16,3],['Temka',15,17,3]],
+          b: [['morriss',21,17,6],['Henry',19,16,3],['sleppyyyy',18,17,4],['Flexxpeek',11,18,3],['petisha',11,13,1]] }
+      ] },
     // R1: CHINGIS WARRIORS 2-1 reveurs inc. Dune 13-15, Rust 15-13; decider ruled an auto loss for Rvurz.
     { a: 'DS_4559C7E779F302E917B1A414', b: 'DS_D1764CAF48B74A2D0B7B3E59', ea: 'MSDTP', eb: 'Rvurz', as: 2, bs: 1, autoMaps: { a: 1, b: 0 }, round: 1, date: 1114,
       maps: [
@@ -6584,9 +6604,21 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var adv = { '1-0': [], '0-1': [] }, r2 = window.msrVoidR2 ? window.msrVoidR2() : null;
       if (r2 && r2.official) r2.pairs.forEach(function (p) { var k = p[2] === '0/1' ? '0-1' : '1-0'; adv[k].push(p[0], p[1]); });
       else if (r2) { adv['1-0'] = r2.up; adv['0-1'] = r2.down; }
+      /* Later Swiss pools: records from every entered result (Round 1 + Round 2 ...), filled as results come in. */
+      (function () {
+        var U = function (v) { return String(v || '').toUpperCase(); }, rec = {}, upTo = {};
+        (window.MSR_VOID_RESULTS || []).forEach(function (r) { if (!(r.as > r.bs || r.bs > r.as)) return; [r.a, r.b].forEach(function (c) { rec[U(c)] = rec[U(c)] || { w: 0, l: 0, code: c, rounds: 0 }; rec[U(c)].rounds = Math.max(rec[U(c)].rounds, r.round || 1); }); rec[U(r.as > r.bs ? r.a : r.b)].w++; rec[U(r.as > r.bs ? r.b : r.a)].l++; });
+        // Pools for round 3 (2-0 / 1-1 / 0-2): only teams that already played round 2. Keep 1-0 / 0-1 pairing order for 1-1.
+        Object.keys(rec).forEach(function (k) { var x = rec[k]; if (x.w + x.l !== 2) return; var key = x.w + '-' + x.l; (upTo[key] = upTo[key] || []).push(x.code); });
+        ['2-0', '1-1', '0-2'].forEach(function (k) { if (upTo[k] && !adv[k]) adv[k] = upTo[k]; });
+      })();
       function tbd(rec, n) {
-        var fill = adv[rec] || [], rows = [];
-        for (var i = 0; i < n; i++) rows.push(h('div', { class: 'sw-m' }, slot(fill[2 * i]), h('span', { class: 'sw-vs' }, 'VS'), slot(fill[2 * i + 1])));
+        var fill = adv[rec] || [], rows = [], paired = rec === '1-0' || rec === '0-1';
+        for (var i = 0; i < n; i++) {
+          var A = fill[2 * i], B = fill[2 * i + 1], rr = paired && A && B && window.msrVoidRes ? window.msrVoidRes(A, B) : null, sa = slot(A), sb = slot(B);
+          if (rr && rr.a !== rr.b) { var wE = rr.a > rr.b ? sa : sb, lE = rr.a > rr.b ? sb : sa; lE.classList.add('sw-lose', rr.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
+          rows.push(h('div', { class: 'sw-m' + (rr ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, rr ? (rr.auto ? 'W/O' : rr.a + ':' + rr.b) : 'VS'), sb));
+        }
         return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/'))), rows);
       }
       function list(title, n, ok) {
