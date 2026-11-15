@@ -3975,12 +3975,13 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           var g = byRec[rec], rows = [];
           if (g && g.matches.length) rows = g.matches.map(row);
           else for (var i = 0; i < EXPECT[rec]; i++) rows.push(h('div', { class: 'sw-m' }, slot(), h('span', { class: 'sw-vs' }, 'VS'), slot()));
-          return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/'))), rows);
+          var w0 = Number(rec[0]), l0 = Number(rec[2]), cc = !w0 && !l0 ? 'blue' : (w0 >= 1 && !l0) ? 'green' : (l0 >= 2 || (l0 === 1 && w0 === 0 && false)) ? 'red' : 'yellow';
+          return h('div', { class: 'sw-g c-' + cc }, h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/'))), rows);
         }
         function list(title, w, l, n, ok) {
           var tags = st.rec ? Object.keys(st.rec).map(function (k) { return st.rec[k]; }).filter(function (r) { return r.w === w && r.l === l; }).map(function (r) { return r.tag; }) : [];
           var items = tags.map(function (t) { return slot(t); }); while (items.length < n) items.push(h('span', { class: 'sw-q' }, '?'));
-          return h('div', { class: 'sw-list ' + (ok ? 'ok' : 'no') }, h('h4', null, title), h('div', { class: 'sl' }, items));
+          return h('div', { class: 'sw-list c-list ' + (ok ? 'ok' : 'no') }, h('h4', null, title), h('div', { class: 'sl' }, items));
         }
         function col(title, date) { return h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, title + (date ? ' · ' + date : '')), h('div', { class: 'sw-body' }, [].slice.call(arguments, 2))); }
         wrap.replaceChildren(
@@ -9111,6 +9112,17 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
   }catch(e){}
 })();
 </script>
+<style id="msr-s3-colors-css">
+.s3b .sw-ch{color:#e9edf2;font-weight:800;letter-spacing:.05em;text-shadow:0 0 12px rgba(120,160,255,.35)}
+.s3b .sw-g{overflow:hidden;padding-top:0;border-width:1px}
+.s3b .sw-g .sw-gh{margin:0 -8px 6px;padding:7px 10px;color:#fff;font-weight:800;letter-spacing:.04em}
+.s3b .sw-g.c-blue{border-color:#2f7cff;box-shadow:0 0 16px -6px #2f7cff}.s3b .sw-g.c-blue .sw-gh{background:linear-gradient(90deg,#1b56c9,#2f7cff)}
+.s3b .sw-g.c-green{border-color:#21e087;box-shadow:0 0 16px -6px #21e087}.s3b .sw-g.c-green .sw-gh{background:linear-gradient(90deg,#0f8a4c,#21b86b)}
+.s3b .sw-g.c-yellow{border-color:#e8b923;box-shadow:0 0 16px -6px #e8b923}.s3b .sw-g.c-yellow .sw-gh{background:linear-gradient(90deg,#9a7508,#d9ac1c);color:#161100}
+.s3b .sw-g.c-red{border-color:#ff4d4d;box-shadow:0 0 16px -6px #ff4d4d}.s3b .sw-g.c-red .sw-gh{background:linear-gradient(90deg,#a11d1d,#e03a3a)}
+.s3b .sw-list.ok{border:1px solid #21e087;box-shadow:0 0 16px -6px #21e087;overflow:hidden}.s3b .sw-list.ok h4{background:linear-gradient(90deg,#0f8a4c,#21b86b);color:#fff;margin:-8px -8px 8px;padding:7px 10px}
+.s3b .sw-list.no{border:1px solid #ff4d4d;box-shadow:0 0 16px -6px #ff4d4d;overflow:hidden}.s3b .sw-list.no h4{background:linear-gradient(90deg,#a11d1d,#e03a3a);color:#fff;margin:-8px -8px 8px;padding:7px 10px}
+</style>
 <style id="msr-app-mode-css">
 /* App mode (installed from "Add to Home Screen"): no browser bars, so respect the notch/status bar and behave like a native app. */
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
