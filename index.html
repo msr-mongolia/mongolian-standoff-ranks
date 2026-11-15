@@ -3781,7 +3781,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     (window.MSR_S3_BALLOTS || []).forEach(function (bl) { bl[1].forEach(function (t, k) { var x = sum[kk(t)] = sum[kk(t)] || { s: 0, n: 0 }; x.s += k + 1; x.n++; }); });
     var avg = {}; Object.keys(sum).forEach(function (k) { avg[k] = { v: sum[k].s / sum[k].n, n: sum[k].n }; });
     function fill() {
-    var r1 = []; for (var i = 0; i < 8; i++) r1.push(h('div', { class: 's3n-m' }, tm(seeds[i], i), h('span', { class: 's3n-vs' }, 'VS'), tm(seeds[15 - i], 15 - i)));
+    var r1 = []; for (var i = 0; i < 8; i++) r1.push(h('div', { class: 's3n-m' }, tm(seeds[i], i), h('span', { class: 's3n-vs' }, 'VS'), tm(seeds[i + 8], i + 8)));
     box.replaceChildren.apply(box, [
       h('div', { class: 's3n-h' }, h('b', null, 'TEAM VOTES'), h('span', null, '8 teams · each ranked the other 15')),
       h('div', { class: 's3n-imgs' }, ['assets/msl-s2-s3-votes-1.jpg', 'assets/msl-s2-s3-votes-2.jpg'].map(function (src, k) { return h('a', { href: src, target: '_blank', rel: 'noopener' }, h('img', { src: src, alt: 'MSL S2 Stage 3 seeding votes ' + (k + 1), loading: 'lazy', decoding: 'async' })); })),
@@ -4979,7 +4979,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
-      { id: 2026111601, g: 'MSL MAJOR S2', t: 'Nov 16', c: 0, s3seed: true, h: 'Stage 3 seeding and Swiss Round 1 schedule', lead: 'The seeding for the 16 teams that qualified for MSL Major S2 Stage 3 is out. Seeds were set by the votes of 8 teams (each team ranked the other 15) using the average place. Swiss Round 1 is played on Nov 17 as #1 vs #16, #2 vs #15 … #8 vs #9.',
+      { id: 2026111601, g: 'MSL MAJOR S2', t: 'Nov 16', c: 0, s3seed: true, h: 'Stage 3 seeding and Swiss Round 1 schedule', lead: 'The seeding for the 16 teams that qualified for MSL Major S2 Stage 3 is out. Seeds were set by the votes of 8 teams (each team ranked the other 15) using the average place. Swiss Round 1 is played on Nov 17 as #1 vs #9, #2 vs #10 … #8 vs #16.',
         body: [
           'Format: Swiss · 16 teams · Bo3 · 3 wins = qualified · 3 losses = eliminated. Round 1 — Nov 17, Round 5 — Nov 21.',
           'Later rounds pair teams with the same record in seed order. Results and the bracket update live on the MSR site under MSL Major S2 → Stage 3.',
@@ -6601,7 +6601,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
      Pairing (Valve Swiss style): R1 seed i vs seed i+8; later rounds pair inside each record group, highest seed vs lowest, no rematches.
      A group is paired only once every team of that record is known. Seeds: window.MSR_S3_SEEDS (16 tags, seed 1 first). */
   var MSR_S3_TAGS = ['6vmp6', 'OMV', '6LC', '0kz', 'KngZz', 'DXIII', '2990 Purple', 'SNT', 'EKS', '2990 White', 'EknZ', 'OTR', 'OMEN', '2990', 'EVKZ', 'UCLT'];
-  /* Official seeding (organiser post, Nov 16): Round 1 = seed 1 vs 16, 2 vs 15 ... 8 vs 9. */
+  /* Official seeding (organiser post, Nov 16): Round 1 = seed 1 vs 9, 2 vs 10 ... 8 vs 16. */
   window.MSR_S3_SEEDS = ['2990 White', 'EknZ', '0kz', 'OMEN', 'SNT', '2990 Purple', 'EKS', '2990', 'EVKZ', 'UCLT', 'OTR', 'KngZz', '6LC', '6vmp6', 'DXIII', 'OMV'];
   var MSR_S3_DATES = { 1: 1117, 2: 1118, 3: 1119, 4: 1120, 5: 1121 };
   window.msrS3 = function () {
@@ -6627,7 +6627,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var groups = [];
       if (n === 1) {
         var ms = [];
-        for (var i = 0; i < 8; i++) ms.push(given ? mk(seeds[i], seeds[15 - i]) : { a: null, b: null, seedA: i + 1, seedB: 16 - i, res: null });
+        for (var i = 0; i < 8; i++) ms.push(given ? mk(seeds[i], seeds[i + 8]) : { a: null, b: null, seedA: i + 1, seedB: i + 9, res: null });
         groups.push({ rec: '0-0', matches: ms });
       } else {
         var recs = {}; Object.keys(rec).forEach(function (k) { var r = rec[k]; if (r.w < 3 && r.l < 3 && r.w + r.l === n - 1) (recs[r.w + '-' + r.l] = recs[r.w + '-' + r.l] || []).push(r); });
@@ -8046,7 +8046,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="msr-config.js"></script>
 
-<script src="msr-language.js?v=news3"></script>
+<script src="msr-language.js?v=news4"></script>
 <script>
 /* MSR Shop ownership and order requests. Payments remain unverified until a trusted provider webhook is connected. */
 (function(){
