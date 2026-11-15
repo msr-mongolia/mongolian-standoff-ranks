@@ -2724,6 +2724,14 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 #app .ap-dc.msr-dc-black{background:linear-gradient(135deg,#000,#141416)!important;color:#fff!important;border:1px solid #3a3a40!important;box-shadow:0 4px 14px -6px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08)!important}
 #app .ap-dc.msr-dc-black svg{color:#fff}
 </style>
+<style id="msr-back2">
+/* BACK2: Lineup / Map pool section background (whole panel). Beats the BACK1 header-only dark body. */
+#app.msr-clan-profile .prof-grid>.box.msr-back2{background-color:#101318!important;background-image:var(--msr-back2)!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+#app.msr-clan-profile .prof-grid>.box.msr-back2>.scrollx,
+#app.msr-clan-profile .prof-grid>.box.msr-back2 table{background:transparent!important;background-image:none!important}
+#app.msr-clan-profile .prof-grid>.box.msr-back2 tbody tr:not(.msr-map-pool-photo){background:rgba(14,16,20,.55)!important;backdrop-filter:blur(2px)}
+#app.msr-clan-profile .prof-grid>.box.msr-back2 tbody tr:not(.msr-map-pool-photo):nth-child(even){background:rgba(24,28,34,.55)!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
@@ -7125,6 +7133,18 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     });
   }
 
+  /* BACK2 command: background of the whole Lineup and Map pool sections (body, not just the BACK1 header).
+     window.MSR_BACK2 = { TEAMCODE: { src: 'assets/x.webp' } }  (image; add dim: 0..1 to change the dark overlay, default .62) */
+  window.MSR_BACK2 = window.MSR_BACK2 || {};
+  function applyTeamBack2(node,code){
+    var b=(window.MSR_BACK2||{})[code];if(!b||!b.src)return;
+    var dim=b.dim==null?.62:b.dim;
+    node.querySelectorAll('.prof-grid > .box').forEach(function(panel){
+      var hd=panel.querySelector(':scope > .panel-h h2');if(!hd||!/^(map pool|lineup)$/i.test(hd.textContent||''))return;
+      panel.classList.add('msr-back2');
+      panel.style.setProperty('--msr-back2','linear-gradient(180deg,rgba(10,12,16,'+dim+'),rgba(10,12,16,'+Math.min(.92,dim+.18)+')),url("'+b.src+'")');
+    });
+  }
   function applyAllClanPanelBack1(node,clan){
     if(!clan)return;
     var code=String(clan.tag||'').toUpperCase();
@@ -7221,6 +7241,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     if(name==='team' && node.dataset.msrBack1Team && T[node.dataset.msrBack1Team]){
       var back1Clan=T[node.dataset.msrBack1Team];
       applyAllClanPanelBack1(node,back1Clan);
+      applyTeamBack2(node,node.dataset.msrBack1Team);
       var back1Code=String(back1Clan.tag||'').toUpperCase();
       var back1Asset=back1Code==='KGTSS'||/^knightss$/i.test(back1Clan.n||'')?'assets/kgtss_back1_video.json?v=smooth-loop-1':
         back1Code==='W2990'||/^2990\s+white$/i.test(back1Clan.n||'')?'assets/2990_white_back1_video.json':
