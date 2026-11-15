@@ -3755,7 +3755,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR White"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'Tournament stages' },
-      [1, 2].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
+      [1, 2, 3].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
     var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_286B21B874899423C6F7C160', 'EliteKingZz']];
     function invCode(inv) {
       if (T[inv[0]]) return inv[0];
@@ -3954,7 +3954,26 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 2 · Zones A–H'), h('span', null, '32 teams · 8 zones of 4 · double elimination · Bo3')), tabs, panel);
     }
     var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, h('div', null, s2Zones()));
-    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination'), stageStrip,
+    // Stage 3: Swiss, 16 teams (the two finalists of every Stage 2 zone), Bo3, 3 wins = qualified, 3 losses = eliminated. Starts Nov 17.
+    var stage3 = (function () {
+      var norm = function (v) { return String(v || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+      var S3 = [['A', ['VAMP EMPIRE', 'Omnis Over']], ['B', ['Six Lence', 'Omega ForceZ']], ['C', ['KingZz', 'Dxvil13']], ['D', ['2990 Purple', 'Starfire Nirvana Team']],
+        ['E', ['Elite Kings', '2990 White']], ['F', ['EliteKingZz', 'Clan-One True Reign']], ['G', ['Omen Esports', '2990 RED']], ['H', ['EVERLASTED', 'Ulseratif Colitis']]];
+      function codeOf(name) { return Object.keys(T).find(function (k) { return norm(T[k].n) === norm(name); }); }
+      var rows = [];
+      S3.forEach(function (z) { z[1].forEach(function (name, i) { var k = codeOf(name);
+        rows.push(h('div', { style: 'display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;box-sizing:border-box;width:100%;min-width:0;max-width:100%' }, k ? crest(k, 'md') : null,
+          k ? h('a', { href: teamHref(k) }, T[k].n) : h('span', null, name), h('small', { style: 'margin-left:auto;opacity:.7;white-space:nowrap' }, 'Zone ' + z[0] + (i ? ' · Lower Final' : ' · Upper Final')))); }); });
+      var outline = [['0–0', '16 teams · Round 1'], ['1–0 / 0–1', 'Round 2'], ['2–0 / 1–1 / 0–2', 'Round 3'], ['2–1 / 1–2', 'Round 4'], ['2–2', 'Round 5 · deciding']];
+      return h('div', { class: 'sw2-wrap' },
+        h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 3 · Swiss'), h('span', null, '16 teams · Bo3 · 3 wins = qualified · 3 losses = eliminated · starts Nov 17')),
+        h('p', { class: 'msr-zone-note' }, 'Round 1 seeding: Seed 1 vs 9, 2 vs 10, 3 vs 11, 4 vs 12, 5 vs 13, 6 vs 14, 7 vs 15, 8 vs 16. Seeds and matches will be announced.'),
+        h('div', { style: 'display:flex;flex-direction:column;gap:6px;margin:10px 0' }, rows),
+        h('div', { class: 'msr-swiss-outcomes' }, h('span', { class: 'qualified' }, '3 WINS · QUALIFIED'), h('span', { class: 'eliminated' }, '3 LOSSES · ELIMINATED')),
+        h('p', { class: 'msr-zone-note' }, outline.map(function (o) { return o[0] + ' → ' + o[1]; }).join('  ·  ')));
+    })();
+    var stage3Panel = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, stage3);
+    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination  |  Stage 3 · Swiss'), stageStrip,
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
           h('div',null,h('h2',null,'GROUP ',h('em',null,'E')),h('p',null,'ROUND ROBIN STAGE'))),
@@ -4142,15 +4161,16 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         h('div', { class: 'msr-swiss-outcomes' }, h('span', { class: 'qualified' }, '3 WINS · QUALIFIED'), h('span', { class: 'eliminated' }, '3 LOSSES · ELIMINATED')));
     });
     var grid = root.querySelector('.msr-zone-grid'); root.insertBefore(tabbar, grid); selectZone(0);
-    root.appendChild(stage2);
+    root.appendChild(stage2); root.appendChild(stage3Panel);
     var stageHead = root.firstElementChild;
     function showStage(n) {
       [].slice.call(stageStrip.children).forEach(function (b2) { b2.setAttribute('aria-selected', String(Number(b2.getAttribute('data-stage')) === n)); });
       [].slice.call(root.children).forEach(function (ch) {
-        if (ch === stageHead || ch === stageStrip || ch === stage2) return;
+        if (ch === stageHead || ch === stageStrip || ch === stage2 || ch === stage3Panel) return;
         if (n === 1) ch.style.removeProperty('display'); else ch.style.setProperty('display', 'none', 'important');
       });
       stage2.style.display = n === 2 ? '' : 'none';
+      stage3Panel.style.display = n === 3 ? '' : 'none';
     }
     stageStrip.addEventListener('click', function (e) { var b2 = e.target.closest('.msr-stage-tab'); if (b2) showStage(Number(b2.getAttribute('data-stage'))); });
     showStage(2); // MSL event opens on Stage 2 (current stage)
