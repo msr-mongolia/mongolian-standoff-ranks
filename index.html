@@ -3954,23 +3954,48 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       return h('div', { class: 'sw2-wrap' }, h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 2 · Zones A–H'), h('span', null, '32 teams · 8 zones of 4 · double elimination · Bo3')), tabs, panel);
     }
     var stage2 = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, h('div', null, s2Zones()));
-    // Stage 3: Swiss, 16 teams (the two finalists of every Stage 2 zone), Bo3, 3 wins = qualified, 3 losses = eliminated. Starts Nov 17.
+    // Stage 3: Swiss, 16 teams (the two finalists of every Stage 2 zone), Bo3, 3 wins = qualified, 3 losses = eliminated. R1 Nov 17 - R5 Nov 21.
     var stage3 = (function () {
-      var norm = function (v) { return String(v || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
-      var S3 = [['A', ['VAMP EMPIRE', 'Omnis Over']], ['B', ['Six Lence', 'Omega ForceZ']], ['C', ['KingZz', 'Dxvil13']], ['D', ['2990 Purple', 'Starfire Nirvana Team']],
-        ['E', ['Elite Kings', '2990 White']], ['F', ['EliteKingZz', 'Clan-One True Reign']], ['G', ['Omen Esports', '2990 RED']], ['H', ['EVERLASTED', 'Ulseratif Colitis']]];
-      function codeOf(name) { return Object.keys(T).find(function (k) { return norm(T[k].n) === norm(name); }); }
-      var rows = [];
-      S3.forEach(function (z) { z[1].forEach(function (name, i) { var k = codeOf(name);
-        rows.push(h('div', { style: 'display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;box-sizing:border-box;width:100%;min-width:0;max-width:100%' }, k ? crest(k, 'md') : null,
-          k ? h('a', { href: teamHref(k) }, T[k].n) : h('span', null, name), h('small', { style: 'margin-left:auto;opacity:.7;white-space:nowrap' }, 'Zone ' + z[0] + (i ? ' · Lower Final' : ' · Upper Final')))); }); });
-      var outline = [['0–0', '16 teams · Round 1'], ['1–0 / 0–1', 'Round 2'], ['2–0 / 1–1 / 0–2', 'Round 3'], ['2–1 / 1–2', 'Round 4'], ['2–2', 'Round 5 · deciding']];
-      return h('div', { class: 'sw2-wrap' },
-        h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 3 · Swiss'), h('span', null, '16 teams · Bo3 · 3 wins = qualified · 3 losses = eliminated · starts Nov 17')),
-        h('p', { class: 'msr-zone-note' }, 'Round 1 seeding: Seed 1 vs 9, 2 vs 10, 3 vs 11, 4 vs 12, 5 vs 13, 6 vs 14, 7 vs 15, 8 vs 16. Seeds and matches will be announced.'),
-        h('div', { style: 'display:flex;flex-direction:column;gap:6px;margin:10px 0' }, rows),
-        h('div', { class: 'msr-swiss-outcomes' }, h('span', { class: 'qualified' }, '3 WINS · QUALIFIED'), h('span', { class: 'eliminated' }, '3 LOSSES · ELIMINATED')),
-        h('p', { class: 'msr-zone-note' }, outline.map(function (o) { return o[0] + ' → ' + o[1]; }).join('  ·  ')));
+      var wrap = h('div', { class: 'sw2-wrap s3b' });
+      function tname(tag) { var c = window.msrTagToCode ? window.msrTagToCode(tag) : null; return { c: c, n: c && T[c] ? T[c].n : tag }; }
+      function teamCell(tag, seedLbl, score, win) {
+        if (!tag) return h('div', { class: 's3b-t tba' }, h('span', null, seedLbl || 'TBA'));
+        var t = tname(tag);
+        return h('div', { class: 's3b-t' + (win === true ? ' win' : win === false ? ' loss' : '') }, t.c ? crest(t.c, 'sm') : null, h('span', null, t.n), score != null ? h('b', null, String(score)) : null);
+      }
+      function matchRow(mt) {
+        var r = mt.res;
+        return h('div', { class: 's3b-m' + (r ? ' done' : '') },
+          teamCell(mt.a, mt.seedA ? 'Seed ' + mt.seedA : null, r ? r.aw : null, r ? r.aw > r.bw : null),
+          h('i', null, 'VS'),
+          teamCell(mt.b, mt.seedB ? 'Seed ' + mt.seedB : null, r ? r.bw : null, r ? r.bw > r.aw : null));
+      }
+      function colorOf(rec) { var w = Number(rec[0]), l = Number(rec[2]); if (!w && !l) return 'blue'; if (w >= 1 && l === 0) return 'green'; if (l >= 2 || (l > w && l >= 1 && w < l)) return 'red'; return 'yellow'; }
+      function paint() {
+        var st; try { st = window.msrS3(); } catch (e) { return; }
+        var cols = st.rounds.map(function (rd) {
+          var dd = rd.date, lbl = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Math.floor(dd / 100) - 1].toUpperCase() + ' ' + dd % 100;
+          return h('div', { class: 's3b-col' }, h('div', { class: 's3b-rl' }, 'ROUND ' + rd.n, h('small', null, lbl)),
+            rd.groups.map(function (g) {
+              var rr = g.rec.replace('-', ' – ');
+              return h('section', { class: 's3b-g ' + colorOf(g.rec) }, h('header', null, rr + ' (R' + rd.n + ')'),
+                g.matches.length ? g.matches.map(matchRow) : h('div', { class: 's3b-wait' }, 'Teams determined by results' + (g.size ? ' (' + g.have + '/' + g.size + ')' : '')));
+            }));
+        });
+        function list(title, cls, tags) {
+          return h('section', { class: 's3b-g ' + cls }, h('header', null, title), tags.length ? tags.map(function (t) { return teamCell(t); }) : h('div', { class: 's3b-wait' }, '—'));
+        }
+        cols.push(h('div', { class: 's3b-col' }, h('div', { class: 's3b-rl' }, 'RESULT', h('small', null, '3 WINS / 3 LOSSES')),
+          list('QUALIFIED · 3 WINS', 'green', st.qualified), list('ELIMINATED · 3 LOSSES', 'red', st.eliminated)));
+        wrap.replaceChildren(
+          h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 3 · Swiss Bracket'), h('span', null, '16 teams · Bo3 · 3 wins = qualified · 3 losses = eliminated · max 5 rounds · Nov 17–21')),
+          h('p', { class: 'msr-zone-note' }, st.given ? 'Round 1: seed 1 vs 9, 2 vs 10 … 8 vs 16. Next rounds are paired inside each record group (highest seed vs lowest seed, no rematches) once every team of that record is known.' : 'Seeds will be announced. Round 1: seed 1 vs 9, 2 vs 10 … 8 vs 16.'),
+          h('div', { class: 's3b-scroll', tabindex: '0', role: 'region', 'aria-label': 'Stage 3 Swiss bracket' }, h('div', { class: 's3b-board' }, cols)));
+      }
+      paint();
+      window.addEventListener('hashchange', function () { setTimeout(paint, 400); });
+      [1500, 4000, 9000].forEach(function (ms) { setTimeout(paint, ms); });   // team tags resolve once Discord team data has loaded
+      return wrap;
     })();
     var stage3Panel = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, stage3);
     var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination  |  Stage 3 · Swiss'), stageStrip,
@@ -6479,10 +6504,82 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
   // MSL Major S2 Stage 2, Round 1: every zone plays M1 (teams 1 v 2) and M2 (teams 3 v 4) today.
   // Only the times the organiser has given are shown; everything else stays TBA.
+  /* MSL Major S2 Stage 3: Swiss, 16 teams, Bo3, 3 wins = qualified, 3 losses = eliminated. R1 Nov 17 ... R5 Nov 21.
+     Results come from ledger entries flagged stage3:true (and MSR_S3_RESULTS for auto wins).
+     Pairing (Valve Swiss style): R1 seed i vs seed i+8; later rounds pair inside each record group, highest seed vs lowest, no rematches.
+     A group is paired only once every team of that record is known. Seeds: window.MSR_S3_SEEDS (16 tags, seed 1 first). */
+  var MSR_S3_TAGS = ['6vmp6', 'OMV', '6LC', '0kz', 'KngZz', 'DXIII', '2990 Purple', 'SNT', 'EKS', '2990 White', 'EknZ', 'OTR', 'OMEN', '2990', 'EVKZ', 'UCLT'];
+  var MSR_S3_DATES = { 1: 1117, 2: 1118, 3: 1119, 4: 1120, 5: 1121 };
+  window.msrS3 = function () {
+    var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+    var given = (window.MSR_S3_SEEDS || []).length === 16;
+    var seeds = given ? window.MSR_S3_SEEDS.slice() : MSR_S3_TAGS.slice();
+    var idx = {}; seeds.forEach(function (t, i) { idx[kk(t)] = i; });
+    var res = [];
+    function add(a, b, aw, bw, date) { if (aw !== bw && idx[kk(a)] != null && idx[kk(b)] != null) res.push({ a: a, b: b, aw: aw, bw: bw, date: date }); }
+    (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) {
+      if (!m.stage3) return;
+      var au = m.auto || { a: 0, b: 0 }, mp = m.maps || [];
+      add(m.a, m.b, mp.filter(function (x) { return x.aScore > x.bScore; }).length + (au.a || 0), mp.filter(function (x) { return x.bScore > x.aScore; }).length + (au.b || 0), m.date);
+    });
+    (window.MSR_S3_RESULTS || []).forEach(function (r) { add(r.a, r.b, (r.auto && r.auto.a) || r.aw || 0, (r.auto && r.auto.b) || r.bw || 0, r.date); });
+    var rec = {}; seeds.forEach(function (t) { rec[kk(t)] = { tag: t, w: 0, l: 0, opp: [] }; });
+    res.forEach(function (r) { var A = rec[kk(r.a)], B = rec[kk(r.b)]; if (r.aw > r.bw) { A.w++; B.l++; } else { B.w++; A.l++; } A.opp.push(kk(r.b)); B.opp.push(kk(r.a)); });
+    function found(a, b) { return res.filter(function (r) { return (kk(r.a) === kk(a) && kk(r.b) === kk(b)) || (kk(r.a) === kk(b) && kk(r.b) === kk(a)); })[0] || null; }
+    function mk(a, b) { var r = found(a, b); return { a: a, b: b, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw } : { aw: r.bw, bw: r.aw }) : null }; }
+    var expect = { '1-0': 8, '0-1': 8, '2-0': 4, '1-1': 8, '0-2': 4, '2-1': 6, '1-2': 6, '2-2': 6 };
+    var rounds = [];
+    for (var n = 1; n <= 5; n++) {
+      var groups = [];
+      if (n === 1) {
+        var ms = [];
+        for (var i = 0; i < 8; i++) ms.push(given ? mk(seeds[i], seeds[i + 8]) : { a: null, b: null, seedA: i + 1, seedB: i + 9, res: null });
+        groups.push({ rec: '0-0', matches: ms });
+      } else {
+        var recs = {}; Object.keys(rec).forEach(function (k) { var r = rec[k]; if (r.w < 3 && r.l < 3 && r.w + r.l === n - 1) (recs[r.w + '-' + r.l] = recs[r.w + '-' + r.l] || []).push(r); });
+        Object.keys(expect).forEach(function (key) {
+          var wl = key.split('-').map(Number); if (wl[0] + wl[1] !== n - 1) return;
+          var g = (recs[key] || []).slice().sort(function (x, y) { return idx[kk(x.tag)] - idx[kk(y.tag)]; });
+          var ms = [];
+          if (g.length === expect[key]) {
+            var pool = g.slice();
+            while (pool.length) {
+              var top = pool.shift(), pick = -1;
+              for (var j = pool.length - 1; j >= 0; j--) if (top.opp.indexOf(kk(pool[j].tag)) < 0) { pick = j; break; }
+              if (pick < 0) pick = pool.length - 1;
+              ms.push(mk(top.tag, pool.splice(pick, 1)[0].tag));
+            }
+          }
+          groups.push({ rec: key, matches: ms, size: expect[key], have: g.length });
+        });
+      }
+      rounds.push({ n: n, date: MSR_S3_DATES[n], groups: groups });
+    }
+    var all = Object.keys(rec).map(function (k) { return rec[k]; });
+    return { given: given, rounds: rounds, rec: rec, qualified: all.filter(function (r) { return r.w >= 3; }).map(function (r) { return r.tag; }), eliminated: all.filter(function (r) { return r.l >= 3; }).map(function (r) { return r.tag; }) };
+  };
+  function ensureS3Matches() {
+    for (var q = ALLM.length - 1; q >= 0; q--) if (ALLM[q].s3fix) { delete MBY[ALLM[q].id]; ALLM.splice(q, 1); }
+    var st; try { st = window.msrS3(); } catch (e) { return; }
+    var nid = 5000;
+    st.rounds.forEach(function (rd) {
+      rd.groups.forEach(function (g) {
+        g.matches.forEach(function (mt, i) {
+          if (mt.res) return;   // played series are shown through the ledger
+          var a = mt.a && window.msrTagToCode ? window.msrTagToCode(mt.a) : null, b = mt.b && window.msrTagToCode ? window.msrTagToCode(mt.b) : null;
+          if (!a || !b) return;
+          while (MBY[nid]) nid++;
+          var d = rd.date, wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(YEAR, Math.floor(d / 100) - 1, d % 100).getDay()];
+          var m = { id: nid, s3fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Stage 3 · Swiss · Round ' + rd.n + ' (' + g.rec.replace('-', '–') + ') · Bo3', state: 'soon', day: d === TODAY ? 'Today' : ('0' + Math.floor(d / 100)).slice(-2) + '/' + ('0' + d % 100).slice(-2) + ' · ' + wd, date: d, when: 'TBA', bo: 3, maps: [] };
+          ALLM.push(m); MBY[nid] = m;
+        });
+      });
+    });
+  }
   function ensureS2Matches() {
-    try { zoneBracket(); } catch (e) { return; }
+    try { zoneBracket(); } catch (e) { ensureS3Matches(); return; }
     var Z = window.msrS2Zones, tm = window.msrS2Team, info = window.msrS2Info || {};
-    if (!Z || !tm) return;
+    if (!Z || !tm) { ensureS3Matches(); return; }
     // rebuilt on every call so team codes always reflect the latest synced teams
     for (var i = ALLM.length - 1; i >= 0; i--) if (ALLM[i].s2fix) { delete MBY[ALLM[i].id]; ALLM.splice(i, 1); }
     var nid = 1, out = [];
@@ -6507,6 +6604,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         MBY[nid] = m;
     });
     out.forEach(function (m) { ALLM.push(m); });
+    ensureS3Matches();
   }
   function matchesApp() {
     ensureS2Matches();
@@ -9011,6 +9109,27 @@ let queued=false;const obs=new MutationObserver(()=>{if(queued)return;queued=tru
   }catch(e){}
 })();
 </script>
+<style id="msr-s3-bracket-css">
+.s3b-scroll{overflow-x:auto;padding:6px 2px 14px;-webkit-overflow-scrolling:touch}
+.s3b-board{display:flex;gap:14px;align-items:flex-start;min-width:max-content}
+.s3b-col{width:250px;flex:0 0 250px;display:flex;flex-direction:column;gap:12px}
+.s3b-rl{font-weight:800;letter-spacing:.06em;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}
+.s3b-rl small{font-weight:600;font-size:11px;color:var(--text)}
+.s3b-g{border:1px solid #3a4452;border-radius:12px;background:linear-gradient(160deg,#0f1722,#0a0f17);padding:0 0 8px;overflow:hidden}
+.s3b-g header{padding:7px 10px;font-weight:800;font-size:13px;text-align:center;letter-spacing:.03em;color:#fff}
+.s3b-g.blue{border-color:#2f7cff;box-shadow:0 0 14px -6px #2f7cff}.s3b-g.blue header{background:linear-gradient(90deg,#1b56c9,#2f7cff)}
+.s3b-g.green{border-color:#21e087;box-shadow:0 0 14px -6px #21e087}.s3b-g.green header{background:linear-gradient(90deg,#0f8a4c,#21b86b)}
+.s3b-g.yellow{border-color:#e8b923;box-shadow:0 0 14px -6px #e8b923}.s3b-g.yellow header{background:linear-gradient(90deg,#9a7508,#d9ac1c);color:#161100}
+.s3b-g.red{border-color:#ff4d4d;box-shadow:0 0 14px -6px #ff4d4d}.s3b-g.red header{background:linear-gradient(90deg,#a11d1d,#e03a3a)}
+.s3b-m{margin:8px 8px 0;border:1px solid #2c3644;border-radius:9px;background:#0b111a;padding:4px 6px;display:flex;flex-direction:column;align-items:stretch;gap:0;position:relative}
+.s3b-m i{align-self:center;font-style:normal;font-weight:800;font-size:10px;color:#e8b923;line-height:1;padding:1px 0}
+.s3b-t{display:flex;align-items:center;gap:8px;padding:4px 4px;font-size:13px;min-height:28px}
+.s3b-t span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s3b-t b{font-size:14px}.s3b-t.tba{opacity:.6;font-style:italic}
+.s3b-t.win{color:#6ff2b0}.s3b-t.loss{opacity:.6}
+.s3b-g>.s3b-t{margin:6px 8px 0;border:1px solid #2c3644;border-radius:8px}
+.s3b-wait{margin:8px;padding:12px;text-align:center;font-size:12px;color:var(--muted);border:1px dashed #2c3644;border-radius:8px}
+</style>
 <style id="msr-app-mode-css">
 /* App mode (installed from "Add to Home Screen"): no browser bars, so respect the notch/status bar and behave like a native app. */
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
