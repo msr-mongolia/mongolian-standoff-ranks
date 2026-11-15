@@ -2725,16 +2725,12 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 #app .ap-dc.msr-dc-black svg{color:#fff}
 </style>
 <style id="msr-back2">
-/* BACK2: Lineup / Map pool section background (whole panel). Beats the BACK1 header-only dark body. */
-#app.msr-clan-profile .prof-grid>.box.msr-back2{background-color:#101318!important;background-image:var(--msr-back2)!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
-#app.msr-clan-profile .prof-grid>.box.msr-back2:has(>.msr-back2-video){position:relative!important;isolation:isolate!important;overflow:hidden!important}
-#app.msr-clan-profile .prof-grid>.box.msr-back2>.msr-back2-video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important;pointer-events:none!important}
-#app.msr-clan-profile .prof-grid>.box.msr-back2>.msr-back2-shade{position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(10,12,16,var(--d)),rgba(10,12,16,calc(var(--d) + .2)))}
-#app.msr-clan-profile .prof-grid>.box.msr-back2>*:not(.msr-back2-video):not(.msr-back2-shade){position:relative;z-index:1}
-#app.msr-clan-profile .prof-grid>.box.msr-back2>.scrollx,
-#app.msr-clan-profile .prof-grid>.box.msr-back2 table{background:transparent!important;background-image:none!important}
-#app.msr-clan-profile .prof-grid>.box.msr-back2 tbody tr:not(.msr-map-pool-photo){background:rgba(14,16,20,.55)!important;backdrop-filter:blur(2px)}
-#app.msr-clan-profile .prof-grid>.box.msr-back2 tbody tr:not(.msr-map-pool-photo):nth-child(even){background:rgba(24,28,34,.55)!important}
+/* BACK2: replaces the Lineup / Map pool header background (BACK1 spot). Body untouched. */
+#app.msr-clan-profile .prof-grid>.box.msr-back2>.panel-h{position:relative!important;isolation:isolate!important;overflow:hidden!important;background-color:#0d0f13!important;background-image:linear-gradient(180deg,rgba(10,12,16,var(--d,.35)),rgba(10,12,16,calc(var(--d,.35) + .15))),var(--msr-back2)!important;background-size:cover!important;background-position:center!important}
+#app.msr-clan-profile .prof-grid>.box.msr-back2>.panel-h>.msr-clan-panel-header-video{display:none!important}
+#app.msr-clan-profile .prof-grid>.box.msr-back2>.panel-h>.msr-back2-video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important;pointer-events:none!important;display:block!important}
+#app.msr-clan-profile .prof-grid>.box.msr-back2>.panel-h::after{content:""!important;position:absolute!important;inset:0!important;z-index:1!important;pointer-events:none!important;background:linear-gradient(180deg,rgba(10,12,16,var(--d,.35)),rgba(10,12,16,calc(var(--d,.35) + .15)))!important;display:block!important}
+#app.msr-clan-profile .prof-grid>.box.msr-back2>.panel-h>*:not(.msr-back2-video):not(.msr-clan-panel-header-video){position:relative!important;z-index:2!important}
 </style>
 </head>
 <body>
@@ -7143,17 +7139,16 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     DS_02454733FB68AAB2875350A0: { video: 'assets/omv_back2.mp4', src: 'assets/omv_back2_poster.jpg', dim: .35 } // Omnis Over (OMV)
   };
   function applyTeamBack2(node,code){
-    var b=(window.MSR_BACK2||{})[code];if(!b||!b.src)return;
-    var dim=b.dim==null?.62:b.dim;
+    // BACK2 replaces the Lineup / Map pool HEADER background (where BACK1 sits); the table body stays as it is.
+    var b=(window.MSR_BACK2||{})[code];if(!b||!(b.src||b.video))return;
+    var dim=b.dim==null?.35:b.dim;
     node.querySelectorAll('.prof-grid > .box').forEach(function(panel){
-      var hd=panel.querySelector(':scope > .panel-h h2');if(!hd||!/^(map pool|lineup)$/i.test(hd.textContent||''))return;
+      var hdr=panel.querySelector(':scope > .panel-h'),hd=hdr&&hdr.querySelector('h2');if(!hd||!/^(map pool|lineup)$/i.test(hd.textContent||''))return;
       panel.classList.add('msr-back2');
-      panel.style.setProperty('--msr-back2','linear-gradient(180deg,rgba(10,12,16,'+dim+'),rgba(10,12,16,'+Math.min(.92,dim+.18)+')),url("'+b.src+'")');
-      if(b.video&&!panel.querySelector(':scope > .msr-back2-video')){
-        // Animated BACK2: looping muted video behind the panel content (poster = src while it loads).
-        var v=h('video',{class:'msr-back2-video',src:b.video,poster:b.src,muted:'',autoplay:'',loop:'',playsinline:'','aria-hidden':'true',preload:'metadata'});
-        v.muted=true;v.defaultMuted=true;v.playsInline=true;panel.insertBefore(v,panel.firstChild);
-        panel.insertBefore(h('div',{class:'msr-back2-shade',style:'--d:'+dim}),v.nextSibling);
+      hdr.style.setProperty('--msr-back2',b.src?'url("'+b.src+'")':'none');hdr.style.setProperty('--d',dim);
+      if(b.video&&!hdr.querySelector(':scope > .msr-back2-video')){
+        var v=h('video',{class:'msr-back2-video',src:b.video,poster:b.src||null,muted:'',autoplay:'',loop:'',playsinline:'','aria-hidden':'true',preload:'metadata'});
+        v.muted=true;v.defaultMuted=true;v.playsInline=true;hdr.insertBefore(v,hdr.firstChild);
         var pl=function(){if(v.paused)v.play().catch(function(){});};pl();setTimeout(pl,600);
       }
     });
