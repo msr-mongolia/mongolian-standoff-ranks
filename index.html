@@ -6988,7 +6988,11 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         return h('div', { class: 'sw-g' }, h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/'))), rows);
       }
       function list(title, n, ok) {
-        var items = []; for (var i = 0; i < n; i++) items.push(h('span', { class: 'sw-q' }, '?'));
+        // Qualified / eliminated boxes: teams whose final record matches (e.g. 0/3) are shown as soon as the result is in.
+        var mt = /^(\d)\/(\d)/.exec(title), U = function (v) { return String(v || '').toUpperCase(); }, rc = {}, ord = [];
+        (window.MSR_VOID_RESULTS || []).forEach(function (r) { if (!(r.as > r.bs || r.bs > r.as)) return; [r.a, r.b].forEach(function (c) { if (!rc[U(c)]) { rc[U(c)] = { w: 0, l: 0, code: c }; ord.push(U(c)); } }); rc[U(r.as > r.bs ? r.a : r.b)].w++; rc[U(r.as > r.bs ? r.b : r.a)].l++; });
+        var got = mt ? ord.filter(function (k) { return rc[k].w === +mt[1] && rc[k].l === +mt[2]; }).map(function (k) { return rc[k].code; }) : [];
+        var items = []; for (var i = 0; i < Math.max(n, got.length); i++) { var it = got[i] ? slot(got[i]) : h('span', { class: 'sw-q' }, '?'); if (got[i] && it.classList) it.classList.add(ok ? 'msr-lg-win' : 'msr-lg-loss'); items.push(it); }
         return h('div', { class: 'sw-list ' + (ok ? 'ok' : 'no') }, h('h4', null, title), h('div', { class: 'sl' }, items));
       }
       function col(title) { return h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, title), h('div', { class: 'sw-body' }, [].slice.call(arguments, 1))); }
