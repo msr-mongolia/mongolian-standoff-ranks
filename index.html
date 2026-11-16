@@ -3204,7 +3204,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
   window.msrVoidR2 = function () {
     var r1 = window.MSR_VOID_R1 || [], up = [], down = [];
-    r1.forEach(function (p) { var rr = window.msrVoidRes(p[0], p[1]); if (!rr || rr.a === rr.b) return; up.push(rr.a > rr.b ? p[0] : p[1]); down.push(rr.a > rr.b ? p[1] : p[0]); });
+    r1.forEach(function (p) { var rr = window.msrVoidRes(p[0], p[1], 1); if (!rr || rr.a === rr.b) return; up.push(rr.a > rr.b ? p[0] : p[1]); down.push(rr.a > rr.b ? p[1] : p[0]); });
     var pair = function (l, rec) { var o = []; for (var i = 0; i + 1 < l.length; i += 2) o.push([l[i], l[i + 1], rec]); return o; };
     if (Array.isArray(window.MSR_VOID_R2) && window.MSR_VOID_R2.length) return { up: up, down: down, pairs: window.MSR_VOID_R2, official: true };
     return { up: up, down: down, pairs: pair(up, '1/0').concat(pair(down, '0/1')), official: false };
@@ -3226,8 +3226,9 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', date: 1114, time: '18:00', bo: 'Bo3', maps: ['Rust', 'Dune', 'Hanami'] } // R1 United elites (Syroz) vs Celestex (Cel2x)
   ];
   window.msrVoidSched = function (x, y) { var U = function (v) { return String(v || '').toUpperCase(); }; return (window.MSR_VOID_SCHEDULE || []).find(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); }) || null; };
-  window.msrVoidRes = function (x, y) {
-    var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); })[0];
+  window.msrVoidRes = function (x, y, round) {
+    // round (optional): only a result from that Swiss round, so a rematch never shows the earlier round's result.
+    var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return ((U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x))) && (!round || (m.round || 1) === round); })[0];
     if (!r) return null; var same = U(r.a) === U(x);
     return { a: same ? r.as : r.bs, b: same ? r.bs : r.as, auto: !!r.auto };
   };
@@ -5399,7 +5400,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     return out;
   }
   function msrRelMatchCard(row){
-    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?(window.msrVoidRes?window.msrVoidRes(rk[0],rk[1]):null):msrRelResult(rk[0],rk[1],row._keys?'s2':undefined,row._sl);
+    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?(window.msrVoidRes?window.msrVoidRes(rk[0],rk[1],row._vround):null):msrRelResult(rk[0],rk[1],row._keys?'s2':undefined,row._sl);
     function team(name,mine){
       var key=row._keys?(mine?rk[0]:rk[1]):msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
       return h('div',{class:'msr-hl-t'+(res?(won?' win':' loss'):'')},
@@ -6839,10 +6840,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         [3, 4, 5].forEach(function (n) { if (vdManual[n] || !window.msrVoidAutoRound) return; var ar = window.msrVoidAutoRound(n); if (!ar.pairs.length || !ar.day) return;
           vdRounds.push({ n: n, label: 'Round ' + n + ' \u00b7 ' + Object.keys(ar.pools).sort().reverse().map(function (k) { return k.replace('-', '/'); }).join(' & '), pairs: ar.pairs.map(function (p) { return [p[0], p[1]]; }), day: ar.day }); });
         var vdGroups = vdRounds.map(function (rd) {
-          var rows = rd.pairs.filter(function (p) { var sc = vdSched(p[0], p[1]), res = window.msrVoidRes ? window.msrVoidRes(p[0], p[1]) : null, rr = res ? (window.MSR_VOID_RESULTS || []).find(function (x) { var U = function (v) { return String(v).toUpperCase(); }; return (U(x.a) === U(p[0]) && U(x.b) === U(p[1])) || (U(x.a) === U(p[1]) && U(x.b) === U(p[0])); }) : null;
+          var rows = rd.pairs.filter(function (p) { var sc = vdSched(p[0], p[1]), res = window.msrVoidRes ? window.msrVoidRes(p[0], p[1], rd.n) : null, rr = res ? (window.MSR_VOID_RESULTS || []).find(function (x) { var U = function (v) { return String(v).toUpperCase(); }; return ((U(x.a) === U(p[0]) && U(x.b) === U(p[1])) || (U(x.a) === U(p[1]) && U(x.b) === U(p[0]))) && (x.round || 1) === rd.n; }) : null;
             var day = (sc && sc.date) || (rr && rr.date) || rd.day; return day === APM.sel && T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
             var sc = vdSched(p[0], p[1]) || {}, tm = sc.time || (/^\d{1,2}:\d{2}$/.test(p[2] || '') ? p[2] : '');
-            return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _bo: /^\d{1,2}:\d{2}$/.test(p[2] || '') || !p[2] ? (sc.bo || 'Swiss') : p[2], time_label: tm, _href: '#voidmatch/' + p[0] + '/' + p[1] + '/' + APM.sel + '/' + encodeURIComponent('Round ' + rd.n) };
+            return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _vround: rd.n, _bo: /^\d{1,2}:\d{2}$/.test(p[2] || '') || !p[2] ? (sc.bo || 'Swiss') : p[2], time_label: tm, _href: '#voidmatch/' + p[0] + '/' + p[1] + '/' + APM.sel + '/' + encodeURIComponent('Round ' + rd.n) };
           });
           return { label: rd.label, rows: rows };
         }).filter(function (g) { return g.rows.length; });
@@ -6937,7 +6938,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         var rows = [];
         for (var i = 0; i < 8; i++) {
           var p = draw ? (draw[i] || []) : [codes[2 * i], codes[2 * i + 1]];
-          var rr = p[0] && p[1] && window.msrVoidRes ? window.msrVoidRes(p[0], p[1]) : null, sa = slot(p[0]), sb = slot(p[1]);
+          var rr = p[0] && p[1] && window.msrVoidRes ? window.msrVoidRes(p[0], p[1], 1) : null, sa = slot(p[0]), sb = slot(p[1]);
           if (rr) { var wE = rr.a > rr.b ? sa : sb, lE = rr.a > rr.b ? sb : sa; lE.classList.add('sw-lose', rr.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
           rows.push(h('div', { class: 'sw-m' + (rr ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, rr ? (rr.auto ? 'W/O' : rr.a + ':' + rr.b) : 'VS'), sb));
         }
@@ -6957,7 +6958,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       function tbd(rec, n) {
         var fill = adv[rec] || [], rows = [], paired = true;
         for (var i = 0; i < n; i++) {
-          var A = fill[2 * i], B = fill[2 * i + 1], rr = paired && A && B && window.msrVoidRes ? window.msrVoidRes(A, B) : null, sa = slot(A), sb = slot(B);
+          var A = fill[2 * i], B = fill[2 * i + 1], rr = paired && A && B && window.msrVoidRes ? window.msrVoidRes(A, B, rec.split('-').reduce(function (t, x) { return t + (+x); }, 1)) : null, sa = slot(A), sb = slot(B);
           if (rr && rr.a !== rr.b) { var wE = rr.a > rr.b ? sa : sb, lE = rr.a > rr.b ? sb : sa; lE.classList.add('sw-lose', rr.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
           rows.push(h('div', { class: 'sw-m' + (rr ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, rr ? (rr.auto ? 'W/O' : rr.a + ':' + rr.b) : 'VS'), sb));
         }
