@@ -3165,7 +3165,17 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     // (Hanami had to be replayed and the rematch could not take place; the 10-13 Hanami scoreboard is not counted).
     { a: 'DS_VOID_EKNZ_20261113', b: 'DS_9FEDE81820B36BB7889B86BA', ea: 'EknZ VOID', eb: '4zA', as: 2, bs: 1, auto: true, round: 1, date: 1113,
       // Admin ruling (Nov 14/15): treated as not played — auto win for EknZ / auto loss for 4zA; ELO by the auto rule only, no K/D/A for anyone.
-    }
+    },
+    // R3 (1-1 pool): CHINGIS WARRIORS 2-0 imp4ct. Rust 13-11, Dune 13-9. In game: RyzeGod = Ryze, Beku! = Beku; tt:Zenny从 played map 2 for imp4ct.
+    { a: 'DS_4559C7E779F302E917B1A414', b: 'DS_A4CCD6C33286B304E839A0BC', ea: 'MSDTP', eb: 'Mpct', as: 2, bs: 0, round: 3, date: 1116,
+      maps: [
+        { map: 'Rust', aScore: 13, bScore: 11,
+          a: [['Tomoko',22,19,5],['RedHusyleR30',28,19,6],['Ocho',16,18,4],['OG.LIKE',10,18,1],['Kura_bish',15,20,0]],
+          b: [['Ryze',23,19,6],['Beku',23,19,2],['Tngs无痕',16,20,2],['Zisel need awp',16,20,4],['Zenix',14,13,1]] },
+        { map: 'Dune', aScore: 13, bScore: 9,
+          a: [['RedHusyleR30',28,15,8],['Kura_bish',21,13,4],['Tomoko',16,15,3],['Ocho',12,16,4],['OG.LIKE',9,13,4]],
+          b: [['Tngs无痕',26,15,4],['tt:Zenny从',15,16,1],['Zisel need awp',10,20,2],['Zenix',9,17,1],['Beku',10,21,3]] }
+      ] }
   ];
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
   window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
