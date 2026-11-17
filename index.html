@@ -3284,10 +3284,10 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   };
   // VOID match schedule: date (MMDD), time, Bo and maps (pick order, last = decider) per pair.
   window.MSR_VOID_SCHEDULE = window.MSR_VOID_SCHEDULE || [
-    { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', date: 1114, time: '18:00', bo: 'Bo3', maps: ['Rust', 'Dune', 'Hanami'] }, // R1 United elites (Syroz) vs Celestex (Cel2x)
-    { a: 'DS_A92955A6312CC42137C3C7EA', b: 'DS_4559C7E779F302E917B1A414', date: 1117, time: '20:00', bo: 'Bo3', maps: ['Dune', 'Sandstone', 'Province'] } // R4 MNKT Blue vs MSDTP (veto: MSDTP Dune, MNKT Sandstone, decider Province)
+    { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', date: 1114, time: '18:00', bo: 'Bo3', maps: ['Rust', 'Dune', 'Hanami'], round: 1 }, // R1 United elites (Syroz) vs Celestex (Cel2x)
+    { a: 'DS_A92955A6312CC42137C3C7EA', b: 'DS_4559C7E779F302E917B1A414', date: 1117, time: '20:00', bo: 'Bo3', maps: ['Dune', 'Sandstone', 'Province'], round: 4 } // R4 MNKT Blue vs MSDTP (veto: MSDTP Dune, MNKT Sandstone, decider Province)
   ];
-  window.msrVoidSched = function (x, y) { var U = function (v) { return String(v || '').toUpperCase(); }; return (window.MSR_VOID_SCHEDULE || []).find(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); }) || null; };
+  window.msrVoidSched = function (x, y, round) { var U = function (v) { return String(v || '').toUpperCase(); }; return (window.MSR_VOID_SCHEDULE || []).find(function (m) { return ((U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x))) && (!m.round || !round || m.round === round); }) || null; };
   window.msrVoidRes = function (x, y, round) {
     // round (optional): only a result from that Swiss round, so a rematch never shows the earlier round's result.
     var U = function (v) { return String(v || '').toUpperCase(); }, r = (window.MSR_VOID_RESULTS || []).filter(function (m) { return ((U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x))) && (!round || (m.round || 1) === round); })[0];
@@ -5650,7 +5650,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         h('div',{class:'msr-mm-lineup'},list.length?list.map(function(p){return h('a',{class:'msr-mm-pl',href:playerHref(p.nick,k)},h('span',{class:'bigav sg'+tc({team:k}),'aria-hidden':'true'},sig(p.nick,52)),h('b',null,p.nick),h('small',null,p.rating?rt(p.rating):'—'));}):h('div',{class:'empty'},'Roster not available.')));
     }
     var center=res?h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},res.a+' – '+res.b),h('small',null,(res.auto?'Auto win':'Final')+(dateTxt?' · '+dateTxt:'')))
-      :(function(){var sc=window.msrVoidSched?window.msrVoidSched(ka,kb):null,sd=sc&&sc.date?(('0'+(sc.date%100)).slice(-2)+' '+MON[Math.floor(sc.date/100)-1]+' '+YEAR):dateTxt;return h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},sc&&sc.time?sc.time:'TBA'),h('small',null,sd||'Not announced yet'));})();
+      :(function(){var vrn=+((rlab.match(/\d+/)||[])[0])||0,sc=window.msrVoidSched?window.msrVoidSched(ka,kb,vrn):null;if(sc&&dn&&sc.date&&sc.date!==dn)sc=null;var sd=sc&&sc.date?(('0'+(sc.date%100)).slice(-2)+' '+MON[Math.floor(sc.date/100)-1]+' '+YEAR):dateTxt;return h('div',{class:'msr-mm-mid'},h('b',{class:'msr-mm-score'},sc&&sc.time?sc.time:'TBA'),h('small',null,sd||'Not announced yet'));})();
     var stats=maps.length?h('section',{class:'msr-mm-sec'},h('h2',null,'Player stats'),h('div',{class:'msr-finished-stats two'},statTable(ka,'pa'),statTable(kb,'pb'))):null;
     return h('div',{class:'msr-mm'},
       h('a',{class:'back',href:'#matches',svg:ICON.back+'<span>Matches</span>'}),
@@ -6970,9 +6970,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         [3, 4, 5].forEach(function (n) { if (vdManual[n] || !window.msrVoidAutoRound) return; var ar = window.msrVoidAutoRound(n); if (!ar.pairs.length || !ar.day) return;
           vdRounds.push({ n: n, label: 'Round ' + n + ' \u00b7 ' + Object.keys(ar.pools).sort().reverse().map(function (k) { return k.replace('-', '/'); }).join(' & '), pairs: ar.pairs.map(function (p) { return [p[0], p[1]]; }), day: ar.day }); });
         var vdGroups = vdRounds.map(function (rd) {
-          var rows = rd.pairs.filter(function (p) { var sc = vdSched(p[0], p[1]), res = window.msrVoidRes ? window.msrVoidRes(p[0], p[1], rd.n) : null, rr = res ? (window.MSR_VOID_RESULTS || []).find(function (x) { var U = function (v) { return String(v).toUpperCase(); }; return ((U(x.a) === U(p[0]) && U(x.b) === U(p[1])) || (U(x.a) === U(p[1]) && U(x.b) === U(p[0]))) && (x.round || 1) === rd.n; }) : null;
+          var rows = rd.pairs.filter(function (p) { var sc = vdSched(p[0], p[1], rd.n), res = window.msrVoidRes ? window.msrVoidRes(p[0], p[1], rd.n) : null, rr = res ? (window.MSR_VOID_RESULTS || []).find(function (x) { var U = function (v) { return String(v).toUpperCase(); }; return ((U(x.a) === U(p[0]) && U(x.b) === U(p[1])) || (U(x.a) === U(p[1]) && U(x.b) === U(p[0]))) && (x.round || 1) === rd.n; }) : null;
             var day = (sc && sc.date) || (rr && rr.date) || rd.day; return day === APM.sel && T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
-            var sc = vdSched(p[0], p[1]) || {}, tm = sc.time || (/^\d{1,2}:\d{2}$/.test(p[2] || '') ? p[2] : '');
+            var sc = vdSched(p[0], p[1], rd.n) || {}, tm = sc.time || (/^\d{1,2}:\d{2}$/.test(p[2] || '') ? p[2] : '');
             return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _vround: rd.n, _bo: /^\d{1,2}:\d{2}$/.test(p[2] || '') || !p[2] ? (sc.bo || 'Swiss') : p[2], time_label: tm, _href: '#voidmatch/' + p[0] + '/' + p[1] + '/' + APM.sel + '/' + encodeURIComponent('Round ' + rd.n) };
           });
           return { label: rd.label, rows: rows };
