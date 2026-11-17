@@ -5319,6 +5319,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   function msrApplyBan() {
     var bp = MSR_BAN.players, i;
     for (i = PMROWS.length - 1; i >= 0; i--) if (bp[String(PMROWS[i].nick).toLowerCase()]) PMROWS.splice(i, 1);
+    // EliteKingZz DIVA played VOID as "EknZ VOID": its players' VOID maps belong to the DIVA lineup (in-game spellings miuu. / Zyaazzz = miuu / Zyaazz).
+    var vnm = { 'miuu.': 'miuu', 'zyaazzz': 'Zyaazz' };
+    PMROWS.forEach(function (r) { if (String(r.team).toUpperCase() === 'DS_VOID_EKNZ_20261113') { r.team = 'DS_BD02236437B5FF2BB5839658'; var vk = String(r.nick).toLowerCase(); if (vnm[vk]) r.nick = vnm[vk]; } });
     Object.keys(PROWS).forEach(function (k) { if (bp[k.toLowerCase()]) delete PROWS[k]; });
     for (i = PLAYERS.length - 1; i >= 0; i--) if (bp[String(PLAYERS[i].nick).toLowerCase()]) PLAYERS.splice(i, 1);
     for (i = RANK.length - 1; i >= 0; i--) if (MSR_BAN.teams[RANK[i][0]]) RANK.splice(i, 1);
