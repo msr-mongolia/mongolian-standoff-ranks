@@ -3490,6 +3490,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var aPlayed=a.verifiedMSR&&Number(a.maps)>0?1:0;
       var bPlayed=b.verifiedMSR&&Number(b.maps)>0?1:0;
       if(aPlayed!==bPlayed)return bPlayed-aPlayed;
+      // Provisional players (fewer than 5 verified maps) always rank below players with a real sample.
+      var aProv=aPlayed&&(Number(a.maps)||0)<5?1:0, bProv=bPlayed&&(Number(b.maps)||0)<5?1:0;
+      if(aProv!==bProv)return aProv-bProv;
       // Rank by verified performance, pulled toward the 1.00 average for small samples so a
       // 1-2 map player cannot out-rank players with a full map record. The displayed rating stays raw.
       var rk=function(p){var m=Math.max(0,Number(p.maps)||0),r=playerRankScore(p);return p.verifiedMSR&&m>0?(r*m+1.0*6)/(m+6):r;};
