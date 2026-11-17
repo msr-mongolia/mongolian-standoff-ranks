@@ -6790,6 +6790,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   var MSR_S3_TAGS = ['6vmp6', 'OMV', '6LC', '0kz', 'KngZz', 'DXIII', '2990 Purple', 'SNT', 'EKS', '2990 White', 'EknZ', 'OTR', 'OMEN', '2990', 'EVKZ', 'UCLT'];
   /* Official Round 1 (organiser post, Nov 16): 2990 White-EVKZ, EknZ-KngZz, 0kz-6LC, OMEN-UCLT, 2990 Purple-OTR, SNT-OMV, EKS-6vmp6, 2990-DXIII = seed i vs i+8 in this order (seed order inferred from the pairing list). */
   window.MSR_BAN_BONUS = { tags: ['6LC', 'SIXP', 'SIXL'], pts: 15 };
+  window.MSR_S3_DQ = ['6LC'];   // admin ruling Nov 18: 6LC banned; 0kz takes their place (counts as 1-0)
   window.MSR_S3_SEEDS = ['2990 White', 'EknZ', '0kz', 'OMEN', '2990 Purple', 'SNT', 'EKS', '2990', 'EVKZ', 'KngZz', '6LC', 'UCLT', 'OTR', 'OMV', '6vmp6', 'DXIII'];
   var MSR_S3_DATES = { 1: 1117, 2: 1118, 3: 1119, 4: 1120, 5: 1121 };
   window.msrS3 = function () {
@@ -6810,7 +6811,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var met = {};
     (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) { met[kk(m.a) + '|' + kk(m.b)] = met[kk(m.b) + '|' + kk(m.a)] = true; });
     res.forEach(function (r) { met[kk(r.a) + '|' + kk(r.b)] = met[kk(r.b) + '|' + kk(r.a)] = true; });
-    res.forEach(function (r) { var A = rec[kk(r.a)], B = rec[kk(r.b)]; if (r.aw > r.bw) { A.w++; B.l++; } else { B.w++; A.l++; } A.opp.push(kk(r.b)); B.opp.push(kk(r.a)); });
+    // Banned teams (MSR_S3_DQ) are out of Stage 3: whoever they played counts as the winner of that series, and they take no part in later rounds.
+    var dq = {}; (window.MSR_S3_DQ || []).forEach(function (t) { dq[kk(t)] = 1; });
+    res.forEach(function (r) { var A = rec[kk(r.a)], B = rec[kk(r.b)], aWon = (dq[kk(r.a)] || dq[kk(r.b)]) ? !!dq[kk(r.b)] : r.aw > r.bw; if (aWon) { A.w++; B.l++; } else { B.w++; A.l++; } A.opp.push(kk(r.b)); B.opp.push(kk(r.a)); });
+    Object.keys(dq).forEach(function (k) { delete rec[k]; });
     function found(a, b) { return res.filter(function (r) { return (kk(r.a) === kk(a) && kk(r.b) === kk(b)) || (kk(r.a) === kk(b) && kk(r.b) === kk(a)); })[0] || null; }
     function mk(a, b) { var r = found(a, b); return { a: a, b: b, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw, auto: r.auto } : { aw: r.bw, bw: r.aw, auto: r.auto }) : null }; }
     var expect = { '1-0': 8, '0-1': 8, '2-0': 4, '1-1': 8, '0-2': 4, '2-1': 6, '1-2': 6, '2-2': 6 };
