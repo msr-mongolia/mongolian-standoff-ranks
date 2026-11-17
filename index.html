@@ -3938,7 +3938,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR White"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'Tournament stages' },
-      [1, 2, 3, 4].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
+      [1, 2, 3, 4].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, n === 4 ? 'Playoff' : 'Stage ' + n); }));
     var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_286B21B874899423C6F7C160', 'EliteKingZz']];
     function invCode(inv) {
       if (T[inv[0]]) return inv[0];
@@ -4201,7 +4201,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         var st; try { st = window.msrS4(); } catch (e) { return; }
         var qs = st.qualified.map(function (t) { return slot(t); }); while (qs.length < 8) qs.push(h('span', { class: 'sw-q' }, '?'));
         wrap.replaceChildren(
-          h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 4 \u00b7 Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3')),
+          h('div', { class: 'sw2-zh' }, h('b', null, 'Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3')),
           h('div', { class: 'sw-wrap' }, h('div', { class: 'sw' },
             col('Quarterfinals', st.qf.map(row), 'c-blue'),
             col('Semifinals', st.sf.map(row), 'c-yellow'),
@@ -4216,7 +4216,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       return wrap;
     })();
     var stage4Panel = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, stage4);
-    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination  |  Stage 3 · Swiss  |  Stage 4 · Playoff'), stageStrip,
+    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination  |  Stage 3 · Swiss  |  Playoff'), stageStrip,
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
           h('div',null,h('h2',null,'GROUP ',h('em',null,'E')),h('p',null,'ROUND ROBIN STAGE'))),
