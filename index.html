@@ -4170,6 +4170,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         return c && T[c] ? h('a', { class: 'sw-t', href: teamHref(c), title: T[c].n, 'aria-label': T[c].n }, swCrest(c)) : h('span', { class: 'sw-q', title: seed ? 'Seed ' + seed : '' }, seed ? String(seed) : '?');
       }
       function row(mt) {
+        if (mt.bye) return h('div', { class: 'sw-m' }, slot(mt.a), h('span', { class: 'sw-vs' }, 'BYE'), h('span', { class: 'sw-q' }, '–'));
         var r = mt.res, sa = slot(mt.a, mt.seedA), sb = slot(mt.b, mt.seedB);
         if (r && r.aw !== r.bw) { var wE = r.aw > r.bw ? sa : sb, lE = r.aw > r.bw ? sb : sa; lE.classList.add('sw-lose', r.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
         return h('div', { class: 'sw-m' + (r ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, r ? (r.auto ? 'W/O' : r.aw + ':' + r.bw) : 'VS'), sb);
@@ -6850,7 +6851,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           var wl = key.split('-').map(Number); if (wl[0] + wl[1] !== n - 1) return;
           var g = (recs[key] || []).slice().sort(function (x, y) { return idx[kk(x.tag)] - idx[kk(y.tag)]; });
           var ms = [];
-          if (g.length === expect[key]) {
+          // A banned team leaves its record group one short: the lowest seed of the group (or window.MSR_S3_BYE[record]) gets a bye, the rest are paired as usual.
+          var byeT = null, gg = g;
+          if (g.length === expect[key] - 1 && g.length % 2 === 1 && Object.keys(dq).length) { var bo = (window.MSR_S3_BYE || {})[key]; byeT = g.filter(function (x) { return bo && kk(x.tag) === kk(bo); })[0] || g[g.length - 1]; gg = g.filter(function (x) { return x !== byeT; }); }
+          if (g.length === expect[key] || byeT) {
             // Pair highest seed with the lowest seed it has NOT met before (in any MSL stage); backtrack so nobody is left with a repeat when a clean pairing exists.
             var solve = function (pl) {
               if (!pl.length) return [];
@@ -6861,10 +6865,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
               }
               return null;
             };
-            var clean = solve(g.slice());
+            var clean = solve(gg.slice());
             if (clean) clean.forEach(function (pr) { ms.push(mk(pr[0].tag, pr[1].tag)); });
             else {
-              var pool = g.slice();
+              var pool = gg.slice();
               while (pool.length) {
                 var top = pool.shift(), pick = -1;
                 for (var j2 = pool.length - 1; j2 >= 0; j2--) if (!met[kk(top.tag) + '|' + kk(pool[j2].tag)]) { pick = j2; break; }
@@ -6873,6 +6877,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
               }
             }
           }
+          if (byeT) ms.push({ a: byeT.tag, b: null, bye: true, res: null });
           groups.push({ rec: key, matches: ms, size: expect[key], have: g.length });
         });
       }
