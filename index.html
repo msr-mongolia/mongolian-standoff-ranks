@@ -5613,7 +5613,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var pp=String(arg||'').split('/'),ka=pp[0],kb=pp[1],dn=+pp[2]||0,rlab=decodeURIComponent(pp[3]||'');
     if(!T[ka]||!T[kb])return V.matches();
     var U=function(v){return String(v||'').toUpperCase();};
-    var raw=(window.MSR_VOID_RESULTS||[]).filter(function(m){return (U(m.a)===U(ka)&&U(m.b)===U(kb))||(U(m.a)===U(kb)&&U(m.b)===U(ka));})[0]||null;
+    // The same pair can meet in several Swiss rounds: take the result of the round (or date) in the link, never another round's.
+    var rnum=+((rlab.match(/\d+/)||[])[0])||0,cands=(window.MSR_VOID_RESULTS||[]).filter(function(m){return (U(m.a)===U(ka)&&U(m.b)===U(kb))||(U(m.a)===U(kb)&&U(m.b)===U(ka));});
+    var raw=(rnum?cands.filter(function(m){return (m.round||1)===rnum;})[0]:(dn&&cands.filter(function(m){return m.date===dn;})[0])||cands[0])||null;
     var flip=raw&&U(raw.a)!==U(ka),res=raw?{a:flip?raw.bs:raw.as,b:flip?raw.as:raw.bs,auto:!!raw.auto}:null;
     var shown=raw?(raw.maps&&raw.maps.length?raw.maps:[]):[],played=raw&&raw.playedMaps?raw.playedMaps:[];
     var maps=raw?(raw.maps||[]).map(function(m){return {map:m.map,a:flip?m.bScore:m.aScore,b:flip?m.aScore:m.bScore,pa:flip?m.b:m.a,pb:flip?m.a:m.b};}):[];
