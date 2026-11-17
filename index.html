@@ -3010,7 +3010,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   [['Anvex','S'],['MPS','S'],['SATT','A'],['SPS','S'],['MSL Season','A'],['MSL Rising Star','B']].forEach(function (x) {
     EVENTS.push({ n: x[0], st: 'soon', dt: 'Coming soon', loc: 'TBA', teams: 'TBA', prize: 'TBA', tier: x[1] });
   });
-  EVENTS.forEach(function (e) { if (e.n === 'SPS') { e.img = 'assets/sps_logo.jpg'; e.discord = 'https://discord.gg/fExHtF3xk'; } }); // Standoff Pro Series
+  EVENTS.forEach(function (e) { if (e.n === 'SPS') { e.img = 'assets/sps_logo.jpg'; e.discord = 'https://discord.gg/fExHtF3xk'; e.teams = 32; e.prize = '1 000 000₮'; e.dist = ['🥇 500 000₮', '🥈 300 000₮', '🥉 200 000₮']; e.notes = ['🎟️ Entry fee 35 000₮']; } }); // Standoff Pro Series
   EVENTS[0].tier = 'S';
   EVENTS.forEach(function (e) { if (e.st === 'soon' && e.dt === 'Coming soon' && !e.id && e.n !== 'SPS') e.locked = true; }); // announced but not open yet
   EVENTS.splice(1, 0, { id: 'void', n: 'VOID Tournament', st: 'now', dt: 'Nov 13, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=2', discord: 'https://discord.gg/fH3w2wYYs',
