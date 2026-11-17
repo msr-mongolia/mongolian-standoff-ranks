@@ -3284,7 +3284,8 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   };
   // VOID match schedule: date (MMDD), time, Bo and maps (pick order, last = decider) per pair.
   window.MSR_VOID_SCHEDULE = window.MSR_VOID_SCHEDULE || [
-    { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', date: 1114, time: '18:00', bo: 'Bo3', maps: ['Rust', 'Dune', 'Hanami'] } // R1 United elites (Syroz) vs Celestex (Cel2x)
+    { a: 'DS_BED22EFE5176D46A905806CD', b: 'DS_7C03F1F6DA5F993B4CC9BB28', date: 1114, time: '18:00', bo: 'Bo3', maps: ['Rust', 'Dune', 'Hanami'] }, // R1 United elites (Syroz) vs Celestex (Cel2x)
+    { a: 'DS_A92955A6312CC42137C3C7EA', b: 'DS_4559C7E779F302E917B1A414', date: 1117, time: '20:00', bo: 'Bo3', maps: ['Dune', 'Sandstone', 'Province'] } // R4 MNKT Blue vs MSDTP (veto: MSDTP Dune, MNKT Sandstone, decider Province)
   ];
   window.msrVoidSched = function (x, y) { var U = function (v) { return String(v || '').toUpperCase(); }; return (window.MSR_VOID_SCHEDULE || []).find(function (m) { return (U(m.a) === U(x) && U(m.b) === U(y)) || (U(m.a) === U(y) && U(m.b) === U(x)); }) || null; };
   window.msrVoidRes = function (x, y, round) {
