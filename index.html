@@ -3938,7 +3938,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var groupData = {"A":[["Ulseratif Colitis","uclt"],["Immortal Dynasy","IMTLL"],["ACCACIN","ACCA"],["Scarlet","SCLAT"],["One True Reign","OTR"],["OMNIS OVER","OMV"],["AIM4R","AIM4R"],["Asterisk","RESKK"]],"B":[["2990 RED","2990"],["EliteKingZz","EknZ"],["CioR White","CioR White"],["Born To Die","B2Di"],["EVERLASTED","EVKZ"],["CHINGIS WARRIORS","MSDTP"],["NeonRiderSS","NNRDS"],["HUMAN4Z","Humn7"]],"C":[["KingZz","KngZz"],["imp4ct","Mpct"],["Ascendd","7ADD"],["ETXEN MgL","ETXEN"],["UxrN","UxrN"],["reveurs inc","Rvurz"],["To exist with purpose","4zi"],["WarriorKingzz","WarKz"]],"D":[["Omega ForceZ","0kz"],["Civilization of ruin","CioR"],["Dxvil13","DXIII"],["Team Lunaris","TLnrs"],["DIFFIRENT LEVEL","DL340"],["Six Lence","6LC"],["Silent R4GE","R4GE7"],["Xiverion","XvrN"]],"F":[["2990 Purple","2990 Purple"],["Team Resolve","R6"],["KnightSS","KGTSS"],["wonderArt","WOART"],["Another Level","-aN0T"],["Pure / VAMP EMPIRE","6vmp6"],["ELITE KINGS","EKS"]]};
     groupData.E=[['1nfinityX','INFYX'],['METAS','METAS'],['DRDRX','DRDRX'],['Starfire Nirvana Team','SNT'],['SIX LENCE PURPLE','SIXP'],['MANAI','MANAI'],['OMEN ESPORTS','OMEN']];
     var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'Tournament stages' },
-      [1, 2, 3].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
+      [1, 2, 3, 4].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': n, 'aria-selected': n === 1 ? 'true' : 'false' }, 'Stage ' + n); }));
     var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_286B21B874899423C6F7C160', 'EliteKingZz']];
     function invCode(inv) {
       if (T[inv[0]]) return inv[0];
@@ -4184,7 +4184,39 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       return wrap;
     })();
     var stage3Panel = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, stage3);
-    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination  |  Stage 3 · Swiss'), stageStrip,
+    // Stage 4: playoff, the 8 teams that qualify from Stage 3, single elimination, Bo3.
+    var stage4 = (function () {
+      var wrap = h('div', { class: 'sw2-wrap s3b' });
+      function slot(tag, seed) {
+        var c = tag && window.msrTagToCode ? window.msrTagToCode(tag) : null;
+        return c && T[c] ? h('a', { class: 'sw-t', href: teamHref(c), title: T[c].n, 'aria-label': T[c].n }, swCrest(c)) : h('span', { class: 'sw-q', title: seed ? 'Seed ' + seed : '' }, seed ? String(seed) : '?');
+      }
+      function row(mt) {
+        var r = mt.res, sa = slot(mt.a, mt.seedA), sb = slot(mt.b, mt.seedB);
+        if (r && r.aw !== r.bw) { var wE = r.aw > r.bw ? sa : sb, lE = r.aw > r.bw ? sb : sa; lE.classList.add('sw-lose', r.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
+        return h('div', { class: 'sw-m' + (r ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, r ? (r.auto ? 'W/O' : r.aw + ':' + r.bw) : 'VS'), sb);
+      }
+      function col(title, rows, cls) { return h('div', { class: 'sw-col' }, h('div', { class: 'sw-body' }, h('div', { class: 'sw-g ' + (cls || 'c-green') }, h('div', { class: 'sw-gh' }, h('b', null, title)), rows))); }
+      function paint() {
+        var st; try { st = window.msrS4(); } catch (e) { return; }
+        var qs = st.qualified.map(function (t) { return slot(t); }); while (qs.length < 8) qs.push(h('span', { class: 'sw-q' }, '?'));
+        wrap.replaceChildren(
+          h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 4 \u00b7 Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3')),
+          h('div', { class: 'sw-wrap' }, h('div', { class: 'sw' },
+            col('Quarterfinals', st.qf.map(row), 'c-blue'),
+            col('Semifinals', st.sf.map(row), 'c-yellow'),
+            col('Final', [row(st.final)], 'c-red'),
+            h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, 'Champion'), h('div', { class: 'sw-body' }, h('div', { class: 'sw-list c-list ok' }, h('h4', null, st.champion ? 'CHAMPION' : 'TBD'), h('div', { class: 'sl' }, [slot(st.champion)])))))),
+          h('div', { class: 'sw-wrap' }, h('div', { class: 'sw-list c-list ok', style: 'max-width:520px' }, h('h4', null, 'Qualified from Stage 3 (' + st.qualified.length + '/8)'), h('div', { class: 'sl' }, qs))),
+          h('p', { class: 'msr-zone-note' }, st.ready ? 'Seeding: Stage 3 record (3\u20130, 3\u20131, 3\u20132), ties by Stage 3 seed. Quarterfinals 1v8, 4v5, 2v7, 3v6.' : 'The bracket is drawn once all 8 teams have qualified from Stage 3 (Nov 21).'));
+      }
+      paint();
+      window.addEventListener('hashchange', function () { setTimeout(paint, 400); });
+      [1500, 4000, 9000].forEach(function (ms) { setTimeout(paint, ms); });
+      return wrap;
+    })();
+    var stage4Panel = h('section', { class: 'msr-stage2-panel', style: 'display:none' }, stage4);
+    var root = h('div', { class: 'msr-zones msr-round-robin-page' }, pageHead('MSL Major S2', 'Stage 1 · Round Robin  |  Stage 2 · Double Elimination  |  Stage 3 · Swiss  |  Stage 4 · Playoff'), stageStrip,
       h('section', {class:'box msr-rr-summary','aria-label':'Group E standings and round robin information'},
         h('div',{class:'msr-rr-summary-head'},h('span',{class:'msr-rr-trophy'},'🏆'),
           h('div',null,h('h2',null,'GROUP ',h('em',null,'E')),h('p',null,'ROUND ROBIN STAGE'))),
@@ -4372,16 +4404,17 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         h('div', { class: 'msr-swiss-outcomes' }, h('span', { class: 'qualified' }, '3 WINS · QUALIFIED'), h('span', { class: 'eliminated' }, '3 LOSSES · ELIMINATED')));
     });
     var grid = root.querySelector('.msr-zone-grid'); root.insertBefore(tabbar, grid); selectZone(0);
-    root.appendChild(stage2); root.appendChild(stage3Panel);
+    root.appendChild(stage2); root.appendChild(stage3Panel); root.appendChild(stage4Panel);
     var stageHead = root.firstElementChild;
     function showStage(n) {
       [].slice.call(stageStrip.children).forEach(function (b2) { b2.setAttribute('aria-selected', String(Number(b2.getAttribute('data-stage')) === n)); });
       [].slice.call(root.children).forEach(function (ch) {
-        if (ch === stageHead || ch === stageStrip || ch === stage2 || ch === stage3Panel) return;
+        if (ch === stageHead || ch === stageStrip || ch === stage2 || ch === stage3Panel || ch === stage4Panel) return;
         if (n === 1) ch.style.removeProperty('display'); else ch.style.setProperty('display', 'none', 'important');
       });
       stage2.style.display = n === 2 ? '' : 'none';
       stage3Panel.style.display = n === 3 ? '' : 'none';
+      stage4Panel.style.display = n === 4 ? '' : 'none';
     }
     stageStrip.addEventListener('click', function (e) { var b2 = e.target.closest('.msr-stage-tab'); if (b2) showStage(Number(b2.getAttribute('data-stage'))); });
     showStage(3); // MSL event opens on Stage 3 (current stage)
@@ -6780,6 +6813,32 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     }
     var all = Object.keys(rec).map(function (k) { return rec[k]; });
     return { given: given, rounds: rounds, rec: rec, qualified: all.filter(function (r) { return r.w >= 3; }).map(function (r) { return r.tag; }), eliminated: all.filter(function (r) { return r.l >= 3; }).map(function (r) { return r.tag; }) };
+  };
+  /* MSL Major S2 Stage 4 (playoff): the 8 teams that qualify from Stage 3, single elimination, Bo3.
+     Seeding (provisional): Stage 3 record (3-0, then 3-1, then 3-2), ties by Stage 3 seed. Quarterfinals 1v8, 4v5, 2v7, 3v6; winners meet in the semifinals (1/8 vs 4/5, 2/7 vs 3/6), then the final.
+     Results come from ledger entries flagged stage4:true. */
+  window.msrS4 = function () {
+    var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+    var s3 = window.msrS3(), seeds = (window.MSR_S3_SEEDS || []).slice(), idx = {}; seeds.forEach(function (t, i) { idx[kk(t)] = i; });
+    var q = Object.keys(s3.rec).map(function (k) { return s3.rec[k]; }).filter(function (r) { return r.w >= 3; }).sort(function (x, y) { return x.l - y.l || idx[kk(x.tag)] - idx[kk(y.tag)]; });
+    var ready = q.length === 8, order = ready ? q.map(function (r) { return r.tag; }) : [];
+    var res = [];
+    (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) {
+      if (!m.stage4) return;
+      var au = m.auto || { a: 0, b: 0 }, mp = m.maps || [];
+      var aw = mp.filter(function (x) { return x.aScore > x.bScore; }).length + (au.a || 0), bw = mp.filter(function (x) { return x.bScore > x.aScore; }).length + (au.b || 0);
+      if (aw !== bw) res.push({ a: m.a, b: m.b, aw: aw, bw: bw, auto: !mp.length, date: m.date });
+    });
+    function mk(a, b, sa, sb) {
+      var r = a && b ? res.filter(function (x) { return (kk(x.a) === kk(a) && kk(x.b) === kk(b)) || (kk(x.a) === kk(b) && kk(x.b) === kk(a)); })[0] : null;
+      var out = { a: a || null, b: b || null, seedA: sa, seedB: sb, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw, auto: r.auto } : { aw: r.bw, bw: r.aw, auto: r.auto }) : null };
+      out.winner = out.res ? (out.res.aw > out.res.bw ? a : b) : null; return out;
+    }
+    var at = function (n) { return ready ? order[n - 1] : null; };
+    var qf = [[1, 8], [4, 5], [2, 7], [3, 6]].map(function (p) { return mk(at(p[0]), at(p[1]), p[0], p[1]); });
+    var sf = [mk(qf[0].winner, qf[1].winner), mk(qf[2].winner, qf[3].winner)];
+    var fin = mk(sf[0].winner, sf[1].winner);
+    return { ready: ready, qualified: q.map(function (r) { return r.tag; }), order: order, qf: qf, sf: sf, final: fin, champion: fin.winner };
   };
   function ensureS3Matches() {
     for (var q = ALLM.length - 1; q >= 0; q--) if (ALLM[q].s3fix) { delete MBY[ALLM[q].id]; ALLM.splice(q, 1); }
