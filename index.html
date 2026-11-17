@@ -6804,6 +6804,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     });
     (window.MSR_S3_RESULTS || []).forEach(function (r) { add(r.a, r.b, (r.auto && r.auto.a) || r.aw || 0, (r.auto && r.auto.b) || r.bw || 0, r.date, !!r.auto); });
     var rec = {}; seeds.forEach(function (t) { rec[kk(t)] = { tag: t, w: 0, l: 0, opp: [] }; });
+    // Every pair that has already met in any MSL stage (ledger) or in Stage 3.
+    var met = {};
+    (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) { met[kk(m.a) + '|' + kk(m.b)] = met[kk(m.b) + '|' + kk(m.a)] = true; });
+    res.forEach(function (r) { met[kk(r.a) + '|' + kk(r.b)] = met[kk(r.b) + '|' + kk(r.a)] = true; });
     res.forEach(function (r) { var A = rec[kk(r.a)], B = rec[kk(r.b)]; if (r.aw > r.bw) { A.w++; B.l++; } else { B.w++; A.l++; } A.opp.push(kk(r.b)); B.opp.push(kk(r.a)); });
     function found(a, b) { return res.filter(function (r) { return (kk(r.a) === kk(a) && kk(r.b) === kk(b)) || (kk(r.a) === kk(b) && kk(r.b) === kk(a)); })[0] || null; }
     function mk(a, b) { var r = found(a, b); return { a: a, b: b, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw, auto: r.auto } : { aw: r.bw, bw: r.aw, auto: r.auto }) : null }; }
@@ -6822,12 +6826,26 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           var g = (recs[key] || []).slice().sort(function (x, y) { return idx[kk(x.tag)] - idx[kk(y.tag)]; });
           var ms = [];
           if (g.length === expect[key]) {
-            var pool = g.slice();
-            while (pool.length) {
-              var top = pool.shift(), pick = -1;
-              for (var j = pool.length - 1; j >= 0; j--) if (top.opp.indexOf(kk(pool[j].tag)) < 0) { pick = j; break; }
-              if (pick < 0) pick = pool.length - 1;
-              ms.push(mk(top.tag, pool.splice(pick, 1)[0].tag));
+            // Pair highest seed with the lowest seed it has NOT met before (in any MSL stage); backtrack so nobody is left with a repeat when a clean pairing exists.
+            var solve = function (pl) {
+              if (!pl.length) return [];
+              for (var j = pl.length - 1; j >= 1; j--) {
+                if (met[kk(pl[0].tag) + '|' + kk(pl[j].tag)]) continue;
+                var rest = pl.slice(1, j).concat(pl.slice(j + 1)), sub = solve(rest);
+                if (sub) return [[pl[0], pl[j]]].concat(sub);
+              }
+              return null;
+            };
+            var clean = solve(g.slice());
+            if (clean) clean.forEach(function (pr) { ms.push(mk(pr[0].tag, pr[1].tag)); });
+            else {
+              var pool = g.slice();
+              while (pool.length) {
+                var top = pool.shift(), pick = -1;
+                for (var j2 = pool.length - 1; j2 >= 0; j2--) if (!met[kk(top.tag) + '|' + kk(pool[j2].tag)]) { pick = j2; break; }
+                if (pick < 0) pick = pool.length - 1;
+                ms.push(mk(top.tag, pool.splice(pick, 1)[0].tag));
+              }
             }
           }
           groups.push({ rec: key, matches: ms, size: expect[key], have: g.length });
