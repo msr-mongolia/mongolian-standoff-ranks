@@ -6786,6 +6786,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           while (MBY[nid]) nid++;
           var d = rd.date, wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(YEAR, Math.floor(d / 100) - 1, d % 100).getDay()];
           var m = { id: nid, s3fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Stage 3 · Swiss · Round ' + rd.n + ' (' + g.rec.replace('-', '–') + ') · Bo3', state: 'soon', day: d === TODAY ? 'Today' : ('0' + Math.floor(d / 100)).slice(-2) + '/' + ('0' + d % 100).slice(-2) + ' · ' + wd, date: d, when: 'TBA', bo: 3, maps: [] };
+          // Veto post from #msl-veto (time + picks + decider); only posts made since Stage 3 opened (Nov 16 06:16 UTC), so an older Stage 2 veto of the same pair never shows.
+          try { var vt = msrVetoFor(a, b); if (vt && String(vt.source_timestamp) >= '2026-11-16T06:16') { if (vt.time_label) m.when = /^\d{1,2}:\d{2}$/.test(vt.time_label) ? vt.time_label : vt.time_label + '?'; if ((vt.picks || []).length) m.maps = vt.picks.map(function (pk, k) { var pc = pk.team ? msrVetoCode(pk.team) : null; return [pk.map, null, null, 'soon', pk.team ? (pc && T[pc] ? (T[pc].tag || T[pc].n) : pk.team) + ' pick' : 'Map ' + (k + 1)]; }).concat(vt.decider ? [[vt.decider, null, null, 'soon', 'Decider']] : []); } } catch (e) {}
           ALLM.push(m); MBY[nid] = m;
         });
       });
