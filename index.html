@@ -8681,6 +8681,8 @@ function verifiedPlayerStats(){
 function verifiedTeamProfiles(){
  const profile=document.querySelector('.prof');if(!profile)return;
  const title=norm(profile.querySelector('h1')?.textContent||'');
+ // EliteKingZz DIVA shares the clan tag EknZ with EliteKingZz but is a different roster with no verified matches yet: never give it the EknZ ledger.
+ if(title.includes('diva'))return;
  const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct','everlasted':'EVKZ','chingiswarriors':'MSDTP','omnisover':'OMV','clanonetruereign':'OTR','ascendd':'7ADD','etxenmgl':'ETXEN'};
  const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
  const profileTeam=msrClanMedia.find(t=>[t.name,t.tag].some(v=>norm(v)===title));
