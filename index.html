@@ -6810,7 +6810,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   var MSR_S3_TAGS = ['6vmp6', 'OMV', '6LC', '0kz', 'KngZz', 'DXIII', '2990 Purple', 'SNT', 'EKS', '2990 White', 'EknZ', 'OTR', 'OMEN', '2990', 'EVKZ', 'UCLT'];
   /* Official Round 1 (organiser post, Nov 16): 2990 White-EVKZ, EknZ-KngZz, 0kz-6LC, OMEN-UCLT, 2990 Purple-OTR, SNT-OMV, EKS-6vmp6, 2990-DXIII = seed i vs i+8 in this order (seed order inferred from the pairing list). */
   window.MSR_BAN_BONUS = { tags: ['6LC', 'SIXP', 'SIXL'], pts: 15 };
-  window.MSR_S3_FORCE = { '0-1': [['DXIII', 'OMV']] };   // organiser request Nov 18
+  window.MSR_S3_FORCE = { '0-1': [['DXIII', 'OMV']], '1-0': [['0kz', '2990 White']] };   // organiser request Nov 18
   window.MSR_S3_DQ = ['6LC'];   // admin ruling Nov 18: 6LC banned; 0kz takes their place (counts as 1-0)
   window.MSR_S3_SEEDS = ['2990 White', 'EknZ', '0kz', 'OMEN', '2990 Purple', 'SNT', 'EKS', '2990', 'EVKZ', 'KngZz', 'CioR', 'UCLT', 'OTR', 'OMV', '6vmp6', 'DXIII'];   // seed 11: CioR replaces banned 6LC (admin ruling Nov 18)
   window.MSR_S3_RESULTS = [{ a: '0kz', b: 'CioR', auto: { a: 2, b: 0 }, date: 'NOV 17' }];   // R1 0kz-6LC played; 6LC banned, so CioR takes their seat as the R1 loser (0kz W/O)
