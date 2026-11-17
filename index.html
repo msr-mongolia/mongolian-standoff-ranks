@@ -3282,7 +3282,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     { nick: 'force', from: 'IMTLL', to: 'DS_A92955A6312CC42137C3C7EA', toNick: 'forcez', date: 1116 }, // IMTLL -> MNKT Blue (same Game ID 248992022)
     { nick: 'Panda4k', from: 'UxrN', to: 'DS_CD3641F18D306E725A580C82', toNick: 'Панда4к〄', date: 1115 } // Unioquiste -> NeonRiderSS (same Game ID 86102030, confirmed roster Nov 15)
   ];
-  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).map(function (r, i) { return [r, i]; }).sort(function (x, y) { return ((x[0].round || 1) - (y[0].round || 1)) || ((x[0].date || 0) - (y[0].date || 0)) || (y[1] - x[1]); }).map(function (x) { return x[0]; }) /* chronological: round, then date, then entry order (older entries sit lower in the list) */.filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }), resetA: r.eloReset === 'a', resetB: r.eloReset === 'b' }; }); };
+  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).map(function (r, i) { return [r, i]; }).sort(function (x, y) { return ((x[0].round || 1) - (y[0].round || 1)) || ((x[0].date || 0) - (y[0].date || 0)) || (y[1] - x[1]); }).map(function (x) { return x[0]; }) /* chronological: round, then date, then entry order (older entries sit lower in the list) */.filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }), resetA: r.eloReset === 'a', resetB: r.eloReset === 'b', void: true }; }); };
   /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
   window.msrVoidR2 = function () {
     var r1 = window.MSR_VOID_R1 || [], up = [], down = [];
@@ -6789,6 +6789,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
      A group is paired only once every team of that record is known. Seeds: window.MSR_S3_SEEDS (16 tags, seed 1 first). */
   var MSR_S3_TAGS = ['6vmp6', 'OMV', '6LC', '0kz', 'KngZz', 'DXIII', '2990 Purple', 'SNT', 'EKS', '2990 White', 'EknZ', 'OTR', 'OMEN', '2990', 'EVKZ', 'UCLT'];
   /* Official Round 1 (organiser post, Nov 16): 2990 White-EVKZ, EknZ-KngZz, 0kz-6LC, OMEN-UCLT, 2990 Purple-OTR, SNT-OMV, EKS-6vmp6, 2990-DXIII = seed i vs i+8 in this order (seed order inferred from the pairing list). */
+  window.MSR_BAN_BONUS = { tags: ['6LC', 'SIXP', 'SIXL'], pts: 15 };
   window.MSR_S3_SEEDS = ['2990 White', 'EknZ', '0kz', 'OMEN', '2990 Purple', 'SNT', 'EKS', '2990', 'EVKZ', 'KngZz', '6LC', 'UCLT', 'OTR', 'OMV', '6vmp6', 'DXIII'];
   var MSR_S3_DATES = { 1: 1117, 2: 1118, 3: 1119, 4: 1120, 5: 1121 };
   window.msrS3 = function () {
@@ -7985,7 +7986,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
     // The first 10 ledger matches are already in the baseline above; every later ledger match is chained in order.
-    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[]};})).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
+    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[],stage2:true};})).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
       return true;
     }).forEach(function(m){
       // Auto-wins (forfeited maps) count as map wins but carry no round score.
@@ -8009,6 +8010,17 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
         var tag=x[0],before=x[3],after=Math.max(0,Math.min(vipTagActive(tag)?Infinity:Math.max(300,before),before+x[1])),prev=x[4]||{w:0,l:0};
         adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1)});
       });
+      // Admin ruling: 6LC (Six Lence + Six Lence Purple) is banned. Every team that lost a series to them from Stage 2 on (and in VOID) gets +15 (MSR_BAN_BONUS).
+      var bnb=window.MSR_BAN_BONUS;
+      if(bnb&&(m.stage2||m.stage3||m.void)){
+        [[m.a,m.b,aw>bw],[m.b,m.a,bw>aw]].forEach(function(z){
+          if(z[2]&&bnb.tags.indexOf(z[0])>-1&&bnb.tags.indexOf(z[1])<0){
+            var lj=lastAdj(z[1]);if(!lj)return;
+            var np=Math.max(0,Math.min(vipTagActive(z[1])?Infinity:Math.max(300,lj.points),lj.points+bnb.pts));
+            lj.change+=np-lj.points;lj.points=np;
+          }
+        });
+      }
     });
     Object.keys(T).forEach(function(code){if(/one true reign/i.test(String(T[code].n||'')))T[code].tag='OTR';});
     applyConfirmedScreenshotTags();
