@@ -8165,10 +8165,13 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
       window.addEventListener('hashchange',function(){setTimeout(schedule,300);});
     })();
 
+    /* Stage 3 admin W/O wins (MSR_S3_RESULTS): the winner gets the normal W/O ELO (+10) and a win in its record/form.
+       The listed loser only fills the bracket seat (e.g. CioR for banned 6LC), so its ELO and record are untouched. */
+    function msrS3EloRows(){return (window.MSR_S3_RESULTS||[]).filter(function(r){return r.auto;}).map(function(r){return {a:r.a,b:r.b,auto:{a:r.auto.a||0,b:r.auto.b||0},maps:[],stage3:true,oneSided:true};});}
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
     // The first 10 ledger matches are already in the baseline above; every later ledger match is chained in order.
-    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[],stage2:true};})).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
+    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[],stage2:true};})).concat(msrS3EloRows()).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
       return true;
     }).forEach(function(m){
       // Auto-wins (forfeited maps) count as map wins but carry no round score.
@@ -8188,7 +8191,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
       var hasAuto=((au.a||0)+(au.b||0))>0;
       var da=fullAuto?(aw>bw?10:-13):Math.round((32*((aw>bw?1:0)-ex)+1.4*diff/count)*mult)+(hasAuto?(aw>bw?10:-13):0);
       var db=fullAuto?(bw>aw?10:-13):Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)+(hasAuto?(bw>aw?10:-13):0);
-      [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].forEach(function(x){
+      [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].filter(function(x){return !(m.oneSided&&x[0]===m.b);}).forEach(function(x){
         var tag=x[0],before=x[3],after=Math.max(0,Math.min(vipTagActive(tag)?Infinity:Math.max(300,before),before+x[1])),prev=x[4]||{w:0,l:0};
         adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1)});
       });
@@ -8211,12 +8214,12 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
 
     // Real form: last results per team, in ledger order (w = won the series, l = lost it).
     var formByTag={};
-    (window.MSR_SCREENSHOT_MATCHES||[]).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[]};})).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).forEach(function(m){
+    (window.MSR_SCREENSHOT_MATCHES||[]).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[]};})).concat(msrS3EloRows()).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).forEach(function(m){
       var au=m.auto||{a:0,b:0},mp=m.maps||[];
       var aw=mp.filter(function(x){return x.aScore>x.bScore;}).length+(au.a||0),bw=mp.filter(function(x){return x.bScore>x.aScore;}).length+(au.b||0);
       if(aw===bw)return;
       formByTag[m.a]=(formByTag[m.a]||'')+(aw>bw?'w':'l');
-      formByTag[m.b]=(formByTag[m.b]||'')+(bw>aw?'w':'l');
+      if(!m.oneSided)formByTag[m.b]=(formByTag[m.b]||'')+(bw>aw?'w':'l');
     });
     adjustments.forEach(function(item){
       var exact=exactTeamNames[item.tag];
