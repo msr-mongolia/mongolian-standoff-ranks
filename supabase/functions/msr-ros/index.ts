@@ -26,6 +26,18 @@ async function copyLogo(url:string,key:string){
 }
 Deno.serve(async(req)=>{
  if(req.method!=='POST')return new Response('Method not allowed',{status:405});
+ // Public, read-only: index of result-channel posts and their stored screenshots (used by the ss-fetch GitHub workflow).
+ // Channels come from the latest results-mode run, so new "*result*" channels appear automatically. No Discord call, no secrets.
+ const q=new URL(req.url).searchParams;
+ if(q.get('mode')==='sslist'){
+  const runs:any[]=await db('msr_ros_runs?select=result&order=ran_at.desc&limit=20')||[];
+  const run=runs.find((r:any)=>r.result?.mode==='results');
+  const chans:any[]=run?.result?.channels||[];
+  const ids=chans.map((c:any)=>c.channel).filter((x:any)=>/^\d+$/.test(String(x)));
+  const rows:any[]=ids.length?(await db('msr_ros_inbox?select=message_id,channel_id,content,logo_urls,source_timestamp&order=source_timestamp.asc&channel_id=in.('+ids.join(',')+')')||[]):[];
+  const cname=(id:string)=>String((chans.find((c:any)=>c.channel===id)||{}).name||'');
+  return Response.json({ok:true,posts:rows.map((r:any)=>({id:r.message_id,channel:cname(r.channel_id),time:r.source_timestamp,text:r.content,images:(r.logo_urls||[]).map((u:string)=>String(u).split('/ros/')[1]).filter(Boolean)}))});
+ }
  const token=(req.headers.get('authorization')||'').replace(/^Bearer /,'');
  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)))).map(b=>b.toString(16).padStart(2,'0')).join('');
  const states=await db('msr_discord_sync_state?select=token_hash&id=eq.true');
