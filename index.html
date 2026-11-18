@@ -7552,6 +7552,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59') accent='#C9D1DC';
         var isVampTeam=(/^6vmp6$/i.test(String(clan.tag||''))||/vamp\s*empire/i.test(clan.n||'')||clanCode==='DS_B8BA2EC7E90713C104377816'); if(isVampTeam) accent='#d0021b';
         var isDxiiiTeam=clanCode==='DS_5E67C1B8721D736CA5B5A960'||/^DXIII$/i.test(String(clan.tag||''))||/^(?:dxiii|dxvil13)$/i.test(String(clan.n||'').trim());
+        if(isDxiiiTeam) accent='#ff3547'; // DXIII BACK1: neon red to match its samurai banner.
         app.style.setProperty('--clan-accent',accent);
         app.style.setProperty('--clan-glow',accent+'45');
         app.classList.add('msr-clan-profile');
