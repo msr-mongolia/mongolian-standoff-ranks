@@ -5494,6 +5494,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   var MF = { ev: 'all', team: 'all' };
 
   function msrRelTeamKey(name){
+    // Colour emoji in veto posts name the sister team (MNKT🔵 = MNKTeam (blue)).
+    name=String(name||'').replace(/\u{1F535}/gu,' blue').replace(/\u{1F534}/gu,' red').replace(/\u{1F7E3}/gu,' purple').replace(/\u26AA/gu,' white').replace(/\u26AB/gu,' black');
     var norm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},n=norm(name);
     var otrCode=Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));});
     var fixed={ 'onetruereign':otrCode,'clanonetruereign':otrCode, '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','sixlencepurple':'SIXP','sixlence':'SIXL','8mna':'MANAI','1nfyx':'INFYX','0men':'OMEN' };
@@ -5502,7 +5504,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var wanted=norm(aliases[n]||name),keys=Object.keys(T);
     return keys.find(function(k){return norm(T[k].n)===wanted;})||
       keys.find(function(k){return norm(String(T[k].n).replace(/\s*\([^)]*\)\s*$/,''))===wanted;})||
-      keys.find(function(k){return norm(T[k].tag)===n;})||null;
+      keys.find(function(k){return norm(T[k].tag)===n;})||
+      // "<tag> <colour>" (MNKT blue, Zx_WB white): the team with that tag whose name carries the colour.
+      (function(){var hit=keys.filter(function(k){var t=norm(T[k].tag);return t&&n.length>t.length&&n.indexOf(t)===0&&norm(T[k].n).indexOf(n.slice(t.length))>=0;});return hit.length===1?hit[0]:null;})()||null;
   }
 
   // Veto posts write the plain tag "cior" for Civilization of Ruin (CioR White is a separate team): resolve those first.
@@ -7160,6 +7164,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           var rows = rd.pairs.filter(function (p) { var sc = vdSched(p[0], p[1], rd.n), res = window.msrVoidRes ? window.msrVoidRes(p[0], p[1], rd.n) : null, rr = res ? (window.MSR_VOID_RESULTS || []).find(function (x) { var U = function (v) { return String(v).toUpperCase(); }; return ((U(x.a) === U(p[0]) && U(x.b) === U(p[1])) || (U(x.a) === U(p[1]) && U(x.b) === U(p[0]))) && (x.round || 1) === rd.n; }) : null;
             var day = (sc && sc.date) || (rr && rr.date) || rd.day; return day === APM.sel && T[p[0]] && T[p[1]] && (!APM.fav || isFav(p[0]) || isFav(p[1])); }).map(function (p) {
             var sc = vdSched(p[0], p[1], rd.n) || {}, tm = sc.time || (/^\d{1,2}:\d{2}$/.test(p[2] || '') ? p[2] : '');
+            /* No admin time yet: take it from the VOID veto post (msr-veto-sync reads every veto and vote channel). */
+            if (!tm && !(window.msrVoidRes && window.msrVoidRes(p[0], p[1], rd.n))) { try { var vv = msrVetoFor(p[0], p[1]); if (vv && vv.time_label && /^\d{1,2}:\d{2}$/.test(vv.time_label)) tm = vv.time_label; } catch (e) {} }
             return { team_a: T[p[0]].n, team_b: T[p[1]].n, _keys: [p[0], p[1]], _void: true, _vround: rd.n, _bo: /^\d{1,2}:\d{2}$/.test(p[2] || '') || !p[2] ? (sc.bo || 'Swiss') : p[2], time_label: tm, _href: '#voidmatch/' + p[0] + '/' + p[1] + '/' + APM.sel + '/' + encodeURIComponent('Round ' + rd.n) };
           });
           return { label: rd.label, rows: rows };
