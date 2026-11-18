@@ -40,11 +40,19 @@ jobs:
           json.dump(d, open('ss-index.json', 'w'), ensure_ascii=False, indent=1)
           print('new images', n)
           PY
+      - name: Snapshot live team data (for offline testing)
+        run: |
+          KEY=$(grep -o "SUPABASE_ANON_KEY[^,}]*" msr-config.js 2>/dev/null | grep -o "['\"][^'\"]*['\"]" | tr -d "'\"" | head -1)
+          if [ -z "$KEY" ]; then curl -sf https://raw.githubusercontent.com/msr-mongolia/mongolian-standoff-ranks/main/msr-config.js -o /tmp/cfg.js && KEY=$(grep -o "SUPABASE_ANON_KEY[^,}]*" /tmp/cfg.js | grep -o "['\"][^'\"]*['\"]" | tr -d "'\"" | head -1); fi
+          B=https://gqepygqtgosvpfirahgd.supabase.co/rest/v1
+          mkdir -p live
+          curl -sf -H "apikey: $KEY" "$B/msr_discord_teams?select=id,name,tag,roster,logo_url,points,player_ids,source_timestamp,source_message_id,vip_started_at,vip_expires_at&order=source_timestamp.asc,name.asc&limit=1000" -o live/teams.json || echo teams-fail
+          curl -sf -H "apikey: $KEY" "$B/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,bans,source_timestamp&order=source_timestamp.desc&limit=100" -o live/rel.json || echo rel-fail
       - name: Commit
         run: |
           git config user.name msr-bot
           git config user.email msr-bot@users.noreply.github.com
-          git add ss ss-index.json
+          git add ss ss-index.json live
           git diff --cached --quiet && exit 0
           git commit -m "ss: new result screenshots"
           git push
