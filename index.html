@@ -6967,31 +6967,29 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var seeds = given ? window.MSR_S3_SEEDS.slice() : MSR_S3_TAGS.slice();
     var idx = {}; seeds.forEach(function (t, i) { idx[kk(t)] = i; });
     var res = [];
-    function add(a, b, aw, bw, date, auto) { if (aw !== bw && idx[kk(a)] != null && idx[kk(b)] != null) res.push({ a: a, b: b, aw: aw, bw: bw, date: date, auto: !!auto }); }
+    function add(a, b, aw, bw, date, auto, round) { if (aw !== bw && idx[kk(a)] != null && idx[kk(b)] != null) res.push({ a: a, b: b, aw: aw, bw: bw, date: date, auto: !!auto, round: round || 1 }); }
     (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) {
       if (!m.stage3) return;
       var au = m.auto || { a: 0, b: 0 }, mp = m.maps || [];
-      add(m.a, m.b, mp.filter(function (x) { return x.aScore > x.bScore; }).length + (au.a || 0), mp.filter(function (x) { return x.bScore > x.aScore; }).length + (au.b || 0), m.date, !mp.length);
+      add(m.a, m.b, mp.filter(function (x) { return x.aScore > x.bScore; }).length + (au.a || 0), mp.filter(function (x) { return x.bScore > x.aScore; }).length + (au.b || 0), m.date, !mp.length, m.round);
     });
-    (window.MSR_S3_RESULTS || []).forEach(function (r) { add(r.a, r.b, (r.auto && r.auto.a) || r.aw || 0, (r.auto && r.auto.b) || r.bw || 0, r.date, !!r.auto); });
+    (window.MSR_S3_RESULTS || []).forEach(function (r) { add(r.a, r.b, (r.auto && r.auto.a) || r.aw || 0, (r.auto && r.auto.b) || r.bw || 0, r.date, !!r.auto, r.round); });
     var rec = {}; seeds.forEach(function (t) { rec[kk(t)] = { tag: t, w: 0, l: 0, opp: [] }; });
     // Every pair that has already met in any MSL stage (ledger) or in Stage 3.
     var met = {};
-    (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) { met[kk(m.a) + '|' + kk(m.b)] = met[kk(m.b) + '|' + kk(m.a)] = true; });
-    res.forEach(function (r) { met[kk(r.a) + '|' + kk(r.b)] = met[kk(r.b) + '|' + kk(r.a)] = true; });
+    (window.MSR_SCREENSHOT_MATCHES || []).forEach(function (m) { if (m.stage3 || m.stage4) return; met[kk(m.a) + '|' + kk(m.b)] = met[kk(m.b) + '|' + kk(m.a)] = true; });
     // Banned teams (MSR_S3_DQ) are out of Stage 3: whoever they played counts as the winner of that series, and they take no part in later rounds.
     var dq = {}; (window.MSR_S3_DQ || []).forEach(function (t) { dq[kk(t)] = 1; });
-    res.forEach(function (r) { var A = rec[kk(r.a)], B = rec[kk(r.b)], aWon = (dq[kk(r.a)] || dq[kk(r.b)]) ? !!dq[kk(r.b)] : r.aw > r.bw; if (aWon) { A.w++; B.l++; } else { B.w++; A.l++; } A.opp.push(kk(r.b)); B.opp.push(kk(r.a)); });
     Object.keys(dq).forEach(function (k) { delete rec[k]; });
-    function found(a, b) { return res.filter(function (r) { return (kk(r.a) === kk(a) && kk(r.b) === kk(b)) || (kk(r.a) === kk(b) && kk(r.b) === kk(a)); })[0] || null; }
-    function mk(a, b) { var r = found(a, b); return { a: a, b: b, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw, auto: r.auto } : { aw: r.bw, bw: r.aw, auto: r.auto }) : null }; }
+    function found(a, b, round) { return res.find(function (r) { return r.round === round && ((kk(r.a) === kk(a) && kk(r.b) === kk(b)) || (kk(r.a) === kk(b) && kk(r.b) === kk(a))); }) || null; }
+    function mk(a, b, round) { var r = found(a, b, round); return { a: a, b: b, res: r ? (kk(r.a) === kk(a) ? { aw: r.aw, bw: r.bw, auto: r.auto } : { aw: r.bw, bw: r.aw, auto: r.auto }) : null }; }
     var expect = { '1-0': 8, '0-1': 8, '2-0': 4, '1-1': 8, '0-2': 4, '2-1': 6, '1-2': 6, '2-2': 6 };
     var rounds = [];
     for (var n = 1; n <= 5; n++) {
       var groups = [];
       if (n === 1) {
         var ms = [];
-        for (var i = 0; i < 8; i++) ms.push(given ? mk(seeds[i], seeds[i + 8]) : { a: null, b: null, seedA: i + 1, seedB: i + 9, res: null });
+        for (var i = 0; i < 8; i++) ms.push(given ? mk(seeds[i], seeds[i + 8], n) : { a: null, b: null, seedA: i + 1, seedB: i + 9, res: null });
         groups.push({ rec: '0-0', matches: ms });
       } else {
         var recs = {}; Object.keys(rec).forEach(function (k) { var r = rec[k]; if (r.w < 3 && r.l < 3 && r.w + r.l === n - 1) (recs[r.w + '-' + r.l] = recs[r.w + '-' + r.l] || []).push(r); });
@@ -7018,14 +7016,14 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
             ((window.MSR_S3_FORCE || {})[key] || []).forEach(function (fp) { var ia = -1, ib = -1; rest0.forEach(function (x, q) { if (kk(x.tag) === kk(fp[0])) ia = q; if (kk(x.tag) === kk(fp[1])) ib = q; }); if (ia > -1 && ib > -1) { forced.push([rest0[ia], rest0[ib]]); rest0 = rest0.filter(function (x, q) { return q !== ia && q !== ib; }); } });
             var clean = solve(rest0.slice());
             if (clean) clean = forced.concat(clean);
-            if (clean) clean.forEach(function (pr) { ms.push(mk(pr[0].tag, pr[1].tag)); });
+            if (clean) clean.forEach(function (pr) { ms.push(mk(pr[0].tag, pr[1].tag, n)); });
             else {
               var pool = rest0.slice();
               while (pool.length) {
                 var top = pool.shift(), pick = -1;
                 for (var j2 = pool.length - 1; j2 >= 0; j2--) if (!met[kk(top.tag) + '|' + kk(pool[j2].tag)]) { pick = j2; break; }
                 if (pick < 0) pick = pool.length - 1;
-                ms.push(mk(top.tag, pool.splice(pick, 1)[0].tag));
+                ms.push(mk(top.tag, pool.splice(pick, 1)[0].tag, n));
               }
             }
           }
@@ -7034,6 +7032,18 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         });
       }
       rounds.push({ n: n, date: MSR_S3_DATES[n], groups: groups });
+      groups.forEach(function (group) {
+        group.matches.forEach(function (match) {
+          if (!match.res) return;
+          var aKey = kk(match.a), bKey = kk(match.b);
+          var winner = match.res.aw > match.res.bw ? rec[aKey] : rec[bKey];
+          var loser = match.res.aw > match.res.bw ? rec[bKey] : rec[aKey];
+          if (!winner || !loser) return;
+          winner.w++; loser.l++;
+          winner.opp.push(kk(loser.tag)); loser.opp.push(kk(winner.tag));
+          met[aKey + '|' + bKey] = met[bKey + '|' + aKey] = true;
+        });
+      });
     }
     var all = Object.keys(rec).map(function (k) { return rec[k]; });
     return { given: given, rounds: rounds, rec: rec, qualified: all.filter(function (r) { return r.w >= 3; }).map(function (r) { return r.tag; }), eliminated: all.filter(function (r) { return r.l >= 3; }).map(function (r) { return r.tag; }) };
