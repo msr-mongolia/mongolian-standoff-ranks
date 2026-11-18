@@ -6892,7 +6892,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   window.MSR_S3_FORCE = { '1-0': [['2990 White', '2990 Purple'], ['EknZ', 'SNT'], ['0kz', 'EKS'], ['OMEN', '2990']], '0-1': [['EVKZ', 'OTR'], ['KngZz', 'OMV'], ['CioR', '6vmp6'], ['UCLT', 'DXIII']] };   // official Round 2 pairings (organiser, Nov 18)
   window.MSR_S3_DQ = ['6LC'];   // admin ruling Nov 18: 6LC banned; 0kz takes their place (counts as 1-0)
   window.MSR_S3_SEEDS = ['2990 White', 'EknZ', '0kz', 'OMEN', '2990 Purple', 'SNT', 'EKS', '2990', 'EVKZ', 'KngZz', 'CioR', 'UCLT', 'OTR', 'OMV', '6vmp6', 'DXIII'];   // seed 11: CioR replaces banned 6LC (admin ruling Nov 18)
-  window.MSR_S3_RESULTS = [{ a: '0kz', b: 'CioR', auto: { a: 2, b: 0 }, date: 'NOV 17' }];   // R1 0kz-6LC played; 6LC banned, so CioR takes their seat as the R1 loser (0kz W/O)
+  window.MSR_S3_RESULTS = [{ a: '0kz', b: 'CioR', auto: { a: 2, b: 0 }, date: 'NOV 17' }, { a: 'EknZ', b: 'KngZz', aw: 2, bw: 0, date: 'NOV 17' }, { a: '2990 Purple', b: 'OTR', aw: 2, bw: 0, date: 'NOV 17' }];   // R1 0kz-6LC played; 6LC banned, so CioR takes their seat as the R1 loser (0kz W/O)
   var MSR_S3_DATES = { 1: 1117, 2: 1118, 3: 1119, 4: 1120, 5: 1121 };
   window.msrS3 = function () {
     var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
