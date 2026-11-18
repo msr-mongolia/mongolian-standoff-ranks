@@ -1424,6 +1424,10 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 
 
 <script>
+/* Memoized name keys: normalize+regex is hot on every render. */
+(function(){var A=new Map(),B=new Map();window.__msrNk=function(v){v=v==null?'':String(v);var r=A.get(v);if(r===undefined){r=v.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');if(A.size>20000)A.clear();A.set(v,r);}return r;};window.__msrNl=function(v){v=v==null?'':String(v);var r=B.get(v);if(r===undefined){r=v.normalize('NFKC').toLowerCase();if(B.size>20000)B.clear();B.set(v,r);}return r;};})();
+</script>
+<script>
 (function(){
  function blockPrivateRoute(){if(/^#(profile|shop)(?:[/?]|$)/i.test(location.hash))location.replace(location.pathname+location.search+'#news');}
  window.addEventListener('hashchange',blockPrivateRoute);blockPrivateRoute();
@@ -3535,7 +3539,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
   function rememberFormerPlayer(player, oldTeam) {
     if (!oldTeam) return;
-    var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+    var nk=function(v){return __msrNk(v||'');};
     var archived=Object.assign({},player,{team:oldTeam,freeAgent:true,rank:0});
     var prior=(window.MSR_FREE_AGENT_RECORDS||window.MSR_FREE_AGENTS||[]).find(function(f){return nk(f.nick)===nk(player.nick)&&(f.team===oldTeam||nk(f.from)===nk((T[oldTeam]||{}).n));});
     archived.gameId=String((GAME_IDS||{})[oldTeam+'|'+nk(player.nick)]||(prior||{}).id||player.gameId||'');
@@ -3546,7 +3550,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   function syncFreeAgentMembership() {
     if (!GAME_IDS) return;
     window.MSR_FREE_AGENT_RECORDS=window.MSR_FREE_AGENT_RECORDS||((window.MSR_FREE_AGENTS||[]).slice());
-    var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+    var nk=function(v){return __msrNk(v||'');};
     PLAYERS.forEach(function(p){
       p.freeAgent=!!p.screenshotOnly||!(ROSTER[p.team]||[]).some(function(n){return nk(n)===nk(p.nick);});
       if(p.freeAgent)rememberFormerPlayer(p,p.team);
@@ -3595,7 +3599,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
   sortPlayerRanking();
   // Registered roster names only; screenshot-only temporary entries are excluded.
-  window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(PLAYERS.filter(p=>!p.freeAgent&&!p.screenshotOnly).map(p=>String(p.nick||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')))];
+  window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(PLAYERS.filter(p=>!p.freeAgent&&!p.screenshotOnly).map(p=>__msrNk(p.nick||'')))];
   // Build roster after game IDs initialize; referencing GAME_IDS here crashed the app.
   window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(p=>!p.freeAgent&&!p.screenshotOnly).map(p=>({
     nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,gameId:''
@@ -3625,7 +3629,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   /* KnightSS roster (Main: KIZO, Rivo, DiDi, Tami, keoz; Sub: Ada, dotaenjoyer, Oscar; captain DiDi). */
   Object.keys({"KIZO": "81130341", "Rivo": "71676722", "DiDi": "69825202", "Tami": "85738773", "keoz": "246103375", "Ada": "119855147", "dotaenjoyer": "219177928", "Oscar": "207290770"}).forEach(function(n){GAME_IDS['KGTSS|'+n.toLowerCase()]={"KIZO": "81130341", "Rivo": "71676722", "DiDi": "69825202", "Tami": "85738773", "keoz": "246103375", "Ada": "119855147", "dotaenjoyer": "219177928", "Oscar": "207290770"}[n];});
   function gameIdEl(nick, team) {
-    var id = GAME_IDS[team + '|' + String(nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')];
+    var id = GAME_IDS[team + '|' + __msrNk(nick)];
     return id ? h('small', { class: 'game-id', style: 'display:block;font-size:12px;color:var(--muted);font-weight:500;line-height:1.7' }, 'ID: ' + id) : null;
   }
   function playerHref(nick, team) { return '#player/' + encodeURIComponent(nick) + (team ? '/' + encodeURIComponent(team) : ''); }
@@ -3634,7 +3638,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var id = String(gameId || '').trim();
     if (!/^\d{5,12}$/.test(id)) return null;
     var matches = PLAYERS.filter(function(p) {
-      var k = p.team + '|' + String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+      var k = p.team + '|' + __msrNk(p.nick);
       return String(GAME_IDS[k] || '') === id;
     });
     if (matches.length !== 1) return null;
@@ -3727,12 +3731,12 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var assigned=MSR_CAPTAINS_BY_TAG[tag] || MSR_CAPTAINS_BY_TAG[String(code).toUpperCase()] || (/wonderart/i.test(name)?'Kl6pse':null);
     var roster=ROSTER[code]||[];
     if(!assigned)return roster[0]||'';
-    var norm=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+    var norm=function(v){return __msrNk(v||'');};
     var found=roster.find(function(n){return norm(n)===norm(assigned);});
     return found||assigned;
   }
   function captainFirstRoster(code) {
-    var captain=teamCaptain(code), norm=function(v){return String(v||'').normalize('NFKC').toLowerCase();};
+    var captain=teamCaptain(code), norm=function(v){return __msrNl(v||'');};
     return (ROSTER[code]||[]).slice().sort(function(a,b){return Number(norm(b)===norm(captain))-Number(norm(a)===norm(captain));});
   }
   function crownSigs() {
@@ -3742,7 +3746,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       if (!m || !sg) return;
       var r = ROSTER[m[1]];
       var captain = teamCaptain(m[1]);
-      if (captain && String(captain).normalize('NFKC').toLowerCase() === String(sg.getAttribute('data-nick')||'').normalize('NFKC').toLowerCase()) {
+      if (captain && __msrNl(captain) === String(sg.getAttribute('data-nick')||'').normalize('NFKC').toLowerCase()) {
         a.classList.add('cap'); a.setAttribute('title', 'Captain');
         a.appendChild(h('i', { class: 'crown', svg: CROWN }));
       }
@@ -4032,7 +4036,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var INV = [['DS_5EE6F3BEECF59DC3C6196F49', '2990 white'], ['DS_286B21B874899423C6F7C160', 'EliteKingZz']];
     function invCode(inv) {
       if (T[inv[0]]) return inv[0];
-      var nk2 = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }, want = nk2(inv[1]);
+      var nk2 = function (v) { return __msrNk(v || ''); }, want = nk2(inv[1]);
       return Object.keys(T).filter(function (c) { return nk2(T[c].n) === want; })[0] || null;
     }
     // One Swiss of 32 teams (30 qualifiers + 2 invited), Bo3: [round, record, matches, note, class]
@@ -4764,7 +4768,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     { date: '2026-11-06', time: '22:00', a: 'MetaS', b: '8MNA', bo: 3, ev: 'MSL Major S2', info: 'Group E · Day 3', stream: '' },
     { date: '2026-11-10', time: '21:00', a: 'CioR', b: 'DL340', bo: 3, ev: 'MSL Major S2', info: 'Group D', stream: '' }
   ];
-  var msrNk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); };
+  var msrNk = function (v) { return __msrNk(v || ''); };
   function msrLiveTeam(name) {
     var k = msrNk(name), code = null;
     Object.keys(T).some(function (c) { if (msrNk(T[c].tag) === k || msrNk(T[c].n) === k || msrNk(c) === k) { code = c; return true; } return false; });
@@ -5762,7 +5766,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     }
     function lineup(k){
       /* Ratings from this team's VOID maps (falls back to MSL ratings, then the registered roster). Top 5 shown, like the MSL match page. */
-      var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');},acc={},K=String(k).toUpperCase();
+      var nk=function(v){return __msrNk(v||'');},acc={},K=String(k).toUpperCase();
       (window.MSR_VOID_RESULTS||[]).forEach(function(r){var side=String(r.a).toUpperCase()===K?'a':String(r.b).toUpperCase()===K?'b':null;if(!side)return;
         (r.maps||[]).forEach(function(m){var R=(m.aScore||0)+(m.bScore||0);(m[side]||[]).forEach(function(q){var x=nk(q[0]),o=acc[x]||(acc[x]={nick:q[0],k:0,d:0,a:0,R:0,n:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.R+=R;o.n++;});});});
       var list=Object.keys(acc).map(function(x){var o=acc[x],c=window.msrCalc?window.msrCalc(o.k,o.d,o.a,o.R):null;o.rating=c?c.rating:0;return o;}).sort(function(a,b){return b.n-a.n||b.rating-a.rating;}).slice(0,5).sort(function(a,b){return b.rating-a.rating;});
@@ -6158,7 +6162,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     sp: { k: 'rating', dir: -1 }, st: { k: 'rating', dir: -1 }, sm: { k: 'played', dir: -1 } };
   // Real verified ledger -> Stats rows. Only K/D/A and map scores exist; ADR/KAST are estimated later by msrCalc. No sides/veto data.
   var LEDGER_KEY = '';
-  function ensureLedgerRows() { try { ensureLedgerRows0(); } finally { if (window.msrApplyBan) window.msrApplyBan(); } }
+  var BAN_SIG = '';
+  function ensureLedgerRows() { try { ensureLedgerRows0(); } finally { if (window.msrApplyBan) { var bs = LEDGER_KEY + '|' + PMROWS.length + '|' + PLAYERS.length + '|' + RANK.length + '|' + (window.MSR_FREE_AGENTS || []).length + '|' + (window.MSR_FREE_AGENT_RECORDS || []).length + '|' + Object.keys(PROWS).length; if (bs !== BAN_SIG) { window.msrApplyBan(); BAN_SIG = LEDGER_KEY + '|' + PMROWS.length + '|' + PLAYERS.length + '|' + RANK.length + '|' + (window.MSR_FREE_AGENTS || []).length + '|' + (window.MSR_FREE_AGENT_RECORDS || []).length + '|' + Object.keys(PROWS).length; } } } }
   function ensureLedgerRows0() {
     var led = window.MSR_SCREENSHOT_MATCHES || [], key = led.length + ':' + Object.keys(T).length + ':' + (window.MSR_VOID_RESULTS || []).length;
     if (key === LEDGER_KEY || !window.msrTagToCode) return;
@@ -6190,7 +6195,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     });
   }
   function statsPlayer(nick, team) {
-    var norm = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); };
+    var norm = function (v) { return __msrNk(v || ''); };
     var aliases = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'], tengrion: ['tengri'], tengri: ['tengrion'], kkasuee: ['kasuee'], kasuee: ['kkasuee'], sarnarn: ['sarnar'], sarnar: ['sarnarn'] }, name = norm(nick);
     var matches = PLAYERS.filter(function (p) { return p.team === team && !p.screenshotOnly && norm(p.nick) === name; });
     if (!matches.length) matches = PLAYERS.filter(function (p) { return p.team === team && !p.screenshotOnly && ((aliases[name] || []).indexOf(norm(p.nick)) >= 0 || (aliases[norm(p.nick)] || []).indexOf(name) >= 0); });
@@ -6202,15 +6207,27 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     if (c === undefined) c = MSR_PK_CACHE[k] = k.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
     return c;
   }
+  var LIX_CACHE = null;
+  function ledgerIndex() {
+    var sig = LEDGER_KEY + '|' + PMROWS.length;
+    if (LIX_CACHE && LIX_CACHE.sig === sig) return LIX_CACHE;
+    var byNick = Object.create(null), byKey = Object.create(null);
+    PMROWS.forEach(function (r, i) { if (!r.ledger) return; r.__li = i; (byNick[r.nick] = byNick[r.nick] || []).push(r); var k = msrPkMemo(r.nick); if (k) (byKey[k] = byKey[k] || []).push(r); });
+    return LIX_CACHE = { sig: sig, byNick: byNick, byKey: byKey };
+  }
   function playerRowsFor(nick, team) {
     ensureLedgerRows();
     var seen = {}, out = [];
     var pk = msrPkMemo, nkey = pk(nick), NA = { xaise: ['aise'], dvrs: ['dvrsss'], dvrsss: ['dvrs'], mitsk: ['merciless'], merciless: ['mitsk'], tengrion: ['tengri'], tengri: ['tengrion'], kkasuee: ['kasuee'], kasuee: ['kkasuee'], sarnarn: ['sarnar'], sarnar: ['sarnarn'] }, nkeys = [nkey].concat(NA[nkey] || []);
     // A transferred player's profile on the new team also lists his maps for the old team.
     var trFrom = null; (window.MSR_PLAYER_TRANSFERS || []).forEach(function (t) { if (team && String(t.to).toUpperCase() === String(team).toUpperCase() && pk(t.toNick || t.nick) === nkey) { trFrom = window.msrTagToCode ? window.msrTagToCode(t.from) : null; if (trFrom) nkeys.push(pk(t.nick)); } });
-    (PROWS[nick] || []).concat(PMROWS.filter(function (r) { return r.ledger && !r.resultsOnly && (r.nick === nick || (nkey && nkeys.indexOf(pk(r.nick)) !== -1)); })).forEach(function (r) {
+    var LIX = ledgerIndex(), lrows = [], lseen = new Set();
+    [nick].concat(nkeys).forEach(function (kk) { ((kk === nick ? LIX.byNick[kk] : LIX.byKey[kk]) || []).forEach(function (r) { if (!lseen.has(r)) { lseen.add(r); lrows.push(r); } }); });
+    lrows.sort(function (a, b) { return a.__li - b.__li; });
+    var lsig = new Set(); lrows.forEach(function (x) { lsig.add([x.team, x.map, x.k, x.d, x.a].join('|')); });
+    (PROWS[nick] || []).concat(lrows.filter(function (r) { return !r.resultsOnly; })).forEach(function (r) {
       if (team && r.team && r.team !== team && !(trFrom && r.team === trFrom)) return;
-      if (!r.m && PMROWS.some(function (x) { return x.ledger && x.team === r.team && x.map === r.map && x.k === r.k && x.d === r.d && x.a === r.a && nkeys.indexOf(pk(x.nick)) >= 0; })) return;
+      if (!r.m && lsig.has([r.team, r.map, r.k, r.d, r.a].join('|'))) return;
       var k = r.m ? [r.team, r.m.id, r.mi].join('|') : [r.team, r.map, r.k, r.d, r.a].join('|'); if (seen[k]) return; seen[k] = 1; out.push(r);
     });
     return out;
@@ -6514,7 +6531,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
     var p = teamCode ? (PLAYERS.find(function (x) { return x.nick === nick && x.team === teamCode; }) || statsPlayer(nick, teamCode)) : PBY[nick];
     if (!p) {
-      var nk=function(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');};
+      var nk=function(v){return __msrNk(v||'');};
       p=(window.MSR_FORMER_PLAYERS||{})[teamCode+'|'+nk(nick)];
       if(!p){var f=(window.MSR_FREE_AGENTS||[]).find(function(f){return nk(f.nick)===nk(nick)&&(!teamCode||f.team===teamCode);});if(f)p={nick:f.nick,team:f.team||'',gameId:f.id||'',freeAgent:true,maps:0,kills:0,deaths:0,rating:0,kd:0};}
     }
@@ -6817,7 +6834,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
     var open = APR.open, cards = [];
     var dt = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    function plAv(nick, code) { var isCaptain=String(nick||'').normalize('NFKC').toLowerCase()===String(teamCaptain(code)||'').normalize('NFKC').toLowerCase(); var avatar=h('span', { class: 'bigav sg' + tc({ team: code }) + (isCaptain?' cap':''), 'aria-hidden': 'true' }, sig(nick, 64), ...(isCaptain?[h('i',{class:'crown',svg:CROWN})]:[])); if(isCaptain)avatar.setAttribute('data-cw','1'); var team=T[code]; if(team && team.img){ avatar.style.backgroundImage='radial-gradient(circle,rgba(8,8,12,.58) 0%,rgba(8,8,12,.82) 100%),url("'+String(team.img).replace(/"/g,'')+'")'; avatar.style.backgroundPosition='center'; avatar.style.backgroundSize='cover'; } return h('a', { class: 'ap-pl', href: playerHref(nick, code) }, avatar, h('span', { class: 'n' }, String(nick || '').replace(/^\s*ign\s*:\s*/i, '').trim())); }
+    function plAv(nick, code) { var isCaptain=__msrNl(nick||'')===String(teamCaptain(code)||'').normalize('NFKC').toLowerCase(); var avatar=h('span', { class: 'bigav sg' + tc({ team: code }) + (isCaptain?' cap':''), 'aria-hidden': 'true' }, sig(nick, 64), ...(isCaptain?[h('i',{class:'crown',svg:CROWN})]:[])); if(isCaptain)avatar.setAttribute('data-cw','1'); var team=T[code]; if(team && team.img){ avatar.style.backgroundImage='radial-gradient(circle,rgba(8,8,12,.58) 0%,rgba(8,8,12,.82) 100%),url("'+String(team.img).replace(/"/g,'')+'")'; avatar.style.backgroundPosition='center'; avatar.style.backgroundSize='cover'; } return h('a', { class: 'ap-pl', href: playerHref(nick, code) }, avatar, h('span', { class: 'n' }, String(nick || '').replace(/^\s*ign\s*:\s*/i, '').trim())); }
     function setOpen(i) {
       open = open === i ? -1 : i; APR.open = open;
       cards.forEach(function (c, k) { var on = k === open; if (on && c.body.classList.contains('msr-lazy-body')) { var nb = c.mk(); c.body.replaceWith(nb); c.body = nb; } c.el.classList.toggle('open', on); c.btn.setAttribute('aria-expanded', on ? 'true' : 'false'); });
@@ -7737,7 +7754,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
   /* Confirmed Discord registrations: reuse existing ranking UI and team records. */
   function mergeDiscordTeams(rows) {
-    function key(s) { return String(s || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); }
+    function key(s) { return __msrNk(s || ''); }
     function registrationTime(row) {
       var time = Date.parse(String(row.source_timestamp || '').replace(' ', 'T').replace(/\+00$/, '+00:00'));
       return Number.isFinite(time) ? time : 0;
@@ -8274,10 +8291,10 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
       applyConfirmedScreenshotTags();
       sortPlayerRanking();
       window.MSR_REGISTERED_PLAYER_ROSTER = PLAYERS.filter(function(p){return !p.freeAgent && !p.screenshotOnly;}).map(function(p){
-        var key=p.team+'|'+String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
+        var key=p.team+'|'+__msrNk(p.nick);
         return {nick:p.nick,team:p.team,tag:(T[p.team]||{}).tag||p.team,gameId:GAME_IDS[key]||''};
       });
-      window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(window.MSR_REGISTERED_PLAYER_ROSTER.map(function(p){return String(p.nick).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');}))];
+      window.MSR_REGISTERED_PLAYER_NAMES = [...new Set(window.MSR_REGISTERED_PLAYER_ROSTER.map(function(p){return __msrNk(p.nick);}))];
       applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.webp';T[code].c='#ff344c';}});
       window.MSR_ROSTER_LOAD_STATE='ready';
@@ -8296,7 +8313,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
   /* Scoreboard links use ledger team labels (MetaS, SNT...) and OCR nicks; resolve them to the registered player before falling back to the player ranking. */
   (function () {
     var baseVPlayer = V.player;
-    var nk = function (v) { return String(v || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); };
+    var nk = function (v) { return __msrNk(v || ''); };
     V.player = function (nick, teamCode) {
     if(window.MSR_ROSTER_LOAD_STATE!=='ready')return rosterLoadingView();
       var fa0 = (window.MSR_FREE_AGENTS || []).find(function (f) { return String(f.nick).toLowerCase() === String(nick).toLowerCase(); });
@@ -8956,7 +8973,7 @@ async function loadMsrClanMedia(){
 loadMsrClanMedia();
 function syncMsrResultCrests(){
  // Use the registered clan's logo for Results rows, not a missing T[code].img.
- const normKey=v=>String(v||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
+ const normKey=v=>__msrNk(v||'');
  const aliases={omv:'omnisover',otr:'clanonetruereign',evkz:'everlasted',msdtp:'chingiswarriors'};
  document.querySelectorAll('#app .mrow').forEach(row=>{
   row.querySelectorAll('.t').forEach(side=>{
@@ -9118,6 +9135,7 @@ function verifiedResultsDetail(){
 };
 summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b'),event);matchPanel.appendChild(summary);
  const content=document.createElement('div');content.className='msr-match-expand-content';matchPanel.appendChild(content);
+ const __build=()=>{
  const finishedDisplayName=(tag)=>tag==='SIXP'?'6LC Purple':tag;
  const title=document.createElement('h2');title.textContent=(match.void?'VOID':'MSL S2')+' · Finished match · '+finishedDisplayName(match.a)+' '+match.score+' '+finishedDisplayName(match.b);
  const subtitle=document.createElement('p');const em=eloMatches[matchIndex];subtitle.textContent='Verified map scores and player K/D/A · '+match.maps.map(m=>m[0]+' '+m[1]+'–'+m[2]).join(' · ')+(((match.auto||{}).a||0)+((match.auto||{}).b||0)?' · +'+(((match.auto||{}).a||0)+((match.auto||{}).b||0))+' auto-win map (no round score)':'')+' · RD '+(em.roundDiff>=0?'+':'')+em.roundDiff+' · '+em.mapCount+' maps · ELO '+finishedDisplayName(match.a)+' '+(em.aChange>=0?'+':'')+em.aChange+' / '+finishedDisplayName(match.b)+' '+(em.bChange>=0?'+':'')+em.bChange;
@@ -9211,7 +9229,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
   [match.a,match.b].forEach(team=>{
    const byNick=new Map();
    selected.forEach(m=>getPlayers(m,team).forEach(([nick,k,d,a])=>{
-    const key=String(nick).normalize('NFKC').toLowerCase();
+    const key=__msrNl(nick);
     const p=byNick.get(key)||{nick,k:0,d:0,a:0,rounds:0};
     p.k+=Number(k)||0;p.d+=Number(d)||0;p.a+=Number(a)||0;
     p.rounds+=Number(m.a)+Number(m.b);byNick.set(key,p);
@@ -9223,7 +9241,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
   [match.a,match.b].forEach(team=>{
    const totals=new Map();
    selected.forEach(m=>getPlayers(m,team).forEach(([nick,k,d,assists])=>{
-    const key=String(nick).normalize('NFKC').toLowerCase();
+    const key=__msrNl(nick);
     const current=totals.get(key)||{nick,k:0,d:0,a:0,rounds:0};
     current.k+=Number(k)||0;current.d+=Number(d)||0;current.a+=Number(assists)||0;
     current.rounds+=Number(m.a)+Number(m.b);totals.set(key,current);
@@ -9242,7 +9260,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
      if(idx===0){const link=document.createElement('a');link.href='#player/'+encodeURIComponent(p.nick)+'/'+encodeURIComponent(team);link.textContent=p.nick;td.appendChild(link);
       const registeredNames=window.MSR_REGISTERED_PLAYER_NAMES||[];
       // Compare visually equivalent Cyrillic/Latin characters and small OCR typos.
-      const clean=v=>String(v||'').normalize('NFKC').toLowerCase()
+      const clean=v=>__msrNl(v||'')
        .replace(/[аɑ]/g,'a').replace(/[её]/g,'e').replace(/[оο]/g,'o')
        .replace(/[рρ]/g,'p').replace(/[сϲ]/g,'c').replace(/[хχ]/g,'x')
        .replace(/[уү]/g,'y').replace(/[ії]/g,'i').replace(/[кκ]/g,'k')
@@ -9273,7 +9291,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
        link.style.fontWeight='700';
        link.title=near?'Possible name: '+possible[0].original+' · '+possible[0].team+(possible[0].gameId?' · ID '+possible[0].gameId:'')+' (verify before merging)':'No close registered name';
       }
-      if(mvp&&mvp.team===team&&mvp.key===String(p.nick).normalize('NFKC').toLowerCase()){
+      if(mvp&&mvp.team===team&&mvp.key===__msrNl(p.nick)){
        const tag=document.createElement('strong');tag.textContent=' MVP';tag.className='mvp';td.appendChild(tag);
       }}
      else{td.textContent=v;td.className='n';if(idx===2)td.classList.add(p.k-p.d>0?'pos':p.k-p.d<0?'neg':'z');if(idx===4){td.classList.add('msr-hltv-rating','msr-rt-'+(Number(v)<0.9?'low':Number(v)>=1?'high':'mid'));}}
@@ -9291,6 +9309,9 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
  });
  tabBar.setAttribute('role','tablist');tabBar.classList.add('tabs');
  showStats(tabs[0],buttons[0]);
+ };
+ // Build the heavy map/player detail only when the match is opened (keeps Results fast).
+ if(matchPanel.open)__build();else matchPanel.addEventListener('toggle',function once(){if(!matchPanel.open)return;matchPanel.removeEventListener('toggle',once);__build();});
  });
  // Day strip (same look as the Matches page): pick a day to see that day's results, or show all.
  {
