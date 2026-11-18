@@ -3304,6 +3304,19 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
         { map: 'Breeze', aScore: 13, bScore: 4,
           a: [['Wu 。',17,10,7],['1owzs',16,9,3],['fml',14,8,1],['dream.',10,9,2],['Tk.Aim.Danger?',12,12,2]],
           b: [['k.',13,14,3],['minnie',12,13,1],['Lucy',12,13,1],['mlue',6,15,1],['miuu.',5,14,1]] }
+      ] },
+    // R4 (1-2 pool): imp4ct 2-1 Zx_WB Black. Province 13-3 Zx_WB, Rust 15-12 imp4ct, Dune 17-15 imp4ct. In game: Beku!난디아 = Beku, Itachi著火 = Itachi; Fl played for Zx_WB Black.
+    { a: 'DS_5CDAAF806D7D39AC2C809ED3', b: 'DS_A4CCD6C33286B304E839A0BC', ea: 'Zx_WB Black', eb: 'Mpct', as: 1, bs: 2, round: 4, date: 1117,
+      maps: [
+        { map: 'Province', aScore: 13, bScore: 3,
+          a: [['Fl',11,10,5],['s1lent',13,6,0],['guessxnontop',13,10,1],['Kevingodpeeek',13,10,3],['V1rtex.666',13,9,2]],
+          b: [['Baitsai god',11,14,1],['Zisel need awp',11,15,1],['Tngs无痕',7,13,1],['Zenny씨',8,14,2],['Beku',5,9,0]] },
+        { map: 'Rust', aScore: 12, bScore: 15,
+          a: [['Fl',27,21,2],['s1lent',14,22,1],['guessxnontop',20,22,4],['V1rtex.666',11,22,5],['Kevingodpeeek',15,22,1]],
+          b: [['Tngs无痕',20,16,8],['Zisel need awp',25,18,2],['Zenix',22,16,1],['Beku',20,19,2],['Baitsai god',21,20,7]] },
+        { map: 'Dune', aScore: 15, bScore: 17,
+          a: [['s1lent',18,26,3],['Kevingodpeeek',24,26,3],['guessxnontop',23,26,3],['Fl',20,28,6],['V1rtex.666',20,25,7]],
+          b: [['Itachi',36,19,4],['Zisel need awp',36,24,4],['Baitsai god',22,23,8],['Tngs无痕',17,20,4],['Zenix',18,22,3]] }
       ] }
   ];
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
@@ -3324,7 +3337,8 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   /* Swiss round n (3..5) pairs, auto: records from results of rounds < n, pooled by record (w/l), paired in result-entry order.
      Day = the day after the last result of round n-1. Override with window.MSR_VOID_ROUNDS when the organiser posts the draw. */
   window.MSR_VOID_FIXED = window.MSR_VOID_FIXED || {
-    5: [['DS_7C03F1F6DA5F993B4CC9BB28', 'DS_BED22EFE5176D46A905806CD']] // Admin (Nov 18): Round 5 Celestex vs United elites (Syroz); the other pairs stay automatic.
+    // Admin (Nov 18): Round 5 = DXIII vs MNKT Blue, MNKT Red vs imp4ct (the R4 1/2 winner that filled the open slot), Celestex vs United elites (Syroz).
+    5: [['DS_5E67C1B8721D736CA5B5A960', 'DS_A92955A6312CC42137C3C7EA'], ['DS_A0B0110FC187C08BE7637475', 'DS_A4CCD6C33286B304E839A0BC'], ['DS_7C03F1F6DA5F993B4CC9BB28', 'DS_BED22EFE5176D46A905806CD']]
   };
   window.msrVoidAutoRound = function (n) {
     var U = function (v) { return String(v || '').toUpperCase(); }, rec = {}, last = 0, pools = {}, order = [];
