@@ -3323,13 +3323,20 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   };
   /* Swiss round n (3..5) pairs, auto: records from results of rounds < n, pooled by record (w/l), paired in result-entry order.
      Day = the day after the last result of round n-1. Override with window.MSR_VOID_ROUNDS when the organiser posts the draw. */
+  window.MSR_VOID_FIXED = window.MSR_VOID_FIXED || {
+    5: [['DS_7C03F1F6DA5F993B4CC9BB28', 'DS_BED22EFE5176D46A905806CD']] // Admin (Nov 18): Round 5 Celestex vs United elites (Syroz); the other pairs stay automatic.
+  };
   window.msrVoidAutoRound = function (n) {
     var U = function (v) { return String(v || '').toUpperCase(); }, rec = {}, last = 0, pools = {}, order = [];
     (window.MSR_VOID_RESULTS || []).forEach(function (r) { if ((r.round || 1) >= n || !(r.as > r.bs || r.bs > r.as)) return; if ((r.round || 1) === n - 1) last = Math.max(last, r.date || 0);
       [r.a, r.b].forEach(function (c) { if (!rec[U(c)]) { rec[U(c)] = { w: 0, l: 0, code: c }; order.push(U(c)); } }); rec[U(r.as > r.bs ? r.a : r.b)].w++; rec[U(r.as > r.bs ? r.b : r.a)].l++; });
-    order.forEach(function (k) { var x = rec[k]; if (x.w + x.l !== n - 1 || x.w >= 3 || x.l >= 3) return; var key = x.w + '-' + x.l; (pools[key] = pools[key] || []).push(x.code); });
+    // Admin-fixed pairs for a round (window.MSR_VOID_FIXED[n] = [[codeA, codeB], ...]): they are taken out of the auto pairing and placed last in the pool of the second team.
+    var fixed = ((window.MSR_VOID_FIXED || {})[n] || []), inFix = {}; fixed.forEach(function (fp) { inFix[U(fp[0])] = 1; inFix[U(fp[1])] = 1; });
+    order.forEach(function (k) { var x = rec[k]; if (inFix[k] || x.w + x.l !== n - 1 || x.w >= 3 || x.l >= 3) return; var key = x.w + '-' + x.l; (pools[key] = pools[key] || []).push(x.code); });
+    var fixPairs = [];
+    fixed.forEach(function (fp) { var r2 = rec[U(fp[1])] || rec[U(fp[0])], key = r2 ? r2.w + '-' + r2.l : '2-2', pl = pools[key] = pools[key] || []; if (pl.length % 2) pl.push(null); /* keep the open auto slot */ pl.push(fp[0], fp[1]); fixPairs.push([fp[0], fp[1], key.replace('-', '/')]); });
     var pairs = [];
-    Object.keys(pools).sort(function (a, b) { return (+b.split('-')[0]) - (+a.split('-')[0]); }).forEach(function (k) { var l = pools[k]; for (var i = 0; i + 1 < l.length; i += 2) pairs.push([l[i], l[i + 1], k.replace('-', '/')]); });
+    Object.keys(pools).sort(function (a, b) { return (+b.split('-')[0]) - (+a.split('-')[0]); }).forEach(function (k) { var l = pools[k]; for (var i = 0; i + 1 < l.length; i += 2) if (l[i] && l[i + 1]) pairs.push([l[i], l[i + 1], k.replace('-', '/')]); });
     var d = last ? last + 1 : 0; if (d && d % 100 > 30) d = d - d % 100 + 101;
     return { pools: pools, pairs: pairs, day: d };
   };
