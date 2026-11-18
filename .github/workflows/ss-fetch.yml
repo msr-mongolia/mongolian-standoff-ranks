@@ -1,0 +1,47 @@
+name: ss-fetch
+# Every 10 minutes: copy new result-channel screenshots (already stored in Supabase by the msr-ros bot)
+# into the ss-fetch branch, with ss-index.json listing each post's text and images. Not part of the site.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: ss-fetch
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ss-fetch
+      - name: Download new screenshots
+        run: |
+          set -e
+          curl -sf -X POST -H 'Content-Type: application/json' -d '{}' \
+            'https://gqepygqtgosvpfirahgd.supabase.co/functions/v1/msr-ros?mode=sslist' -o ss-index.json
+          python3 - <<'PY'
+          import json, os, urllib.request
+          d = json.load(open('ss-index.json'))
+          os.makedirs('ss', exist_ok=True)
+          base = 'https://gqepygqtgosvpfirahgd.supabase.co/storage/v1/object/public/team-logos/ros/'
+          n = 0
+          for p in d.get('posts', []):
+              for f in p.get('images', []):
+                  if '/' in f or os.path.exists('ss/' + f):
+                      continue
+                  try:
+                      urllib.request.urlretrieve(base + f, 'ss/' + f); n += 1
+                  except Exception as e:
+                      print('miss', f, e)
+          json.dump(d, open('ss-index.json', 'w'), ensure_ascii=False, indent=1)
+          print('new images', n)
+          PY
+      - name: Commit
+        run: |
+          git config user.name msr-bot
+          git config user.email msr-bot@users.noreply.github.com
+          git add ss ss-index.json
+          git diff --cached --quiet && exit 0
+          git commit -m "ss: new result screenshots"
+          git push
