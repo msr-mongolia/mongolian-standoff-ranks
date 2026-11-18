@@ -34,10 +34,16 @@ Deno.serve(async(req)=>{
  const tokens=[Deno.env.get('MSR_BOT_TOKEN'),Deno.env.get('DISCORD_BOT_TOKEN')].filter(Boolean) as string[];
  if(!tokens.length)return Response.json({ok:false,error:'missing_bot_token'},{status:503});
  const auth={Authorization:'Bot '+tokens[0]};const access:any[]=[];
+ // mode 'results': read every text channel whose name contains "result" (any category), messages since `since` (default Nov 12),
+ // copying screenshot attachments to team-logos/ros/<messageId>_<i> so they can be read later.
+ let opts:any={};try{opts=await req.json();}catch(_e){}
+ const RESULTS=opts?.mode==='results';const SINCE=Date.parse(opts?.since||'2026-11-12T00:00:00Z');
  const cat=await (await fetch(D+'/channels/'+CATEGORIES[0],{headers:auth})).json().catch(()=>null);
  const gid=cat?.guild_id||'1568348065595785316';
  const all:any[]=await (await fetch(D+'/guilds/'+gid+'/channels',{headers:auth})).json().catch(()=>[]);
- const CHANS=(Array.isArray(all)?all:[]).filter((c:any)=>CATEGORIES.includes(c.parent_id)&&[0,5,15].includes(c.type));
+ const nm=(c:any)=>String(c.name||'').normalize('NFKC').toLowerCase();
+ const CHANS=(Array.isArray(all)?all:[]).filter((c:any)=>[0,5,15].includes(c.type)&&(RESULTS?/result/.test(nm(c)):CATEGORIES.includes(c.parent_id)));
+ if(opts?.list)return Response.json({ok:true,guild:gid,channels:CHANS.map((c:any)=>({id:c.id,name:c.name,parent:c.parent_id,parentName:(all.find((x:any)=>x.id===c.parent_id)||{}).name||null}))});
  let activeThreads:any[]=[];try{const ar=await fetch(D+'/guilds/'+gid+'/threads/active',{headers:auth});if(ar.ok)activeThreads=(await ar.json()).threads||[];}catch(_e){}
  const known=new Map<string,any>((await db('msr_ros_inbox?select=message_id,logo_urls,source_timestamp')||[]).map((x:any)=>[x.message_id,x]));
  let scanned=0,stored=0,logos=0,threads=0;const errors:string[]=[];
@@ -64,8 +70,11 @@ Deno.serve(async(req)=>{
   for(let p=0;p<maxPages;p++){
    const r=await fetch(D+'/channels/'+channel+'/messages?limit=100'+(before?'&before='+before:''),{headers:auth});
    if(!r.ok){errors.push(channel+':'+r.status);return;}
-   const msgs=await r.json();if(!Array.isArray(msgs)||!msgs.length)return;
-   await ingest(msgs,threadName,parent);
+   let msgs=await r.json();if(!Array.isArray(msgs)||!msgs.length)return;
+   const old=RESULTS&&msgs.some((m:any)=>Date.parse(m.timestamp)<SINCE);
+   if(RESULTS)msgs=msgs.filter((m:any)=>Date.parse(m.timestamp)>=SINCE);
+   if(msgs.length)await ingest(msgs,threadName,parent);
+   if(old)return;
    before=msgs[msgs.length-1].id;if(msgs.length<100)return;
   }
  }
@@ -77,9 +86,9 @@ Deno.serve(async(req)=>{
    try{const arc=await fetch(D+'/channels/'+ch.id+'/threads/archived/public?limit=100',{headers:auth});if(arc.ok){const aj:any=await arc.json();for(const t of aj.threads||[])if(!list.some((x:any)=>x.id===t.id))list.push(t);}}catch(_e){}
    for(const t of list.slice(0,80)){threads++;await readAll(t.id,String(t.name||''),5,ch.id);}
   }catch(e){errors.push(String((e as Error).message||e));}
-  access.push({channel:ch.id,name:ch.name,read:errors.length===before?'ok':'error',messages:scanned-s0});
+  access.push({channel:ch.id,name:ch.name,parent:ch.parent_id,read:errors.length===before?'ok':'error',messages:scanned-s0});
  }
- const result={ok:!errors.length||stored>0,channels:access,scanned,stored,logos,threads,errors};
+ const result={ok:!errors.length||stored>0,mode:RESULTS?'results':'ros',channels:access,scanned,stored,logos,threads,errors};
  await db('msr_ros_runs',{method:'POST',body:JSON.stringify({result}),headers:{Prefer:'return=minimal'}}).catch(()=>null);
  return Response.json(result);
 });
