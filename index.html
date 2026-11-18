@@ -3877,7 +3877,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     }
     var banPost = NEWS.filter(function(n){return n.id===2026110702})[0];
     var updPost = NEWS.filter(function(n){return n.id===2026110701})[0];
-    var cardIds = [2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
+    var cardIds = [2026111802, 2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
     var cardItems = cardIds.map(function (id) { return NEWS.filter(function (n) { return n.id === id; })[0]; }).filter(Boolean);
     function nwBg(n) { if (n.s3seed && window.msrS3SeedArt) return h('div', { class: 'bg' }, window.msrS3SeedArt()); return n.img ? h('div', { class: 'bg' }, h('img', { src: n.img, alt: '', loading: 'lazy' })) : null; }
     function nwCard(n, cls) {
@@ -5208,6 +5208,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
+      { id: 2026111802, g: 'MSR OFFICIAL', t: '11-р сарын 18', c: 0, h: "Шинэ журам: бүрэлдэхүүн солих төлбөр ба өмнөх багаас гаргах", lead: "Өөр багийн тоглогчийг авахын тулд тэр тоглогч өмнөх багаасаа заавал гарсан байх ёстой. Бүрэлдэхүүнд тоглогч нэмэх, хасах бүрд нэг хүнд 1,500₮ төлнө.",
+        body: ["Тоглогчийн шилжилт, багийн бүрэлдэхүүний өөрчлөлтийг цэгцтэй, шударга болгох зорилгоор дараах журмыг мөрдөнө.", "• Баг өөр багт бүртгэлтэй тоглогчийг авахын өмнө тухайн тоглогч өмнөх багаасаа заавал хасагдсан (гарсан) байх ёстой. Өмнөх багаас нь хасалт хийгдээгүй бол шинэ багийн бүрэлдэхүүнд бүртгэхгүй.", "• Бүрэлдэхүүнд тоглогч нэмэх: нэг хүнд 1,500₮.", "• Бүрэлдэхүүнээс тоглогч хасах (багаас гаргах): нэг хүнд 1,500₮.", "• Жишээ: 2 тоглогч гаргаж, 2 шинэ тоглогч авбал 4 × 1,500₮ = 6,000₮.", "• Төлбөр баталгаажсаны дараа өөрчлөлтийг MSR сайтад оруулна. Өмнөх журам (нэг удаад хамгийн ихдээ 3 солилт, 4 ба түүнээс дээш бол оноо 0-ээс эхэлнэ) хэвээр үйлчилнэ.", "Бүрэлдэхүүн өөрчлөх хүсэлтээ MSR админд Discord-оор илгээнэ үү: https://discord.com/users/1128188613230874727", "— MSR Administration"] },
       { id: 2026111801, g: 'MSR OFFICIAL', t: '11-р сарын 18', c: 0, h: '6LC (Six Lence, Six Lence Purple) болон VorK1ng — MSR-ээс бүрмөсөн BAN', lead: '6LC багууд болон тоглогч VorK1ng MSR-ээс бүрмөсөн (permanent) хориглогдлоо.', body: [
         '6LC (Six Lence, Six Lence Purple) багууд болон тоглогч VorK1ng MSR-д оролцохоос бүрмөсөн хориглогдсон болохыг мэдэгдэж байна.',
         'Ranking-аас 6LC багуудыг хаслаа. VorK1ng-ийн тоглогчийн статистикийг устгасан. 6LC-ийн бусад тоглогчид free agent боллоо.',
@@ -8471,7 +8473,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="msr-config.js"></script>
 
-<script src="msr-language.js?v=dc1"></script>
+<script src="msr-language.js?v=rule1118"></script>
 <script>
 /* MSR Shop ownership and order requests. Payments remain unverified until a trusted provider webhook is connected. */
 (function(){
