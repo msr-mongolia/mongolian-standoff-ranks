@@ -2738,6 +2738,12 @@ a.tl:hover,.tl:hover{color:var(--tracer)!important}
 #app .prof.msr-knight-video-panel>.msr-team-gold-sticker.msr-dxiii-sticker img{width:100%!important;height:100%!important;object-fit:contain!important;mix-blend-mode:normal!important;filter:none!important;background:transparent!important}
 @media(max-width:520px){#app .prof.msr-knight-video-panel>.msr-team-gold-sticker.msr-dxiii-sticker{width:86px;height:106px;right:10px}}
 </style>
+<style id="msr-holo-only-p2990">
+/* Admin (Nov 18): the moving colour/holo shine is kept only on the 2990 Purple sticker; every other sticker shows its plain image. */
+html body .msr-team-gold-sticker:not(:has(img[src*="p2990"]))::before,html body .msr-team-gold-sticker:not(:has(img[src*="p2990"]))::after,
+html body #app .prof .msr-team-gold-sticker:not(:has(img[src*="p2990"]))::before,html body #app .prof .msr-team-gold-sticker:not(:has(img[src*="p2990"]))::after,
+html body .msr-holo-wrap:not(:has(img[src*="p2990"]))::before,html body .msr-holo-wrap:not(:has(img[src*="p2990"]))::after{content:none!important;display:none!important;background:none!important}
+</style>
 </head>
 <body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs><filter id="msr-remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -0.14"/><feComponentTransfer><feFuncA type="linear" slope="3"/></feComponentTransfer></filter></defs></svg>
