@@ -6934,7 +6934,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         return sb;
       })())); };
       var body = i === open ? mkBody() : h('div', { class: 'ap-body msr-lazy-body' });
-      var eventBadges=rankingEventBadges(code),eventLinks=eventBadges?Array.from(eventBadges.querySelectorAll('a')):[];
+      // Eliminated teams remain in rankings, but their tournament status chips are not shown.
+      var eventBadges=rankingEventBadges(code),eventLinks=eventBadges?Array.from(eventBadges.querySelectorAll('a')).filter(function(link){return !link.classList.contains('is-eliminated');}):[];
       // No big event logo behind the card; show a small "participating" chip with the event name instead.
       var eventArtwork=[];
       if(eventLinks.length){var nmBox=btn.querySelector('.nm');if(nmBox)eventLinks.forEach(function(link){var out=link.classList.contains('is-eliminated'),nameEl=link.querySelector('.msr-ranking-event-name');nmBox.appendChild(h('span',{class:'msr-rank-event-chip'+(out?' out':'')+(link.getAttribute('data-tier')?' tier-'+link.getAttribute('data-tier'):''),title:link.title},(link.getAttribute('data-tier')?'★ '+link.getAttribute('data-tier')+' · ':'🏆 ')+(nameEl?nameEl.textContent:'MSL Major S2')+(!out&&/^(2990white|dxvil13|elitekingzz|accacin|teamresolve)$/.test(String(T[code].n||'').toLowerCase().replace(/[^a-z0-9]/g,''))&&/MSL/i.test(nameEl?nameEl.textContent:'MSL')?' · Stage 2':'')+(out?' · Eliminated':'')));});}
