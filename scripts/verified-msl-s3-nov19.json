@@ -1,0 +1,48 @@
+[
+  {
+    "source_message_id": "1572813011247304796",
+    "verified_from": "2 MSL-result Discord scoreboards; Province 13:11 and Breeze 13:9",
+    "match": {
+      "a": "KngZz", "b": "OMV", "stage3": true, "round": 2, "date": "NOV 19",
+      "maps": [
+        {
+          "map": "Province", "aScore": 13, "bScore": 11,
+          "a": [["SarNar",32,16,2],["Yeji",19,16,4],["Cup!d",12,19,6],["Tengri",11,10,1],["kkasuee",11,19,5]],
+          "b": [["Zen禅",28,13,1],["Forgot",18,17,3],["Urchoice",12,20,8],["Sy1oss",12,17,4],["Zev|I|",9,18,2]]
+        },
+        {
+          "map": "Breeze", "aScore": 13, "bScore": 9,
+          "a": [["kkasuee",23,13,7],["SarNar",23,11,1],["Yeji",23,13,2],["Tengri",12,16,4],["Cup!d",8,14,3]],
+          "b": [["Forgot",21,17,5],["Sy1oss",18,17,4],["Urchoice",14,19,1],["Zev|I|",6,18,6],["Morti",7,19,2]]
+        }
+      ]
+    }
+  },
+  {
+    "source_message_id": "1572861632063873065",
+    "verified_from": "2 unique MSL-result scoreboards (2 other attachments duplicate); Hanami 17:14 and Dune 13:1; sides resolved by MSR roster",
+    "match": {
+      "a": "2990 White", "b": "2990 Purple", "stage3": true, "round": 2, "date": "NOV 19",
+      "maps": [
+        {
+          "map": "Hanami", "aScore": 17, "bScore": 14,
+          "a": [["7uan",31,22,8],["yakuya",25,23,2],["s1lent",22,20,5],["Jerry",17,22,6],["yuna-",18,27,6]],
+          "b": [["Ban",30,23,2],["fOrest",22,23,3],["rain.",22,20,5],["ANNIHILATION",22,24,2],["B.T",18,24,5]]
+        },
+        {
+          "map": "Dune", "aScore": 13, "bScore": 1,
+          "a": [["7uan",14,7,0],["s1lent",16,4,1],["yuna-",13,11,2],["Jerry",9,10,5],["yakuya",10,7,1]],
+          "b": [["Ban",9,13,1],["rain.",9,13,2],["B.T",9,12,1],["fOrest",8,13,2],["ANNIHILATION",4,13,2]]
+        }
+      ]
+    }
+  },
+  {
+    "source_message_id": "1572837105124511775",
+    "verified_from": "MSL-result organizer message: EliteKingzz vs Snt, Autowin EknZ; no player KDA counted",
+    "match": {
+      "a": "EknZ", "b": "SNT", "auto": {"a": 2, "b": 0},
+      "maps": [], "stage3": true, "round": 2, "date": "NOV 19"
+    }
+  }
+]

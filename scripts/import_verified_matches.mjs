@@ -27,6 +27,17 @@ let added = 0;
 for (const item of entries) {
   const m = item.match ?? item;
   if (typeof m.a !== 'string' || typeof m.b !== 'string' || !Array.isArray(m.maps)) throw new Error('Invalid match');
+  // Organizer-confirmed walkovers have no screenshots and must never create
+  // fabricated map or player statistics. The Swiss bracket reads m.auto.
+  if (m.maps.length === 0 && m.auto) {
+    if (!m.stage3 || !Number.isInteger(m.round) || ![2, 0].includes(m.auto.a) ||
+        ![2, 0].includes(m.auto.b) || m.auto.a + m.auto.b !== 2 ||
+        !item.source_message_id) throw new Error('Invalid organizer-confirmed walkover');
+    const key = keyOf(m);
+    if (known.has(key)) { console.log('Already registered auto:', m.a, 'vs', m.b); continue; }
+    known.add(key); main.push(m); added++;
+    continue;
+  }
   if (m.maps.length < 2 || m.maps.length > 3) throw new Error('A verified Bo3 requires 2–3 maps');
   const wins = [0, 0];
   for (const map of m.maps) {
