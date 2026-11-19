@@ -1,0 +1,51 @@
+name: Import staff-verified result screenshots
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verified-*.json'
+      - 'scripts/import_verified_matches.mjs'
+      - '.github/workflows/import-results.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: msr-verified-results-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply verified scoreboards, avoiding duplicate matches
+        run: |
+          set -eu
+          for file in scripts/verified-*.json; do
+            node scripts/import_verified_matches.mjs "$file"
+          done
+          python3 scripts/check.py
+      - name: Commit and publish updated ledger
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          git config user.name msr-bot
+          git config user.email msr-bot@users.noreply.github.com
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'All verified matches already registered'
+            exit 0
+          fi
+          git commit -m 'Import verified Discord result screenshots to live MSR ledger'
+          git push origin main
+          gh workflow run pages.yml --ref main

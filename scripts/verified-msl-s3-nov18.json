@@ -1,0 +1,63 @@
+[
+  {
+    "source_message_id": "1572665555997954141",
+    "verified_from": "3 Discord scoreboard screenshots; maps ordered by final-map chronology",
+    "match": {
+      "a": "DXIII",
+      "b": "UCLT",
+      "maps": [
+        {
+          "map": "Province",
+          "aScore": 9,
+          "bScore": 13,
+          "a": [["Str1ker愛v4",20,14,2],["shikiNg",15,15,1],["Melo",14,14,2],["Hollow",11,19,3],["Tgsu",8,16,3]],
+          "b": [["1ngenu1ty",24,12,4],["kenny",18,15,2],["bliz",14,15,6],["Jollibee",14,14,1],["Gems",8,13,6]]
+        },
+        {
+          "map": "Rust",
+          "aScore": 13,
+          "bScore": 10,
+          "a": [["Hollow",24,13,4],["Str1ker愛v4",23,15,3],["Melo",10,15,2],["Tgsu",15,15,1],["shikiNg",13,15,4]],
+          "b": [["Jollibee",17,15,5],["1ngenu1ty",21,15,4],["kenny",18,17,2],["bliz",9,21,3],["Gems",8,18,2]]
+        },
+        {
+          "map": "Hanami",
+          "aScore": 13,
+          "bScore": 4,
+          "a": [["Str1ker愛v4",21,9,8],["shikiNg",18,8,0],["Tgsu",14,11,6],["Hollow",14,10,1],["Melo",10,8,2]],
+          "b": [["Gems",13,15,1],["1ngenu1ty",11,15,1],["Jollibee",10,16,1],["kenny",5,15,5],["bliz",6,16,4]]
+        }
+      ],
+      "stage3": true,
+      "round": 2,
+      "date": "NOV 18"
+    }
+  },
+  {
+    "source_message_id": "1572670433478709441",
+    "verified_from": "2 Discord scoreboard screenshots; screenshot-only nick variants remain unlinked until game ID confirmation",
+    "match": {
+      "a": "6vmp6",
+      "b": "CioR",
+      "maps": [
+        {
+          "map": "Rust",
+          "aScore": 13,
+          "bScore": 8,
+          "a": [["kago",24,17,3],["Break",17,15,1],["xane",16,17,7],["Wish",15,13,4],["Zepo",12,19,5]],
+          "b": [["Rovs",17,18,6],["waosN",18,16,3],["Sinon",14,15,5],["DioSa優",12,17,5],["120",12,18,6]]
+        },
+        {
+          "map": "Dune",
+          "aScore": 13,
+          "bScore": 11,
+          "a": [["Break",26,13,2],["hyzel",13,14,4],["Zepo",18,19,2],["Wish",15,18,6],["kago",15,18,3]],
+          "b": [["waosN",23,16,4],["Sinon",14,18,1],["120",17,18,2],["Rovs",12,19,4],["DioSa優",11,20,2]]
+        }
+      ],
+      "stage3": true,
+      "round": 2,
+      "date": "NOV 18"
+    }
+  }
+]
