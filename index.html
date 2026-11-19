@@ -8563,22 +8563,6 @@ MSR_ROSTER_UPDATES.ds_4559c7e779f302e917b1a414 = {"roster":["S1mple","REDHUSYLER
     if (window.msrApplyBan) window.msrApplyBan();
   }
   applyVerifiedTeamEloToRank();
-  /* Ban notice on Ranking and on the banned teams' pages. */
-  (function () {
-    function banNotice() {
-      var d = document.createElement('div');
-      d.className = 'msr-ban-notice';
-      d.style.cssText = 'margin:12px 0;padding:12px 14px;border:1px solid #b4232a;border-left-width:4px;border-radius:10px;background:rgba(180,35,42,.10);color:inherit;font-size:13px;line-height:1.45';
-      d.innerHTML = '<strong>⛔ 6LC (Six Lence, Six Lence Purple) banned</strong><br>6LC багууд болон тоглогч VorK1ng MSR-ээс мөнхөд хориглогдсон. 6LC-ийн бусад тоглогчид free agent боллоо.<br><span style="opacity:.75">6LC (Six Lence, Six Lence Purple) and the player VorK1ng are permanently banned from MSR. The other 6LC players are free agents.</span>';
-      return d;
-    }
-    function wrap(name, isBanned) {
-      var orig = V[name]; if (typeof orig !== 'function') return;
-      V[name] = function (code) { var el = orig.apply(this, arguments); if (el && el.insertBefore && isBanned(code)) el.insertBefore(banNotice(), el.firstChild); return el; };
-    }
-    wrap('ranking', function () { return true; });
-    wrap('team', function (code) { return !!(window.MSR_BAN && window.MSR_BAN.teams[code]); });
-  })();
   /* Team logos live in Supabase storage; when they cannot be loaded show a coloured tag badge instead of an empty grey square. */
   function msrLogoBadge(fileId) {
     var tag = String((window.MSR_LOGO_TAGS || {})[fileId] || '?').replace(/[<>&"']/g, '').trim().slice(0, 5).toUpperCase() || '?';
