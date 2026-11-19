@@ -7510,12 +7510,16 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       });
       // Qualification is known from Swiss results. Opponents are not: the
       // organiser must supply MSR_VOID_PLAYOFF_DRAW before QF slots are filled.
+      // Organiser decision (Nov 19): EliteKingZz DIVA replaces banned 6LC in
+      // the VOID playoffs. Preserve their actual Swiss records unchanged.
+      var replacement = 'DS_BD02236437B5FF2BB5839658';
       var qualifiers = (window.MSR_VOID_TEAMS || []).filter(function (c) {
-        return voidTeamCode(c) && records[U(c)] && records[U(c)].w >= 3;
+        return U(c) !== 'SIXL' && voidTeamCode(c) && records[U(c)] && (records[U(c)].w >= 3 || U(c) === replacement);
       }).sort(function (a, b) {
+        if (U(a) === replacement) return 1;
+        if (U(b) === replacement) return -1;
         return records[U(a)].l - records[U(b)].l || T[voidTeamCode(a)].n.localeCompare(T[voidTeamCode(b)].n);
       });
-      var banned = function (c) { return U(c) === 'SIXL'; }; // MSR's existing 6LC ban.
       var draw = Array.isArray(window.MSR_VOID_PLAYOFF_DRAW) && window.MSR_VOID_PLAYOFF_DRAW.length === 4 ? window.MSR_VOID_PLAYOFF_DRAW : [];
       var results = Array.isArray(window.MSR_VOID_PLAYOFF_RESULTS) ? window.MSR_VOID_PLAYOFF_RESULTS : [];
       function result(round, n, a, b) {
@@ -7564,9 +7568,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         h('p', { class: 'vd-po-sub' }, '8 spots · Quarterfinals → Semifinals → Final · One loss = elimination. Bracket opponents appear after the official draw.'),
         h('div', { class: 'vd-po-qualified' }, qualifiers.map(function (code) {
           var resolved = voidTeamCode(code);
-          return h('a', { class: 'vd-po-qualified-team' + (banned(code) ? ' banned' : ''), href: teamHref(resolved), title: T[resolved].n },
+          return h('a', { class: 'vd-po-qualified-team', href: teamHref(resolved), title: T[resolved].n },
             crest(resolved, 'sm'), h('span', null, h('strong', null, T[resolved].n),
-              h('small', null, banned(code) ? 'MSR BANNED' : records[U(code)].w + '–' + records[U(code)].l + ' · QUALIFIED')));
+              h('small', null, U(code) === replacement ? '6LC REPLACEMENT' : records[U(code)].w + '–' + records[U(code)].l + ' · QUALIFIED')));
         })),
         h('div', { class: 'vd-po-scroll', role: 'region', 'aria-label': 'Scrollable playoff bracket', tabindex: '0' },
           h('div', { class: 'vd-po-bracket' },
@@ -7575,7 +7579,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
             col('GRAND FINAL', '1 MATCH', game('final', 0, fin[0], fin[1])),
             col('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '🏆'), teamSlot(champion, null, 'TBD'))))),
         h('div', { class: 'vd-po-note' }, 'ⓘ ', draw.length ? 'Official draw is set. Match winners will advance when results are verified.' : 'Official quarterfinal matchups are pending. Teams are listed as Swiss qualifiers, not as seeded pairings.',
-          qualifiers.some(banned) ? ' 6LC reached 3 wins but is MSR-banned; its playoff spot requires an organiser ruling.' : ''));
+          ' EliteKingZz DIVA replaces banned 6LC by organiser decision.'));
     }
     V.event = function (arg) {
       if (arg !== 'void') return baseEvent.apply(this, arguments);
