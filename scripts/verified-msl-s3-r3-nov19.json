@@ -1,0 +1,826 @@
+[
+ {
+  "source_message_id": "1572985643099885710",
+  "verified_from": "2 unique MSL-result scoreboards; Rust 13:10, Dune 13:6",
+  "match": {
+   "a": "2990",
+   "b": "EknZ",
+   "stage3": true,
+   "round": 3,
+   "date": "NOV 19",
+   "maps": [
+    {
+     "map": "Rust",
+     "aScore": 13,
+     "bScore": 10,
+     "a": [
+      [
+       "Acse",
+       24,
+       15,
+       3
+      ],
+      [
+       "OxiMx.",
+       20,
+       19,
+       2
+      ],
+      [
+       "Keni",
+       16,
+       15,
+       3
+      ],
+      [
+       "Amarshi",
+       12,
+       17,
+       7
+      ],
+      [
+       "SKIZOGOD.",
+       15,
+       19,
+       3
+      ]
+     ],
+     "b": [
+      [
+       "koldplay",
+       20,
+       18,
+       4
+      ],
+      [
+       "Aizen",
+       19,
+       15,
+       3
+      ],
+      [
+       "Tengerist",
+       14,
+       18,
+       4
+      ],
+      [
+       "Kaizen",
+       15,
+       19,
+       3
+      ],
+      [
+       "Hypexl",
+       16,
+       18,
+       4
+      ]
+     ]
+    },
+    {
+     "map": "Dune",
+     "aScore": 13,
+     "bScore": 6,
+     "a": [
+      [
+       "Acse",
+       21,
+       12,
+       2
+      ],
+      [
+       "Amarshi",
+       21,
+       12,
+       5
+      ],
+      [
+       "SKIZOGOD.",
+       14,
+       15,
+       0
+      ],
+      [
+       "excell.",
+       11,
+       11,
+       3
+      ],
+      [
+       "OxiMx.",
+       9,
+       18,
+       5
+      ]
+     ],
+     "b": [
+      [
+       "koldplay",
+       18,
+       14,
+       5
+      ],
+      [
+       "Hypexl",
+       17,
+       15,
+       0
+      ],
+      [
+       "Aizen",
+       13,
+       16,
+       4
+      ],
+      [
+       "Kaizen",
+       11,
+       14,
+       2
+      ],
+      [
+       "Tengerist",
+       9,
+       17,
+       3
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source_message_id": "1572989951019065505",
+  "verified_from": "2 unique scoreboards (both OTR wins); text says 2:1, CioR-won map screenshot missing",
+  "match": {
+   "a": "OTR",
+   "b": "CioR",
+   "stage3": true,
+   "round": 3,
+   "date": "NOV 19",
+   "maps": [
+    {
+     "map": "Sandstone",
+     "aScore": 13,
+     "bScore": 6,
+     "a": [
+      [
+       "HexarioN",
+       20,
+       12,
+       2
+      ],
+      [
+       "Mizuri",
+       15,
+       9,
+       5
+      ],
+      [
+       "Mercedes",
+       15,
+       13,
+       3
+      ],
+      [
+       "FURI",
+       16,
+       8,
+       1
+      ],
+      [
+       "tuvshuupixelll.",
+       8,
+       13,
+       3
+      ]
+     ],
+     "b": [
+      [
+       "Diose",
+       14,
+       14,
+       1
+      ],
+      [
+       "Rovs",
+       13,
+       15,
+       1
+      ],
+      [
+       "120",
+       10,
+       16,
+       3
+      ],
+      [
+       "Front",
+       10,
+       15,
+       1
+      ],
+      [
+       "Sinon.",
+       8,
+       14,
+       1
+      ]
+     ]
+    },
+    {
+     "map": "Rust",
+     "aScore": 13,
+     "bScore": 10,
+     "a": [
+      [
+       "Mizuri",
+       21,
+       14,
+       2
+      ],
+      [
+       "HexarioN",
+       18,
+       14,
+       6
+      ],
+      [
+       "tuvshuupixelll.",
+       24,
+       14,
+       1
+      ],
+      [
+       "FURI",
+       17,
+       17,
+       3
+      ],
+      [
+       "Mercedes",
+       13,
+       19,
+       8
+      ]
+     ],
+     "b": [
+      [
+       "Diose",
+       25,
+       17,
+       6
+      ],
+      [
+       "Front",
+       14,
+       18,
+       2
+      ],
+      [
+       "120",
+       18,
+       18,
+       2
+      ],
+      [
+       "Sinon.",
+       10,
+       18,
+       3
+      ],
+      [
+       "Rovs",
+       10,
+       22,
+       2
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source_message_id": "1572997699173884034",
+  "verified_from": "2 unique scoreboards; Hanami 13:4, Rust 13:10",
+  "match": {
+   "a": "2990 Purple",
+   "b": "KngZz",
+   "stage3": true,
+   "round": 3,
+   "date": "NOV 19",
+   "maps": [
+    {
+     "map": "Hanami",
+     "aScore": 13,
+     "bScore": 4,
+     "a": [
+      [
+       "rain.",
+       16,
+       9,
+       3
+      ],
+      [
+       "Jennie666",
+       19,
+       10,
+       4
+      ],
+      [
+       "kenbe.scb",
+       14,
+       8,
+       3
+      ],
+      [
+       "Ban",
+       14,
+       9,
+       3
+      ],
+      [
+       "B.T",
+       13,
+       14,
+       3
+      ]
+     ],
+     "b": [
+      [
+       "dvuS",
+       12,
+       14,
+       1
+      ],
+      [
+       "Yeji",
+       11,
+       15,
+       2
+      ],
+      [
+       "Mit:)",
+       10,
+       16,
+       0
+      ],
+      [
+       "TengriGOD",
+       9,
+       14,
+       1
+      ],
+      [
+       "SarNar",
+       8,
+       17,
+       5
+      ]
+     ]
+    },
+    {
+     "map": "Rust",
+     "aScore": 13,
+     "bScore": 10,
+     "a": [
+      [
+       "Ban",
+       24,
+       11,
+       3
+      ],
+      [
+       "B.T",
+       23,
+       18,
+       2
+      ],
+      [
+       "kenbe.scb",
+       16,
+       12,
+       7
+      ],
+      [
+       "Jennie666",
+       17,
+       16,
+       5
+      ],
+      [
+       "rain.",
+       11,
+       17,
+       4
+      ]
+     ],
+     "b": [
+      [
+       "Yeji",
+       27,
+       17,
+       8
+      ],
+      [
+       "Mit:)",
+       15,
+       18,
+       4
+      ],
+      [
+       "Cup777",
+       12,
+       17,
+       4
+      ],
+      [
+       "dvuS",
+       10,
+       20,
+       3
+      ],
+      [
+       "SarNar",
+       8,
+       19,
+       5
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source_message_id": "1573019941295362132",
+  "verified_from": "3 unique scoreboards; Hanami 15:17, Breeze 13:10, Dune 13:5",
+  "match": {
+   "a": "EVKZ",
+   "b": "OMEN",
+   "stage3": true,
+   "round": 3,
+   "date": "NOV 19",
+   "maps": [
+    {
+     "map": "Hanami",
+     "aScore": 15,
+     "bScore": 17,
+     "a": [
+      [
+       "Benaruu",
+       33,
+       26,
+       4
+      ],
+      [
+       "17",
+       26,
+       25,
+       9
+      ],
+      [
+       "Liminar",
+       19,
+       21,
+       4
+      ],
+      [
+       "Chronic",
+       25,
+       25,
+       7
+      ],
+      [
+       "127",
+       16,
+       24,
+       4
+      ]
+     ],
+     "b": [
+      [
+       "Mysterio",
+       34,
+       21,
+       4
+      ],
+      [
+       "Ares",
+       22,
+       23,
+       5
+      ],
+      [
+       "El",
+       25,
+       27,
+       10
+      ],
+      [
+       "7mist",
+       21,
+       22,
+       7
+      ],
+      [
+       "drager",
+       19,
+       27,
+       1
+      ]
+     ]
+    },
+    {
+     "map": "Breeze",
+     "aScore": 13,
+     "bScore": 10,
+     "a": [
+      [
+       "Vyse",
+       24,
+       17,
+       3
+      ],
+      [
+       "Chronic",
+       18,
+       13,
+       5
+      ],
+      [
+       "Benaruu",
+       18,
+       17,
+       6
+      ],
+      [
+       "17",
+       14,
+       14,
+       3
+      ],
+      [
+       "Liminar",
+       11,
+       16,
+       2
+      ]
+     ],
+     "b": [
+      [
+       "drager",
+       17,
+       16,
+       4
+      ],
+      [
+       "Mysterio",
+       18,
+       16,
+       4
+      ],
+      [
+       "El",
+       15,
+       18,
+       6
+      ],
+      [
+       "7mist",
+       14,
+       16,
+       5
+      ],
+      [
+       "Ares",
+       13,
+       19,
+       3
+      ]
+     ]
+    },
+    {
+     "map": "Dune",
+     "aScore": 13,
+     "bScore": 5,
+     "a": [
+      [
+       "Benaruu",
+       27,
+       9,
+       2
+      ],
+      [
+       "Vyse",
+       13,
+       11,
+       1
+      ],
+      [
+       "127",
+       17,
+       9,
+       1
+      ],
+      [
+       "Chronic",
+       13,
+       12,
+       5
+      ],
+      [
+       "17",
+       7,
+       12,
+       5
+      ]
+     ],
+     "b": [
+      [
+       "7mist",
+       13,
+       17,
+       2
+      ],
+      [
+       "Mysterio",
+       13,
+       15,
+       3
+      ],
+      [
+       "El",
+       12,
+       16,
+       4
+      ],
+      [
+       "drager",
+       10,
+       15,
+       2
+      ],
+      [
+       "Ares",
+       4,
+       15,
+       4
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "source_message_id": "1573041712777920552",
+  "verified_from": "2 unique scoreboards; Rust 13:2, Province 13:11",
+  "match": {
+   "a": "EKS",
+   "b": "DXIII",
+   "stage3": true,
+   "round": 3,
+   "date": "NOV 19",
+   "maps": [
+    {
+     "map": "Rust",
+     "aScore": 13,
+     "bScore": 2,
+     "a": [
+      [
+       "Label",
+       19,
+       7,
+       1
+      ],
+      [
+       "JuTt",
+       11,
+       7,
+       5
+      ],
+      [
+       "Economica",
+       11,
+       12,
+       6
+      ],
+      [
+       "Vice",
+       13,
+       9,
+       2
+      ],
+      [
+       "StorminG",
+       10,
+       9,
+       2
+      ]
+     ],
+     "b": [
+      [
+       "Tgsu",
+       12,
+       14,
+       1
+      ],
+      [
+       "Melo",
+       10,
+       13,
+       0
+      ],
+      [
+       "Str1ker愛v4",
+       8,
+       15,
+       3
+      ],
+      [
+       "xaise",
+       7,
+       15,
+       0
+      ],
+      [
+       "shikiNg",
+       5,
+       8,
+       2
+      ]
+     ]
+    },
+    {
+     "map": "Province",
+     "aScore": 13,
+     "bScore": 11,
+     "a": [
+      [
+       "Vice",
+       22,
+       12,
+       2
+      ],
+      [
+       "JuTt",
+       20,
+       17,
+       7
+      ],
+      [
+       "StorminG",
+       19,
+       17,
+       1
+      ],
+      [
+       "Label",
+       19,
+       15,
+       5
+      ],
+      [
+       "Savent",
+       12,
+       19,
+       0
+      ]
+     ],
+     "b": [
+      [
+       "Melo",
+       19,
+       15,
+       5
+      ],
+      [
+       "shikiNg",
+       22,
+       19,
+       4
+      ],
+      [
+       "Str1ker愛v4",
+       15,
+       19,
+       5
+      ],
+      [
+       "xaise",
+       14,
+       20,
+       2
+      ],
+      [
+       "Tgsu",
+       8,
+       19,
+       4
+      ]
+     ]
+    }
+   ]
+  }
+ }
+]
