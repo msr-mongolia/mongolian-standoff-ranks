@@ -2074,6 +2074,12 @@ background-color:#171a1e!important
 #app.msr-clan-profile:has(.prof.msr-xvrn-profile) .msr-team-stats-heading svg{color:#bfc4cc!important}
 </style>
 <style id="msr-xvrn-gold-sticker">#app .prof.msr-xvrn-profile{position:relative;padding-right:160px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:128px;height:102px;border:0;padding:0;background:transparent;cursor:zoom-in;filter:drop-shadow(0 3px 6px #0009);z-index:4}@media(max-width:650px){#app .prof.msr-xvrn-profile{padding-right:95px!important}#app .prof.msr-xvrn-profile .msr-team-gold-sticker{width:80px;height:64px;right:6px}}</style>
+<style id="msr-omninox-vip">
+#app .prof.msr-omninox-profile{position:relative;padding-right:150px!important}
+#app .prof.msr-omninox-profile>.msr-team-gold-sticker{position:absolute!important;right:16px;top:50%;transform:translateY(-50%);width:112px;height:112px;z-index:5;border:0;background:transparent;cursor:zoom-in;filter:drop-shadow(0 0 13px rgba(238,178,54,.33))}
+#app .prof.msr-omninox-profile>.msr-team-gold-sticker img{width:100%;height:100%;object-fit:contain}
+@media(max-width:650px){#app .prof.msr-omninox-profile{padding-right:88px!important}#app .prof.msr-omninox-profile>.msr-team-gold-sticker{right:5px;width:76px;height:76px}}
+</style>
 <style id="msr-team-gold-sticker">
 #app .prof.msr-lunaris-clean{padding-right:125px!important}
 #app .prof.msr-lunaris-clean .msr-team-gold-sticker{position:absolute!important;right:18px;top:50%;transform:translateY(-50%);width:90px;height:90px;padding:0;border:0;background:transparent;cursor:zoom-in;z-index:3;filter:drop-shadow(0 2px 5px #0009)}
@@ -6449,6 +6455,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   // Team Discord servers shown on the team page (VIP). theme: 'black' = black-dominant button.
   window.MSR_TEAM_DISCORD = window.MSR_TEAM_DISCORD || { OMGZ: { url: 'https://discord.gg/dvskvX8Ge', theme: 'black' } };
   function isOkz(code){return code==='OMGZ'||/^omega\s+forcez$/i.test(String((T[code]||{}).n||'').trim());}
+  function isOmninoxTeam(code){return code==='DS_F1C9FDB9DAA7BF021B336DEE'||/^omninox\s+forcesz$/i.test(String((T[code]||{}).n||'').trim());}
   function isW2990White(code){return code==='W2990'||/^2990\s+white$/i.test(String((T[code]||{}).n||'').trim());}
   function isSixlBlue(code){return code==='DS_3B58BC4EF94967967F5DEE31'||/^six\s+lence$/i.test(String((T[code]||{}).n||'').trim());}
   function isSixpPurple(code){return code==='DS_1EBA48558E161139234422F7'||/^six\s+lence\s+purple$/i.test((T[code]||{}).n||'');}
@@ -7910,6 +7917,20 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if(isSixlBlue(clanCode)){node.classList.add('msr-sixl-back1');applyClanVideoBack1(node,'assets/sixl_back1_video.json?v=1');}
         if(isOmvTeam(clanCode))applyClanVideoBack1(node,'assets/omv_back1_video.json?v=1');
         if(isDxiiiTeam)applyClanVideoBack1(node,'assets/dxiii_back1.mp4');
+        if(isOmninoxTeam(clanCode)){
+          applyClanVideoBack1(node,'assets/omninox_back1.mp4?v=1');
+          var oxProf=node.querySelector('.prof');
+          if(oxProf){
+            oxProf.classList.add('msr-omninox-profile');
+            var oxSticker=h('button',{type:'button',class:'msr-team-gold-sticker','aria-label':'Enlarge Omninox ForcesZ golden sticker',onclick:function(){
+              var d=document.createElement('dialog');d.className='msr-gold-sticker-dialog';
+              d.appendChild(h('button',{type:'button',class:'msr-gold-sticker-close',onclick:function(){d.close();}},'×'));
+              d.appendChild(h('span',{class:'msr-holo-wrap'},h('img',{src:'assets/omninox_gold_sticker.webp?v=1',alt:'Omninox ForcesZ golden sticker'})));
+              d.addEventListener('close',function(){d.remove();});document.body.appendChild(d);d.showModal();
+            }},h('img',{src:'assets/omninox_gold_sticker.webp?v=1',alt:'Omninox ForcesZ golden sticker'}));
+            oxProf.appendChild(oxSticker);
+          }
+        }
         if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59')applyClanVideoBack1(node,'assets/rvurz_back1_video.json?v=1');
         applyTeamEffect(node,clanCode);
         if(/^xiverion divine$/i.test(clan.n||''))applyXvrnVideoBack1(node);
@@ -7932,7 +7953,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         isSixlBlue(node.dataset.msrBack1Team)?'assets/sixl_back1_video.json?v=1':
         isDxiiiTeam?'assets/dxiii_back1.mp4':
         node.dataset.msrBack1Team==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_back1_video.json?v=1':
-        isOmvTeam(node.dataset.msrBack1Team)?'assets/omv_back1_video.json?v=1':null;
+        isOmvTeam(node.dataset.msrBack1Team)?'assets/omv_back1_video.json?v=1':
+        isOmninoxTeam(node.dataset.msrBack1Team)?'assets/omninox_back1.mp4?v=1':null;
       if(back1Asset && msrClanVideoPromises[back1Asset]){
         msrClanVideoPromises[back1Asset].then(function(){
           if(node.isConnected)applyAllClanPanelBack1(node,back1Clan);
