@@ -21,8 +21,22 @@ if (JSON.stringify(main) !== JSON.stringify(mirror)) throw new Error('Existing l
 // Swiss opponents may meet again in a later round: do not discard that result.
 const keyOf = m => [m.a.toLowerCase(), m.b.toLowerCase()].sort().join('|') + '|' +
   (m.stage3 ? 's3:' + (m.round || 1) : m.slot || '');
-const known = new Set(main.map(keyOf));
+const known = new Map(main.map(m => [keyOf(m), m]));
 let added = 0;
+let correctedDates = 0;
+
+function updateVerifiedDate(originalMatch, correctedMatch, sourceId) {
+  if (!sourceId || originalMatch.date === correctedMatch.date) return;
+  // An amended date must never silently overwrite existing map scores or KDA.
+  if (originalMatch.a !== correctedMatch.a || originalMatch.b !== correctedMatch.b ||
+      JSON.stringify(originalMatch.maps) !== JSON.stringify(correctedMatch.maps) ||
+      JSON.stringify(originalMatch.auto ?? null) !== JSON.stringify(correctedMatch.auto ?? null)) {
+    throw new Error('Date correction has conflicting scoreboard: ' + correctedMatch.a + ' vs ' + correctedMatch.b);
+  }
+  if (typeof correctedMatch.date !== 'string' || !/^NOV \d{1,2}$/.test(correctedMatch.date)) throw new Error('Invalid corrected date');
+  originalMatch.date = correctedMatch.date;
+  correctedDates++;
+}
 
 for (const item of entries) {
   const m = item.match ?? item;
@@ -34,8 +48,8 @@ for (const item of entries) {
         ![2, 0].includes(m.auto.b) || m.auto.a + m.auto.b !== 2 ||
         !item.source_message_id) throw new Error('Invalid organizer-confirmed walkover');
     const key = keyOf(m);
-    if (known.has(key)) { console.log('Already registered auto:', m.a, 'vs', m.b); continue; }
-    known.add(key); main.push(m); added++;
+    if (known.has(key)) { updateVerifiedDate(known.get(key), m, item.source_message_id); console.log('Already registered auto:', m.a, 'vs', m.b); continue; }
+    known.set(key, m); main.push(m); added++;
     continue;
   }
   if (m.maps.length < 2 || m.maps.length > 3) throw new Error('A verified Bo3 requires 2–3 maps');
@@ -52,11 +66,11 @@ for (const item of entries) {
   }
   if (Math.max(...wins) !== 2 || (m.maps.length === 3 && Math.min(...wins) !== 1)) throw new Error('Bo3 series winner mismatch');
   const key = keyOf(m);
-  if (known.has(key)) { console.log('Already registered:', m.a, 'vs', m.b); continue; }
-  known.add(key); main.push(m); added++;
+  if (known.has(key)) { updateVerifiedDate(known.get(key), m, item.source_message_id); console.log('Already registered:', m.a, 'vs', m.b); continue; }
+  known.set(key, m); main.push(m); added++;
 }
-if (!added) { console.log('No new matches'); process.exit(0); }
+if (!added && !correctedDates) { console.log('No new matches or corrected dates'); process.exit(0); }
 const updated = original.replace(first, `window.MSR_SCREENSHOT_MATCHES = ${JSON.stringify(main)};`).replace(second, `const screenshotMatches=${JSON.stringify(main)};`);
 if (updated === original) throw new Error('Ledger replacement failed');
 fs.writeFileSync(htmlPath, updated);
-console.log(`Imported ${added} match(es) to both ledgers, total=${main.length}`);
+console.log(`Imported ${added} match(es), corrected ${correctedDates} date(s) in both ledgers, total=${main.length}`);
