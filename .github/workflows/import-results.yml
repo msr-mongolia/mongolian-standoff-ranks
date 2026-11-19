@@ -6,6 +6,8 @@ on:
     paths:
       - 'scripts/verified-*.json'
       - 'scripts/import_verified_matches.mjs'
+      - 'scripts/msl-stage3-official-pairings.json'
+      - 'scripts/apply_s3_pairings.mjs'
       - '.github/workflows/import-results.yml'
   workflow_dispatch:
 
@@ -33,6 +35,7 @@ jobs:
           for file in scripts/verified-*.json; do
             node scripts/import_verified_matches.mjs "$file"
           done
+          node scripts/apply_s3_pairings.mjs
           python3 scripts/check.py
       - name: Commit and publish updated ledger
         env:
