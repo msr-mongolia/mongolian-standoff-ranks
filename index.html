@@ -7623,14 +7623,25 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if (c) slots.push(h('a', { class: 'vd-c', href: teamHref(c), title: T[c].n, 'aria-label': T[c].n }, crest(c, 'md')));
       }
       var dc = ev.discord ? h('a', { class: 'ap-dc', href: ev.discord, target: '_blank', rel: 'noopener noreferrer' }, 'Discord') : null;
+      var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'VOID tournament stages' },
+        [1, 2].map(function (n) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', id: 'void-stage-tab-' + n, 'data-stage': n, 'aria-controls': 'void-stage-panel-' + n, 'aria-selected': String(n === 2) }, 'Stage ' + n); }));
+      var stage1 = h('section', { id: 'void-stage-panel-1', role: 'tabpanel', 'aria-labelledby': 'void-stage-tab-1' },
+        h('div', { class: 'vd-sec' }, h('h3', null, 'Stage 1 · Swiss'), h('span', null, '16 teams · 3 wins qualify · 3 losses eliminated')),
+        h('div', { class: 'sw-wrap' }, voidSwiss(codes)),
+        h('div', { class: 'vd-note' }, (window.MSR_VOID_R1 ? '' : 'Round 1 pairs are provisional (registration order) until the draw is confirmed. ') + 'Schedule and results will appear in the bracket once they are confirmed.'));
+      var stage2 = h('section', { id: 'void-stage-panel-2', role: 'tabpanel', 'aria-labelledby': 'void-stage-tab-2' }, voidPlayoffs());
+      function showStage(n) {
+        [].slice.call(stageStrip.children).forEach(function (tab) { tab.setAttribute('aria-selected', String(Number(tab.getAttribute('data-stage')) === n)); });
+        stage1.style.display = n === 1 ? '' : 'none';
+        stage2.style.display = n === 2 ? '' : 'none';
+      }
+      stageStrip.addEventListener('click', function (e) { var tab = e.target.closest('.msr-stage-tab'); if (tab) showStage(Number(tab.getAttribute('data-stage'))); });
+      showStage(2);
       return h('div', null,
         h('a', { class: 'back', href: '#events', svg: ICON.back + '<span>All events</span>' }),
         pageHead('VOID Tournament', 'Swiss → Single Elimination Playoffs · 16 teams · ' + (ev.dt || 'TBA'), dc),
         h('div', { class: 'vd-facts' }, ev.tier ? h('span', { class: 'ap-tier t-' + ev.tier }, '★ ' + ev.tier + ' TIER') : null, h('span', { class: 'ap-chip' }, 'Prize pool ' + (ev.prize || 'TBA')), (ev.notes || []).map(function (x) { return h('span', { class: 'ap-chip' }, x); }), h('span', { class: 'ap-chip' }, '16 teams')),
-        voidPlayoffs(),
-        h('div', { class: 'vd-sec' }, h('h3', null, 'Stage 1 · Swiss'), h('span', null, '16 teams · 3 wins qualify · 3 losses eliminated')),
-        h('div', { class: 'sw-wrap' }, voidSwiss(codes)),
-        h('div', { class: 'vd-note' }, (window.MSR_VOID_R1 ? '' : 'Round 1 pairs are provisional (registration order) until the draw is confirmed. ') + 'Schedule and results will appear in the bracket once they are confirmed.'));
+        stageStrip, stage1, stage2);
     };
   })();
 
