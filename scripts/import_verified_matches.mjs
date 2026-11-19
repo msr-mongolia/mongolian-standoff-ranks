@@ -18,7 +18,9 @@ const a = original.match(first), b = original.match(second);
 if (!a || !b) throw new Error('MSR ledger copies not found');
 const main = JSON.parse(a[1]), mirror = JSON.parse(b[1]);
 if (JSON.stringify(main) !== JSON.stringify(mirror)) throw new Error('Existing ledger copies differ: refusing import');
-const keyOf = m => [m.a.toLowerCase(), m.b.toLowerCase()].sort().join('|') + '|' + (m.stage3 ? 's3' : m.slot || '');
+// Swiss opponents may meet again in a later round: do not discard that result.
+const keyOf = m => [m.a.toLowerCase(), m.b.toLowerCase()].sort().join('|') + '|' +
+  (m.stage3 ? 's3:' + (m.round || 1) : m.slot || '');
 const known = new Set(main.map(keyOf));
 let added = 0;
 

@@ -1,0 +1,54 @@
+name: Auto-publish verified MSL result screenshots
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/auto-results.yml'
+      - 'scripts/auto_import_results.mjs'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: msr-verified-results-import
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read complete OCR results, cross-check fixtures, update both ledgers
+        run: |
+          node scripts/auto_import_results.mjs
+          python3 scripts/check.py
+      - name: Push newly accepted results to MSR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          git config user.name msr-bot
+          git config user.email msr-bot@users.noreply.github.com
+          git add index.html
+          if test -f scripts/auto-verified-results.json; then
+            git add scripts/auto-verified-results.json
+          fi
+          if git diff --cached --quiet; then
+            echo 'No new high-confidence match results to publish'
+            exit 0
+          fi
+          git commit -m 'Auto-import validated Discord screenshot results'
+          git pull --rebase origin main
+          git push origin main
+          gh workflow run pages.yml --ref main
