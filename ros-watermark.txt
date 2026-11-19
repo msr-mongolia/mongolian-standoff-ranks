@@ -1,3 +1,3 @@
 # Roster/free-agent posts (msr_ros_inbox, non-result channels) with source_timestamp after this UTC time are not yet applied to the site.
 # The scheduled MSR task replaces the line below with the newest source_timestamp it applied.
-2026-11-18T15:39:23.104Z
+2026-11-19T16:43:36.339Z
