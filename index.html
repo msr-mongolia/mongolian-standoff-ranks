@@ -3038,6 +3038,12 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   // Rvurz–Chingis Warriors, MNKT purple–MNKT blue, Four zest assault–EknZ, Dxvil13–KnightSS.
   window.MSR_VOID_R1 = window.MSR_VOID_R1 || [['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3'],['DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28'],['SIXL','DS_A0B0110FC187C08BE7637475'],['DS_7C03F1F6DA5F993B4CC9BB28','DS_BED22EFE5176D46A905806CD'],['DS_D1764CAF48B74A2D0B7B3E59','DS_4559C7E779F302E917B1A414'],['DS_779FBD131741477AF32F9268','DS_A92955A6312CC42137C3C7EA'],['DS_9FEDE81820B36BB7889B86BA','DS_BD02236437B5FF2BB5839658'],['DS_5E67C1B8721D736CA5B5A960','KGTSS']];
   window.MSR_VOID_DAY = 1113; // Matches page shows the VOID Round 1 block on this day
+  // VOID Single Elimination: fill the four official quarterfinal pairs only after
+  // the organiser confirms the draw. Never infer playoff opponents from Swiss order.
+  // Pair format: [[teamA, teamB], ...]. Result format:
+  // {round:'qf'|'sf'|'final', match:1-based number, a:teamCode, b:teamCode, as:2, bs:0}.
+  window.MSR_VOID_PLAYOFF_DRAW = window.MSR_VOID_PLAYOFF_DRAW || [];
+  window.MSR_VOID_PLAYOFF_RESULTS = window.MSR_VOID_PLAYOFF_RESULTS || [];
   // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
     {"a":"DS_5E67C1B8721D736CA5B5A960","b":"DS_A92955A6312CC42137C3C7EA","ea":"DXIII","eb":"MNKT Blue","as":2,"bs":0,"round":5,"date":1118,"maps":[{"map":"Province","aScore":13,"bScore":0,"a":[["Melo",16,4,2],["shikiNg",13,6,2],["Tgsu",12,9,4],["Hollow..",13,9,3],["Revi",8,9,5]],"b":[["Hexor",9,13,4],["saD",10,14,1],["Adios",5,13,2],["Shinobi",8,12,0],["Misw",4,13,2]]},{"map":"Rust","aScore":13,"bScore":0,"a":[["Revi",14,9,4],["Melo",11,4,4],["Hollow..",12,4,3],["shikiNg",11,3,1],["Tgsu",8,5,4]],"b":[["Hexor",7,13,3],["saD",7,13,0],["Adios",7,13,1],["forcez",4,13,0],["Shinobi",0,6,0]]}]},
@@ -7389,6 +7395,47 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     if (!css) { css = document.createElement('style'); css.id = 'msr-void-css';
       css.textContent = '.vd-facts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}.vd-facts .ap-chip{white-space:nowrap}.vd-sec{margin:22px 0 8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.vd-sec h3{margin:0;font-size:16px}.vd-sec span{color:var(--dim);font-size:12.5px;font-weight:600}.vd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.vd-t{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.03);color:inherit;text-decoration:none;font-weight:700}.vd-t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vd-t i{font-style:normal;color:var(--dim);font-size:12px;margin-left:auto}.vd-t.empty{opacity:.5;border-style:dashed;font-weight:600;color:var(--dim)}.vd-pool{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 14px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.03)}.vd-pool b{font-size:13px}.vd-pool>span{color:var(--dim);font-size:12px;font-weight:600}.vd-chips{display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:6px;align-items:center}.vd-c{display:inline-flex;text-decoration:none}.vd-c.empty{opacity:.45}.vd-note{margin-top:16px;padding:12px 14px;border:1px dashed rgba(255,255,255,.18);border-radius:10px;color:var(--dim);font-size:13px}';
       document.head.appendChild(css); }
+    if (!document.getElementById('msr-void-playoffs-css')) {
+      var poCss = document.createElement('style'); poCss.id = 'msr-void-playoffs-css';
+      poCss.textContent = `
+        .vd-po-card{position:relative;overflow:hidden;padding:21px;border:1px solid rgba(74,225,180,.25);border-radius:20px;background:radial-gradient(ellipse at 95% 0%,rgba(24,183,136,.12),transparent 38%),linear-gradient(150deg,#12191e,#0b0e12);box-shadow:0 14px 46px rgba(0,0,0,.22)}
+        .vd-po-title{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:7px}
+        .vd-po-title h3{margin:0;font-size:clamp(18px,3vw,24px);font-weight:900;letter-spacing:-.025em}
+        .vd-po-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid rgba(70,220,165,.36);border-radius:30px;background:rgba(39,209,147,.09);color:#70f6c6;font-size:10px;font-weight:900;letter-spacing:.11em}
+        .vd-po-sub{margin:0 0 17px;color:#a3b0b7;font-size:12px;line-height:1.65}
+        .vd-po-qualified{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
+        .vd-po-qualified .vd-po-qualified-team{display:flex;align-items:center;gap:8px;min-width:0;padding:8px 9px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.025);border-radius:10px;text-decoration:none;color:inherit}
+        .vd-po-qualified-team .crest{width:28px;height:28px;min-width:28px;border-radius:7px}
+        .vd-po-qualified-team strong{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:1.4}
+        .vd-po-qualified-team small{display:block;font-size:10px;color:#6de7b6;font-weight:800}
+        .vd-po-qualified-team.banned{opacity:.58;border-color:rgba(245,76,84,.32)}
+        .vd-po-qualified-team.banned small{color:#fb7e85}
+        .vd-po-scroll{overflow-x:auto;overflow-y:hidden;padding:1px 0 6px;scrollbar-width:thin;scrollbar-color:#30534c transparent}
+        .vd-po-bracket{display:grid;grid-template-columns:repeat(4,minmax(172px,1fr));gap:38px;min-width:810px}
+        .vd-po-column{min-width:0}.vd-po-colhead{height:38px;display:flex;align-items:center;justify-content:space-between;gap:4px;border-bottom:1px solid rgba(255,255,255,.12);color:#eef4f3;font-size:12px;font-weight:900;letter-spacing:.06em}
+        .vd-po-colhead small{color:#758e8a;font-size:10px;font-weight:800}
+        .vd-po-round{height:520px;display:flex;flex-direction:column;justify-content:space-around;gap:14px}
+        .vd-po-pair{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:12px;position:relative}
+        .vd-po-game{position:relative;flex-shrink:0;border:1px solid rgba(255,255,255,.13);border-radius:12px;background:#181f25;overflow:visible;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+        .vd-po-game-label{display:flex;justify-content:space-between;padding:7px 9px;border-bottom:1px solid rgba(255,255,255,.07);color:#94a39f;font-size:9px;letter-spacing:.06em;font-weight:850}
+        .vd-po-player{min-height:34px;padding:5px 7px;display:flex;gap:7px;align-items:center;color:#d3dcda;text-decoration:none}
+        .vd-po-player+.vd-po-player{border-top:1px solid rgba(255,255,255,.06)}
+        .vd-po-player .crest{width:23px;height:23px;min-width:23px;border-radius:6px}
+        .vd-po-player .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;font-weight:850;flex:1}
+        .vd-po-player .score{font-size:11px;color:#96a4aa;font-weight:900}
+        .vd-po-player.tbd{color:#74848b}.vd-po-player.tbd .crest{display:none}
+        .vd-po-player.won{background:rgba(37,224,143,.11);color:#78f1b8}.vd-po-player.won .score{color:#78f1b8}
+        .vd-po-player.lost{opacity:.45}
+        .vd-po-column:not(:last-child) .vd-po-game:after{content:'';position:absolute;top:50%;right:-19px;width:19px;border-top:1px solid rgba(111,163,151,.35)}
+        .vd-po-column:not(:last-child) .vd-po-pair:after{content:'';position:absolute;top:25%;bottom:25%;right:-19px;border-right:1px solid rgba(111,163,151,.35)}
+        .vd-po-column:not(:last-child) .vd-po-pair:before{content:'';position:absolute;right:-38px;top:50%;width:19px;border-top:1px solid rgba(111,163,151,.35)}
+        .vd-po-champion{width:100%;padding:16px 12px;border:1px solid rgba(255,207,100,.45);border-radius:13px;background:linear-gradient(140deg,rgba(236,176,56,.12),rgba(236,176,56,.02));text-align:center}
+        .vd-po-champion .icon{font-size:24px;display:block;margin:0 0 7px}.vd-po-champion .vd-po-player{justify-content:center;border:0}.vd-po-champion .vd-po-player .name{flex:0 1 auto}
+        .vd-po-note{display:flex;gap:8px;align-items:flex-start;margin-top:10px;padding:10px 12px;border:1px dashed rgba(255,255,255,.15);border-radius:10px;color:#aebbb8;font-size:11px;line-height:1.55}
+        @media(max-width:760px){.vd-po-card{padding:14px;border-radius:14px}.vd-po-qualified{grid-template-columns:repeat(2,minmax(0,1fr))}.vd-po-sub{font-size:11px}.vd-po-bracket{min-width:750px;grid-template-columns:repeat(4,minmax(155px,1fr));gap:34px}.vd-po-round{height:485px}.vd-po-note{font-size:10.5px}}
+      `;
+      document.head.appendChild(poCss);
+    }
     /* 16-team Swiss bracket (3 wins qualify / 3 losses eliminate), empty until the draw and results are entered. */
     function voidSwiss(codes) {
       /* Round 1 pairs: window.MSR_VOID_R1 = [[codeA, codeB], ...] once the draw is known; until then registered teams fill the slots in registration order. */
@@ -7443,6 +7490,83 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         col('Round 5', list('3/1 · QUALIFIED', 3, true), tbd('2-2', 3), list('1/3 · ELIMINATED', 3, false)),
         col('Result', list('3/2 · QUALIFIED', 3, true), list('2/3 · ELIMINATED', 3, false)));
     }
+    function voidPlayoffs() {
+      var U = function (v) { return String(v || '').toUpperCase(); };
+      var records = {};
+      (window.MSR_VOID_RESULTS || []).forEach(function (r) {
+        if (!(r.as > r.bs || r.bs > r.as)) return;
+        [r.a, r.b].forEach(function (c) { if (!records[U(c)]) records[U(c)] = { w: 0, l: 0 }; });
+        records[U(r.as > r.bs ? r.a : r.b)].w++;
+        records[U(r.as > r.bs ? r.b : r.a)].l++;
+      });
+      // Qualification is known from Swiss results. Opponents are not: the
+      // organiser must supply MSR_VOID_PLAYOFF_DRAW before QF slots are filled.
+      var qualifiers = (window.MSR_VOID_TEAMS || []).filter(function (c) {
+        return T[c] && records[U(c)] && records[U(c)].w >= 3;
+      }).sort(function (a, b) {
+        return records[U(a)].l - records[U(b)].l || T[a].n.localeCompare(T[b].n);
+      });
+      var banned = function (c) { return U(c) === 'SIXL'; }; // MSR's existing 6LC ban.
+      var draw = Array.isArray(window.MSR_VOID_PLAYOFF_DRAW) && window.MSR_VOID_PLAYOFF_DRAW.length === 4 ? window.MSR_VOID_PLAYOFF_DRAW : [];
+      var results = Array.isArray(window.MSR_VOID_PLAYOFF_RESULTS) ? window.MSR_VOID_PLAYOFF_RESULTS : [];
+      function result(round, n, a, b) {
+        if (!a || !b) return null;
+        return results.find(function (r) {
+          return r.round === round && +r.match === n + 1 &&
+            ((U(r.a) === U(a) && U(r.b) === U(b)) || (U(r.a) === U(b) && U(r.b) === U(a))) &&
+            Number.isInteger(r.as) && Number.isInteger(r.bs) && r.as !== r.bs;
+        }) || null;
+      }
+      function winner(round, n, a, b) {
+        var r = result(round, n, a, b);
+        return r ? (r.as > r.bs ? r.a : r.b) : null;
+      }
+      function teamSlot(code, r, fallback) {
+        var t = code && T[code], w = r && U(r.as > r.bs ? r.a : r.b) === U(code);
+        var lost = r && !w;
+        var tag = t ? 'a' : 'div', opts = { class: 'vd-po-player' + (!t ? ' tbd' : '') + (w ? ' won' : lost ? ' lost' : '') };
+        if (t) { opts.href = teamHref(code); opts.title = t.n; }
+        var score = r ? U(r.a) === U(code) ? r.as : r.bs : null;
+        return h(tag, opts, t ? crest(code, 'sm') : null,
+          h('span', { class: 'name' }, t ? t.n : (fallback || 'TBD')),
+          score !== null ? h('span', { class: 'score' }, String(score)) : null);
+      }
+      function game(round, n, a, b) {
+        var r = result(round, n, a, b);
+        return h('div', { class: 'vd-po-game' },
+          h('div', { class: 'vd-po-game-label' }, h('span', null, round.toUpperCase() + ' ' + (n + 1)), h('span', null, r ? 'FINAL SCORE' : 'BO3 · TBD')),
+          teamSlot(a, r, 'TBD'), teamSlot(b, r, 'TBD'));
+      }
+      function pair() { return h('div', { class: 'vd-po-pair' }, [].slice.call(arguments)); }
+      function col(name, note) {
+        return h('div', { class: 'vd-po-column' },
+          h('div', { class: 'vd-po-colhead' }, h('span', null, name), h('small', null, note)),
+          h('div', { class: 'vd-po-round' }, [].slice.call(arguments, 2)));
+      }
+      var qs = [0, 1, 2, 3].map(function (i) { return draw[i] || []; });
+      var sf = [
+        [winner('qf', 0, qs[0][0], qs[0][1]), winner('qf', 1, qs[1][0], qs[1][1])],
+        [winner('qf', 2, qs[2][0], qs[2][1]), winner('qf', 3, qs[3][0], qs[3][1])]
+      ];
+      var fin = [winner('sf', 0, sf[0][0], sf[0][1]), winner('sf', 1, sf[1][0], sf[1][1])];
+      var champion = winner('final', 0, fin[0], fin[1]);
+      return h('section', { class: 'vd-po-card', 'aria-label': 'VOID Playoffs Single Elimination' },
+        h('div', { class: 'vd-po-title' }, h('h3', null, 'VOID · PLAYOFFS'), h('span', { class: 'vd-po-badge' }, '● SINGLE ELIMINATION')),
+        h('p', { class: 'vd-po-sub' }, '8 spots · Quarterfinals → Semifinals → Final · One loss = elimination. Bracket opponents appear after the official draw.'),
+        h('div', { class: 'vd-po-qualified' }, qualifiers.map(function (code) {
+          return h('a', { class: 'vd-po-qualified-team' + (banned(code) ? ' banned' : ''), href: teamHref(code), title: T[code].n },
+            crest(code, 'sm'), h('span', null, h('strong', null, T[code].n),
+              h('small', null, banned(code) ? 'MSR BANNED' : records[U(code)].w + '–' + records[U(code)].l + ' · QUALIFIED')));
+        })),
+        h('div', { class: 'vd-po-scroll', role: 'region', 'aria-label': 'Scrollable playoff bracket', tabindex: '0' },
+          h('div', { class: 'vd-po-bracket' },
+            col('QUARTERFINALS', '4 MATCHES', pair(game('qf', 0, qs[0][0], qs[0][1]), game('qf', 1, qs[1][0], qs[1][1])), pair(game('qf', 2, qs[2][0], qs[2][1]), game('qf', 3, qs[3][0], qs[3][1]))),
+            col('SEMIFINALS', '2 MATCHES', pair(game('sf', 0, sf[0][0], sf[0][1]), game('sf', 1, sf[1][0], sf[1][1]))),
+            col('GRAND FINAL', '1 MATCH', game('final', 0, fin[0], fin[1])),
+            col('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '🏆'), teamSlot(champion, null, 'TBD'))))),
+        h('div', { class: 'vd-po-note' }, 'ⓘ ', draw.length ? 'Official draw is set. Match winners will advance when results are verified.' : 'Official quarterfinal matchups are pending. Teams are listed as Swiss qualifiers, not as seeded pairings.',
+          qualifiers.some(banned) ? ' 6LC reached 3 wins but is MSR-banned; its playoff spot requires an organiser ruling.' : ''));
+    }
     V.event = function (arg) {
       if (arg !== 'void') return baseEvent.apply(this, arguments);
       var ev = EVENTS.filter(function (e) { return e.id === 'void'; })[0] || {};
@@ -7455,8 +7579,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var dc = ev.discord ? h('a', { class: 'ap-dc', href: ev.discord, target: '_blank', rel: 'noopener noreferrer' }, 'Discord') : null;
       return h('div', null,
         h('a', { class: 'back', href: '#events', svg: ICON.back + '<span>All events</span>' }),
-        pageHead('VOID Tournament', 'Stage 1 · Swiss · 16 teams · ' + (ev.dt || 'TBA'), dc),
+        pageHead('VOID Tournament', 'Swiss → Single Elimination Playoffs · 16 teams · ' + (ev.dt || 'TBA'), dc),
         h('div', { class: 'vd-facts' }, ev.tier ? h('span', { class: 'ap-tier t-' + ev.tier }, '★ ' + ev.tier + ' TIER') : null, h('span', { class: 'ap-chip' }, 'Prize pool ' + (ev.prize || 'TBA')), (ev.notes || []).map(function (x) { return h('span', { class: 'ap-chip' }, x); }), h('span', { class: 'ap-chip' }, '16 teams')),
+        voidPlayoffs(),
         h('div', { class: 'vd-sec' }, h('h3', null, 'Stage 1 · Swiss'), h('span', null, '16 teams · 3 wins qualify · 3 losses eliminated')),
         h('div', { class: 'sw-wrap' }, voidSwiss(codes)),
         h('div', { class: 'vd-note' }, (window.MSR_VOID_R1 ? '' : 'Round 1 pairs are provisional (registration order) until the draw is confirmed. ') + 'Schedule and results will appear in the bracket once they are confirmed.'));
