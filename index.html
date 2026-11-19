@@ -7964,6 +7964,14 @@ MSR_ROSTER_UPDATES.ds_cd3641f18d306e725a580c82 = {"roster":["Skyee","Axape","PIK
 MSR_ROSTER_UPDATES.ds_47546cb9c5d6818be10f3e88 = {"roster":["Peace","wL","Genius 帝","suffer","valkrn","Expert","on"],"ids":{"Peace":"80544296","wL":"235279995","Genius 帝":"237136488","suffer":"256693886","valkrn":"136955661","Expert":"58042031","on":"217591205"}};
 MSR_ROSTER_UPDATES.ds_7c03f1f6da5f993b4cc9bb28 = {"roster":["Yori","ShoX.!.back","Weso","rexOzkxm1","Haise","enjyy_","60kkscerato","Zyron"],"ids":{"Yori":"213223938","ShoX.!.back":"57070064","Weso":"280222631","rexOzkxm1":"138698603","enjyy_":"134161111","60kkscerato":"115595850","Zyron":"264308218"}};
 MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","Asd","Xeno is love!?!","Ylalt x 165hz","Sleepy","Real Donk","Absolute"],"ids":{"ice D":"100224444","Kenshi":"198801347","Asd":"257036300","Xeno is love!?!":"246703775","Ylalt x 165hz":"247210851","Sleepy":"208230755","Real Donk":"96924644","Absolute":"127853587"}};
+// Latest verified Discord rosters (Nov 14–19). Game IDs identify transfers; earlier match history stays archived.
+MSR_ROSTER_UPDATES.ds_5edc00f2fc3922bc3269121e = {"roster":["Rev","KovaakS","YourRayc","SATANIK69","Sekk","Solus","NkuL","Ascension"],"ids":{"Rev":"264046721","KovaakS":"127853587","YourRayc":"130407759","SATANIK69":"132729631","Sekk":"160383799","Solus":"285924300","NkuL":"280257047","Ascension":"157986424"}};
+// DRDRX: the Discord entry `diddy` is on hold pending staff resolution of the reported permanent ban.
+MSR_ROSTER_UPDATES.ds_752d2420bea0465ec064967f = {"roster":["Wing","ХАЙР777","Cloud","MIKASA","youchGOD","renz4k","Soul소울"],"ids":{"Wing":"265932023","ХАЙР777":"283622865","Cloud":"286173279","MIKASA":"251641599","youchGOD":"232912865","renz4k":"177733809","Soul소울":"283101500"}};
+MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","Asd","Xeno is love!?!","Ylalt x 165hz","Sleepy","Real Donk"],"ids":{"ice D":"100224444","Kenshi":"198801347","Asd":"257036300","Xeno is love!?!":"246703775","Ylalt x 165hz":"247210851","Sleepy":"208230755","Real Donk":"96924644"}};
+MSR_ROSTER_UPDATES.ds_89b90cdaa01ea1390c0e248c = {"roster":["Yeji","dvuS","SarNar","kasuee","Cupid","Silky","Mitee"],"ids":{"Yeji":"29609259","dvuS":"184288245","SarNar":"137551663","kasuee":"17297284","Cupid":"122578850","Silky":"92289964","Mitee":"82095999"}};
+MSR_ROSTER_UPDATES.ds_5cdaaf806d7d39ac2c809ed3 = {"roster":["s1lent","L1NEPEEK","V1rtex.666","Tanhil","guessxnontop","Kevingodpeeek","Verkuzzz젿져.","Fi"],"ids":{"s1lent":"255463314","L1NEPEEK":"171311768","V1rtex.666":"221249980","Tanhil":"242943291","guessxnontop":"257412528","Kevingodpeeek":"257856571","Verkuzzz젿져.":"218515017","Fi":"140802592"}};
+MSR_ROSTER_UPDATES.ds_4559c7e779f302e917b1a414 = {"roster":["S1mple","REDHUSYLER30","OG.LIKE","Miso666","tomokoGodd","URNU"],"ids":{"S1mple":"246760287","REDHUSYLER30":"181514423","OG.LIKE":"271797447","Miso666":"160541279","tomokoGodd":"105202197","URNU":"188314521"}};
     registrations.forEach(function (row) {
       var u=MSR_ROSTER_UPDATES[row.id];if(!u)return;
       // Keep departures from the imported previous roster even on a fresh page load.
@@ -8273,11 +8281,27 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
        The listed loser only fills the bracket seat (e.g. CioR for banned 6LC), so its ELO and record are untouched. */
     function msrS3EloRows(){return (window.MSR_S3_RESULTS||[]).filter(function(r){return r.auto;}).map(function(r){return {a:r.a,b:r.b,auto:{a:r.auto.a||0,b:r.auto.b||0},maps:[],stage3:true,oneSided:true};});}
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
+    // More than three new Game IDs in the Nov 19 confirmed roster: ELO resets
+    // to zero, but match records, player stats and previous ELO history remain.
+    var pendingRosterPenalties=['8MNA','DRDRX'],rosterPenaltiesApplied=false;
+    function applyLatestRosterPenalties(){
+      if(rosterPenaltiesApplied)return;
+      rosterPenaltiesApplied=true;
+      pendingRosterPenalties.forEach(function(tag){
+        var prev=null;
+        for(var i=adjustments.length-1;i>=0;i--)if(adjustments[i].tag===tag){prev=adjustments[i];break;}
+        var before=prev?prev.points:50;
+        adjustments.push({tag:tag,points:0,change:-before,w:prev?prev.w:0,l:prev?prev.l:0,penalty:true,rosterChange:true});
+      });
+    }
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
     // The first 10 ledger matches are already in the baseline above; every later ledger match is chained in order.
     (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[],stage2:true};})).concat(msrS3EloRows()).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
       return true;
     }).forEach(function(m){
+      // New series from Nov 19 onwards earn ELO after the roster penalty.
+      var matchDate=String(m.date||'').match(/NOV\s+(\d+)/i);
+      if(matchDate&&Number(matchDate[1])>=19)applyLatestRosterPenalties();
       // Auto-wins (forfeited maps) count as map wins but carry no round score.
       var au=m.auto||{a:0,b:0};
       var count=m.maps.length+(au.a||0)+(au.b||0),aw=m.maps.filter(x=>x.aScore>x.bScore).length+(au.a||0),bw=count-aw;
@@ -8311,6 +8335,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
         });
       }
     });
+    applyLatestRosterPenalties();
     Object.keys(T).forEach(function(code){if(/one true reign/i.test(String(T[code].n||'')))T[code].tag='OTR';});
     applyConfirmedScreenshotTags();
     // Exact registered team identity is authoritative. A clan TAG can belong
