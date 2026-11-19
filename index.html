@@ -7436,12 +7436,21 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       `;
       document.head.appendChild(poCss);
     }
+    // Discord Swiss results use registration IDs, while the site may merge a
+    // registered team into an existing team code with the same name.
+    function voidTeamCode(raw) {
+      if (!raw) return null;
+      if (T[raw]) return raw;
+      var mapped = (window.MSR_REGISTERED_CODE || {})[String(raw).toUpperCase()];
+      return mapped && T[mapped] ? mapped : null;
+    }
     /* 16-team Swiss bracket (3 wins qualify / 3 losses eliminate), empty until the draw and results are entered. */
     function voidSwiss(codes) {
       /* Round 1 pairs: window.MSR_VOID_R1 = [[codeA, codeB], ...] once the draw is known; until then registered teams fill the slots in registration order. */
       var draw = Array.isArray(window.MSR_VOID_R1) && window.MSR_VOID_R1.length ? window.MSR_VOID_R1 : null;
       function slot(code) {
-        return code && T[code] ? h('a', { class: 'sw-t', href: teamHref(code), title: T[code].n, 'aria-label': T[code].n }, swCrest(code)) : h('span', { class: 'sw-q' }, '?');
+        var resolved = voidTeamCode(code);
+        return resolved ? h('a', { class: 'sw-t', href: teamHref(resolved), title: T[resolved].n, 'aria-label': T[resolved].n }, swCrest(resolved)) : h('span', { class: 'sw-q' }, '?');
       }
       function r1() {
         var rows = [];
@@ -7502,9 +7511,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       // Qualification is known from Swiss results. Opponents are not: the
       // organiser must supply MSR_VOID_PLAYOFF_DRAW before QF slots are filled.
       var qualifiers = (window.MSR_VOID_TEAMS || []).filter(function (c) {
-        return T[c] && records[U(c)] && records[U(c)].w >= 3;
+        return voidTeamCode(c) && records[U(c)] && records[U(c)].w >= 3;
       }).sort(function (a, b) {
-        return records[U(a)].l - records[U(b)].l || T[a].n.localeCompare(T[b].n);
+        return records[U(a)].l - records[U(b)].l || T[voidTeamCode(a)].n.localeCompare(T[voidTeamCode(b)].n);
       });
       var banned = function (c) { return U(c) === 'SIXL'; }; // MSR's existing 6LC ban.
       var draw = Array.isArray(window.MSR_VOID_PLAYOFF_DRAW) && window.MSR_VOID_PLAYOFF_DRAW.length === 4 ? window.MSR_VOID_PLAYOFF_DRAW : [];
@@ -7522,12 +7531,12 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         return r ? (r.as > r.bs ? r.a : r.b) : null;
       }
       function teamSlot(code, r, fallback) {
-        var t = code && T[code], w = r && U(r.as > r.bs ? r.a : r.b) === U(code);
+        var resolved = voidTeamCode(code), t = resolved && T[resolved], w = r && U(r.as > r.bs ? r.a : r.b) === U(code);
         var lost = r && !w;
         var tag = t ? 'a' : 'div', opts = { class: 'vd-po-player' + (!t ? ' tbd' : '') + (w ? ' won' : lost ? ' lost' : '') };
-        if (t) { opts.href = teamHref(code); opts.title = t.n; }
+        if (t) { opts.href = teamHref(resolved); opts.title = t.n; }
         var score = r ? U(r.a) === U(code) ? r.as : r.bs : null;
-        return h(tag, opts, t ? crest(code, 'sm') : null,
+        return h(tag, opts, t ? crest(resolved, 'sm') : null,
           h('span', { class: 'name' }, t ? t.n : (fallback || 'TBD')),
           score !== null ? h('span', { class: 'score' }, String(score)) : null);
       }
@@ -7554,8 +7563,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         h('div', { class: 'vd-po-title' }, h('h3', null, 'VOID · PLAYOFFS'), h('span', { class: 'vd-po-badge' }, '● SINGLE ELIMINATION')),
         h('p', { class: 'vd-po-sub' }, '8 spots · Quarterfinals → Semifinals → Final · One loss = elimination. Bracket opponents appear after the official draw.'),
         h('div', { class: 'vd-po-qualified' }, qualifiers.map(function (code) {
-          return h('a', { class: 'vd-po-qualified-team' + (banned(code) ? ' banned' : ''), href: teamHref(code), title: T[code].n },
-            crest(code, 'sm'), h('span', null, h('strong', null, T[code].n),
+          var resolved = voidTeamCode(code);
+          return h('a', { class: 'vd-po-qualified-team' + (banned(code) ? ' banned' : ''), href: teamHref(resolved), title: T[resolved].n },
+            crest(resolved, 'sm'), h('span', null, h('strong', null, T[resolved].n),
               h('small', null, banned(code) ? 'MSR BANNED' : records[U(code)].w + '–' + records[U(code)].l + ' · QUALIFIED')));
         })),
         h('div', { class: 'vd-po-scroll', role: 'region', 'aria-label': 'Scrollable playoff bracket', tabindex: '0' },
@@ -7570,10 +7580,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     V.event = function (arg) {
       if (arg !== 'void') return baseEvent.apply(this, arguments);
       var ev = EVENTS.filter(function (e) { return e.id === 'void'; })[0] || {};
-      var codes = (window.MSR_VOID_TEAMS || []).filter(function (c) { return T[c]; });
+      var codes = (window.MSR_VOID_TEAMS || []).filter(function (c) { return voidTeamCode(c); });
       var slots = [];
       for (var i = 0; i < 16; i++) {
-        var c = codes[i];
+        var c = voidTeamCode(codes[i]);
         if (c) slots.push(h('a', { class: 'vd-c', href: teamHref(c), title: T[c].n, 'aria-label': T[c].n }, crest(c, 'md')));
       }
       var dc = ev.discord ? h('a', { class: 'ap-dc', href: ev.discord, target: '_blank', rel: 'noopener noreferrer' }, 'Discord') : null;
@@ -8119,6 +8129,7 @@ MSR_ROSTER_UPDATES.ds_4559c7e779f302e917b1a414 = {"roster":["S1mple","REDHUSYLER
     Object.keys(MSR_ROSTER_UPDATES).forEach(function (rid) { if (registrations.some(function (r) { return r.id === rid; })) Object.keys(MSR_ROSTER_UPDATES[rid].ids).forEach(function (n) { latestClanById.set(MSR_ROSTER_UPDATES[rid].ids[n], rid); }); });
     var byName = {};
     Object.keys(T).forEach(function (code) { byName[key(T[code].n)] = code; });
+    window.MSR_REGISTERED_CODE = {};
     registrations.forEach(function (row) {
       if (!row || !/^[a-z0-9_]{3,40}$/i.test(row.id) || typeof row.name !== 'string' ||
           !Array.isArray(row.roster) || row.roster.length < 5 || row.roster.length > 12 ||
@@ -8193,6 +8204,7 @@ MSR_ROSTER_UPDATES.ds_4559c7e779f302e917b1a414 = {"roster":["S1mple","REDHUSYLER
         // Keep only the newest submitted roster; former members become free agents.
       }
       code = code || row.id.toUpperCase();
+      window.MSR_REGISTERED_CODE[row.id.toUpperCase()] = code;
       // Correct Manai's submitted list numbers without changing the players' game IDs.
       if (code === 'MANAI') {
         var manaiNames = { '5 1330': '1330', '6': 'Finn', '7 Vibes?': 'Vibes?', '8 Ign-ApriL': 'ApriL' };
