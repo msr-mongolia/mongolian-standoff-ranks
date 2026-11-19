@@ -3038,11 +3038,17 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   // Rvurz–Chingis Warriors, MNKT purple–MNKT blue, Four zest assault–EknZ, Dxvil13–KnightSS.
   window.MSR_VOID_R1 = window.MSR_VOID_R1 || [['DS_A4CCD6C33286B304E839A0BC','DS_5CDAAF806D7D39AC2C809ED3'],['DS_A24136D1A99B5E5DFAE15E9F','DS_4561C74A8EF7ED8EBA1EEC28'],['SIXL','DS_A0B0110FC187C08BE7637475'],['DS_7C03F1F6DA5F993B4CC9BB28','DS_BED22EFE5176D46A905806CD'],['DS_D1764CAF48B74A2D0B7B3E59','DS_4559C7E779F302E917B1A414'],['DS_779FBD131741477AF32F9268','DS_A92955A6312CC42137C3C7EA'],['DS_9FEDE81820B36BB7889B86BA','DS_BD02236437B5FF2BB5839658'],['DS_5E67C1B8721D736CA5B5A960','KGTSS']];
   window.MSR_VOID_DAY = 1113; // Matches page shows the VOID Round 1 block on this day
-  // VOID Single Elimination: fill the four official quarterfinal pairs only after
-  // the organiser confirms the draw. Never infer playoff opponents from Swiss order.
+  // VOID Single Elimination (organiser request, Nov 19): 6LC is replaced by
+  // EliteKingZz DIVA, which faces the weakest remaining Swiss qualifier.
+  // Other QFs follow Swiss records, map differential and round differential.
   // Pair format: [[teamA, teamB], ...]. Result format:
   // {round:'qf'|'sf'|'final', match:1-based number, a:teamCode, b:teamCode, as:2, bs:0}.
-  window.MSR_VOID_PLAYOFF_DRAW = window.MSR_VOID_PLAYOFF_DRAW || [];
+  window.MSR_VOID_PLAYOFF_DRAW = window.MSR_VOID_PLAYOFF_DRAW || [
+    ['KGTSS','DS_A0B0110FC187C08BE7637475'],
+    ['DS_4559C7E779F302E917B1A414','DS_4561C74A8EF7ED8EBA1EEC28'],
+    ['DS_D1764CAF48B74A2D0B7B3E59','DS_5E67C1B8721D736CA5B5A960'],
+    ['DS_7C03F1F6DA5F993B4CC9BB28','DS_BD02236437B5FF2BB5839658']
+  ];
   window.MSR_VOID_PLAYOFF_RESULTS = window.MSR_VOID_PLAYOFF_RESULTS || [];
   // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
@@ -7423,6 +7429,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         .vd-po-player .crest{width:23px;height:23px;min-width:23px;border-radius:6px}
         .vd-po-player .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;font-weight:850;flex:1}
         .vd-po-player .score{font-size:11px;color:#96a4aa;font-weight:900}
+        .vd-po-player .seed{font-size:9px;color:#83a69b;font-weight:850;min-width:18px}
         .vd-po-player.tbd{color:#74848b}.vd-po-player.tbd .crest{display:none}
         .vd-po-player.won{background:rgba(37,224,143,.11);color:#78f1b8}.vd-po-player.won .score{color:#78f1b8}
         .vd-po-player.lost{opacity:.45}
@@ -7504,12 +7511,19 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var records = {};
       (window.MSR_VOID_RESULTS || []).forEach(function (r) {
         if (!(r.as > r.bs || r.bs > r.as)) return;
-        [r.a, r.b].forEach(function (c) { if (!records[U(c)]) records[U(c)] = { w: 0, l: 0 }; });
+        [r.a, r.b].forEach(function (c) { if (!records[U(c)]) records[U(c)] = { w: 0, l: 0, mapDiff: 0, roundDiff: 0 }; });
         records[U(r.as > r.bs ? r.a : r.b)].w++;
         records[U(r.as > r.bs ? r.b : r.a)].l++;
+        records[U(r.a)].mapDiff += r.as - r.bs;
+        records[U(r.b)].mapDiff += r.bs - r.as;
+        (r.maps || []).forEach(function (m) {
+          if (!Number.isFinite(m.aScore) || !Number.isFinite(m.bScore)) return;
+          records[U(r.a)].roundDiff += m.aScore - m.bScore;
+          records[U(r.b)].roundDiff += m.bScore - m.aScore;
+        });
       });
-      // Qualification is known from Swiss results. Opponents are not: the
-      // organiser must supply MSR_VOID_PLAYOFF_DRAW before QF slots are filled.
+      // Qualification and seeding use the verified Swiss results; this staff
+      // pairing replaces 6LC without changing any historical match record.
       // Organiser decision (Nov 19): EliteKingZz DIVA replaces banned 6LC in
       // the VOID playoffs. Preserve their actual Swiss records unchanged.
       var replacement = 'DS_BD02236437B5FF2BB5839658';
@@ -7518,7 +7532,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       }).sort(function (a, b) {
         if (U(a) === replacement) return 1;
         if (U(b) === replacement) return -1;
-        return records[U(a)].l - records[U(b)].l || T[voidTeamCode(a)].n.localeCompare(T[voidTeamCode(b)].n);
+        return records[U(a)].l - records[U(b)].l ||
+          records[U(b)].mapDiff - records[U(a)].mapDiff ||
+          records[U(b)].roundDiff - records[U(a)].roundDiff ||
+          T[voidTeamCode(a)].n.localeCompare(T[voidTeamCode(b)].n);
       });
       var draw = Array.isArray(window.MSR_VOID_PLAYOFF_DRAW) && window.MSR_VOID_PLAYOFF_DRAW.length === 4 ? window.MSR_VOID_PLAYOFF_DRAW : [];
       var results = Array.isArray(window.MSR_VOID_PLAYOFF_RESULTS) ? window.MSR_VOID_PLAYOFF_RESULTS : [];
@@ -7537,10 +7554,12 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       function teamSlot(code, r, fallback) {
         var resolved = voidTeamCode(code), t = resolved && T[resolved], w = r && U(r.as > r.bs ? r.a : r.b) === U(code);
         var lost = r && !w;
+        var seed = qualifiers.indexOf(code);
         var tag = t ? 'a' : 'div', opts = { class: 'vd-po-player' + (!t ? ' tbd' : '') + (w ? ' won' : lost ? ' lost' : '') };
         if (t) { opts.href = teamHref(resolved); opts.title = t.n; }
         var score = r ? U(r.a) === U(code) ? r.as : r.bs : null;
         return h(tag, opts, t ? crest(resolved, 'sm') : null,
+          t && seed >= 0 ? h('span', { class: 'seed' }, '#' + (seed + 1)) : null,
           h('span', { class: 'name' }, t ? t.n : (fallback || 'TBD')),
           score !== null ? h('span', { class: 'score' }, String(score)) : null);
       }
@@ -7565,8 +7584,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var champion = winner('final', 0, fin[0], fin[1]);
       return h('section', { class: 'vd-po-card', 'aria-label': 'VOID Playoffs Single Elimination' },
         h('div', { class: 'vd-po-title' }, h('h3', null, 'VOID · PLAYOFFS'), h('span', { class: 'vd-po-badge' }, '● SINGLE ELIMINATION')),
-        h('p', { class: 'vd-po-sub' }, '8 spots · Quarterfinals → Semifinals → Final · One loss = elimination. Bracket opponents appear after the official draw.'),
-        h('div', { class: 'vd-po-qualified' }, qualifiers.map(function (code) {
+        h('p', { class: 'vd-po-sub' }, '8 teams · Quarterfinals → Semifinals → Final · BO3 · One loss = elimination. Seeding: Swiss record, map difference, round difference.'),
+        draw.length ? null : h('div', { class: 'vd-po-qualified' }, qualifiers.map(function (code) {
           var resolved = voidTeamCode(code);
           return h('a', { class: 'vd-po-qualified-team', href: teamHref(resolved), title: T[resolved].n },
             crest(resolved, 'sm'), h('span', null, h('strong', null, T[resolved].n),
@@ -7578,8 +7597,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
             col('SEMIFINALS', '2 MATCHES', pair(game('sf', 0, sf[0][0], sf[0][1]), game('sf', 1, sf[1][0], sf[1][1]))),
             col('GRAND FINAL', '1 MATCH', game('final', 0, fin[0], fin[1])),
             col('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '🏆'), teamSlot(champion, null, 'TBD'))))),
-        h('div', { class: 'vd-po-note' }, 'ⓘ ', draw.length ? 'Official draw is set. Match winners will advance when results are verified.' : 'Official quarterfinal matchups are pending. Teams are listed as Swiss qualifiers, not as seeded pairings.',
-          ' EliteKingZz DIVA replaces banned 6LC by organiser decision.'));
+        h('div', { class: 'vd-po-note' }, 'ⓘ ', draw.length ? 'Quarterfinals are seeded. Winners advance after their BO3 results are verified.' : 'Quarterfinal pairings are pending.',
+          ' EliteKingZz DIVA replaces banned 6LC and faces the lowest-seeded qualifier, Celestex.'));
     }
     V.event = function (arg) {
       if (arg !== 'void') return baseEvent.apply(this, arguments);
