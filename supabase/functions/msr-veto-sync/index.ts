@@ -7,6 +7,10 @@ async function db(path:string,init:RequestInit={}){const r=await fetch(base+'/re
 const FIXED=['1571086314294485022','1571110242102808586','1571086271026036816'];
 const GUILD='1568348065595785316';
 
+// Admins write match times as bare 8 / 9 / 10 (or 8:30): matches are always in the evening, so hours 1-11 mean 13-23 (8 -> 20:00). A "(8:30)" note after a full time is ignored.
+function toEvening(t:string|null){if(!t)return t;const m=String(t).match(/^(\d{1,2})(?::(\d{2}))?$/);if(!m)return t;let h=Number(m[1]);if(h>=1&&h<=11)h+=12;return String(h)+':'+(m[2]||'00');}
+const noParen=(s:string)=>s.replace(/\s*\([^)]*\)\s*/g,' ').trim();
+
 function parseRel(content:string){
  const lines=content.replace(/\u{1F19A}️?/gu,' vs ').split(/\r?\n/).map(s=>s.replace(/(\d)\s*:\s*(\d)/g,'$1:$2').replace(/\s+/g,' ').trim()).filter(Boolean);
  const vsLines=lines.filter(s=>/\bvs\b/i.test(s));
@@ -21,11 +25,12 @@ function parseRel(content:string){
  const vi=lines.indexOf(vsLines[0]);
  for(const line of lines.slice(vi+1)){
   if(/^[-=_~\s]+$/.test(line))continue;
-  const tm=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2}|\d{1,2})$/i)||line.match(/^(?:time|tsag)\s*:?\s*(\d{1,2})(?::(\d{2}))?:?\s*$/i);
+  const tl=noParen(line);
+  const tm=tl.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2}|\d{1,2})$/i)||tl.match(/^(?:time|tsag)\s*:?\s*(\d{1,2})(?::(\d{2}))?:?\s*$/i);
   if(tm){const raw=tm[2]?tm[1]+':'+tm[2]:tm[1];time=raw.includes(':')?raw:raw+':00';continue;}
-  const dt=line.match(/^(\d{1,2}:\d{2})\s+\d{1,2}[\/.]\d{1,2}$/)||line.match(/^\d{1,2}[\/.]\d{1,2}\s+(\d{1,2}:\d{2})$/);
+  const dt=tl.match(/^(\d{1,2}:\d{2})\s+\d{1,2}[\/.]\d{1,2}$/)||tl.match(/^\d{1,2}[\/.]\d{1,2}\s+(\d{1,2}:\d{2})$/);
   if(dt){time=dt[1];continue;}
-  const ap=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
+  const ap=tl.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
   if(ap){let hr=Number(ap[1])%12;if(ap[3].toLowerCase()==='pm')hr+=12;time=String(hr)+':'+(ap[2]||'00');continue;}
   const evening=line.match(/^oroini\s+(\d{1,2})\s*tsgaas$/i);if(evening){const hour=Number(evening[1]);if(hour>=1&&hour<=11)time=String(hour+12)+':00';continue;}
   if(/\bbans?\b/i.test(line)){
@@ -58,7 +63,7 @@ function parseRel(content:string){
  // A pick/ban owner written as a short prefix of exactly one of the two teams (e.g. "2990" for "2990 white") is the full team name.
  const nk=(s:string)=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const own=(t:string)=>{const x=nk(t),A=nk(ta),B=nk(tb);if(!x||x===A||x===B)return t;const pa=A.startsWith(x),pb=B.startsWith(x);return pa!==pb?(pa?ta:tb):t;};
- return {team_a:ta,team_b:tb,time_label:time,picks:finalPicks.map((p:any)=>({...p,team:p.team?own(p.team):p.team})),decider,bans:bans.map((p:any)=>({...p,team:own(p.team)}))};
+ return {team_a:ta,team_b:tb,time_label:toEvening(time),picks:finalPicks.map((p:any)=>({...p,team:p.team?own(p.team):p.team})),decider,bans:bans.map((p:any)=>({...p,team:own(p.team)}))};
 }
 
 // Fallback for veto posts without a single "A vs B" line (side-chooser formats).
@@ -76,7 +81,7 @@ function parseRelSides(content:string){
  const other=(n:string)=>n===a?b:a;
  let time:string|null=null,decider:string|null=null,bare:string|null=null;const picks:any[]=[];
  for(const line of lines.slice(lines.indexOf(hdr)+1)){
-  const tm=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2})$/i);if(tm){time=tm[1];continue;}
+  const tm=noParen(line).match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}(?::\d{2})?)$/i);if(tm){time=tm[1];continue;}
   const map=findMap(line);if(!map)continue;
   if(/\bdec(?:ider)?\b/i.test(line)){decider=map;continue;}
   let ct:string|null=null;
@@ -90,7 +95,7 @@ function parseRelSides(content:string){
  if(picks.length!==2)return null;
  if(!decider&&bare&&!picks.some((p:any)=>p.map===bare))decider=bare;
  if(!decider)return null;
- return {team_a:a.slice(0,100),team_b:b.slice(0,100),time_label:time,picks,decider,bans:[]};
+ return {team_a:a.slice(0,100),team_b:b.slice(0,100),time_label:toEvening(time),picks,decider,bans:[]};
 }
 
 // Last fallback: a post with just "A vs B" and the three final maps in order (no bans / no pick owners).
@@ -103,14 +108,14 @@ function parseMapsOnly(content:string){
  const v=vs[0].match(/^(.+?)\s+vs\s+(.+?)(?:\s+(\d{1,2}:\d{2}))?$/i);if(!v)return null;
  let time=v[3]||null;const maps:string[]=[];
  for(const line of lines.slice(lines.indexOf(vs[0])+1)){
-  const tm=line.match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}:\d{2})$/i);if(tm){time=tm[1];continue;}
+  const tm=noParen(line).match(/^(?:(?:time|tsag)\s*:?\s*)?(\d{1,2}(?::\d{2})?)$/i);if(tm){time=tm[1];continue;}
   if(/\b(?:ban|pick|dec(?:ider)?)\b/i.test(line))return null;
   const toks=line.toLowerCase().split(/[^a-z]+/).filter(Boolean);
   const hits=toks.map(t=>aliases[t]).filter(Boolean);
   if(hits.length&&toks.length<=hits.length+1){for(const m of hits)if(!maps.includes(m))maps.push(m);}
  }
  if(maps.length!==3)return null;
- return {team_a:v[1].trim().slice(0,100),team_b:v[2].trim().slice(0,100),time_label:time,picks:[{team:'',map:maps[0]},{team:'',map:maps[1]}],decider:maps[2],bans:[]};
+ return {team_a:v[1].trim().slice(0,100),team_b:v[2].trim().slice(0,100),time_label:toEvening(time),picks:[{team:'',map:maps[0]},{team:'',map:maps[1]}],decider:maps[2],bans:[]};
 }
 
 const D='https://discord.com/api/v10';
