@@ -3376,7 +3376,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     { nick: 'snow!!!', from: 'drdrx', to: 'DS_REVOLUTION_5RV_1572281163', toNick: 'SMASH', date: 1117 }, // drdrx -> Revolution (same Game ID 248869027, new IGN SMASH)
     { nick: 'CartiB', from: 'MetaS', to: 'DS_REVOLUTION_5RV_1572281163', toNick: 'CartiB', date: 1117 } // METAS -> Revolution (same Game ID 195850009)
   ];
-  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).map(function (r, i) { return [r, i]; }).sort(function (x, y) { return ((x[0].round || 1) - (y[0].round || 1)) || ((x[0].date || 0) - (y[0].date || 0)) || (y[1] - x[1]); }).map(function (x) { return x[0]; }) /* chronological: round, then date, then entry order (older entries sit lower in the list) */.filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }), resetA: r.eloReset === 'a', resetB: r.eloReset === 'b', void: true }; }); };
+  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).map(function (r, i) { return [r, i]; }).sort(function (x, y) { return ((x[0].round || 1) - (y[0].round || 1)) || ((x[0].date || 0) - (y[0].date || 0)) || (y[1] - x[1]); }).map(function (x) { return x[0]; }) /* chronological: round, then date, then entry order (older entries sit lower in the list) */.filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }), resetA: r.eloReset === 'a', resetB: r.eloReset === 'b', void: true, date: r.date }; }); };
   /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
   window.msrVoidR2 = function () {
     var r1 = window.MSR_VOID_R1 || [], up = [], down = [];
@@ -8493,7 +8493,10 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster":["Luxxus","MooN","no
 
     /* Stage 3 admin W/O wins (MSR_S3_RESULTS): the winner gets the normal W/O ELO (+10) and a win in its record/form.
        The listed loser only fills the bracket seat (e.g. CioR for banned 6LC), so its ELO and record are untouched. */
-    function msrS3EloRows(){return (window.MSR_S3_RESULTS||[]).filter(function(r){return r.auto;}).map(function(r){return {a:r.a,b:r.b,auto:{a:r.auto.a||0,b:r.auto.b||0},maps:[],stage3:true,oneSided:true};});}
+    function msrS3EloRows(){return (window.MSR_S3_RESULTS||[]).filter(function(r){return r.auto;}).map(function(r){return {a:r.a,b:r.b,auto:{a:r.auto.a||0,b:r.auto.b||0},maps:[],stage3:true,oneSided:true,date:r.date};});}
+    /* Day key (e.g. NOV 19 / 1119 -> 1119) so the ranking's +/-pt shows the change from the team's most recent match by date,
+       not whichever row happened to be chained last (S2/S3 W/O rows are chained after the ledger). ELO totals are unchanged. */
+    function msrAdjDay(v){if(typeof v==='number')return v;var mm=/NOV\s*(\d+)/i.exec(String(v||''));return mm?1100+ +mm[1]:0;}
     var adjustments=[{"tag":"DXIII","points":79,"change":29,"w":1,"l":0},{"tag":"TLnrs","points":24,"change":-26,"w":0,"l":1},{"tag":"1NFYx","points":74,"change":24,"w":1,"l":0},{"tag":"8MNA","points":27,"change":-23,"w":0,"l":1},{"tag":"DRDRX","points":72,"change":22,"w":1,"l":0},{"tag":"SIXP","points":29,"change":-21,"w":0,"l":1},{"tag":"AIM4R","points":73,"change":23,"w":1,"l":0},{"tag":"RESKK","points":27,"change":-23,"w":0,"l":1},{"tag":"KGTSS","points":73,"change":23,"w":1,"l":0},{"tag":"R6","points":27,"change":-23,"w":0,"l":1},{"tag":"6LC","points":72,"change":22,"w":1,"l":0},{"tag":"DL340","points":29,"change":-21,"w":0,"l":1},{"tag":"CioR","points":29,"change":-21,"w":0,"l":1},{"tag":"0kz","points":70,"change":20,"w":1,"l":0},{"tag":"SCLAT","points":76,"change":26,"w":1,"l":0},{"tag":"ACCA","points":26,"change":-24,"w":0,"l":1},{"tag":"UCLT","points":74,"change":24,"w":1,"l":0},{"tag":"IMTLL","points":28,"change":-22,"w":0,"l":1},{"tag":"OMV","points":30,"change":-20,"w":0,"l":1},{"tag":"OTR","points":71,"change":21,"w":1,"l":0}];
     // More than three new Game IDs in the Nov 19 confirmed roster: ELO resets
     // to zero, but match records, player stats and previous ELO history remain.
@@ -8510,7 +8513,7 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster":["Luxxus","MooN","no
     }
     // Calculate new screenshot-confirmed matches using the same ELO v3 formula.
     // The first 10 ledger matches are already in the baseline above; every later ledger match is chained in order.
-    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[],stage2:true};})).concat(msrS3EloRows()).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
+    (window.MSR_SCREENSHOT_MATCHES||[]).slice(10).concat((window.MSR_S2_RESULTS||[]).map(function(r){return {a:r.a,b:r.b,auto:r.auto,maps:[],stage2:true,date:r.date};})).concat(msrS3EloRows()).concat(window.msrVoidEloRows?window.msrVoidEloRows():[]).filter(function(m){
       return true;
     }).forEach(function(m){
       // New series from Nov 19 onwards earn ELO after the roster penalty.
@@ -8535,7 +8538,7 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster":["Luxxus","MooN","no
       var db=fullAuto?(bw>aw?10:-13):Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)+(hasAuto?(bw>aw?10:-13):0);
       [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].filter(function(x){return !(m.oneSided&&x[0]===m.b);}).forEach(function(x){
         var tag=x[0],before=x[3],after=Math.max(0,Math.min(vipTagActive(tag)?Infinity:Math.max(300,before),before+x[1])),prev=x[4]||{w:0,l:0};
-        adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1)});
+        adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1),d:msrAdjDay(m.date)});
       });
       // Admin ruling: 6LC (Six Lence + Six Lence Purple) is banned. Every team that lost a series to them from Stage 2 on (and in VOID) gets +15 (MSR_BAN_BONUS).
       var bnb=window.MSR_BAN_BONUS;
@@ -8564,6 +8567,7 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster":["Luxxus","MooN","no
       formByTag[m.a]=(formByTag[m.a]||'')+(aw>bw?'w':'l');
       if(!m.oneSided)formByTag[m.b]=(formByTag[m.b]||'')+(bw>aw?'w':'l');
     });
+    var msrLastChange={};adjustments.forEach(function(z){var c=msrLastChange[z.tag];if(!c||(z.d||0)>=c.d)msrLastChange[z.tag]={d:z.d||0,change:z.change};});
     adjustments.forEach(function(item){
       var exact=exactTeamNames[item.tag];
       var match=exact&&Object.keys(T).find(function(code){
@@ -8580,7 +8584,7 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster":["Luxxus","MooN","no
       if(!match)return;
       var row=RANK.find(function(x){return x[0]===match;});
       if(!row){row=[match,50,0,0,0,''];RANK.push(row);}
-      row[1]=item.points;row[2]=item.change;row[3]=item.w;row[4]=item.l;row[5]=(formByTag[item.tag]||'').slice(-5)||(item.w?'w':'l');
+      row[1]=item.points;row[2]=(msrLastChange[item.tag]||item).change;row[3]=item.w;row[4]=item.l;row[5]=(formByTag[item.tag]||'').slice(-5)||(item.w?'w':'l');
       (window.MSR_ELO_HIST=window.MSR_ELO_HIST||{})[match]=[50].concat(adjustments.filter(function(z){return z.tag===item.tag;}).map(function(z){return z.points;}));
     });
     RANK.sort(function(a,b){return Number(b[1]||0)-Number(a[1]||0);});
