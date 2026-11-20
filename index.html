@@ -3918,7 +3918,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     }
     var banPost = NEWS.filter(function(n){return n.id===2026110702})[0];
     var updPost = NEWS.filter(function(n){return n.id===2026110701})[0];
-    var cardIds = [2026111803, 2026111802, 2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
+    var cardIds = [2026111802, 2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
     var cardItems = cardIds.map(function (id) { return NEWS.filter(function (n) { return n.id === id; })[0]; }).filter(Boolean);
     function nwBg(n) { if (n.s3seed && window.msrS3SeedArt) return h('div', { class: 'bg' }, window.msrS3SeedArt()); return n.img ? h('div', { class: 'bg' }, h('img', { src: n.img, alt: '', loading: 'lazy' })) : null; }
     function nwCard(n, cls) {
@@ -5260,21 +5260,6 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     NEWS.push(
       { id: 2026111802, g: 'MSR OFFICIAL', t: '11-р сарын 18', c: 0, h: "Шинэ журам: бүрэлдэхүүн солих төлбөр ба нэг TAG — нэг бүрэлдэхүүн", lead: "Өөр багийн тоглогчийг авахын тулд тэр тоглогч өмнөх багаасаа заавал хасагдсан байх ёстой. Free agent-аас тоглогч авах үнэгүй. Өөр багаас тоглогч авах 1 хүнд 1,500₮, өөрийн багаас тоглогч хасуулах 1 хүнд 1,500₮.",
         body: ["Тоглогчийн шилжилт, багийн бүрэлдэхүүний өөрчлөлтийг цэгцтэй, шударга болгох зорилгоор дараах журмыг мөрдөнө.", "• Өмнөх багаас заавал гаргах: өөр багт бүртгэлтэй тоглогчийг авахын өмнө тэр тоглогч өмнөх багаасаа заавал хасагдсан байх ёстой. Хасалт хийгдээгүй бол шинэ багт бүртгэхгүй.", "• Нэг TAG — нэг бүрэлдэхүүн: нэг TAG-тай баг олон тэмцээнд зэрэг оролцох бол бүгдэд нь нэг ижил бүрэлдэхүүнээр оролцоно. Өөр тэмцээнд өөр бүрэлдэхүүнээр орохыг хориглоно.", "• Солилтын хязгаар: нэг удаад хамгийн ихдээ 3 тоглогч солино. 3-аас дээш тоглогч солихыг хориглоно.", "• Free agent-аас тоглогч авах: үнэгүй.", "• Өөр багаас тоглогч авах: 1 хүн 1,500₮.","• Өөрийн багаас тоглогч хасуулах: 1 хүн 1,500₮.", "• Төлбөр баталгаажсаны дараа өөрчлөлтийг MSR сайтад оруулна.", "Бүрэлдэхүүн өөрчлөх хүсэлтээ MSR админд Discord-оор илгээнэ үү: https://discord.com/users/1128188613230874727", "— MSR Administration"] },
-      { id: 2026111803, g: 'MSR OFFICIAL', t: 'Nov 18', c: 0, h: 'MSR Blacklist: 8 United elites (Syroz) players banned', lead: 'MSR Administration has banned all 8 registered players of United elites (Syroz) for wallhack / cheating: Tk.Aim.Danger? permanently, the other 7 players for 3 months (Nov 18, 2026 to Feb 18, 2027).', body: [
-        'MSR Administration announces that all 8 registered players of United elites (clan tag: Syroz) are banned from MSR tournaments for using a wallhack (cheating).',
-        'Ban start: 2026-11-18. Tk.Aim.Danger? is banned permanently; the other 7 players are banned for 3 months, until 2027-02-18.',
-        '1. Tk.Aim.Danger? — ID 287928658 — PERMANENT',
-        '2. Wu 。 — ID 245042282 — 3 months',
-        '3. moak — ID 263026698 — 3 months',
-        '4. dream. — ID 284127374 — 3 months',
-        '5. Urumt — ID 248447579 — 3 months',
-        '6. fml — ID 279697670 — 3 months',
-        '7. 1owzs — ID 112297934 — 3 months',
-        '8. YellowFlash. — ID 89398373 — 3 months',
-        'The ban follows each player by game ID: it stays in force if the player transfers to another team. No other players or teams are affected. Player statistics and match history are kept.',
-        'Questions: contact MSR Administration on Discord: https://discord.com/users/1128188613230874727',
-        '— MSR Administration'
-      ] },
       { id: 2026111801, g: 'MSR OFFICIAL', t: '11-р сарын 18', c: 0, h: '6LC (Six Lence, Six Lence Purple) болон VorK1ng — MSR-ээс бүрмөсөн BAN', lead: '6LC багууд болон тоглогч VorK1ng MSR-ээс бүрмөсөн (permanent) хориглогдлоо.', body: [
         '6LC (Six Lence, Six Lence Purple) багууд болон тоглогч VorK1ng MSR-д оролцохоос бүрмөсөн хориглогдсон болохыг мэдэгдэж байна.',
         'Ranking-аас 6LC багуудыг хаслаа. VorK1ng-ийн тоглогчийн статистикийг устгасан. 6LC-ийн бусад тоглогчид free agent боллоо.',
@@ -5450,16 +5435,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   var MSR_BAN = { teams: { SIXL: 1, SIXP: 1 }, players: { vork1ng: 1 } };
   window.MSR_BAN = MSR_BAN;
   /* Timed player bans (Admin ruling Nov 18, 2026): United elites (Syroz) - cheating. Stats and match history are kept; the ban follows the game ID wherever the player goes. */
-  window.MSR_PLAYER_BANS = [
-    { nick: 'Tk.Aim.Danger?', id: '287928658', from: '2026-11-18', until: '9999-12-31', perm: true, team: 'DS_BED22EFE5176D46A905806CD' },
-    { nick: 'Wu 。', id: '245042282', from: '2026-11-18', until: '2027-02-18', team: 'DS_BED22EFE5176D46A905806CD' },
-    { nick: 'moak', id: '263026698', from: '2026-11-18', until: '2027-02-18', team: 'DS_BED22EFE5176D46A905806CD' },
-    { nick: 'dream.', id: '284127374', from: '2026-11-18', until: '2027-02-18', team: 'DS_BED22EFE5176D46A905806CD' },
-    { nick: 'Urumt', id: '248447579', from: '2026-11-18', until: '2027-02-18', team: 'DS_BED22EFE5176D46A905806CD' },
-    { nick: 'fml', id: '279697670', from: '2026-11-18', until: '2027-02-18', team: 'DS_BED22EFE5176D46A905806CD' },
-    { nick: '1owzs', id: '112297934', from: '2026-11-18', until: '2027-02-18', team: 'DS_BED22EFE5176D46A905806CD' },
-    { nick: 'YellowFlash.', id: '89398373', from: '2026-11-18', until: '2027-02-18', team: 'DS_BED22EFE5176D46A905806CD' }
-  ];
+  window.MSR_PLAYER_BANS = [];   // United elites (Syroz) ban of Nov 18 fully lifted by admin (Nov 20)
   window.msrPlayerBanFor = function (nick, teamCode) {
     var n = String(nick || '').toLowerCase(), tc = String(teamCode || '').toUpperCase(), idt = window.MSR_ID_TEAM || {}, now = new Date().toISOString().slice(0, 10);
     return (window.MSR_PLAYER_BANS || []).find(function (b) {
