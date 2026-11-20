@@ -5435,7 +5435,12 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   var MSR_BAN = { teams: { SIXL: 1, SIXP: 1 }, players: { vork1ng: 1 } };
   window.MSR_BAN = MSR_BAN;
   /* Timed player bans (Admin ruling Nov 18, 2026): United elites (Syroz) - cheating. Stats and match history are kept; the ban follows the game ID wherever the player goes. */
-  window.MSR_PLAYER_BANS = [];   // United elites (Syroz) ban of Nov 18 fully lifted by admin (Nov 20)
+  window.MSR_PLAYER_BANS = [   // United elites (Syroz) ban of Nov 18 fully lifted by admin (Nov 20)
+    /* Discord #BLACKLIST (permanent, cheating). Not on any site roster; the game-ID ban keeps them out of rosters/free agents. */
+    { nick: 'DIDDY', id: '240643708', team: '', from: '2026-11-19', until: '9999-12-31', perm: true },
+    { nick: 'wickshi', id: '281722367', team: '', from: '2026-11-19', until: '9999-12-31', perm: true },
+    { nick: 'melo', id: '208825379', team: '', from: '2026-11-19', until: '9999-12-31', perm: true }
+  ];
   window.msrPlayerBanFor = function (nick, teamCode) {
     var n = String(nick || '').toLowerCase(), tc = String(teamCode || '').toUpperCase(), idt = window.MSR_ID_TEAM || {}, now = new Date().toISOString().slice(0, 10);
     return (window.MSR_PLAYER_BANS || []).find(function (b) {
@@ -8215,7 +8220,7 @@ MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","As
 MSR_ROSTER_UPDATES.ds_b8ba2ec7e90713c104377816 = {"roster":["xane","kago","Break","Wish","Zepo","hyzel","savent"],"ids":{"xane":"43841300","kago":"153721694","Break":"117729610","Wish":"120043530","Zepo":"192593962","hyzel":"218823035","savent":"276120769"}};
 // Latest verified Discord rosters (Nov 14–19). Game IDs identify transfers; earlier match history stays archived.
 MSR_ROSTER_UPDATES.ds_5edc00f2fc3922bc3269121e = {"roster":["Rev","KovaakS","YourRayc","SATANIK69","Sekk","Solus","NkuL","Ascension"],"ids":{"Rev":"264046721","KovaakS":"127853587","YourRayc":"130407759","SATANIK69":"132729631","Sekk":"160383799","Solus":"285924300","NkuL":"280257047","Ascension":"157986424"}};
-// DRDRX: the Discord entry `diddy` is on hold pending staff resolution of the reported permanent ban.
+// DRDRX: the Discord entry `diddy` is permanently blacklisted (cheat, #BLACKLIST Nov 19) and is not added to the roster.
 MSR_ROSTER_UPDATES.ds_752d2420bea0465ec064967f = {"roster":["Wing","ХАЙР777","Cloud","MIKASA","youchGOD","renz4k","Soul소울"],"ids":{"Wing":"265932023","ХАЙР777":"283622865","Cloud":"286173279","MIKASA":"251641599","youchGOD":"232912865","renz4k":"177733809","Soul소울":"283101500"}};
 MSR_ROSTER_UPDATES.ds_a24136d1a99b5e5dfae15e9f = {"roster":["ice D","Kenshi","Asd","Xeno is love!?!","Ylalt x 165hz","Sleepy","Real Donk"],"ids":{"ice D":"100224444","Kenshi":"198801347","Asd":"257036300","Xeno is love!?!":"246703775","Ylalt x 165hz":"247210851","Sleepy":"208230755","Real Donk":"96924644"}};
 MSR_ROSTER_UPDATES.ds_89b90cdaa01ea1390c0e248c = {"roster":["Yeji","dvuS","SarNar","kasuee","Cupid","Silky","Mitee"],"ids":{"Yeji":"29609259","dvuS":"184288245","SarNar":"137551663","kasuee":"17297284","Cupid":"122578850","Silky":"92289964","Mitee":"82095999"}};

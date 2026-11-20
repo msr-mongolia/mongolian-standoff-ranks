@@ -8,7 +8,7 @@ const headers={apikey:service,Authorization:'Bearer '+service,'Content-Type':'ap
 async function db(path:string,init:RequestInit={}){const r=await fetch(base+'/rest/v1/'+path,{...init,headers:{...headers,...init.headers}});if(!r.ok)throw Error('database_'+r.status+' '+(await r.text()).slice(0,200));const b=await r.text();return b?JSON.parse(b):null;}
 const D='https://discord.com/api/v10';
 // 1571082373032968294 is the 👑TOUR PRIVATE category; 1570818287086866562 is ROSTER REGISTRATION.
-// Every text channel under these categories (plus their threads) is read.
+// Every text channel under these categories (plus their threads) is read, plus any *blacklist* channel (ban list).
 const CATEGORIES=['1571082373032968294','1570818287086866562'];
 async function copyLogo(url:string,key:string){
  try{
@@ -54,7 +54,7 @@ Deno.serve(async(req)=>{
  const gid=cat?.guild_id||'1568348065595785316';
  const all:any[]=await (await fetch(D+'/guilds/'+gid+'/channels',{headers:auth})).json().catch(()=>[]);
  const nm=(c:any)=>String(c.name||'').normalize('NFKC').toLowerCase();
- const CHANS=(Array.isArray(all)?all:[]).filter((c:any)=>[0,5,15].includes(c.type)&&(RESULTS?/result/.test(nm(c)):CATEGORIES.includes(c.parent_id)));
+ const CHANS=(Array.isArray(all)?all:[]).filter((c:any)=>[0,5,15].includes(c.type)&&(RESULTS?/result/.test(nm(c)):(CATEGORIES.includes(c.parent_id)||/black|хар.?жагсаалт/.test(nm(c)))));
  if(opts?.list)return Response.json({ok:true,guild:gid,channels:CHANS.map((c:any)=>({id:c.id,name:c.name,parent:c.parent_id,parentName:(all.find((x:any)=>x.id===c.parent_id)||{}).name||null}))});
  let activeThreads:any[]=[];try{const ar=await fetch(D+'/guilds/'+gid+'/threads/active',{headers:auth});if(ar.ok)activeThreads=(await ar.json()).threads||[];}catch(_e){}
  const known=new Map<string,any>((await db('msr_ros_inbox?select=message_id,logo_urls,source_timestamp')||[]).map((x:any)=>[x.message_id,x]));
