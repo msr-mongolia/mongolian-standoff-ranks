@@ -3057,7 +3057,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   ];
   window.MSR_VOID_PLAYOFF_RESULTS = window.MSR_VOID_PLAYOFF_RESULTS || [
     // QF4 (Nov 20): Celestex 2-0 EliteKingZz DIVA. Dune 13-6, Province 13-6 (scoreboards).
-    { round: 'qf', match: 4, a: 'DS_7C03F1F6DA5F993B4CC9BB28', b: 'DS_BD02236437B5FF2BB5839658', as: 2, bs: 0, date: 1120,
+    { round: 'qf', match: 4, a: 'DS_7C03F1F6DA5F993B4CC9BB28', b: 'DS_BD02236437B5FF2BB5839658', ea: 'Cel2x', eb: 'EliteKingZz DIVA', as: 2, bs: 0, date: 1120,
       maps: [
         { map: 'Dune', aScore: 13, bScore: 6,
           a: [['weso',23,13,2],['I love',20,10,0],['60kkscerato',17,11,5],['Yori',13,12,2],['shox.! back',9,14,4]],
@@ -3378,6 +3378,13 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
           b: [['Itachi',36,19,4],['Zisel need awp',36,24,4],['Baitsai god',22,23,8],['Tngs无痕',17,20,4],['Zenix',18,22,3]] }
       ] }
   ];
+  // VOID Swiss + playoff results together, for ELO and player K/D/A (Swiss tables, pools and qualification keep MSR_VOID_RESULTS only).
+  // Playoff rounds sort after Swiss Round 5: qf = 6, sf = 7, final = 8. Playoff entries need ea/eb (ELO tags) to count for ELO.
+  window.msrVoidAll = function () {
+    var po = { qf: 6, sf: 7, final: 8 };
+    return (window.MSR_VOID_RESULTS || []).concat((window.MSR_VOID_PLAYOFF_RESULTS || []).filter(function (r) { return r && r.a && r.b && r.as !== r.bs; }).map(function (r) {
+      var o = {}; Object.keys(r).forEach(function (k) { o[k] = r[k]; }); o.playoff = r.round; o.round = po[r.round] || 6; return o; }));
+  };
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
   window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
     { nick: 'Zet良', from: 'WOART', to: 'DS_A92955A6312CC42137C3C7EA', toNick: 'Zet良.', date: 1114 }, // WoArt -> MNKT Blue (same Game ID 174981510)
@@ -3388,7 +3395,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     { nick: 'snow!!!', from: 'drdrx', to: 'DS_REVOLUTION_5RV_1572281163', toNick: 'SMASH', date: 1117 }, // drdrx -> Revolution (same Game ID 248869027, new IGN SMASH)
     { nick: 'CartiB', from: 'MetaS', to: 'DS_REVOLUTION_5RV_1572281163', toNick: 'CartiB', date: 1117 } // METAS -> Revolution (same Game ID 195850009)
   ];
-  window.msrVoidEloRows = function () { return (window.MSR_VOID_RESULTS || []).map(function (r, i) { return [r, i]; }).sort(function (x, y) { return ((x[0].round || 1) - (y[0].round || 1)) || ((x[0].date || 0) - (y[0].date || 0)) || (y[1] - x[1]); }).map(function (x) { return x[0]; }) /* chronological: round, then date, then entry order (older entries sit lower in the list) */.filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }), resetA: r.eloReset === 'a', resetB: r.eloReset === 'b', void: true, date: r.date }; }); };
+  window.msrVoidEloRows = function () { return window.msrVoidAll().map(function (r, i) { return [r, i]; }).sort(function (x, y) { return ((x[0].round || 1) - (y[0].round || 1)) || ((x[0].date || 0) - (y[0].date || 0)) || (y[1] - x[1]); }).map(function (x) { return x[0]; }) /* chronological: round, then date, then entry order (older entries sit lower in the list) */.filter(function (r) { return r.ea && r.eb && r.as !== r.bs; }).map(function (r) { return { a: r.ea, b: r.eb, auto: r.auto ? { a: r.as, b: r.bs } : (r.autoMaps || null), maps: (r.maps || []).map(function (x) { return { map: x.map, aScore: x.aScore, bScore: x.bScore }; }), resetA: r.eloReset === 'a', resetB: r.eloReset === 'b', void: true, date: r.date }; }); };
   /* Round 2 pairs: window.MSR_VOID_R2 (organiser draw) when given; otherwise R1 winners pair up in 1/0 and losers in 0/1 in result order. */
   window.msrVoidR2 = function () {
     var r1 = window.MSR_VOID_R1 || [], up = [], down = [];
@@ -3532,7 +3539,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var codeOf=function(c){c=String(c||'');return T[c]?c:(Object.keys(T).find(function(k){return k.toUpperCase()===c.toUpperCase();})||null);};
       // Transferred players: their verified MSL maps from the old team move to their profile on the new team.
       (window.MSR_PLAYER_TRANSFERS||[]).forEach(function(t){var x=sums[t.from+'|'+normVerified(t.nick)],to=codeOf(t.to);if(!x||!to)return;var key=to+'|'+normVerified(t.toNick||t.nick),o=acc[key]||(acc[key]={team:to,nick:t.toNick||t.nick,k:0,d:0,a:0,maps:0,rounds:0});o.k+=x.k;o.d+=x.d;o.a+=x.a;o.maps+=x.maps;o.rounds+=x.rounds;});
-      (window.MSR_VOID_RESULTS||[]).forEach(function(r){(r.maps||[]).forEach(function(m){var R=(m.aScore||0)+(m.bScore||0);[['a',codeOf(r.a)],['b',codeOf(r.b)]].forEach(function(sd){if(!sd[1])return;(m[sd[0]]||[]).forEach(function(q){var key=sd[1]+'|'+normVerified(q[0]),o=acc[key]||(acc[key]={team:sd[1],nick:q[0],k:0,d:0,a:0,maps:0,rounds:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.maps++;o.rounds+=R;});});});});
+      window.msrVoidAll().forEach(function(r){(r.maps||[]).forEach(function(m){var R=(m.aScore||0)+(m.bScore||0);[['a',codeOf(r.a)],['b',codeOf(r.b)]].forEach(function(sd){if(!sd[1])return;(m[sd[0]]||[]).forEach(function(q){var key=sd[1]+'|'+normVerified(q[0]),o=acc[key]||(acc[key]={team:sd[1],nick:q[0],k:0,d:0,a:0,maps:0,rounds:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.maps++;o.rounds+=R;});});});});
       PLAYERS.forEach(function(p){if(p._vd&&p._run!==runId){p.maps-=p._vd.maps;p.kills-=p._vd.k;p.deaths-=p._vd.d;p.assists-=p._vd.a;p.rounds-=p._vd.rounds;}p._vd=null;});
       Object.keys(acc).forEach(function(key){
         var v=acc[key],nk=normVerified(v.nick),team=PLAYERS.filter(function(p){return p.team===v.team;});
@@ -5696,7 +5703,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       out.push({idx:idx,opp:mine?cb:ca,mine:mine?aw:bw,theirs:mine?bw:aw,maps:maps,auto:((e.auto&&((e.auto.a||0)+(e.auto.b||0)))||0)>0,fullAuto:!(e.maps||[]).length});
     });
     // VOID Tournament results count as the team's series too (after the MSL ledger, in entry order).
-    (window.MSR_VOID_RESULTS||[]).forEach(function(r,vi){
+    window.msrVoidAll().forEach(function(r,vi){
       var ca=String(r.a||'').toUpperCase(),cb=String(r.b||'').toUpperCase(),K=String(k).toUpperCase();
       if((ca!==K&&cb!==K)||r.as===r.bs)return;
       var mine=ca===K,ra=r.as||0,rb=r.bs||0;
@@ -5819,7 +5826,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     if(!T[ka]||!T[kb])return V.matches();
     var U=function(v){return String(v||'').toUpperCase();};
     // The same pair can meet in several Swiss rounds: take the result of the round (or date) in the link, never another round's.
-    var rnum=+((rlab.match(/\d+/)||[])[0])||0,cands=(window.MSR_VOID_RESULTS||[]).filter(function(m){return (U(m.a)===U(ka)&&U(m.b)===U(kb))||(U(m.a)===U(kb)&&U(m.b)===U(ka));});
+    var rnum=+((rlab.match(/\d+/)||[])[0])||0,cands=window.msrVoidAll().filter(function(m){return (U(m.a)===U(ka)&&U(m.b)===U(kb))||(U(m.a)===U(kb)&&U(m.b)===U(ka));});
     var raw=(rnum?cands.filter(function(m){return (m.round||1)===rnum;})[0]:(dn&&cands.filter(function(m){return m.date===dn;})[0])||cands[0])||null;
     var flip=raw&&U(raw.a)!==U(ka),res=raw?{a:flip?raw.bs:raw.as,b:flip?raw.as:raw.bs,auto:!!raw.auto}:null;
     var shown=raw?(raw.maps&&raw.maps.length?raw.maps:[]):[],played=raw&&raw.playedMaps?raw.playedMaps:[];
@@ -5847,7 +5854,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     function lineup(k){
       /* Ratings from this team's VOID maps (falls back to MSL ratings, then the registered roster). Top 5 shown, like the MSL match page. */
       var nk=function(v){return __msrNk(v||'');},acc={},K=String(k).toUpperCase();
-      (window.MSR_VOID_RESULTS||[]).forEach(function(r){var side=String(r.a).toUpperCase()===K?'a':String(r.b).toUpperCase()===K?'b':null;if(!side)return;
+      window.msrVoidAll().forEach(function(r){var side=String(r.a).toUpperCase()===K?'a':String(r.b).toUpperCase()===K?'b':null;if(!side)return;
         (r.maps||[]).forEach(function(m){var R=(m.aScore||0)+(m.bScore||0);(m[side]||[]).forEach(function(q){var x=nk(q[0]),o=acc[x]||(acc[x]={nick:q[0],k:0,d:0,a:0,R:0,n:0});o.k+=q[1];o.d+=q[2];o.a+=q[3];o.R+=R;o.n++;});});});
       var list=Object.keys(acc).map(function(x){var o=acc[x],c=window.msrCalc?window.msrCalc(o.k,o.d,o.a,o.R):null;o.rating=c?c.rating:0;return o;}).sort(function(a,b){return b.n-a.n||b.rating-a.rating;}).slice(0,5).sort(function(a,b){return b.rating-a.rating;});
       if(list.length<5){var have={};list.forEach(function(o){have[nk(o.nick)]=1;});
@@ -6245,7 +6252,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   var BAN_SIG = '';
   function ensureLedgerRows() { try { ensureLedgerRows0(); } finally { if (window.msrApplyBan) { var bs = LEDGER_KEY + '|' + PMROWS.length + '|' + PLAYERS.length + '|' + RANK.length + '|' + (window.MSR_FREE_AGENTS || []).length + '|' + (window.MSR_FREE_AGENT_RECORDS || []).length + '|' + Object.keys(PROWS).length; if (bs !== BAN_SIG) { window.msrApplyBan(); BAN_SIG = LEDGER_KEY + '|' + PMROWS.length + '|' + PLAYERS.length + '|' + RANK.length + '|' + (window.MSR_FREE_AGENTS || []).length + '|' + (window.MSR_FREE_AGENT_RECORDS || []).length + '|' + Object.keys(PROWS).length; } } } }
   function ensureLedgerRows0() {
-    var led = window.MSR_SCREENSHOT_MATCHES || [], key = led.length + ':' + Object.keys(T).length + ':' + (window.MSR_VOID_RESULTS || []).length;
+    var led = window.MSR_SCREENSHOT_MATCHES || [], key = led.length + ':' + Object.keys(T).length + ':' + window.msrVoidAll().length;
     if (key === LEDGER_KEY || !window.msrTagToCode) return;
     LEDGER_KEY = key;
     for (var i = PMROWS.length - 1; i >= 0; i--) if (PMROWS[i].ledger) PMROWS.splice(i, 1);
@@ -6263,7 +6270,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       });
     });
     // VOID Tournament maps also feed the player match lists (own event label).
-    (window.MSR_VOID_RESULTS || []).forEach(function (r, vi) {
+    window.msrVoidAll().forEach(function (r, vi) {
       var cof = function (c) { c = String(c || ''); return T[c] ? c : (Object.keys(T).find(function (k) { return k.toUpperCase() === c.toUpperCase(); }) || null); }, ca = cof(r.a), cb = cof(r.b), vdate = r.date || 0;
       (r.maps || []).forEach(function (x, mi) {
         var R = (x.aScore || 0) + (x.bScore || 0), mo = { id: 200000 + vi, ledger: true, void: true, a: ca, b: cb };
@@ -9135,7 +9142,7 @@ screenshotMatches.forEach(m=>{
  results.push({group:'',stage2:true,zone:m.zone,slot:m.slot,s2date:'NOV 12',a:m.a,b:m.b,winner:aw>bw?m.a:m.b,score:aw+'–'+bw,maps:[],screenshotMaps:[],auto:au});
 });
 // VOID Tournament results (own event: shown on Results under the VOID filter, ELO via the same chain).
-(window.MSR_VOID_RESULTS||[]).forEach(r=>{
+window.msrVoidAll().forEach(r=>{
  if(!r.ea||!r.eb||r.as===r.bs)return;
  results.push({group:'',void:true,round:r.round||1,vdate:r.date||1113,a:r.ea,b:r.eb,winner:r.as>r.bs?r.ea:r.eb,score:r.as+'–'+r.bs,maps:(r.maps||[]).map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:r.maps||[],auto:r.auto?{a:r.as,b:r.bs}:(r.autoMaps||{a:0,b:0})});
 });
@@ -9195,7 +9202,7 @@ function verifiedPlayerRows(team){var base=verifiedPlayerRowsMSL(team),t=resolve
  // VOID Tournament maps count too (same teams play both events). Match on the ELO tag or the team code.
  var same=function(tag,code){try{return (tag&&resolveMsrTeam(tag)===t)||(code&&(String(code).toUpperCase()===String(team).toUpperCase()||resolveMsrTeam(code)===t));}catch(_e){return false;}};
  var U=function(v){return String(v||'').toUpperCase();},hm=/^#(?:team|player\/[^/]+)\/([^/?]+)/.exec(location.hash||''),hc=hm?U(decodeURIComponent(hm[1])):'';
- var VR=window.MSR_VOID_RESULTS||[],hcVoid=!!hc&&VR.some(function(r){return U(r.a)===hc||U(r.b)===hc;});
+ var VR=window.msrVoidAll(),hcVoid=!!hc&&VR.some(function(r){return U(r.a)===hc||U(r.b)===hc;});
  var extra=[];VR.forEach(function(r){(r.maps||[]).forEach(function(x){var side=hcVoid?(U(r.a)===hc?'a':U(r.b)===hc?'b':null):(same(r.ea,r.a)?'a':same(r.eb,r.b)?'b':null);if(!side)return;(x[side]||[]).forEach(function(q){extra.push({nick:msrFixNick(t,q[0]),map:x.map,k:q[1],d:q[2],a:q[3],rounds:(x.aScore||0)+(x.bScore||0),void:true});});});});
  return base.concat(extra);}
 function verifiedPlayerRowsMSL(team){team=resolveMsrTeam(team);const src=(team==='KngZz'||team==='mpct')?additionalMatchStats:verifiedStats;const previous=Object.entries(src).flatMap(([map,teams])=>(teams[team]||[]).map(([nick,k,d,a])=>({nick,map,k,d,a,rounds:matchRounds[team]?.[map]||verifiedRounds[map]||0})));const fresh=screenshotMatches.flatMap(m=>m.maps.flatMap(x=>(team===m.a?x.a:team===m.b?x.b:[]).map(([nick,k,d,a])=>({nick:msrFixNick(team,nick),map:x.map,k,d,a,rounds:x.aScore+x.bScore}))));return previous.concat(fresh);}
@@ -9299,7 +9306,7 @@ function verifiedTeamProfiles(){
  const code0=title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  const hashCode=(/^#team\/([^/?]+)/.exec(location.hash)||[])[1];
  // VOID-only teams have no MSL ledger tag: fall back to the team code in the URL so their VOID maps still fill the lineup.
- const code=code0||(hashCode&&(window.MSR_VOID_RESULTS||[]).some(r=>[r.a,r.b].some(c=>String(c).toUpperCase()===decodeURIComponent(hashCode).toUpperCase()))?decodeURIComponent(hashCode):'');
+ const code=code0||(hashCode&&window.msrVoidAll().some(r=>[r.a,r.b].some(c=>String(c).toUpperCase()===decodeURIComponent(hashCode).toUpperCase()))?decodeURIComponent(hashCode):'');
  if(!code)return;
  const teamMatches=results.filter(r=>r.a===code||r.b===code);
  // Screenshot series already carries verified map results. Use it when the
