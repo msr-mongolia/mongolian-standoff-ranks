@@ -1,4 +1,5 @@
-[{"team_a":"0kz","team_b":"2990 white","time_label":"21:00","picks":[{"map": "Province", "team": "2990 white"}, {"map": "Breeze", "team": "0kz"}],"decider":"Sandstone","bans":[],"source_timestamp":"2026-11-19T12:57:23.728+00:00"}, 
+[{"team_a":"MSDTP","team_b":"RA1IN","time_label":"20:00","picks":[{"map": "Dune", "team": "RA1IN P"}, {"map": "Province", "team": "MSDTP P"}],"decider":"Prison","bans":[],"source_timestamp":"2026-11-20T01:17:06.308+00:00"}, 
+ {"team_a":"0kz","team_b":"2990 white","time_label":"21:00","picks":[{"map": "Province", "team": "2990 white"}, {"map": "Breeze", "team": "0kz"}],"decider":"Sandstone","bans":[],"source_timestamp":"2026-11-19T12:57:23.728+00:00"}, 
  {"team_a":"kngzz","team_b":"2990 purple","time_label":null,"picks":[{"map": "Rust", "team": "kngzz"}, {"map": "Hanami", "team": "2990 purple"}],"decider":"Province","bans":[],"source_timestamp":"2026-11-19T10:00:02.946+00:00"}, 
  {"team_a":"EknZ","team_b":"2990 red","time_label":null,"picks":[{"map": "Rust", "team": "Eknz"}, {"map": "Dune", "team": "2990red"}],"decider":"Province","bans":[],"source_timestamp":"2026-11-19T09:30:43.315+00:00"}, 
  {"team_a":"0kz","team_b":"Eks","time_label":null,"picks":[{"map": "Breeze", "team": "eks"}, {"map": "Rust", "team": "0kz"}],"decider":"Hanami","bans":[],"source_timestamp":"2026-11-17T18:49:25.712+00:00"}, 
