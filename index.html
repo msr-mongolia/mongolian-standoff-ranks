@@ -8243,15 +8243,17 @@ MSR_ROSTER_UPDATES.ds_22f83076aa7a9955ce280140 = {"roster": ["Shriden", "ITACHI"
       });
       row.roster=u.roster.slice();row.player_ids=Object.assign({},u.ids);
     });
-    var latestClanById = new Map();
+    var latestClanById = new Map(), latestClanTs = new Map();
+    var regTs = function (row) { var t = Date.parse(row && row.source_timestamp); return isFinite(t) ? t : 0; };
     registrations.forEach(function (row) {
       row.roster.forEach(function (nick) {
         var id = String(row.player_ids[nick] || '');
-        if (/^\d{5,12}$/.test(id)) latestClanById.set(id, row.id);
+        if (/^\d{5,12}$/.test(id) && regTs(row) >= (latestClanTs.get(id) || 0)) { latestClanById.set(id, row.id); latestClanTs.set(id, regTs(row)); }
       });
     });
+    // Admin rule (Nov 20): a game ID registered in two teams belongs to the team whose Discord roster post is the newest.
+    Object.keys(MSR_ROSTER_UPDATES).forEach(function (rid) { var reg = registrations.find(function (r) { return r.id === rid; }); if (reg) Object.keys(MSR_ROSTER_UPDATES[rid].ids).forEach(function (n) { var pid = String(MSR_ROSTER_UPDATES[rid].ids[n]); if (regTs(reg) >= (latestClanTs.get(pid) || 0)) { latestClanById.set(pid, rid); latestClanTs.set(pid, regTs(reg)); } }); });
     window.MSR_ID_TEAM = {}; latestClanById.forEach(function (rid, pid) { window.MSR_ID_TEAM[pid] = { team: String(rid).toUpperCase() }; });
-    Object.keys(MSR_ROSTER_UPDATES).forEach(function (rid) { if (registrations.some(function (r) { return r.id === rid; })) Object.keys(MSR_ROSTER_UPDATES[rid].ids).forEach(function (n) { latestClanById.set(MSR_ROSTER_UPDATES[rid].ids[n], rid); }); });
     var byName = {};
     Object.keys(T).forEach(function (code) { byName[key(T[code].n)] = code; });
     window.MSR_REGISTERED_CODE = {};
@@ -8779,6 +8781,45 @@ MSR_ROSTER_UPDATES.ds_22f83076aa7a9955ce280140 = {"roster": ["Shriden", "ITACHI"
       var el = tv.apply(this, arguments), c = String(code || '').toUpperCase();
       var list = (window.MSR_PLAYER_BANS || []).filter(function (b) { return String(b.team).toUpperCase() === c && window.msrPlayerBanFor(b.nick, c); });
       if (el && el.insertBefore && list.length) el.insertBefore(note('<strong>⛔ Player bans: ' + list.length + ' players of this roster</strong><br>Cheating (wallhack). ' + list.map(function (b) { return b.nick.replace(/[<>&]/g, '') + ' (' + b.id + ') — ' + (b.perm ? 'permanent' : '3 months, ' + b.from + ' → ' + b.until); }).join('; ') + '. The ban applies even if a player moves to another team. Stats and match history are kept.'), el.firstChild);
+      return el;
+    };
+  })();
+
+  /* Roster history on the team page: who joined / left and when (msr_roster_history, filled from Discord roster posts). */
+  (function () {
+    var cache = null;
+    function load() {
+      if (cache) return cache;
+      var cfg = window.MSR_CONFIG || {};
+      if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return (cache = Promise.resolve([]));
+      cache = fetch(cfg.SUPABASE_URL + '/rest/v1/msr_roster_history?select=team_id,nick,game_id,action,at,source&order=at.desc,id.desc&limit=5000', { headers: { apikey: cfg.SUPABASE_ANON_KEY } })
+        .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
+      return cache;
+    }
+    function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function fmt(t) { var d = new Date(t); return isNaN(d) ? '' : d.toISOString().slice(0, 10); }
+    var tv = V.team;
+    V.team = function (code) {
+      var el = tv.apply(this, arguments), c = String(code || '').toUpperCase();
+      if (!el || !el.appendChild) return el;
+      var box = document.createElement('div');
+      box.className = 'msr-roster-history';
+      box.style.cssText = 'margin:18px 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:13px;line-height:1.5';
+      el.appendChild(box);
+      load().then(function (rows) {
+        var reg = window.MSR_REGISTERED_CODE || {};
+        var mine = (rows || []).filter(function (r) { var id = String(r.team_id || '').toUpperCase(); return (reg[id] || id) === c; });
+        if (!mine.length) { box.remove(); return; }
+        var first = {}; mine.forEach(function (r) { first[r.at] = 1; });
+        var start = Object.keys(first).sort()[0];
+        var html = '<div style="font-weight:800;font-size:15px;margin-bottom:8px">Ростерийн түүх</div><ul style="list-style:none;margin:0;padding:0">';
+        mine.forEach(function (r) {
+          var initial = r.source === 'backfill' && r.at === start && r.action === 'join';
+          var tag = r.action === 'join' ? '<b style="color:#2fb36b">' + (initial ? '● Бүртгэгдсэн' : '↑ Орсон') + '</b>' : '<b style="color:#e0505a">↓ Гарсан</b>';
+          html += '<li style="display:flex;gap:10px;padding:5px 0;border-top:1px solid var(--line)"><span style="color:var(--dim);min-width:84px">' + fmt(r.at) + '</span>' + tag + '<span>' + esc(r.nick) + (r.game_id ? ' <span style="color:var(--dim)">(' + esc(r.game_id) + ')</span>' : '') + '</span></li>';
+        });
+        box.innerHTML = html + '</ul>';
+      });
       return el;
     };
   })();
