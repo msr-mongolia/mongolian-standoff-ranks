@@ -4271,6 +4271,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     // Stage 3: Swiss, 16 teams (the two finalists of every Stage 2 zone), Bo3, 3 wins = qualified, 3 losses = eliminated. R1 Nov 17 - R5 Nov 21.
     var stage3 = (function () {
       var wrap = h('div', { class: 'sw2-wrap s3b' });
+      /* Repaints (timers, team data loading) must not throw a swiped board back to Round 1: keep the horizontal scroll position. */
+      (function () { var rc = wrap.replaceChildren.bind(wrap); wrap.replaceChildren = function () { var o = wrap.querySelector('.sw-wrap'), sx = o ? o.scrollLeft : 0; rc.apply(null, arguments); var n = wrap.querySelector('.sw-wrap'); if (n && sx) { n.scrollLeft = sx; requestAnimationFrame(function () { n.scrollLeft = sx; }); } }; })();
       function tname(tag) { var c = window.msrTagToCode ? window.msrTagToCode(tag) : null; return { c: c, n: c && T[c] ? T[c].n : tag }; }
       function slot(tag, seed) {
         var c = tag && window.msrTagToCode ? window.msrTagToCode(tag) : null;
@@ -4324,6 +4326,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     // Stage 4: playoff, the 8 teams that qualify from Stage 3, single elimination, Bo3.
     var stage4 = (function () {
       var wrap = h('div', { class: 'sw2-wrap s3b' });
+      /* Repaints (timers, team data loading) must not throw a swiped board back to Round 1: keep the horizontal scroll position. */
+      (function () { var rc = wrap.replaceChildren.bind(wrap); wrap.replaceChildren = function () { var o = wrap.querySelector('.sw-wrap'), sx = o ? o.scrollLeft : 0; rc.apply(null, arguments); var n = wrap.querySelector('.sw-wrap'); if (n && sx) { n.scrollLeft = sx; requestAnimationFrame(function () { n.scrollLeft = sx; }); } }; })();
       function slot(tag, seed) {
         var c = tag && window.msrTagToCode ? window.msrTagToCode(tag) : null;
         return c && T[c] ? h('a', { class: 'sw-t', href: teamHref(c), title: T[c].n, 'aria-label': T[c].n }, swCrest(c)) : h('span', { class: 'sw-q', title: seed ? 'Seed ' + seed : '' }, seed ? String(seed) : '?');
