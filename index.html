@@ -6464,6 +6464,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   // Team Discord servers shown on the team page (VIP). theme: 'black' = black-dominant button.
   window.MSR_TEAM_DISCORD = window.MSR_TEAM_DISCORD || { OMGZ: { url: 'https://discord.gg/dvskvX8Ge', theme: 'black' } };
   function isOkz(code){return code==='OMGZ'||/^omega\s+forcez$/i.test(String((T[code]||{}).n||'').trim());}
+  function isOkzTeam(code){return code==='OMGZ'||code==='DS_DF21A75C3BF321AE7FC0010D'||/^omega\s+forcez$/i.test(String((T[code]||{}).n||'').trim());}
   function isOmninoxTeam(code){return code==='DS_F1C9FDB9DAA7BF021B336DEE'||/^omninox\s+forcesz$/i.test(String((T[code]||{}).n||'').trim());}
   function isW2990White(code){return code==='W2990'||/^2990\s+white$/i.test(String((T[code]||{}).n||'').trim());}
   function isSixlBlue(code){return code==='DS_3B58BC4EF94967967F5DEE31'||/^six\s+lence$/i.test(String((T[code]||{}).n||'').trim());}
@@ -7938,6 +7939,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if(isSixlBlue(clanCode)){node.classList.add('msr-sixl-back1');applyClanVideoBack1(node,'assets/sixl_back1_video.json?v=1');}
         if(isOmvTeam(clanCode))applyClanVideoBack1(node,'assets/omv_back1_video.json?v=1');
         if(isDxiiiTeam)applyClanVideoBack1(node,'assets/dxiii_back1.mp4');
+        if(isOkzTeam(clanCode))applyClanVideoBack1(node,'assets/0kz_back1.mp4?v=1');
         if(isOmninoxTeam(clanCode)){
           applyClanVideoBack1(node,'assets/omninox_back1.mp4?v=1');
           var oxProf=node.querySelector('.prof');
@@ -7975,7 +7977,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         isDxiiiTeam?'assets/dxiii_back1.mp4':
         node.dataset.msrBack1Team==='DS_D1764CAF48B74A2D0B7B3E59'?'assets/rvurz_back1_video.json?v=1':
         isOmvTeam(node.dataset.msrBack1Team)?'assets/omv_back1_video.json?v=1':
-        isOmninoxTeam(node.dataset.msrBack1Team)?'assets/omninox_back1.mp4?v=1':null;
+        isOmninoxTeam(node.dataset.msrBack1Team)?'assets/omninox_back1.mp4?v=1':
+        isOkzTeam(node.dataset.msrBack1Team)?'assets/0kz_back1.mp4?v=1':null;
       if(back1Asset && msrClanVideoPromises[back1Asset]){
         msrClanVideoPromises[back1Asset].then(function(){
           if(node.isConnected)applyAllClanPanelBack1(node,back1Clan);
