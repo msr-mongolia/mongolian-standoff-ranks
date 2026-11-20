@@ -3068,7 +3068,17 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
       ] }
 ,
     // QF1 (Nov 20): KnightSS 2-0 MNKT Red. Text-only result post (no scoreboards), so no map stats.
-    { round: 'qf', match: 1, a: 'KGTSS', b: 'DS_A0B0110FC187C08BE7637475', ea: 'KGTSS', eb: 'MNKT Red', as: 2, bs: 0, date: 1120 }
+    { round: 'qf', match: 1, a: 'KGTSS', b: 'DS_A0B0110FC187C08BE7637475', ea: 'KGTSS', eb: 'MNKT Red', as: 2, bs: 0, date: 1120 },
+    // QF2 (Nov 20): RA1IN 2-0 CHINGIS WARRIORS (MSDTP). Province 13-10, Dune 13-7 (scoreboards).
+    { round: 'qf', match: 2, a: 'DS_4559C7E779F302E917B1A414', b: 'DS_4561C74A8EF7ED8EBA1EEC28', ea: 'MSDTP', eb: 'RA1IN', as: 0, bs: 2, date: 1120,
+      maps: [
+        { map: 'Province', aScore: 10, bScore: 13,
+          a: [['Tomoko:)',20,16,1],['OG.LIKE',18,16,7],['RedHusyleR30',20,16,1],['kura_bish',17,19,3],['resugod',5,16,0]],
+          b: [['Pororo',19,16,5],['Ashura深',17,18,3],['fOrest!!!',17,17,2],['Kl6pse.',11,15,0],['M4D-120',14,15,3]] },
+        { map: 'Dune', aScore: 7, bScore: 13,
+          a: [['RedHusyleR30',21,15,1],['Tomoko:)',13,13,1],['OG.LIKE',14,16,3],['resugod',11,18,3],['kura_bish',8,20,3]],
+          b: [['Ashura深',29,12,1],['fOrest!!!',15,11,5],['Kl6pse.',15,14,1],['Pororo',13,14,5],['XiQQ',9,16,5]] }
+      ] }
   ];
   // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
