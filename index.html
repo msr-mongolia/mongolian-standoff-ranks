@@ -5689,7 +5689,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     return out;
   }
   function msrRelMatchCard(row){
-    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._void?(window.msrVoidRes?window.msrVoidRes(rk[0],rk[1],row._vround):null):msrRelResult(rk[0],rk[1],row._keys?'s2':undefined,row._sl);
+    var rk=row._keys||[msrRelTeamKey(row.team_a),msrRelTeamKey(row.team_b)],res=row._res!==undefined?row._res:row._void?(window.msrVoidRes?window.msrVoidRes(rk[0],rk[1],row._vround):null):msrRelResult(rk[0],rk[1],row._keys?'s2':undefined,row._sl);
     function team(name,mine){
       var key=row._keys?(mine?rk[0]:rk[1]):msrRelTeamKey(name),won=res&&(mine?res.a>res.b:res.b>res.a),label=key?(T[key].n||name):name;
       return h('div',{class:'msr-hl-t'+(res?(won?' win':' loss'):'')},
@@ -7294,6 +7294,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         }
         box.appendChild(mslPanel);
       }
+      var vpShown = false;
       var s2Shown = YEAR === 2026 && (APM.sel >= 1112 && APM.sel <= 1114) && window.msrS2Zones && window.msrS2Team;
       if (s2Shown) {
         var s2Rows = function (zi) {
@@ -7355,6 +7356,43 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           box.appendChild(vdPanel);
         }
       }
+      /* VOID playoffs (single elimination, Bo3) on the Matches page. A match shows on the day of its veto post (Ulaanbaatar time),
+         else the day its result was entered; a pair with neither shows on today (and later days) as TBA until it is played. */
+      (function () {
+        var pdraw = window.MSR_VOID_PLAYOFF_DRAW, res = window.MSR_VOID_PLAYOFF_RESULTS || [];
+        if (YEAR !== 2026 || !Array.isArray(pdraw) || pdraw.length !== 4 || APM.sel < 1120) return;
+        var U = function (v) { return String(v || '').toUpperCase(); }, key = function (c) { return T[c] ? c : Object.keys(T).find(function (k) { return U(k) === U(c); }); };
+        var find = function (rd, n, a, b) { return res.find(function (r) { return r.round === rd && +r.match === n + 1 && ((U(r.a) === U(a) && U(r.b) === U(b)) || (U(r.a) === U(b) && U(r.b) === U(a))) && r.as !== r.bs; }) || null; };
+        var win = function (rd, n, p) { var r = p[0] && p[1] ? find(rd, n, p[0], p[1]) : null; return r ? (r.as > r.bs ? r.a : r.b) : null; };
+        var qf = pdraw.map(function (p) { return [p[0], p[1]]; });
+        var sf = [[win('qf', 0, qf[0]), win('qf', 1, qf[1])], [win('qf', 2, qf[2]), win('qf', 3, qf[3])]];
+        var fin = [[win('sf', 0, sf[0]), win('sf', 1, sf[1])]];
+        var stages = [['qf', 'Quarterfinals', qf], ['sf', 'Semifinals', sf], ['final', 'Final', fin]];
+        var groups = stages.map(function (st) {
+          var rows = st[2].map(function (p, i) {
+            var a = key(p[0]), b = key(p[1]); if (!a || !b) return null;
+            if (APM.fav && !isFav(a) && !isFav(b)) return null;
+            var r = find(st[0], i, p[0], p[1]), vt = null;
+            try { vt = msrVetoFor(a, b); if (vt && String(vt.source_timestamp) < '2026-11-19') vt = null; } catch (e) { vt = null; }
+            var day = 0;
+            if (vt) { var d = new Date(new Date(vt.source_timestamp).getTime() + 8 * 3600e3); day = (d.getUTCMonth() + 1) * 100 + d.getUTCDate(); }
+            else if (r && r.date) day = r.date;
+            if (day ? day !== APM.sel : (r || APM.sel < TODAY)) return null;
+            var flip = r && U(r.a) !== U(a);
+            return { team_a: T[a].n, team_b: T[b].n, _keys: [a, b], _bo: 'Bo3', time_label: vt && /^\d{1,2}:\d{2}$/.test(vt.time_label || '') ? vt.time_label : '',
+              _res: r ? { a: flip ? r.bs : r.as, b: flip ? r.as : r.bs, auto: !!r.auto } : null, _href: '#event/void' };
+          }).filter(Boolean).sort(function (x, y) { return (x.time_label ? 0 : 1) - (y.time_label ? 0 : 1) || String(x.time_label).localeCompare(String(y.time_label)); });
+          return { label: st[1], rows: rows };
+        }).filter(function (g) { return g.rows.length; });
+        if (!groups.length) return;
+        var n = groups.reduce(function (m, g) { return m + g.rows.length; }, 0), poOpen = APM.vpOpen !== false;
+        var panel = h('section', { class: 'ap-card msr-rel-tournament msr-void-day' });
+        panel.appendChild(h('button', { type: 'button', class: 'ap-gh', 'aria-expanded': String(poOpen), onclick: function () { APM.vpOpen = !poOpen; draw(); } },
+          evLogo('VOID Tournament'), h('b', null, 'VOID Tournament · Playoffs'), h('span', { class: 'ct' }, n + (n === 1 ? ' match' : ' matches')), h('i', { class: 'chv', svg: APIC.chev })));
+        if (poOpen) panel.appendChild(h('div', { class: 'msr-rel-group-panel' }, groups.map(function (g) { return [h('h2', { class: 'msr-rel-group-heading' }, g.label), h('div', { class: 'msr-rel-match-list' }, g.rows.map(msrRelMatchCard))]; })));
+        box.appendChild(panel);
+        vpShown = true;
+      })();
       var list = ALLM.filter(function (m) { return (m.state !== 'done' || m.s3fix) && !m.s2fix && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
       list.forEach(function (m) { if (!seen[m.ev]) { seen[m.ev] = []; groups.push([m.ev, seen[m.ev]]); } seen[m.ev].push(m); });
@@ -7372,7 +7410,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         }) : null;
         box.appendChild(h('div', { class: 'ap-card ap-grp' + (isOpen ? ' open' : '') }, head, rows ? h('div', { class: 'ap-rows' }, rows) : null));
       });
-      if (!groups.length && !(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110) && !s2Shown) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
+      if (!groups.length && !(YEAR===2026&&APM.sel>=1104&&APM.sel<=1110) && !s2Shown && !vpShown) box.appendChild(h('div', { class: 'ap-empty' }, APM.fav ? (FAV.length ? 'None of your followed teams play on this day.' : 'Tap ☆ next to a team in Ranking to follow it. Their matches will show up here.') : 'No matches on this day.'));
       favBtn.setAttribute('aria-pressed', APM.fav ? 'true' : 'false'); favBtn.innerHTML = starSvg(APM.fav);
     }
     draw();
