@@ -3055,7 +3055,18 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     ['DS_D1764CAF48B74A2D0B7B3E59','DS_5E67C1B8721D736CA5B5A960'],
     ['DS_7C03F1F6DA5F993B4CC9BB28','DS_BD02236437B5FF2BB5839658']
   ];
-  window.MSR_VOID_PLAYOFF_RESULTS = window.MSR_VOID_PLAYOFF_RESULTS || [];
+  window.MSR_VOID_PLAYOFF_RESULTS = window.MSR_VOID_PLAYOFF_RESULTS || [
+    // QF4 (Nov 20): Celestex 2-0 EliteKingZz DIVA. Dune 13-6, Province 13-6 (scoreboards).
+    { round: 'qf', match: 4, a: 'DS_7C03F1F6DA5F993B4CC9BB28', b: 'DS_BD02236437B5FF2BB5839658', as: 2, bs: 0, date: 1120,
+      maps: [
+        { map: 'Dune', aScore: 13, bScore: 6,
+          a: [['weso',23,13,2],['I love',20,10,0],['60kkscerato',17,11,5],['Yori',13,12,2],['shox.! back',9,14,4]],
+          b: [['k.',22,16,4],['misu',10,16,1],['miuu.',9,18,5],['minnie',12,19,3],['mlue',7,17,1]] },
+        { map: 'Province', aScore: 13, bScore: 6,
+          a: [['Yori',15,11,4],['weso',17,15,4],['shox.! back',18,14,1],['I love',16,16,2],['60kkscerato',14,13,4]],
+          b: [['k.',20,17,5],['misu',14,16,0],['mlue',13,16,1],['Zyaazzz',10,15,4],['minnie',9,16,1]] }
+      ] }
+  ];
   // VOID results (kept apart from MSL standings, but they count for ELO). a/b = team codes, ea/eb = ELO tags, as/bs = series score, auto = forfeit.
   window.MSR_VOID_RESULTS = window.MSR_VOID_RESULTS || [
     {"a":"DS_5E67C1B8721D736CA5B5A960","b":"DS_A92955A6312CC42137C3C7EA","ea":"DXIII","eb":"MNKT Blue","as":2,"bs":0,"round":5,"date":1118,"maps":[{"map":"Province","aScore":13,"bScore":0,"a":[["Melo",16,4,2],["shikiNg",13,6,2],["Tgsu",12,9,4],["Hollow..",13,9,3],["Revi",8,9,5]],"b":[["Hexor",9,13,4],["saD",10,14,1],["Adios",5,13,2],["Shinobi",8,12,0],["Misw",4,13,2]]},{"map":"Rust","aScore":13,"bScore":0,"a":[["Revi",14,9,4],["Melo",11,4,4],["Hollow..",12,4,3],["shikiNg",11,3,1],["Tgsu",8,5,4]],"b":[["Hexor",7,13,3],["saD",7,13,0],["Adios",7,13,1],["forcez",4,13,0],["Shinobi",0,6,0]]}]},
