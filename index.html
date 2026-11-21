@@ -10457,7 +10457,7 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
  var S=new Map(),running=false,t0=performance.now(),RM=false;
  try{RM=matchMedia('(prefers-reduced-motion:reduce)').matches;}catch(_e){}
  function st(el){var o=S.get(el);if(!o){o={hx:.5,hy:.5,thx:.5,thy:.5,act:0,gyro:0};S.set(el,o);}return o;}
- function prep(el){var im=el.querySelector('img');if(im&&/p2990_blue_sticker/.test(im.getAttribute('src')||'')&&!el.querySelector('.msr-p2990-red')){var rd=new Image();rd.className='msr-p2990-red';rd.alt='';rd.setAttribute('aria-hidden','true');rd.src=im.getAttribute('src').replace('blue','red');el.appendChild(rd);}if(im&&!el.style.getPropertyValue('--st'))el.style.setProperty('--st','url("'+(im.getAttribute('src')||'').replace(/"/g,'%22')+'")');}
+ function prep(el){var im=el.querySelector('img');if(im&&/p2990_blue_sticker/.test(im.getAttribute('src')||'')&&!el.querySelector('.msr-p2990-red')){var rd=new Image();rd.className='msr-p2990-red';rd.onerror=function(){rd.remove();};rd.alt='';rd.setAttribute('aria-hidden','true');rd.src=im.getAttribute('src').replace('blue','red');el.appendChild(rd);}if(im&&!el.style.getPropertyValue('--st'))el.style.setProperty('--st','url("'+(im.getAttribute('src')||'').replace(/"/g,'%22')+'")');}
  function els(){return document.querySelectorAll('.msr-team-gold-sticker,.msr-holo-wrap');}
  function scan(){els().forEach(prep);kick();}
  function frame(now){
@@ -10714,86 +10714,6 @@ html body nav.main.mob a{font-family:var(--b)!important;text-transform:none!impo
 #app .s2p-lg.msr-lg-loss>*,#app .s2p-lg.msr-lg-auto>*{opacity:.45;filter:grayscale(1)}
 #app .s2p-cb{row-gap:6px}
 </style>
-<style id="msr-music-style">
-#msr-music{position:fixed;z-index:160;right:16px;bottom:20px;width:46px;height:46px;border-radius:50%;border:1px solid #536176;background:rgba(41,46,54,.95);color:#ebedf0;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(16px);-webkit-tap-highlight-color:transparent;padding:0}
-#msr-music svg{width:22px;height:22px}
-#msr-music.on{border-color:#3ddc84;color:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.15)}
-#msr-music.on .msr-mu-off,#msr-music:not(.on) .msr-mu-on{display:none}
-@media(max-width:760px){#msr-music{right:5%;bottom:calc(94px + env(safe-area-inset-bottom))}}
-</style>
-<button id="msr-music" type="button" aria-label="Background music: off" aria-pressed="false" title="Background music">
-<svg class="msr-mu-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
-<svg class="msr-mu-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m16 9 6 6"/><path d="m22 9-6 6"/></svg>
-</button>
-<script id="msr-music-script">
-/* Background music: an original loop synthesized live with the Web Audio API (no audio file, no licensed track).
-   Off by default; browsers only allow sound after a tap, so it starts from the button. The on/off choice is remembered per browser. */
-(function () {
-  var btn = document.getElementById('msr-music'); if (!btn) return;
-  var AC = window.AudioContext || window.webkitAudioContext; if (!AC) { btn.style.display = 'none'; return; }
-  var KEY = 'msr-music', ctx = null, master = null, timer = null, step = 0, next = 0, on = false;
-  var BPM = 96, S16 = 60 / BPM / 4, VOL = 0.16;
-  // A minor: Am - F - C - G, one bar each (MIDI roots and chord tones).
-  var CH = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]], BASS = [45, 41, 48, 43];
-  var ARP = [0, 1, 2, 1, 2, 0, 1, 2];
-  var f = function (m) { return 440 * Math.pow(2, (m - 69) / 12); };
-  function pref(v) { try { if (v === undefined) return localStorage.getItem(KEY) === '1'; localStorage.setItem(KEY, v ? '1' : '0'); } catch (e) { return false; } }
-  function init() {
-    ctx = new AC(); master = ctx.createGain(); master.gain.value = 0;
-    var comp = ctx.createDynamicsCompressor(); master.connect(comp); comp.connect(ctx.destination);
-    var n = ctx.sampleRate, buf = ctx.createBuffer(1, n, n), d = buf.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; ctx._noise = buf;
-  }
-  function env(g, t, a, peak, rel) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + rel); }
-  function pad(t, chord, dur) {
-    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(700, t); lp.frequency.linearRampToValueAtTime(1300, t + dur / 2); lp.frequency.linearRampToValueAtTime(700, t + dur);
-    var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.05, t + 0.6); g.gain.setValueAtTime(0.05, t + dur - 0.4); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.2);
-    lp.connect(g); g.connect(master);
-    chord.forEach(function (m) { [-7, 7].forEach(function (cents) { var o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f(m); o.detune.value = cents; o.connect(lp); o.start(t); o.stop(t + dur + 0.3); }); });
-  }
-  function bass(t, m) { var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'triangle'; o.frequency.value = f(m); env(g, t, 0.01, 0.22, S16 * 3); o.connect(g); g.connect(master); o.start(t); o.stop(t + S16 * 4); }
-  function pluck(t, m) { var o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(3000, t); lp.frequency.exponentialRampToValueAtTime(400, t + 0.25); o.type = 'square'; o.frequency.value = f(m + 12); env(g, t, 0.005, 0.035, 0.3); o.connect(lp); lp.connect(g); g.connect(master); o.start(t); o.stop(t + 0.4); }
-  function kick(t) { var o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.12); env(g, t, 0.002, 0.5, 0.25); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.3); }
-  function hat(t, v) { var s = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = ctx._noise; hp.type = 'highpass'; hp.frequency.value = 7000; env(g, t, 0.001, v, 0.05); s.connect(hp); hp.connect(g); g.connect(master); s.start(t); s.stop(t + 0.08); }
-  function snare(t) { var s = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = ctx._noise; bp.type = 'bandpass'; bp.frequency.value = 1800; env(g, t, 0.002, 0.12, 0.16); s.connect(bp); bp.connect(g); g.connect(master); s.start(t); s.stop(t + 0.2); }
-  function play(i, t) {
-    var bar = Math.floor(i / 16) % 4, s = i % 16, sec = Math.floor(i / 64) % 2; // every other 4-bar pass adds drums
-    if (s === 0) pad(t, CH[bar], S16 * 16);
-    if (s % 4 === 0 || s === 10) bass(t, BASS[bar]);
-    if (s % 2 === 0) pluck(t, CH[bar][ARP[(s / 2) % 8]]);
-    if (sec === 1 || i >= 128) { if (s % 4 === 0) kick(t); if (s === 4 || s === 12) snare(t); if (s % 2 === 1) hat(t, 0.03); }
-  }
-  function tick() { while (next < ctx.currentTime + 0.12) { play(step, next); step++; next += S16; } }
-  // Own track: if assets/music.mp3 exists in the repo it plays (looped) instead of the synthesized loop.
-  var FILE = 'assets/music.mp3', track = null, hasFile = null;
-  function checkFile() { return hasFile !== null ? Promise.resolve(hasFile) : fetch(FILE, { method: 'HEAD', cache: 'no-store' }).then(function (r) { hasFile = r.ok && !/text\/html/i.test(r.headers.get('content-type') || ''); return hasFile; }).catch(function () { hasFile = false; return false; }); }
-  checkFile();
-  function startFile() { if (!track) { track = new Audio(FILE); track.loop = true; track.preload = 'auto'; } track.volume = 0.35; return track.play(); }
-  function start() {
-    if (track || hasFile) { startFile().catch(function () {}); return; }
-    if (!ctx) init();
-    ctx.resume(); step = 0; next = ctx.currentTime + 0.08;
-    master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setValueAtTime(master.gain.value, ctx.currentTime); master.gain.linearRampToValueAtTime(VOL, ctx.currentTime + 1.5);
-    clearInterval(timer); timer = setInterval(tick, 25); tick();
-  }
-  function stop() {
-    if (track) track.pause();
-    if (!ctx) return; clearInterval(timer); timer = null;
-    master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setValueAtTime(master.gain.value, ctx.currentTime); master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
-    setTimeout(function () { if (!on && ctx) ctx.suspend(); }, 600);
-  }
-  function set(v, save) {
-    on = v; btn.classList.toggle('on', v); btn.setAttribute('aria-pressed', v ? 'true' : 'false'); btn.setAttribute('aria-label', 'Background music: ' + (v ? 'on' : 'off'));
-    if (save) pref(v);
-    if (!v) { stop(); return; }
-    if (hasFile === null && !track) { startFile().then(function () { hasFile = true; }, function () { track = null; hasFile = false; checkFile().then(function (ok) { if (on) ok ? startFile().catch(function () {}) : start(); }); }); return; }
-    start();
-  }
-  btn.addEventListener('click', function () { set(!on, true); });
-  // Remembered "on": start at the first tap anywhere (autoplay rules need a user gesture).
-  if (pref()) { var first = function (e) { document.removeEventListener('pointerdown', first, true); if (!on && e.target !== btn && !btn.contains(e.target)) set(true, false); }; document.addEventListener('pointerdown', first, true); }
-  document.addEventListener('visibilitychange', function () { if (!on) return; if (track) { document.hidden ? track.pause() : track.play().catch(function () {}); return; } if (!ctx) return; if (document.hidden) { clearInterval(timer); ctx.suspend(); } else { ctx.resume().then(function () { next = ctx.currentTime + 0.08; clearInterval(timer); timer = setInterval(tick, 25); }); } });
-})();
-</script>
 </body>
 </html>
 
