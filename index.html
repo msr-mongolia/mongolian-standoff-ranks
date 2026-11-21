@@ -5641,7 +5641,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
   // Veto times are always evening: a bare 8 / 9 / 10 (or 8:30) means 20:00 / 21:00 / 22:00.
   // Admin-confirmed time corrections for veto posts whose time is written ambiguously (pair of lower-case team names -> HH:MM).
-  var MSR_VETO_TIME_FIX={'0kz|6lc':'22:00'};
+  var MSR_VETO_TIME_FIX={'0kz|6lc':'22:00','eks|kngzz':'21:00'}; // eks|kngzz: veto post Nov 21 "21:00sgt" (parser missed the time)
   function msrVetoFor(ka,kb){
     var r=msrRelUpcoming().find(function(r){var x=msrVetoCode(r.team_a),y=msrVetoCode(r.team_b);return (x===ka&&y===kb)||(x===kb&&y===ka);})||null;
     if(r){var n=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},fx=MSR_VETO_TIME_FIX[[n(r.team_a),n(r.team_b)].sort().join('|')];if(fx)r=Object.assign({},r,{time_label:fx});else{var tl=String(r.time_label||'').replace(/\s*\([^)]*\)/g,'').trim(),em=tl.match(/^(\d{1,2})(?::(\d{2}))?$/);if(em){var hh=+em[1];if(hh>=1&&hh<=11)hh+=12;r=Object.assign({},r,{time_label:hh+':'+(em[2]||'00')});}}}
