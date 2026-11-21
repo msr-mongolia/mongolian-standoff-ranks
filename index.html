@@ -10763,25 +10763,35 @@ html body nav.main.mob a{font-family:var(--b)!important;text-transform:none!impo
     if (sec === 1 || i >= 128) { if (s % 4 === 0) kick(t); if (s === 4 || s === 12) snare(t); if (s % 2 === 1) hat(t, 0.03); }
   }
   function tick() { while (next < ctx.currentTime + 0.12) { play(step, next); step++; next += S16; } }
+  // Own track: if assets/music.mp3 exists in the repo it plays (looped) instead of the synthesized loop.
+  var FILE = 'assets/music.mp3', track = null, hasFile = null;
+  function checkFile() { return hasFile !== null ? Promise.resolve(hasFile) : fetch(FILE, { method: 'HEAD', cache: 'no-store' }).then(function (r) { hasFile = r.ok && !/text\/html/i.test(r.headers.get('content-type') || ''); return hasFile; }).catch(function () { hasFile = false; return false; }); }
+  checkFile();
+  function startFile() { if (!track) { track = new Audio(FILE); track.loop = true; track.preload = 'auto'; } track.volume = 0.35; return track.play(); }
   function start() {
+    if (track || hasFile) { startFile().catch(function () {}); return; }
     if (!ctx) init();
     ctx.resume(); step = 0; next = ctx.currentTime + 0.08;
     master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setValueAtTime(master.gain.value, ctx.currentTime); master.gain.linearRampToValueAtTime(VOL, ctx.currentTime + 1.5);
     clearInterval(timer); timer = setInterval(tick, 25); tick();
   }
   function stop() {
+    if (track) track.pause();
     if (!ctx) return; clearInterval(timer); timer = null;
     master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setValueAtTime(master.gain.value, ctx.currentTime); master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
     setTimeout(function () { if (!on && ctx) ctx.suspend(); }, 600);
   }
   function set(v, save) {
     on = v; btn.classList.toggle('on', v); btn.setAttribute('aria-pressed', v ? 'true' : 'false'); btn.setAttribute('aria-label', 'Background music: ' + (v ? 'on' : 'off'));
-    if (save) pref(v); v ? start() : stop();
+    if (save) pref(v);
+    if (!v) { stop(); return; }
+    if (hasFile === null && !track) { startFile().then(function () { hasFile = true; }, function () { track = null; hasFile = false; checkFile().then(function (ok) { if (on) ok ? startFile().catch(function () {}) : start(); }); }); return; }
+    start();
   }
   btn.addEventListener('click', function () { set(!on, true); });
   // Remembered "on": start at the first tap anywhere (autoplay rules need a user gesture).
   if (pref()) { var first = function (e) { document.removeEventListener('pointerdown', first, true); if (!on && e.target !== btn && !btn.contains(e.target)) set(true, false); }; document.addEventListener('pointerdown', first, true); }
-  document.addEventListener('visibilitychange', function () { if (!ctx || !on) return; if (document.hidden) { clearInterval(timer); ctx.suspend(); } else { ctx.resume().then(function () { next = ctx.currentTime + 0.08; clearInterval(timer); timer = setInterval(tick, 25); }); } });
+  document.addEventListener('visibilitychange', function () { if (!on) return; if (track) { document.hidden ? track.pause() : track.play().catch(function () {}); return; } if (!ctx) return; if (document.hidden) { clearInterval(timer); ctx.suspend(); } else { ctx.resume().then(function () { next = ctx.currentTime + 0.08; clearInterval(timer); timer = setInterval(tick, 25); }); } });
 })();
 </script>
 </body>
