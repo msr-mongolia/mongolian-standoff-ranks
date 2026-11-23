@@ -3133,6 +3133,9 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
       ] }
 ,
     // SF1 (Nov 22): KGTSS 2-1 RA1IN. Rust 13-11, Province 13-8, Hanami 8-13 (scoreboards; Hanami screenshot posted later).
+    // FINAL (Nov 23): KnightSS (KGTSS) beat DXIII - VOID champion (admin, Nov 23). Series score not posted yet, so winOnly:
+    // shown in the bracket as champion only; kept out of results/ELO/stats until the score (and scoreboards) arrive.
+    { round: 'final', match: 1, a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 1, bs: 0, winOnly: true, date: 1123 },
     { round: 'sf', match: 1, a: 'KGTSS', b: 'DS_4561C74A8EF7ED8EBA1EEC28', ea: 'KGTSS', eb: 'RA1IN', as: 2, bs: 1, date: 1122,
       maps: [
         { map: 'Rust', aScore: 13, bScore: 11,
@@ -3461,7 +3464,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   // Playoff rounds sort after Swiss Round 5: qf = 6, sf = 7, final = 8. Playoff entries need ea/eb (ELO tags) to count for ELO.
   window.msrVoidAll = function () {
     var po = { qf: 6, sf: 7, final: 8 };
-    return (window.MSR_VOID_RESULTS || []).concat((window.MSR_VOID_PLAYOFF_RESULTS || []).filter(function (r) { return r && r.a && r.b && r.as !== r.bs; }).map(function (r) {
+    return (window.MSR_VOID_RESULTS || []).concat((window.MSR_VOID_PLAYOFF_RESULTS || []).filter(function (r) { return r && r.a && r.b && r.as !== r.bs && !r.winOnly; }).map(function (r) {
       var o = {}; Object.keys(r).forEach(function (k) { o[k] = r[k]; }); o.playoff = r.round; o.round = po[r.round] || 6; return o; }));
   };
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
@@ -7869,7 +7872,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         var seed = qualifiers.indexOf(code);
         var tag = t ? 'a' : 'div', opts = { class: 'vd-po-player' + (!t ? ' tbd' : '') + (w ? ' won' : lost ? ' lost' : '') };
         if (t) { opts.href = teamHref(resolved); opts.title = t.n; }
-        var score = r ? U(r.a) === U(code) ? r.as : r.bs : null;
+        var score = r && !r.winOnly ? U(r.a) === U(code) ? r.as : r.bs : null;
         return h(tag, opts, t ? crest(resolved, 'sm') : null,
           t && seed >= 0 ? h('span', { class: 'seed' }, '#' + (seed + 1)) : null,
           h('span', { class: 'name' }, t ? t.n : (fallback || 'TBD')),
@@ -7878,7 +7881,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       function game(round, n, a, b) {
         var r = result(round, n, a, b);
         return h('div', { class: 'vd-po-game' },
-          h('div', { class: 'vd-po-game-label' }, h('span', null, round.toUpperCase() + ' ' + (n + 1)), h('span', null, r ? 'FINAL SCORE' : 'BO3 · TBD')),
+          h('div', { class: 'vd-po-game-label' }, h('span', null, round.toUpperCase() + ' ' + (n + 1)), h('span', null, r ? (r.winOnly ? 'WINNER' : 'FINAL SCORE') : 'BO3 · TBD')),
           teamSlot(a, r, 'TBD'), teamSlot(b, r, 'TBD'));
       }
       function pair() { return h('div', { class: 'vd-po-pair' }, [].slice.call(arguments)); }
