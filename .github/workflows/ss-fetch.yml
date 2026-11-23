@@ -1,5 +1,5 @@
 name: ss-fetch
-# Every 10 minutes: copy new result-channel screenshots (already stored in Supabase by the msr-ros bot)
+# Every 10 minutes (and on change of this file): copy new result-channel screenshots (already stored in Supabase by the msr-ros bot)
 # into the ss-fetch branch, with ss-index.json listing each post's text and images. Not part of the site.
 on:
   schedule:
