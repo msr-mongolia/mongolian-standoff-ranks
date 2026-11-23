@@ -4462,11 +4462,11 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         var st; try { st = window.msrS4(); } catch (e) { return; }
         var qs = st.qualified.map(function (t) { return slot(t); }); while (qs.length < 8) qs.push(h('span', { class: 'sw-q' }, '?'));
         wrap.replaceChildren(
-          h('div', { class: 'sw2-zh' }, h('b', null, 'Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3 \u00b7 Nov 23\u201325')),
+          h('div', { class: 'sw2-zh' }, h('b', null, 'Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3 \u00b7 Nov 24\u201326')),
           h('div', { class: 'sw-wrap' }, h('div', { class: 'sw' },
-            col('Quarterfinals \u00b7 Nov 23', st.qf.map(row), 'c-blue'),
-            col('Semifinals \u00b7 Nov 24', st.sf.map(row), 'c-yellow'),
-            col('Final \u00b7 Nov 25', [row(st.final)], 'c-red'),
+            col('Quarterfinals \u00b7 Nov 24', st.qf.map(row), 'c-blue'),
+            col('Semifinals \u00b7 Nov 25', st.sf.map(row), 'c-yellow'),
+            col('Final \u00b7 Nov 26', [row(st.final)], 'c-red'),
             h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, 'Champion'), h('div', { class: 'sw-body' }, h('div', { class: 'sw-list c-list ok' }, h('h4', null, st.champion ? 'CHAMPION' : 'TBD'), h('div', { class: 'sl' }, [slot(st.champion)])))))),
           h('div', { class: 'sw-wrap' }, h('div', { class: 'sw-list c-list ok', style: 'max-width:520px' }, h('h4', null, 'Qualified from Stage 3 (' + st.qualified.length + '/8)'), h('div', { class: 'sl' }, qs))),
           h('p', { class: 'msr-zone-note' }, st.ready ? 'Seeding: Stage 3 record (3\u20130, 3\u20131, 3\u20132), ties by Stage 3 seed. Quarterfinals 1v8, 4v5, 2v7, 3v6.' : 'The bracket is drawn once all 8 teams have qualified from Stage 3 (Nov 21).'));
