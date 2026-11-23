@@ -3096,8 +3096,16 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
           b: [['k.',20,17,5],['misu',14,16,0],['mlue',13,16,1],['Zyaazzz',10,15,4],['minnie',9,16,1]] }
       ] }
 ,
-    // QF1 (Nov 20): KnightSS 2-0 MNKT Red. Text-only result post (no scoreboards), so no map stats.
-    { round: 'qf', match: 1, a: 'KGTSS', b: 'DS_A0B0110FC187C08BE7637475', ea: 'KGTSS', eb: 'MNKT Red', as: 2, bs: 0, date: 1120 },
+    // QF1 (Nov 20): KnightSS 2-0 MNKT Red. Hanami 13-6, Rust 13-5 (scoreboards recovered Nov 24; large PNGs were skipped before).
+    { round: 'qf', match: 1, a: 'KGTSS', b: 'DS_A0B0110FC187C08BE7637475', ea: 'KGTSS', eb: 'MNKT Red', as: 2, bs: 0, date: 1120,
+      maps: [
+        { map: 'Hanami', aScore: 13, bScore: 6,
+          a: [['Tami',20,9,2],['Ada',18,10,7],['keoz',18,11,7],['Rivo._',14,14,4],['DiDi',14,10,6]],
+          b: [['En IS',24,17,3],['Arventy',8,17,3],['miracle',9,18,3],['MICKY',9,15,2],['Paris',4,17,2]] },
+        { map: 'Rust', aScore: 13, bScore: 5,
+          a: [['Tami',19,9,5],['DiDi',17,9,4],['keoz',18,13,6],['Rivo._',15,11,3],['Ada',12,14,4]],
+          b: [['MICKY',20,14,1],['miracle',16,14,2],['Arventy',7,18,4],['En IS',8,18,3],['Paris',5,17,0]] }
+      ] },
     // QF2 (Nov 20): RA1IN 2-0 CHINGIS WARRIORS (MSDTP). Province 13-10, Dune 13-7 (scoreboards).
     { round: 'qf', match: 2, a: 'DS_4559C7E779F302E917B1A414', b: 'DS_4561C74A8EF7ED8EBA1EEC28', ea: 'MSDTP', eb: 'RA1IN', as: 0, bs: 2, date: 1120,
       maps: [
