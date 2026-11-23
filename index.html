@@ -4016,10 +4016,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       '.skin .sk-slide{position:relative;flex:0 0 50%;width:50%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:10px;padding:22px 12px 38px;text-align:center;color:#fff;box-sizing:border-box;' +
         'background:linear-gradient(180deg,rgba(9,10,11,.35) 0%,rgba(9,10,11,.05) 30%,rgba(9,10,11,.55) 62%,rgba(9,10,11,.95) 100%),var(--skimg) center / cover no-repeat}' +
       '.skin .sk-slide.sps{background:radial-gradient(120% 60% at 50% 30%,rgba(76,216,150,.22),transparent 70%),linear-gradient(180deg,#0d1512 0%,#090a0b 100%)}' +
-      '.skin .sk-logo{width:150px;height:150px;object-fit:cover;border-radius:22px;box-shadow:0 0 0 1px rgba(76,216,150,.45),0 10px 30px -8px rgba(0,0,0,.8),0 0 28px -4px rgba(76,216,150,.5);margin-bottom:auto;margin-top:64px}' +
+      '.skin .sk-logo{width:min(150px,86%)!important;max-width:100%!important;height:auto!important;aspect-ratio:1/1;object-fit:contain!important;border-radius:22px;flex:none;box-shadow:0 0 0 1px rgba(76,216,150,.45),0 10px 30px -8px rgba(0,0,0,.8),0 0 28px -4px rgba(76,216,150,.5);margin-bottom:auto;margin-top:64px}' +
       '.skin .sk-pairs{display:flex;flex-direction:column;gap:7px;width:100%;margin:2px 0 4px}' +
       '.skin .sk-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;padding:5px 6px;border-radius:10px;background:rgba(9,10,11,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}' +
-      '.skin .sk-pair .crest{width:38px!important;height:38px!important;justify-self:center;font-size:12px}' +
+      '.skin .sk-pair .crest{width:min(38px,34%)!important;height:auto!important;aspect-ratio:1/1;justify-self:center;font-size:12px}' +
       '.skin .sk-vs{font-size:10px;font-weight:800;color:#8fe7bf;letter-spacing:.08em}' +
       '.skin .sk-dots{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:6px;z-index:3}' +
       '.skin .sk-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3);transition:background .3s,transform .3s}' +
@@ -4046,7 +4046,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         h('span', { class: 'sk-tag' }, 'Event'),
         h('img', { class: 'sk-logo', src: 'assets/sps_logo.jpg', alt: 'SPS logo', loading: 'lazy' }),
         h('b', { class: 'sk-t' }, 'SPS'),
-        h('span', { class: 'sk-s' }, 'Standoff Pro Series', h('br'), '40 teams · 1 000 000₮'),
+        h('span', { class: 'sk-s' }, 'Standoff Pro Series', h('br'), '40 teams', h('br'), h('span', { style: 'white-space:nowrap' }, '1 000 000₮')),
         h('span', { class: 'sk-b' }, 'View event →'));
       var el = h('div', { class: 'skin ' + side, 'data-i': String(startIdx) },
         h('div', { class: 'sk-track' }, msl, sps),
