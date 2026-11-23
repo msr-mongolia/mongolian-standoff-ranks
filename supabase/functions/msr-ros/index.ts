@@ -17,7 +17,7 @@ async function copyLogo(url:string,key:string){
   const r=await fetch(u,{redirect:'error'});if(!r.ok)return null;
   const mime=(r.headers.get('content-type')||'').split(';')[0];
   if(!['image/png','image/jpeg','image/webp','image/gif'].includes(mime))return null;
-  const bytes=await r.arrayBuffer();if(!bytes.byteLength||bytes.byteLength>4194304)return null;
+  const bytes=await r.arrayBuffer();if(!bytes.byteLength||bytes.byteLength>26214400)return null;
   const ext=mime==='image/png'?'png':mime==='image/webp'?'webp':mime==='image/gif'?'gif':'jpg';
   const path='ros/'+key+'.'+ext;
   const up=await fetch(base+'/storage/v1/object/team-logos/'+path,{method:'POST',headers:{apikey:service,Authorization:'Bearer '+service,'Content-Type':mime,'x-upsert':'true'},body:bytes});
