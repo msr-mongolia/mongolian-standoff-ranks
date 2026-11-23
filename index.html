@@ -6762,10 +6762,29 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           +[0,.5,1].map(function(f){var v=mn+(mx-mn)*f,y=Y(v);return '<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="rgba(255,255,255,.07)"/><text x="'+(pl-6)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#8a94a3">'+Math.round(v)+'</text>';}).join('')
           +'<path d="'+area+'" fill="url(#eloG)"/>'
           +'<g filter="url(#eloGlow)" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'+P.slice(0,-1).map(function(_,i){return '<path d="'+seg(i)+'" stroke="'+(hs[i+1]>=hs[i]?GR:RD)+'"/>';}).join('')+'</g>'
-          +hs.map(function(v,i){var end=i===hs.length-1;return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="'+(end?5:7)+'" fill="'+(end?col:'transparent')+'"'+(end?' style="filter:drop-shadow(0 0 6px '+col+')"':'')+'><title>'+(i?'After match '+i:'Start')+': '+v+' pt</title></circle>';}).join('')
+          +hs.map(function(v,i){var end=i===hs.length-1,dc=i&&hs[i]<hs[i-1]?RD:GR,cx=X(i).toFixed(1),cy=Y(v).toFixed(1);return '<g class="eloDot" data-i="'+i+'" style="cursor:pointer"><circle cx="'+cx+'" cy="'+cy+'" r="14" fill="transparent"/><circle class="eloPt" cx="'+cx+'" cy="'+cy+'" r="'+(end?5.5:4)+'" fill="'+(end?dc:'#0b0a12')+'" stroke="'+dc+'" stroke-width="2"'+(end?' style="filter:drop-shadow(0 0 6px '+dc+')"':'')+'/></g>';}).join('')
           +'<text x="'+pl+'" y="'+(Ht-6)+'" font-size="11" fill="#8a94a3">Start</text><text x="'+(W-pr)+'" y="'+(Ht-6)+'" text-anchor="end" font-size="11" fill="#8a94a3">Now</text></svg>';
         var box=h('div',{class:'box',style:'margin:12px 0;padding:12px 14px'},h('div',{style:'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px'},h('b',null,'ELO history'),h('span',{style:'font-size:12px;color:var(--muted)'},(last-hs[0]>=0?'+':'')+(last-hs[0])+' pt · '+(hs.length-1)+' matches')));
-        var holder=document.createElement('div');holder.innerHTML=svg;box.appendChild(holder);return box;
+        var holder=document.createElement('div');holder.innerHTML=svg;box.style.position='relative';holder.style.position='relative';box.appendChild(holder);
+        var meta=(window.MSR_ELO_META||{})[code]||[],tip=document.createElement('div');
+        tip.style.cssText='position:absolute;display:none;z-index:5;min-width:150px;max-width:230px;padding:9px 12px;border-radius:12px;background:rgba(14,12,22,.97);border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 28px rgba(0,0,0,.6);font-size:12.5px;line-height:1.45;color:#f4f4f5;pointer-events:none';
+        holder.appendChild(tip);
+        var hide=function(){tip.style.display='none';};
+        var oppName=function(t){var c=t&&window.msrTagToCode?window.msrTagToCode(t):null;return (c&&T[c]&&T[c].n)||t||'';};
+        holder.addEventListener('click',function(ev){
+          var g=ev.target.closest&&ev.target.closest('.eloDot');if(!g){hide();return;}
+          ev.stopPropagation();var i=+g.getAttribute('data-i'),m=meta[i],v=hs[i],ch=i?v-hs[i-1]:0,html;
+          if(!i)html='<b>Start</b><br>'+v+' pt';
+          else if(m&&m.pen)html='<b>Penalty</b><br>ELO reset · '+v+' pt';
+          else html='<b>'+(m&&m.opp?'vs '+oppName(m.opp):'Match '+i)+'</b>'+(m&&m.sc?' · '+m.sc:'')+'<br><span style="color:'+(ch>=0?'#7dff3a':'#ff5d5d')+';font-weight:700">'+(m&&m.won!=null?(m.won?'WIN':'LOSS')+' ':'')+(ch>=0?'+':'')+ch+' pt</span> → '+v+' pt'+(m&&m.md?'<br><span style="color:#8a94a3">'+String(m.md).replace(/[<>&]/g,'')+'</span>':'');
+          tip.innerHTML=html;tip.style.display='block';
+          var hr=holder.getBoundingClientRect(),gr=g.getBoundingClientRect(),tw=tip.offsetWidth,x=gr.left-hr.left+gr.width/2-tw/2;
+          x=Math.max(0,Math.min(hr.width-tw,x));tip.style.left=x+'px';
+          var y=gr.top-hr.top-tip.offsetHeight-8;if(y<0)y=gr.bottom-hr.top+8;tip.style.top=y+'px';
+        });
+        document.addEventListener('click',function(ev){if(!holder.contains(ev.target))hide();});
+        window.addEventListener('hashchange',hide);
+        return box;
       })(),
       (function(){var tp=window.msrTP(code);return h('div',{class:'msr-tp-line',style:'margin:10px 0;padding:9px 14px;border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:13px;font-weight:700;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap'},h('span',null,'🏆 Tournament points'),h('b',null,fmt(tp.pts)+(tp.cap?' / '+tp.cap:' · no cap (VIP)')));})(),
       (Number(r[1])>=250&&!(Date.parse(T[code].vipExpiresAt)>Date.now()))?h('div',{class:'msr-vip-nudge',style:'margin:12px 0;padding:10px 14px;border:1px solid rgba(245,195,73,.55);border-radius:8px;background:rgba(245,195,73,.08);color:#e7bf68;font-size:13px;font-weight:700'},Number(r[1])>=300?'ELO 300 хязгаарт хүрсэн: үнэгүй эрхээр дээш өсөхгүй. VIP CLAN авбал ELO хязгааргүй өснө.':'ELO '+fmt(r[1])+' — 300 хязгаарт ойртож байна. 300-аас дээш өсөхөд VIP CLAN шаардлагатай.'):null,
@@ -8846,7 +8865,7 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster": ["Luxxus", "MooN", 
       var db=fullAuto?(bw>aw?10:-13):Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)+(hasAuto?(bw>aw?10:-13):0);
       [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].filter(function(x){return !(m.oneSided&&x[0]===m.b);}).forEach(function(x){
         var tag=x[0],before=x[3],after=Math.max(0,Math.min(vipTagActive(tag)?Infinity:Math.max(300,before),before+x[1])),prev=x[4]||{w:0,l:0};
-        adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1),d:msrAdjDay(m.date)});
+        adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1),d:msrAdjDay(m.date),opp:(tag===m.a?m.b:m.a),sc:(tag===m.a?aw+'-'+bw:bw+'-'+aw),won:!!x[2],md:m.date});
       });
       // Admin ruling: 6LC (Six Lence + Six Lence Purple) is banned. Every team that lost a series to them from Stage 2 on (and in VOID) gets +15 (MSR_BAN_BONUS).
       var bnb=window.MSR_BAN_BONUS;
@@ -8895,6 +8914,7 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster": ["Luxxus", "MooN", 
       if(!row){row=[match,50,0,0,0,''];RANK.push(row);}
       row[1]=item.points;row[2]=(msrLastChange[item.tag]||item).change;row[3]=item.w;row[4]=item.l;row[5]=(formByTag[item.tag]||'').slice(-5)||(item.w?'w':'l');
       (window.MSR_ELO_HIST=window.MSR_ELO_HIST||{})[match]=[50].concat(adjustments.filter(function(z){return z.tag===item.tag;}).map(function(z){return z.points;}));
+      (window.MSR_ELO_META=window.MSR_ELO_META||{})[match]=[null].concat(adjustments.filter(function(z){return z.tag===item.tag;}).map(function(z){return {opp:z.opp||'',sc:z.sc||'',won:z.won,ch:z.change,pen:!!z.penalty,md:z.md||''};}));
     });
     RANK.sort(function(a,b){return Number(b[1]||0)-Number(a[1]||0);});
     if (window.msrApplyBan) window.msrApplyBan();
