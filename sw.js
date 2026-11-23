@@ -1,5 +1,5 @@
 /* MSR service worker: network-first so the site always shows the latest version; cache is only an offline fallback. */
-const CACHE = 'msr-v2';
+const CACHE = 'msr-v3';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(
   caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())
@@ -33,7 +33,7 @@ self.addEventListener('fetch', e => {
 self.addEventListener('push', e => {
   let d = {}; try { d = e.data ? e.data.json() : {}; } catch (_) {}
   e.waitUntil(self.registration.showNotification(d.title || 'MSR', {
-    body: d.body || '', icon: 'assets/pwa/icon-192.png', badge: 'assets/pwa/icon-192.png', data: { url: d.url || './' }
+    body: d.body || '', icon: 'assets/pwa/icon-192-v2.png', badge: 'assets/pwa/icon-192-v2.png', data: { url: d.url || './' }
   }));
 });
 self.addEventListener('notificationclick', e => {
