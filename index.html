@@ -5,12 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Mongolian Standoff Ranks (MSR) — Монголын Standoff 2 багуудын чансаа, тоглогчдын рейтинг, тэмцээн болон тоглолтын мэдээлэл.">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<link rel="canonical" href="https://msr-mongolia.github.io/mongolian-standoff-ranks/">
+<link rel="canonical" href="https://msrmongolia.com/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="MSR – Mongolian Standoff Ranks | Standoff 2 Mongolia">
 <meta property="og:description" content="Монголын Standoff 2 багуудын чансаа, тоглогчдын рейтинг, тэмцээн болон тоглолтын мэдээлэл.">
-<meta property="og:url" content="https://msr-mongolia.github.io/mongolian-standoff-ranks/">
-<meta name="twitter:card" content="summary">
+<meta property="og:url" content="https://msrmongolia.com/">
+<meta property="og:site_name" content="MSR – Mongolian Standoff Ranks">
+<meta property="og:image" content="https://msrmongolia.com/assets/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MSR – Mongolian Standoff Ranks">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://msrmongolia.com/assets/og-cover.jpg">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#07040f">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,7 +25,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="assets/pwa/apple-touch-icon.png">
 <script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Mongolian Standoff Ranks","alternateName":"MSR Standoff 2 Mongolia","url":"https://msr-mongolia.github.io/mongolian-standoff-ranks/","description":"Mongolian Standoff 2 team and player rankings, tournaments and match results."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Mongolian Standoff Ranks","alternateName":"MSR Standoff 2 Mongolia","url":"https://msrmongolia.com/","description":"Mongolian Standoff 2 team and player rankings, tournaments and match results."}</script>
 <title>MSR – Mongolian Standoff Ranks | Standoff 2 Mongolia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600&family=Golos+Text:wght@400;500;600;700&family=Russo+One&family=Kaushan+Script&family=Marck+Script&family=Mrs+Saint+Delafield&family=Caveat:wght@700&family=Kalam:wght@700&family=Permanent+Marker&family=Mr+De+Haviland&family=Herr+Von+Muellerhoff&display=swap">
@@ -9062,6 +9068,62 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster": ["Luxxus", "MooN", 
       });
       return el;
     };
+  })();
+
+  /* Share button on team and player pages (native share sheet on phones, copy-link elsewhere). */
+  (function () {
+    var css = document.createElement('style');
+    css.textContent = '.msr-share-btn{display:inline-flex;align-items:center;gap:6px;margin:8px 0 2px;padding:7px 13px;border-radius:999px;border:1px solid rgba(76,216,150,.55);background:rgba(76,216,150,.1);color:#8fe7bf;font:600 13px/1 inherit;cursor:pointer}.msr-share-btn:hover{background:rgba(76,216,150,.2)}';
+    document.head.appendChild(css);
+    function shareBtn(title) {
+      var b = h('button', { type: 'button', class: 'msr-share-btn', 'aria-label': 'Share this page' }, '↗ Share');
+      b.addEventListener('click', function () {
+        var url = location.href, data = { title: title, text: title + ' – MSR', url: url };
+        if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+        var done = function () { b.textContent = '✓ Link copied'; setTimeout(function () { b.textContent = '↗ Share'; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy link', url); });
+        else window.prompt('Copy link', url);
+      });
+      return b;
+    }
+    function wrapShare(name, titleOf) {
+      var orig = V[name]; if (typeof orig !== 'function') return;
+      V[name] = function () {
+        var el = orig.apply(this, arguments);
+        try {
+          if (el && el.insertBefore) {
+            var back = el.querySelector && el.querySelector('a.back'), b = shareBtn(titleOf.apply(null, arguments));
+            if (back && back.parentNode) back.parentNode.insertBefore(b, back.nextSibling); else el.insertBefore(b, el.firstChild);
+          }
+        } catch (e) {}
+        return el;
+      };
+    }
+    wrapShare('team', function (code) { var t = (typeof T !== 'undefined' && T[code]) || {}; return (t.n || 'Team') + (t.tag ? ' [' + t.tag + ']' : ''); });
+    wrapShare('player', function (nick) { return String(nick || 'Player'); });
+  })();
+
+  /* Install-the-app hint: shown once after a visitor has opened a few pages (Android/desktop Chrome install prompt, iOS "Add to Home Screen" tip). */
+  (function () {
+    var KEY = 'msr-install-hint', deferred = null, views = 0;
+    function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    if (window.matchMedia && matchMedia('(display-mode: standalone)').matches || navigator.standalone) return;
+    if (lsGet(KEY)) return;
+    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
+    var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    function show() {
+      if (document.getElementById('msr-install-bar') || lsGet(KEY) || (!deferred && !ios)) return;
+      var bar = document.createElement('div'); bar.id = 'msr-install-bar';
+      bar.style.cssText = 'position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:9998;display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;background:#10201a;border:1px solid rgba(76,216,150,.55);color:#e9fff5;font:500 13.5px/1.35 inherit;box-shadow:0 10px 30px -8px rgba(0,0,0,.8);max-width:520px;margin:0 auto';
+      var txt = document.createElement('span'); txt.style.flex = '1';
+      txt.textContent = deferred ? 'Install MSR as an app for quick access to results and rankings.' : 'Add MSR to your Home Screen: tap Share, then "Add to Home Screen".';
+      bar.appendChild(txt);
+      if (deferred) { var ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Install'; ok.style.cssText = 'padding:7px 14px;border-radius:999px;border:0;background:#4cd896;color:#06130d;font-weight:700;cursor:pointer'; ok.onclick = function () { deferred.prompt(); deferred.userChoice.finally(function () { lsSet(KEY, '1'); bar.remove(); }); }; bar.appendChild(ok); }
+      var x = document.createElement('button'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.textContent = '×'; x.style.cssText = 'padding:2px 8px;border:0;background:transparent;color:#9fb4ab;font-size:20px;cursor:pointer'; x.onclick = function () { lsSet(KEY, '1'); bar.remove(); };
+      bar.appendChild(x); document.body.appendChild(bar);
+    }
+    window.addEventListener('hashchange', function () { views++; if (views >= 3) setTimeout(show, 1200); });
   })();
 
   function safeRouteDecode(value) {
