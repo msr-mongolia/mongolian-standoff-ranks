@@ -4510,18 +4510,18 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       function row(mt) {
         var r = mt.res, sa = slot(mt.a, mt.seedA), sb = slot(mt.b, mt.seedB);
         if (r && r.aw !== r.bw) { var wE = r.aw > r.bw ? sa : sb, lE = r.aw > r.bw ? sb : sa; lE.classList.add('sw-lose', r.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
-        return h('div', { class: 'sw-m' + (r ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, r ? (r.auto ? 'W/O' : r.aw + ':' + r.bw) : 'VS'), sb);
+        return h('div', { class: 'sw-m' + (r ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, r ? (r.auto ? 'W/O' : r.aw + ':' + r.bw) : (mt.date ? Math.floor(mt.date / 100) + '/' + mt.date % 100 + ' ' + (mt.time || '') : 'VS')), sb);
       }
       function col(title, rows, cls) { return h('div', { class: 'sw-col' }, h('div', { class: 'sw-body' }, h('div', { class: 'sw-g ' + (cls || 'c-green') }, h('div', { class: 'sw-gh' }, h('b', null, title)), rows))); }
       function paint() {
         var st; try { st = window.msrS4(); } catch (e) { return; }
         var qs = st.qualified.map(function (t) { return slot(t); }); while (qs.length < 8) qs.push(h('span', { class: 'sw-q' }, '?'));
         wrap.replaceChildren(
-          h('div', { class: 'sw2-zh' }, h('b', null, 'Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3 \u00b7 Nov 24\u201326')),
+          h('div', { class: 'sw2-zh' }, h('b', null, 'Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3 \u00b7 from Nov 24')),
           h('div', { class: 'sw-wrap' }, h('div', { class: 'sw' },
-            col('Quarterfinals \u00b7 Nov 24', st.qf.map(row), 'c-blue'),
-            col('Semifinals \u00b7 Nov 25', st.sf.map(row), 'c-yellow'),
-            col('Final \u00b7 Nov 26', [row(st.final)], 'c-red'),
+            col('Quarterfinals \u00b7 Nov 24\u201325', st.qf.map(row), 'c-blue'),
+            col('Semifinals \u00b7 TBA', st.sf.map(row), 'c-yellow'),
+            col('Final \u00b7 TBA', [row(st.final)], 'c-red'),
             h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, 'Champion'), h('div', { class: 'sw-body' }, h('div', { class: 'sw-list c-list ok' }, h('h4', null, st.champion ? 'CHAMPION' : 'TBD'), h('div', { class: 'sl' }, [slot(st.champion)])))))),
           h('div', { class: 'sw-wrap' }, h('div', { class: 'sw-list c-list ok', style: 'max-width:520px' }, h('h4', null, 'Qualified from Stage 3 (' + st.qualified.length + '/8)'), h('div', { class: 'sl' }, qs))),
           h('p', { class: 'msr-zone-note' }, st.ready ? (window.MSR_S4_DRAW ? 'Quarterfinal pairs: official draw by the organiser (Nov 23). Seed numbers = Stage 3 record order.' : 'Seeding: Stage 3 record (3\u20130, 3\u20131, 3\u20132), ties by Stage 3 seed. Quarterfinals 1v8, 4v5, 2v7, 3v6.') : 'The bracket is drawn once all 8 teams have qualified from Stage 3 (Nov 21).'));
@@ -7394,8 +7394,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   /* MSL Major S2 Stage 4 (playoff): the 8 teams that qualify from Stage 3, single elimination, Bo3.
      Seeding (provisional): Stage 3 record (3-0, then 3-1, then 3-2), ties by Stage 3 seed. Quarterfinals 1v8, 4v5, 2v7, 3v6; winners meet in the semifinals (1/8 vs 4/5, 2/7 vs 3/6), then the final.
      Results come from ledger entries flagged stage4:true. */
-  // MSL Major S2 Playoff QF draw announced by the organiser (Nov 23): 2990 White–EKS, 2990 Purple–EknZ, 2990 Red–Vamp Empire, Omega ForceZ–EVKZ.
-  window.MSR_S4_DRAW = window.MSR_S4_DRAW || [['2990 White', 'EKS'], ['2990 Purple', 'EknZ'], ['2990', '6vmp6'], ['0kz', 'EVKZ']];
+  // MSL Major S2 Playoff QF draw + schedule announced by the organiser (Nov 23): [teamA, teamB, date MMDD, time].
+  window.MSR_S4_DRAW = window.MSR_S4_DRAW || [['2990 White', 'EKS', 1124, '20:00'], ['2990 Purple', 'EknZ', 1124, '22:00'], ['2990', '6vmp6', 1125, '20:00'], ['0kz', 'EVKZ', 1125, '22:00']];
   window.msrS4 = function () {
     var kk = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
     var s3 = window.msrS3(), seeds = (window.MSR_S3_SEEDS || []).slice(), idx = {}; seeds.forEach(function (t, i) { idx[kk(t)] = i; });
@@ -7417,7 +7417,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var qf = [[1, 8], [4, 5], [2, 7], [3, 6]].map(function (p) { return mk(at(p[0]), at(p[1]), p[0], p[1]); });
     // Organiser's official QF draw (Nov 23) overrides the computed seeding pairs once all 8 have qualified.
     var dr = window.MSR_S4_DRAW;
-    if (ready && dr && dr.length === 4) { var sd = function (t) { var i = order.map(kk).indexOf(kk(t)); return i >= 0 ? i + 1 : null; }; qf = dr.map(function (p) { return mk(p[0], p[1], sd(p[0]), sd(p[1])); }); }
+    if (ready && dr && dr.length === 4) { var sd = function (t) { var i = order.map(kk).indexOf(kk(t)); return i >= 0 ? i + 1 : null; }; qf = dr.map(function (p) { var o = mk(p[0], p[1], sd(p[0]), sd(p[1])); o.date = p[2] || null; o.time = p[3] || null; return o; }); }
     var sf = [mk(qf[0].winner, qf[1].winner), mk(qf[2].winner, qf[3].winner)];
     var fin = mk(sf[0].winner, sf[1].winner);
     return { ready: ready, qualified: q.map(function (r) { return r.tag; }), order: order, qf: qf, sf: sf, final: fin, champion: fin.winner };
@@ -7453,6 +7453,20 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           ALLM.push(m); MBY[nid] = m;
         });
       });
+    });
+    // Stage 4 playoff matches with an announced date/time (MSR_S4_DRAW).
+    var s4; try { s4 = window.msrS4(); } catch (e) { s4 = null; }
+    (s4 ? s4.qf : []).forEach(function (mt, i) {
+      if (!mt.date) return;
+      var a = mt.a && window.msrTagToCode ? window.msrTagToCode(mt.a) : null, b = mt.b && window.msrTagToCode ? window.msrTagToCode(mt.b) : null;
+      if (!a || !b) return;
+      while (MBY[nid]) nid++;
+      var d = mt.date, wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(YEAR, Math.floor(d / 100) - 1, d % 100).getDay()], r = mt.res;
+      var m = { id: nid, s3fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Playoff \u00b7 Quarterfinal ' + (i + 1) + ' \u00b7 Bo3', state: r ? 'done' : 'soon', day: d === TODAY ? 'Today' : ('0' + Math.floor(d / 100)).slice(-2) + '/' + ('0' + d % 100).slice(-2) + ' \u00b7 ' + wd, date: d, when: r ? 'FINAL' : (mt.time || 'TBA'), bo: 3, maps: [] };
+      if (r) { var ka = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }, le = (window.MSR_SCREENSHOT_MATCHES || []).filter(function (e) { return e.stage4 && ((ka(e.a) === ka(mt.a) && ka(e.b) === ka(mt.b)) || (ka(e.a) === ka(mt.b) && ka(e.b) === ka(mt.a))); })[0], same = le && ka(le.a) === ka(mt.a);
+        if (le && (le.maps || []).length) m.maps = le.maps.map(function (x) { return [x.map, same ? x.aScore : x.bScore, same ? x.bScore : x.aScore, 'done', x.map]; });
+        else { var wa = r.aw > r.bw; m.when = 'AUTO WIN'; m.autoWin = true; m.maps = [['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win'], ['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win']]; } }
+      ALLM.push(m); MBY[nid] = m;
     });
   }
   function ensureS2Matches() {
