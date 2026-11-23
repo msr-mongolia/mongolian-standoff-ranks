@@ -4006,16 +4006,60 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   var V = {};
 
   var MSLIMG = 'assets/img/c5d00115b52e.jpg';
-  /* side banners (wallpaper-style) for MSL Major S2, shown on wide screens */
+  /* side banners (wallpaper-style), shown on wide screens: a slider that moves sideways by itself.
+     Slide 1 = MSL Major S2 Playoff (the 8 qualified teams, shown as the 4 quarterfinal pairs), slide 2 = SPS poster. */
   (function () {
-    var st = document.createElement('style'); st.textContent = '.skin{--skimg:url("' + MSLIMG + '")}'; document.head.appendChild(st);
-    ['l', 'r'].forEach(function (side) {
-      document.body.appendChild(h('a', { class: 'skin ' + side, href: '#event/msl', 'aria-label': 'MSL Major S2' },
+    var st = document.createElement('style'); st.id = 'msr-skin-slider-css';
+    st.textContent = '.skin{--skimg:url("' + MSLIMG + '")}' +
+      '.skin .sk-track{position:absolute;inset:0;display:flex;width:200%;transition:transform .8s cubic-bezier(.65,0,.35,1)}' +
+      '.skin[data-i="1"] .sk-track{transform:translateX(-50%)}' +
+      '.skin .sk-slide{position:relative;flex:0 0 50%;width:50%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:10px;padding:22px 12px 38px;text-align:center;color:#fff;box-sizing:border-box;' +
+        'background:linear-gradient(180deg,rgba(9,10,11,.35) 0%,rgba(9,10,11,.05) 30%,rgba(9,10,11,.55) 62%,rgba(9,10,11,.95) 100%),var(--skimg) center / cover no-repeat}' +
+      '.skin .sk-slide.sps{background:radial-gradient(120% 60% at 50% 30%,rgba(76,216,150,.22),transparent 70%),linear-gradient(180deg,#0d1512 0%,#090a0b 100%)}' +
+      '.skin .sk-logo{width:150px;height:150px;object-fit:cover;border-radius:22px;box-shadow:0 0 0 1px rgba(76,216,150,.45),0 10px 30px -8px rgba(0,0,0,.8),0 0 28px -4px rgba(76,216,150,.5);margin-bottom:auto;margin-top:64px}' +
+      '.skin .sk-pairs{display:flex;flex-direction:column;gap:7px;width:100%;margin:2px 0 4px}' +
+      '.skin .sk-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;padding:5px 6px;border-radius:10px;background:rgba(9,10,11,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}' +
+      '.skin .sk-pair .crest{width:38px!important;height:38px!important;justify-self:center;font-size:12px}' +
+      '.skin .sk-vs{font-size:10px;font-weight:800;color:#8fe7bf;letter-spacing:.08em}' +
+      '.skin .sk-dots{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:6px;z-index:3}' +
+      '.skin .sk-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3);transition:background .3s,transform .3s}' +
+      '.skin[data-i="0"] .sk-dots i:nth-child(1),.skin[data-i="1"] .sk-dots i:nth-child(2){background:#4cd896;transform:scale(1.25)}' +
+      '@media (prefers-reduced-motion:reduce){.skin .sk-track{transition:none}}';
+    document.head.appendChild(st);
+    var sides = [];
+    function mslSlide() {
+      var s4 = null; try { s4 = window.msrS4 ? window.msrS4() : null; } catch (e) { s4 = null; }
+      var body = [h('span', { class: 'sk-tag' }, 'Event'), h('b', { class: 'sk-t' }, 'MSL', h('br'), 'MAJOR', h('br'), 'S2')];
+      if (s4 && s4.ready && window.msrTagToCode) {
+        body.push(h('span', { class: 'sk-s' }, 'Playoff', h('br'), '8 teams · Bo3'));
+        body.push(h('div', { class: 'sk-pairs' }, s4.qf.map(function (m) {
+          var ca = window.msrTagToCode(m.a), cb = window.msrTagToCode(m.b);
+          return h('div', { class: 'sk-pair', title: m.a + ' vs ' + m.b }, swCrest(ca), h('span', { class: 'sk-vs' }, 'VS'), swCrest(cb));
+        })));
+      } else body.push(h('span', { class: 'sk-s' }, 'Swiss stage', h('br'), '32 teams · Bo3'));
+      body.push(h('span', { class: 'sk-b' }, 'View bracket →'));
+      return body;
+    }
+    function build(side, startIdx) {
+      var msl = h('a', { class: 'sk-slide msl', href: '#event/msl', 'aria-label': 'MSL Major S2 playoff' }, mslSlide());
+      var sps = h('a', { class: 'sk-slide sps', href: '#events', 'aria-label': 'SPS – Standoff Pro Series' },
         h('span', { class: 'sk-tag' }, 'Event'),
-        h('b', { class: 'sk-t' }, 'MSL', h('br'), 'MAJOR', h('br'), 'S2'),
-        h('span', { class: 'sk-s' }, 'Swiss stage', h('br'), '32 teams · Bo3'),
-        h('span', { class: 'sk-b' }, 'View bracket →')));
-    });
+        h('img', { class: 'sk-logo', src: 'assets/sps_logo.jpg', alt: 'SPS logo', loading: 'lazy' }),
+        h('b', { class: 'sk-t' }, 'SPS'),
+        h('span', { class: 'sk-s' }, 'Standoff Pro Series', h('br'), '40 teams · 1 000 000₮'),
+        h('span', { class: 'sk-b' }, 'View event →'));
+      var el = h('div', { class: 'skin ' + side, 'data-i': String(startIdx) },
+        h('div', { class: 'sk-track' }, msl, sps),
+        h('div', { class: 'sk-dots', 'aria-hidden': 'true' }, h('i'), h('i')));
+      document.body.appendChild(el); sides.push({ el: el, msl: msl });
+    }
+    build('l', 0); build('r', 1);
+    function refresh() { sides.forEach(function (x) { x.msl.replaceChildren.apply(x.msl, mslSlide()); }); }
+    [1500, 4000, 9000, 15000].forEach(function (ms) { setTimeout(refresh, ms); });   // team logos resolve once Discord team data has loaded
+    window.addEventListener('hashchange', function () { setTimeout(refresh, 400); });
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, paused = false;
+    sides.forEach(function (x) { x.el.addEventListener('mouseenter', function () { paused = true; }); x.el.addEventListener('mouseleave', function () { paused = false; }); });
+    if (!reduce) setInterval(function () { if (paused || document.hidden) return; sides.forEach(function (x) { x.el.setAttribute('data-i', x.el.getAttribute('data-i') === '0' ? '1' : '0'); }); }, 6000);
   })();
   V.news = function () {
     function msrPost(n, label){
