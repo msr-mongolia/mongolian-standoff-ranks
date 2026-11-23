@@ -4727,7 +4727,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       stage4Panel.style.display = n === 4 ? '' : 'none';
     }
     stageStrip.addEventListener('click', function (e) { var b2 = e.target.closest('.msr-stage-tab'); if (b2) showStage(Number(b2.getAttribute('data-stage'))); });
-    showStage(3); // MSL event opens on Stage 3 (current stage)
+    showStage(4); // MSL event opens on Playoff (current stage)
     return root;
   }
   V.event = function (arg) {
