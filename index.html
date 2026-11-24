@@ -6870,8 +6870,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var rows = filterRows(playerRowsFor(nick, team), F), g = agg(rows);
       var recent = rows.slice().sort(function (a, b) { return b.date - a.date || b.m.id - a.m.id || b.mi - a.mi; });
       if (!rows.length && p.verifiedMSR && Number(p.maps)>0 && F.days==='all' && F.ev==='all' && F.map==='all') {
-        var rds=Number(p.rounds)||0;
-        [['Rating',(Number(p.rating)||0).toFixed(2)],['K/D',(Number(p.kd)||0).toFixed(2)],['ADR','—'],['KAST','—'],['Kills / round',rds?(Number(p.kills)/rds).toFixed(2):'—'],['Deaths / round',rds?(Number(p.deaths)/rds).toFixed(2):'—'],['Maps played',String(p.maps)]].forEach(function(c){sb.appendChild(statTile(c[0],c[1],c[0]==='Rating'));});
+        var rds=Number(p.rounds)||0, mc=rds>0&&window.msrCalc?window.msrCalc(Number(p.kills)||0,Number(p.deaths)||0,Number(p.assists)||0,rds):null;   // ADR/KAST estimated from verified totals, like the team page
+        [['Rating',(Number(p.rating)||0).toFixed(2)],['K/D',(Number(p.kd)||0).toFixed(2)],['ADR',mc?mc.adr.toFixed(1):'—'],['KAST',mc?mc.kast.toFixed(1)+'%':'—'],['Kills / round',rds?(Number(p.kills)/rds).toFixed(2):'—'],['Deaths / round',rds?(Number(p.deaths)/rds).toFixed(2):'—'],['Maps played',String(p.maps)]].forEach(function(c){sb.appendChild(statTile(c[0],c[1],c[0]==='Rating'));});
         host.appendChild(h('div',{class:'empty'},'Verified match totals are available; individual map history is not linked yet.'));
         return;
       }
