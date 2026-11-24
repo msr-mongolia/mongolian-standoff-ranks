@@ -5065,9 +5065,30 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var a = msrNk(item.a), b = msrNk(item.b);
     return (MSR_REL_MATCHES || []).find(function (r) { var x = msrNk(r.team_a), y = msrNk(r.team_b); return (x === a && y === b) || (x === b && y === a); }) || null;
   }
+  function msrLiveStat(name) {
+    var c = msrLiveTeam(name); if (!c) return null;
+    var i = RANK.findIndex(function (x) { return x[0] === c; }); if (i < 0) return null;
+    var r = RANK[i], w = Number(r[3] || 0), l = Number(r[4] || 0), t = w + l;
+    return { code: c, pos: i + 1, pts: Math.round(Number(r[1] || 0)), chg: Number(r[2] || 0), w: w, l: l, wr: t ? Math.round(w * 100 / t) : 0, form: String(r[5] || '').slice(-5) };
+  }
   function msrLiveSide(name, right) {
-    var c = msrLiveTeam(name);
-    return h('span', { class: 'msr-lv-team' }, c ? crest(c, 'sm') : h('span', { style: 'display:inline-block;width:24px;height:24px' }), h('b', null, c ? T[c].n : name));
+    var c = msrLiveTeam(name), st = msrLiveStat(name);
+    return h('span', { class: 'msr-lv-team' }, c ? crest(c, 'sm') : h('span', { style: 'display:inline-block;width:24px;height:24px' }), h('b', null, c ? T[c].n : name), st ? h('small', { class: 'msr-lv-st' }, '#' + st.pos + ' · ' + st.pts + ' pt') : null);
+  }
+  function msrLiveStatusBox(item) {
+    var cell = function (name) {
+      var st = msrLiveStat(name), c = msrLiveTeam(name);
+      if (!st) return h('div', { class: 'msr-lv-tsc' }, h('b', null, name), h('div', { class: 'msr-lv-note' }, 'No ranking yet'));
+      return h('a', { class: 'msr-lv-tsc', href: '#team/' + c },
+        h('div', { class: 'msr-lv-sch' }, crest(c, 'sm'), h('b', null, T[c].n)),
+        h('div', { class: 'msr-lv-sgrid' },
+          h('span', null, h('small', null, 'Rank'), h('b', null, '#' + st.pos)),
+          h('span', null, h('small', null, 'Points'), h('b', null, st.pts)),
+          h('span', null, h('small', null, 'W-L'), h('b', null, st.w + '-' + st.l)),
+          h('span', null, h('small', null, 'Win %'), h('b', null, st.wr + '%'))),
+        st.form ? h('div', { class: 'msr-lv-form' }, st.form.split('').map(function (ch) { return h('i', { class: ch === 'w' ? 'w' : 'l' }, ch === 'w' ? 'W' : 'L'); })) : null);
+    };
+    return h('div', { class: 'msr-lv-box' }, h('div', { class: 'msr-lv-h' }, h('h3', null, 'Team status')), h('div', { class: 'msr-lv-sbox' }, cell(item.a), cell(item.b)));
   }
   function msrLiveBadge(st, item) {
     return st === 'live' ? h('span', { class: 'msr-lv-badge live' }, 'LIVE') : st === 'done' ? h('span', { class: 'msr-lv-badge done' }, 'FINAL') : h('span', { class: 'msr-lv-badge soon' }, item.time);
@@ -5077,7 +5098,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     return h('a', { class: 'msr-lv-row', href: '#live/' + idx },
       h('div', { class: 'msr-lv-badges' }, msrLiveBadge(st, item), h('small', null, 'BO' + item.bo)),
       h('div', { class: 'msr-lv-teams' }, msrLiveSide(item.a), msrLiveSide(item.b)),
-      h('div', { class: 'msr-lv-sc' }, led ? [h('b', { class: led.sa > led.sb ? 'w' : 'l' }, String(led.sa)), h('b', { class: led.sb > led.sa ? 'w' : 'l' }, String(led.sb))] : [h('b', null, '–'), h('b', null, '–')]),
+      h('div', { class: 'msr-lv-tsc' }, led ? [h('b', { class: led.sa > led.sb ? 'w' : 'l' }, String(led.sa)), h('b', { class: led.sb > led.sa ? 'w' : 'l' }, String(led.sb))] : [h('b', null, '–'), h('b', null, '–')]),
       h('div', { class: 'msr-lv-ev' }, item.ev + ' · ' + item.info));
   }
   function msrLiveScoreboard(led, item) {
@@ -5133,7 +5154,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       h('div', { class: 'msr-lv-veto' }, h('div', null, 'Best of ' + item.bo + ' (Online)'), h('div', null, item.ev + ' · ' + item.info), h('div', null, 'Start ' + item.time + ' (Ulaanbaatar, UTC+8)')));
     var player = embed ? h('div', { class: 'msr-lv-player' }, h('iframe', { src: embed, allow: 'autoplay; fullscreen; picture-in-picture; encrypted-media', allowfullscreen: 'true', loading: 'lazy', referrerpolicy: 'strict-origin-when-cross-origin', title: 'Live stream' })) : null;
     return h('div', null, h('a', { class: 'msr-lv-back', href: '#live' }, '‹ Live'), head,
-      h('div', { class: 'msr-lv-grid' }, h('div', null, mapsBox), h('div', null, infoBox, watch)),
+      h('div', { class: 'msr-lv-grid' }, h('div', null, mapsBox), h('div', null, msrLiveStatusBox(item), infoBox, watch)),
       player, msrLiveScoreboard(led, item));
   }
   V.live = function (arg) {
@@ -5160,7 +5181,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       return v;
     };
     var st = document.createElement('style'); st.id = 'msr-wp-css';
-    st.textContent = '#app .msr-wp{display:flex;align-items:center;gap:14px;margin:0 0 14px;padding:14px 16px;border-radius:18px;text-decoration:none;color:#fff;border:1px solid rgba(255,106,26,.45);background:linear-gradient(135deg,rgba(255,106,26,.18),rgba(255,255,255,.04));box-shadow:0 0 26px -10px rgba(255,106,26,.8)}#app .msr-wp-dot{flex:none;width:12px;height:12px;border-radius:50%;background:#ff3d3d;box-shadow:0 0 0 0 rgba(255,61,61,.7);animation:msrWpPulse 1.6s infinite}#app .msr-wp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}#app .msr-wp-t small{font-size:10px;letter-spacing:.14em;color:#ffb27a;font-weight:700}#app .msr-wp-t b{font-size:16px}#app .msr-wp-t em{font-style:normal;font-size:12px;color:#b9b6c9}#app .msr-wp-go{flex:none;padding:8px 14px;border-radius:999px;background:#ff6a1a;font-weight:700;font-size:13px}@keyframes msrWpPulse{70%{box-shadow:0 0 0 10px rgba(255,61,61,0)}100%{box-shadow:0 0 0 0 rgba(255,61,61,0)}}@media (prefers-reduced-motion:reduce){#app .msr-wp-dot{animation:none}}';
+    st.textContent = '#app .msr-lv-st{display:block;font-size:11px;font-weight:600;color:#ffb27a;margin-left:6px}#app .msr-lv-team{flex-wrap:wrap}#app .msr-lv-sbox{display:grid;grid-template-columns:1fr 1fr;gap:10px}#app .msr-lv-tsc{display:block;padding:10px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:inherit;text-decoration:none}#app .msr-lv-sch{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}#app .msr-lv-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}#app .msr-lv-sgrid span{display:flex;flex-direction:column}#app .msr-lv-sgrid small{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#9a96b0}#app .msr-lv-sgrid b{font-size:15px}#app .msr-lv-form{display:flex;gap:4px;margin-top:8px}#app .msr-lv-form i{font-style:normal;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center}#app .msr-lv-form i.w{background:rgba(125,255,58,.18);color:#7dff3a}#app .msr-lv-form i.l{background:rgba(255,61,61,.18);color:#ff6b6b}#app .msr-wp{display:flex;align-items:center;gap:14px;margin:0 0 14px;padding:14px 16px;border-radius:18px;text-decoration:none;color:#fff;border:1px solid rgba(255,106,26,.45);background:linear-gradient(135deg,rgba(255,106,26,.18),rgba(255,255,255,.04));box-shadow:0 0 26px -10px rgba(255,106,26,.8)}#app .msr-wp-dot{flex:none;width:12px;height:12px;border-radius:50%;background:#ff3d3d;box-shadow:0 0 0 0 rgba(255,61,61,.7);animation:msrWpPulse 1.6s infinite}#app .msr-wp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}#app .msr-wp-t small{font-size:10px;letter-spacing:.14em;color:#ffb27a;font-weight:700}#app .msr-wp-t b{font-size:16px}#app .msr-wp-t em{font-style:normal;font-size:12px;color:#b9b6c9}#app .msr-wp-go{flex:none;padding:8px 14px;border-radius:999px;background:#ff6a1a;font-weight:700;font-size:13px}@keyframes msrWpPulse{70%{box-shadow:0 0 0 10px rgba(255,61,61,0)}100%{box-shadow:0 0 0 0 rgba(255,61,61,0)}}@media (prefers-reduced-motion:reduce){#app .msr-wp-dot{animation:none}}';
     if (!document.getElementById('msr-wp-css')) document.head.appendChild(st);
   })();
   (function () {
