@@ -3153,9 +3153,19 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
       ] }
 ,
     // SF1 (Nov 22): KGTSS 2-1 RA1IN. Rust 13-11, Province 13-8, Hanami 8-13 (scoreboards; Hanami screenshot posted later).
-    // FINAL (Nov 23): KnightSS (KGTSS) beat DXIII - VOID champion (admin, Nov 23). Series score not posted yet, so winOnly:
-    // shown in the bracket as champion only; kept out of results/ELO/stats until the score (and scoreboards) arrive.
-    { round: 'final', match: 1, a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 1, bs: 0, winOnly: true, date: 1123 },
+    // FINAL (Nov 23): KnightSS (KGTSS) 2-1 DXIII - VOID champion. Hanami 13-6, Rust 8-13, Province 13-7 (scoreboards posted Nov 24).
+    { round: 'final', match: 1, a: 'KGTSS', b: 'DS_5E67C1B8721D736CA5B5A960', ea: 'KGTSS', eb: 'DXIII', as: 2, bs: 1, date: 1123,
+      maps: [
+        { map: 'Hanami', aScore: 13, bScore: 6,
+          a: [['Tami',21,9,2],['DiDi',15,9,4],['keoz',16,14,2],['Kizo',14,12,5],['Ada',5,10,4]],
+          b: [['Melo',15,14,3],['Str1ker愛v4',17,13,1],['shikiNg',9,15,1],['Tgsu',8,16,3],['Xaise',5,15,1]] },
+        { map: 'Rust', aScore: 8, bScore: 13,
+          a: [['DiDi',19,18,2],['keoz',14,19,1],['Tami',10,16,6],['Ada',13,15,4],['Kizo',13,16,3]],
+          b: [['Melo',17,13,3],['shikiNg',21,13,1],['Xaise',17,16,7],['Tgsu',11,13,5],['Str1ker愛v4',16,14,4]] },
+        { map: 'Province', aScore: 13, bScore: 7,
+          a: [['keoz',24,14,6],['Ada',17,13,8],['Kizo',15,14,2],['DiDi',14,13,2],['Tami',10,14,4]],
+          b: [['shikiNg',20,16,3],['Str1ker愛v4',15,16,6],['Xaise',15,17,2],['Melo',12,16,3],['Tgsu',6,15,2]] }
+      ] },
     { round: 'sf', match: 1, a: 'KGTSS', b: 'DS_4561C74A8EF7ED8EBA1EEC28', ea: 'KGTSS', eb: 'RA1IN', as: 2, bs: 1, date: 1122,
       maps: [
         { map: 'Rust', aScore: 13, bScore: 11,
