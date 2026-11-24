@@ -6505,7 +6505,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var ev = (EVOPT.filter(function (o) { return o[0] !== 'all'; })[0] || ['all'])[0];
     led.forEach(function (m, li) {
       var ca = window.msrTagToCode(m.a), cb = window.msrTagToCode(m.b), ldate = 0;
-      if (m.stage2 || m.stage3) { var dm = /NOV (\d+)/.exec(m.date || ''); ldate = dm ? 1100 + +dm[1] : 1112; }
+      if (m.stage2 || m.stage3 || m.stage4) { var dm = /NOV (\d+)/.exec(m.date || ''); ldate = dm ? 1100 + +dm[1] : 1112; }
       else if (window.msrMatchSchedule) { var sc0 = window.msrMatchSchedule(m.a, m.b); ldate = sc0 ? 1100 + sc0.date : 0; }
       (m.maps || []).forEach(function (x, mi) {
         var R = (x.aScore || 0) + (x.bScore || 0), mo = { id: 100000 + li, ledger: true, a: ca, b: cb };
@@ -9567,7 +9567,7 @@ screenshotMatches.forEach(m=>{
  const aWins=m.maps.filter(x=>x.aScore>x.bScore).length+(au.a||0);
  const bWins=m.maps.filter(x=>x.bScore>x.aScore).length+(au.b||0);
  if(m.maps.length+(au.a||0)+(au.b||0)<2||Math.max(aWins,bWins)<2)return;
- results.push({group:'',a:m.a,b:m.b,winner:aWins>bWins?m.a:m.b,score:aWins+'–'+bWins,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:m.maps,auto:au,stage2:!!m.stage2,stage3:!!m.stage3,round:m.round,zone:m.zone,slot:m.slot,s2date:m.date});
+ results.push({group:'',a:m.a,b:m.b,winner:aWins>bWins?m.a:m.b,score:aWins+'–'+bWins,maps:m.maps.map(x=>[x.map,x.aScore,x.bScore]),screenshotMaps:m.maps,auto:au,stage2:!!m.stage2,stage3:!!(m.stage3||m.stage4),stage4:!!m.stage4,round:m.round,zone:m.zone,slot:m.slot,s2date:m.date});
 });
 (window.MSR_S2_RESULTS||[]).forEach(m=>{
  const au=m.auto||{a:0,b:0},aw=au.a||0,bw=au.b||0;
@@ -10084,7 +10084,7 @@ function verifiedResultsDetail(){
  const msrMatchSchedule=window.msrMatchSchedule;
  results.forEach((match,matchIndex)=>{
  const matchPanel=document.createElement('details');matchPanel.className='msr-match-expand';section.appendChild(matchPanel);const _sd=match.stage3?null:msrMatchSchedule(match.a,match.b);matchPanel.dataset.ev=match.void?'void':'msl';matchPanel.dataset.day=match.void?String(match.vdate-1100):match.stage3?String(+((/NOV (\d+)/.exec(match.s2date||'')||[0,17])[1])):match.stage2?String(+((/NOV (\d+)/.exec(match.s2date||'')||[0,12])[1])):_sd?String(_sd.date):'';
- const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=match.stage3?null:msrMatchSchedule(match.a,match.b);event.textContent=match.void?'VOID TOURNAMENT · SWISS · ROUND '+match.round+' · NOV '+(match.vdate-1100):match.stage3?'MSL MAJOR S2 · STAGE 3 · SWISS · ROUND '+(match.round||1)+' · '+(match.s2date||'NOV 17')+' · BO3':match.stage2?'MSL MAJOR S2 · STAGE 2 · ZONE '+match.zone+' · '+(match.s2date||'NOV 13')+' · BO3':(sched?'MSL MAJOR · GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL MAJOR · ')+'BO3';if(sched)event.title='Group '+sched.group+' · played Nov '+sched.date;const summaryLogo=(team,position)=>{
+ const summary=document.createElement('summary');summary.className='msr-match-expand-head';summary.innerHTML='';const topA=document.createElement('strong');topA.textContent=match.a;const topScore=document.createElement('b');topScore.className='msr-hltv-result-score';(function(){const sp=String(match.score).split('–');const aWin=match.winner===match.a;const x=document.createElement('span'),v=document.createElement('span'),y=document.createElement('span');x.textContent=sp[0];y.textContent=sp[1];v.textContent=' vs ';v.className='msr-vs';x.className=aWin?'msr-s-win':'msr-s-loss';y.className=aWin?'msr-s-loss':'msr-s-win';topScore.append(x,v,y);})();const topB=document.createElement('strong');topB.textContent=match.b==='SIXP'?'6LC Purple':match.b;const event=document.createElement('small');const sched=match.stage3?null:msrMatchSchedule(match.a,match.b);event.textContent=match.void?'VOID TOURNAMENT · SWISS · ROUND '+match.round+' · NOV '+(match.vdate-1100):match.stage4?'MSL MAJOR S2 · PLAYOFF · '+({qf:'QUARTERFINAL',sf:'SEMIFINAL',final:'FINAL'}[match.round]||'PLAYOFF')+' · '+(match.s2date||'NOV 24')+' · BO3':match.stage3?'MSL MAJOR S2 · STAGE 3 · SWISS · ROUND '+(match.round||1)+' · '+(match.s2date||'NOV 17')+' · BO3':match.stage2?'MSL MAJOR S2 · STAGE 2 · ZONE '+match.zone+' · '+(match.s2date||'NOV 13')+' · BO3':(sched?'MSL MAJOR · GROUP '+sched.group+' · NOV '+sched.date+' · ':'MSL MAJOR · ')+'BO3';if(sched)event.title='Group '+sched.group+' · played Nov '+sched.date;const summaryLogo=(team,position)=>{
  const wrap=document.createElement('span');wrap.className='msr-hltv-summary-team msr-hltv-summary-'+position;
  wrap.dataset.back1Label=team==='SIXP'?'6LC Purple':team;
  let tint=0;for(const ch of team)tint=(tint*31+ch.charCodeAt(0))>>>0;
@@ -10145,7 +10145,7 @@ summary.replaceChildren(summaryLogo(match.a,'a'),topScore,summaryLogo(match.b,'b
   mh.append(mkTeam(match.a,aWon,elo0.aChange,elo0.aAfter),mc,mkTeam(match.b,!aWon,elo0.bChange,elo0.bAfter));
   content.appendChild(mh);
   const mi2=document.createElement('div');mi2.className='mi2';
-  [['b','MSL Major S2'],['span',match.stage3?'Stage 3 · Swiss · Round '+(match.round||1)+' · Bo3':match.stage2?'Stage 2 · Zone '+match.zone+' · Bo3':sched?'Group '+sched.group+' · Bo3':'Bo3'],['span','Best of 3']].forEach(([tg,tx])=>{const e=document.createElement(tg);e.textContent=tx;mi2.appendChild(e);});
+  [['b','MSL Major S2'],['span',match.stage4?'Playoff · '+({qf:'Quarterfinal',sf:'Semifinal',final:'Final'}[match.round]||'Playoff')+' · Bo3':match.stage3?'Stage 3 · Swiss · Round '+(match.round||1)+' · Bo3':match.stage2?'Stage 2 · Zone '+match.zone+' · Bo3':sched?'Group '+sched.group+' · Bo3':'Bo3'],['span','Best of 3']].forEach(([tg,tx])=>{const e=document.createElement(tg);e.textContent=tx;mi2.appendChild(e);});
   content.appendChild(mi2);
   const gh=text=>{const g=document.createElement('div');g.className='grp-h';g.textContent=text;return g;};
   content.appendChild(gh('Maps'));

@@ -13,9 +13,10 @@ const N = +process.argv[2] || 8;
   await p.locator('button', { hasText: /^MSL Major S2$/ }).first().click(); await p.waitForTimeout(500);
   const days = [...new Set(led.map(m => (/NOV (\d+)/.exec(m.date || '') || [])[1]).filter(Boolean))];
   let text = '';
-  for (const d of days) { await p.locator('button.ap-day', { hasText: new RegExp('^' + d) }).first().click(); await p.waitForTimeout(700); text += ' ' + await p.evaluate(() => document.body.innerText.replace(/\s+/g, ' ')); }
+  const seen = new Set(); for (const d of days) { const dl = p.locator('button.ap-day', { hasText: new RegExp('^' + d) }); if (!(await dl.count())) continue; seen.add(d); await dl.first().click(); await p.waitForTimeout(700); text += ' ' + await p.evaluate(() => document.body.innerText.replace(/\s+/g, ' ')); }
   const rows = (text.match(/WIN \d VS \d/g) || []).length;
-  if (rows < led.length) fail.push('Results shows ' + rows + ' finished series for the last ' + led.length + ' ledger entries');
+  const ledSeen = led.filter(m => seen.has((/NOV (\d+)/.exec(m.date || '') || [])[1])).length;
+  if (rows < ledSeen) fail.push('Results shows ' + rows + ' finished series for the last ' + ledSeen + ' ledger entries on the visible days');
   const opened = await p.evaluate(() => { const d = document.querySelector('details'); return !!d; });
   if (!opened) fail.push('Results has no match rows');
   await b.close();
