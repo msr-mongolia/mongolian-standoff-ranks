@@ -1,0 +1,38 @@
+name: fetch-media
+# Admin media links (Pinterest/TikTok/etc. videos for back1/back2) the agent sandbox cannot reach:
+# every URL in .github/fetch-media.txt is downloaded with yt-dlp (or curl for direct files) into branch `media-fetch`.
+on:
+  push:
+    branches: [main]
+    paths: ['.github/fetch-media.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: fetch-media
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: src
+      - name: Download
+        run: |
+          pip install -q yt-dlp
+          mkdir -p out
+          i=0
+          grep -v '^#' src/.github/fetch-media.txt | while read -r url; do
+            [ -z "$url" ] && continue
+            i=$((i+1)); slug=$(echo "$url" | sha1sum | cut -c1-10)
+            yt-dlp -q --no-playlist -f 'bv*+ba/b' --merge-output-format mp4 -o "out/${slug}.%(ext)s" "$url" \
+              || curl -sfL -o "out/${slug}.bin" "$url" || echo "fail $url"
+            echo "$slug $url" >> out/index.txt
+          done
+          ls -la out
+      - name: Commit to media-fetch
+        run: |
+          cd out
+          git init -q && git checkout -q -b media-fetch
+          git config user.name msr-bot && git config user.email msr-bot@users.noreply.github.com
+          git add -A && git commit -qm "media for $(date -u +%F)"
+          git push -fq "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:media-fetch
