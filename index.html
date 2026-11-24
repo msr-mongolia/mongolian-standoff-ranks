@@ -1327,6 +1327,9 @@ html .pl-grid .plc .av.sg{width:42px!important;height:42px!important;min-width:4
 .msr-nw .hero,.msr-nw .g2 a.c{min-height:0}
 .msr-nw a.c .bg:empty{display:none}
 @media(max-width:420px){.msr-nw{padding:0 8px}.msr-nw .hero{min-height:300px}.msr-nw .g2{gap:8px}}
+
+/* wide news posters (16:9 match posters): full card width */
+.msr-nw a.c .bg.wide{padding:0!important}.msr-nw a.c .bg.wide img{height:auto!important;width:100%!important;max-width:none!important;aspect-ratio:16/9!important;object-fit:cover!important;margin:0!important;border-radius:0!important;opacity:1!important}
 </style>
 <style id="msr-post-feed-style">
 .msr-post-feed{max-width:760px;margin:16px auto 85px;padding:0 10px}.msr-about-post{border:1px solid #3e4652;border-radius:16px;overflow:hidden;background:#1f242a;color:#f3f4f6;box-shadow:0 12px 35px #0004}.msr-post-author{display:flex;gap:12px;align-items:center;padding:18px 20px 12px}.msr-post-avatar{display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:50%;border:2px solid #4cd896;background:linear-gradient(145deg,#282d34,#0f1215);font-size:17px;letter-spacing:-1px;font-weight:950;color:#f9fafb;text-shadow:0 0 14px #5eeba9}.msr-post-author-text{display:flex;flex-direction:column;gap:4px;min-width:0}.msr-post-author-text strong{font-size:16px;color:#f7f8f9}.msr-post-author-text span{font-size:12px;color:#67dda6}.msr-post-copy{padding:7px 20px 17px;font-size:15px;line-height:1.75;color:#dee1e5}.msr-post-copy h1{font-size:clamp(20px,4.5vw,27px);line-height:1.3;color:#fff;margin:7px 0 15px}.msr-post-copy p{margin:0 0 14px}.msr-post-ending{font-weight:800;color:#c0c6ce!important;margin-bottom:0!important}.msr-post-art{position:relative;min-height:345px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:25px;background:radial-gradient(circle at 50% 48%,#2fbc7a 0,#282d35 33%,#16191e 65%,#0c0e10 100%);isolation:isolate}.msr-post-art:before{content:'';position:absolute;inset:-45%;z-index:-1;background:repeating-conic-gradient(from 15deg,#6ab4f10a 0 7deg,transparent 7deg 25deg);transform:rotate(-12deg)}.msr-post-art:after{content:'';position:absolute;inset:14px;border:1px solid #79caff30;pointer-events:none}.msr-post-art-ring{display:flex;flex-direction:column;align-items:center;gap:8px;padding:30px 20px;border:2px solid #66b9ed55;box-shadow:0 0 65px #2795db33,inset 0 0 45px #278ec21a;transform:skew(-4deg);background:#091b2d66}.msr-post-art-logo{font-size:clamp(74px,17vw,132px);line-height:1;letter-spacing:-.11em;padding-right:.11em;font-weight:1000;font-style:italic;color:#f9fafb;text-shadow:0 6px 0 #2fbc7a,0 12px 22px #000b,0 0 35px #4bdb98}.msr-post-art-sub{font-size:clamp(10px,2.5vw,16px);letter-spacing:3px;font-weight:900;color:#c7ccd3;text-align:center}.msr-post-art-tagline{font-size:10px;letter-spacing:2px;text-align:center;font-weight:800;color:#cacfd6;padding:0 15px}@media(max-width:540px){.msr-post-feed{padding:0;margin-top:7px}.msr-about-post{border-radius:13px}.msr-post-author{padding:14px 15px 10px}.msr-post-copy{padding:5px 15px 15px;font-size:14px}.msr-post-art{min-height:275px}.msr-post-art-ring{padding:24px 15px}.msr-post-art-sub{letter-spacing:1.4px}}
@@ -4119,9 +4122,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     }
     var banPost = NEWS.filter(function(n){return n.id===2026110702})[0];
     var updPost = NEWS.filter(function(n){return n.id===2026110701})[0];
-    var cardIds = [2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
+    var cardIds = [2026112401, 2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
     var cardItems = cardIds.map(function (id) { return NEWS.filter(function (n) { return n.id === id; })[0]; }).filter(Boolean);
-    function nwBg(n) { if (n.s3seed && window.msrS3SeedArt) return h('div', { class: 'bg' }, window.msrS3SeedArt()); return n.img ? h('div', { class: 'bg' }, h('img', { src: n.img, alt: '', loading: 'lazy' })) : null; }
+    function nwBg(n) { if (n.s3seed && window.msrS3SeedArt) return h('div', { class: 'bg' }, window.msrS3SeedArt()); return n.img ? h('div', { class: 'bg' + (n.wide ? ' wide' : '') }, h('img', { src: n.img, alt: '', loading: 'lazy' })) : null; }
     function nwCard(n, cls) {
       return h('a', { class: 'c ' + cls, href: '#article/' + n.id }, nwBg(n),
         h('div', { class: 'tx' }, h('span', { class: 'tg' }, n.g || 'MSR'), h('h3', null, n.h), h('div', { class: 'mt' }, n.t)));
@@ -4239,7 +4242,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     return h('div', { class: 'article' },
       h('a', { class: 'back', href: '#news', svg: ICON.back + '<span>Бүх мэдээ</span>' }),
       h('div', null, n.live ? h('span', { class: 'tag live' }, h('span', { class: 'pip' }), 'Live') : h('span', { class: 'tag soft' }, ({ Today: 'Өнөөдөр', Yesterday: 'Өчигдөр', Earlier: 'Өмнөх' })[n.g] || n.g)),
-      n.img ? h('img', { src: n.img, alt: '', style: 'display:block;width:100%;max-width:320px;aspect-ratio:1/1;height:auto;object-fit:contain;border-radius:16px;margin:8px 0;background:#101215;padding:8px' }) : null,
+      n.img ? h('img', { src: n.img, alt: '', style: n.wide ? 'display:block;width:100%;height:auto;border-radius:16px;margin:8px 0' : 'display:block;width:100%;max-width:320px;aspect-ratio:1/1;height:auto;object-fit:contain;border-radius:16px;margin:8px 0;background:#101215;padding:8px' }) : null,
       h('h1', null, n.h),
       h('div', { class: 'meta' }, flag(), h('span', null, n.t), comments(n.c + ' сэтгэгдэл')),
       h('p', { style: 'font-weight:600;color:#eceef0' }, n.lead),
@@ -5459,6 +5462,15 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
+      { id: 2026112401, g: 'MSL MAJOR S2', t: '11-р сарын 24', c: 0, wide: true, img: 'assets/news/msl-po-qf1-2990w-eks.jpg', h: 'MSL Major S2 Playoff эхэллээ: 2990 White vs EKS — өнөө орой 20:00 🔥', lead: 'Хүлээлт дууслаа! Өнөөдөр 20:00 цагт MSL Major S2-ын Playoff-ын нээлтийн тулаанд 2990 White, Elite Kings (EKS)-тэй Best of 3 форматаар нүүр тулна.', body: [
+        'Stage 3 Swiss-ийг давж гарсан шилдэг 8 баг одоо хасагдах системээр (single elimination, Bo3) аваргын төлөө тулалдана. Нэг л цуврал хожигдвол тэмцээнээс шууд гарна — алдаа гаргах эрх байхгүй.',
+        'Stage 3-ыг 1-р байраар дуусгасан 2990 White итгэлтэй орж ирж байгаа бол EKS үүнийг таслан зогсоохыг зорьж байна. Эхний map-аас л гал гарах нь тодорхой — хэн нь хагас шигшээд шалгарах вэ?',
+        'Өнөөдрийн хуваарь (11/24): 20:00 — 2990 White vs EKS · 22:00 — 2990 Purple vs EliteKingZz (EknZ).',
+        'Маргааш (11/25): 20:00 — 2990 Red vs Vamp Empire · 22:00 — Omega ForceZ vs Everlasted (EVKZ).',
+        'Тайлбарлагч (caster): CHANCE 🎙️',
+        'Тоглолт дуусмагц оноо, scoreboard, тоглогчдын K/D статистикийг MSR дээр шинэчилнэ. Playoff bracket-ыг Events → MSL Major S2 → Playoff хэсгээс хараарай.',
+        '— MSR'
+      ] },
       { id: 2026111801, g: 'MSR OFFICIAL', t: '11-р сарын 18', c: 0, h: '6LC (Six Lence, Six Lence Purple) болон VorK1ng — MSR-ээс бүрмөсөн BAN', lead: '6LC багууд болон тоглогч VorK1ng MSR-ээс бүрмөсөн (permanent) хориглогдлоо.', body: [
         '6LC (Six Lence, Six Lence Purple) багууд болон тоглогч VorK1ng MSR-д оролцохоос бүрмөсөн хориглогдсон болохыг мэдэгдэж байна.',
         'Ranking-аас 6LC багуудыг хаслаа. VorK1ng-ийн тоглогчийн статистикийг устгасан. 6LC-ийн бусад тоглогчид free agent боллоо.',
