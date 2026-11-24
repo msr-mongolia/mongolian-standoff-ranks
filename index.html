@@ -4133,7 +4133,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     }
     var banPost = NEWS.filter(function(n){return n.id===2026110702})[0];
     var updPost = NEWS.filter(function(n){return n.id===2026110701})[0];
-    var cardIds = [2026112401, 2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
+    var cardIds = [2026112406, 2026112401, 2026111601, 2026111801, 2026111203, 2026111202, 2026110702, 2026110701, 20261105, 20261103, 'msr-login-guide'];
     var cardItems = cardIds.map(function (id) { return NEWS.filter(function (n) { return n.id === id; })[0]; }).filter(Boolean);
     function nwBg(n) { if (n.s3seed && window.msrS3SeedArt) return h('div', { class: 'bg' }, window.msrS3SeedArt()); return n.img ? h('div', { class: 'bg' + (n.wide ? ' wide' : '') }, h('img', { src: n.img, alt: '', loading: 'lazy' })) : null; }
     function nwCard(n, cls) {
@@ -5513,6 +5513,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var N = function (c) { return T[c] ? T[c].n : 'Qualifier'; }, q = DEMO.swiss.q30, top = RANK[0][0], live = M.filter(function (x) { return x.state === 'live'; })[0];
     NEWS.splice(0, NEWS.length);
     NEWS.push(
+      { id: 2026112406, g: 'MSL MAJOR S2', t: '11-р сарын 24', c: 0, h: "Playoff QF2: Hanami дээр EknZ 2990 Purple-г 13-3-аар хожлоо", lead: "MSL Major S2 Playoff-ын 2990 Purple vs EliteKingZz (EknZ) тулаанд Hanami map-ыг EknZ 13-3-аар хожлоо.", body: ["Hanami: 2990 Purple 3 - 13 EknZ.", "Тоглолтын эцсийн дүн, бусад map-ын оноо баталгаажмагц шинэчилнэ."] },
       { id: 2026112401, g: 'MSL MAJOR S2', t: '11-р сарын 24', c: 0, wide: true, img: 'assets/news/msl-po-qf1-2990w-eks.jpg', h: 'MSL Major S2 Playoff эхэллээ: 2990 White vs EKS — өнөө орой 20:00 🔥', lead: 'Хүлээлт дууслаа! Өнөөдөр 20:00 цагт MSL Major S2-ын Playoff-ын нээлтийн тулаанд 2990 White, Elite Kings (EKS)-тэй Best of 3 форматаар нүүр тулна.', body: [
         'Stage 3 Swiss-ийг давж гарсан шилдэг 8 баг одоо хасагдах системээр (single elimination, Bo3) аваргын төлөө тулалдана. Нэг л цуврал хожигдвол тэмцээнээс шууд гарна — алдаа гаргах эрх байхгүй.',
         'Stage 3-ыг 1-р байраар дуусгасан 2990 White итгэлтэй орж ирж байгаа бол EKS үүнийг таслан зогсоохыг зорьж байна. Эхний map-аас л гал гарах нь тодорхой — хэн нь хагас шигшээд шалгарах вэ?',
