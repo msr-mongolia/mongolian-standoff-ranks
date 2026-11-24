@@ -3489,6 +3489,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   };
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
   window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
+    { nick: 'Makk', from: 'WarKz', to: 'DS_D9C14CF463458E6D605CBBCD', toNick: 'M?kk_on_Top', date: 1124 }, // WarriorKingzz -> ZARTEXy (same Game ID 241314633, confirmed roster Nov 24)
     { nick: 'Muck', from: '6LC', to: 'DS_45CE87E719BF421295A5516B', toNick: 'MuckKing', date: 1123 }, // Six Lence (removed from MSR, free agent) -> Team Legend (same Game ID 250311397, confirmed roster Nov 23)
     { nick: 'Heavyqqq', from: '6LC', to: 'DS_45CE87E719BF421295A5516B', toNick: 'Heavy', date: 1123 }, // Six Lence (removed from MSR, free agent) -> Team Legend (same Game ID 212543848, confirmed roster Nov 23)
     { nick: 'Cintexx', from: '6LC', to: 'DS_45CE87E719BF421295A5516B', toNick: 'cintex888', date: 1123 }, // Six Lence (removed from MSR, free agent) -> Team Legend (same Game ID 83200145, confirmed roster Nov 23)
@@ -8516,6 +8517,8 @@ MSR_ROSTER_UPDATES.ds_8871e98258bf73cafb935a72 = {"roster":["Savent","J u T t","
 MSR_ROSTER_UPDATES.ds_4367d7bd6e14ef588790f3cc = {"roster":["Mirage","Cannot","Ultimate","GANJA","Jeffrey","Roll","Pew"],"ids":{"Mirage":"246218932","Cannot":"70195039","Ultimate":"128786388","GANJA":"164584300","Jeffrey":"287542096","Roll":"91678347","Pew":"291074133"}};
 // Discord confirmed rosters 2026-11-20 (auto import): new Inception (innce)
 MSR_ROSTER_UPDATES.ds_22f83076aa7a9955ce280140 = {"roster": ["Shriden", "ITACHI", "hunter", "Kane", "Danceandshot", "Hulan", "Last"], "ids": {"Shriden": "101992662", "ITACHI": "160074350", "hunter": "35630116", "Kane": "246475729", "Danceandshot": "281513980", "Hulan": "262801304", "Last": "156256780"}};
+// Discord confirmed roster 2026-11-24 10:28 UTC (auto import): new team ZARTEXy [Z4RTX]. Newest roster post wins by Game ID: M?kk_on_Top = Makk from WarriorKingzz (stats kept).
+MSR_ROSTER_UPDATES.ds_d9c14cf463458e6d605cbbcd = {"roster": ["s1nex666", "soft.", "RomanticHomicide", "JaxeeST", "M?kk_on_Top", "reeyu67", "DRAY"], "ids": {"s1nex666": "292470437", "soft.": "289876000", "RomanticHomicide": "290771235", "JaxeeST": "243808724", "M?kk_on_Top": "241314633", "reeyu67": "166443178", "DRAY": "274786766"}};
 // Discord confirmed roster 2026-11-23 05:59 UTC (auto import): new team Team Legend [TL]. Newest roster post wins by Game ID:
 // MuckKing, Heavy, cintex888, Ryowhs, Kairos (ex-Six Lence free agents), Lance armstrong (= wL from Ascendd); new: thezz, Zvvd.
 MSR_ROSTER_UPDATES.ds_45ce87e719bf421295a5516b = {"roster":["MuckKing","Heavy","cintex888","Ryowhs","Kairos","Lance armstrong","thezz","Zvvd."],"ids":{"MuckKing":"250311397","Heavy":"212543848","cintex888":"83200145","Ryowhs":"271227843","Kairos":"87463821","Lance armstrong":"235279995","thezz":"247469538","Zvvd.":"67469934"}};
