@@ -9471,9 +9471,9 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
     var st = document.createElement('style'); st.id = 'msr-mvp-css';
     st.textContent = '#app .msr-mvps{margin:0 0 26px}#app .msr-mvps h2{font-size:18px;margin:0 0 12px;letter-spacing:.04em}#app .msr-mvp-ev{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}#app .msr-mvp-hd{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between;margin-bottom:12px}#app .msr-mvp-hd b{font-size:15px}#app .msr-mvp-hd span{font-size:12px;color:var(--muted,#8b97ab)}#app .msr-mvp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}#app .msr-mvp-c{display:block;color:inherit;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:12px;position:relative;min-width:0}#app .msr-mvp-c.p1{border-color:#ffc83d;box-shadow:0 0 18px rgba(255,200,61,.25)}#app .msr-mvp-c .bd{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:99px;background:#ffc83d;color:#1a1300;margin-bottom:6px}#app .msr-mvp-c .bd.n{background:var(--line);color:inherit}#app .msr-mvp-c .nk{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-mvp-c .tm{font-size:12px;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-mvp-c .rt{font-size:22px;font-weight:800;margin-top:6px}#app .msr-mvp-c .ss{font-size:12px;opacity:.8;margin-top:2px}@media(max-width:640px){#app .msr-mvp-row{grid-template-columns:1fr}}';
     if (!document.getElementById('msr-mvp-css')) document.head.appendChild(st);
-    function top3(get, min) {
+    function top3(get, min, n) {
       return PLAYERS.map(function (p) { var s = get(p); if (!s || s.maps < min || !p.team || !T[p.team]) return null; var rounds = Math.max(1, s.rounds); return { p: p, maps: s.maps, k: s.k, d: s.d, a: s.a, kd: s.k / Math.max(1, s.d), rating: window.msrCalc(s.k, s.d, s.a, rounds).rating }; })
-        .filter(Boolean).sort(function (x, y) { return y.rating - x.rating; }).slice(0, 3);
+        .filter(Boolean).sort(function (x, y) { return y.rating - x.rating; }).slice(0, n || 3);
     }
     var _p = V.players;
     V.players = function () {
@@ -9496,8 +9496,8 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
               h('div', { class: 'rt' }, x.rating.toFixed(2)),
               h('div', { class: 'ss' }, x.k + '/' + x.d + '/' + x.a + ' \u00b7 KD ' + x.kd.toFixed(2) + ' \u00b7 ' + x.maps + ' maps')));
           });
-          var cm = ev.champ ? top3(function (p) { return p.team === ev.champ ? ev.get(p) : null; }, ev.min)[0] : null;
-          var champEl = cm ? h('a', { class: 'msr-mvp-c p1', style: 'margin-top:10px', href: playerHref(cm.p.nick, cm.p.team) }, h('span', { class: 'bd' }, T[ev.champ].n.toUpperCase() + ' MVP'), h('div', { class: 'nk' }, cm.p.nick), h('div', { class: 'tm' }, 'Champion team \u00b7 ' + T[ev.champ].n), h('div', { class: 'rt' }, cm.rating.toFixed(2)), h('div', { class: 'ss' }, cm.k + '/' + cm.d + '/' + cm.a + ' \u00b7 KD ' + cm.kd.toFixed(2) + ' \u00b7 ' + cm.maps + ' maps')) : null;
+          var cl = ev.champ ? top3(function (p) { return p.team === ev.champ ? ev.get(p) : null; }, ev.min, 99) : [], mx = cl.reduce(function (m, x) { return Math.max(m, x.maps); }, 0), cm = cl.filter(function (x) { return x.maps === mx; })[0] || null;
+          var champEl = cm ? h('a', { class: 'msr-mvp-c p1', style: 'margin-top:10px', href: playerHref(cm.p.nick, cm.p.team) }, h('span', { class: 'bd' }, T[ev.champ].n.toUpperCase() + ' MVP'), h('div', { class: 'nk' }, cm.p.nick), h('div', { class: 'tm' }, 'Most maps played \u00b7 best rating in the champion team'), h('div', { class: 'rt' }, cm.rating.toFixed(2)), h('div', { class: 'ss' }, cm.k + '/' + cm.d + '/' + cm.a + ' \u00b7 KD ' + cm.kd.toFixed(2) + ' \u00b7 ' + cm.maps + ' maps')) : null;
           box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n), h('span', null, (ev.done ? 'Finished' : 'Ongoing') + ' \u00b7 ' + allK + ' kills \u00b7 ' + Math.round(allM / 10) + ' maps \u00b7 min ' + ev.min + ' maps to qualify')), row, champEl));
         });
         if (box.children.length > 1) { var hd = node.firstElementChild; if (hd) hd.insertAdjacentElement('afterend', box); else node.insertBefore(box, node.firstChild); }
