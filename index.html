@@ -9481,7 +9481,7 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
       try {
         if (!node || !node.querySelector || node.querySelector('.msr-mvps') || !window.msrCalc) return node;
         var evs = [
-          { n: 'VOID Tournament', done: true, min: 3, get: function (p) { return p._vd || null; } }
+          { n: 'VOID Tournament', done: true, min: 3, champ: 'KGTSS', get: function (p) { return p._vd || null; } }
         ];
         var box = h('section', { class: 'msr-mvps' }, h('h2', null, 'MVPs'));
         evs.forEach(function (ev) {
@@ -9495,7 +9495,9 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
               h('div', { class: 'rt' }, x.rating.toFixed(2)),
               h('div', { class: 'ss' }, x.k + '/' + x.d + '/' + x.a + ' \u00b7 KD ' + x.kd.toFixed(2) + ' \u00b7 ' + x.maps + ' maps')));
           });
-          box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n), h('span', null, (ev.done ? 'Finished' : 'Ongoing') + ' \u00b7 ' + allK + ' kills \u00b7 ' + Math.round(allM / 10) + ' maps \u00b7 min ' + ev.min + ' maps to qualify')), row));
+          var cm = ev.champ ? top3(function (p) { return p.team === ev.champ ? ev.get(p) : null; }, ev.min)[0] : null;
+          var champEl = cm ? h('a', { class: 'msr-mvp-c p1', style: 'margin-top:10px', href: playerHref(cm.p.nick, cm.p.team) }, h('span', { class: 'bd' }, T[ev.champ].n.toUpperCase() + ' MVP'), h('div', { class: 'nk' }, cm.p.nick), h('div', { class: 'tm' }, 'Champion team \u00b7 ' + T[ev.champ].n), h('div', { class: 'rt' }, cm.rating.toFixed(2)), h('div', { class: 'ss' }, cm.k + '/' + cm.d + '/' + cm.a + ' \u00b7 KD ' + cm.kd.toFixed(2) + ' \u00b7 ' + cm.maps + ' maps')) : null;
+          box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n), h('span', null, (ev.done ? 'Finished' : 'Ongoing') + ' \u00b7 ' + allK + ' kills \u00b7 ' + Math.round(allM / 10) + ' maps \u00b7 min ' + ev.min + ' maps to qualify')), row, champEl));
         });
         if (box.children.length > 1) { var hd = node.firstElementChild; if (hd) hd.insertAdjacentElement('afterend', box); else node.insertBefore(box, node.firstChild); }
       } catch (e) {}
