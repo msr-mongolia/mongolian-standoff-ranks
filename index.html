@@ -2800,7 +2800,7 @@ html body .msr-holo-wrap:not(:has(img[src*="p2990"]))::before,html body .msr-hol
       <a href="#results" data-r="results">Results</a>
       <a href="#events" data-r="events">Events</a>
       <div class="nav-dd"><a href="#ranking" data-r="ranking">Ranking</a><div class="nav-dd-menu"><a href="#ranking" data-r="ranking">MSR ranking</a><a href="#tpranking" data-r="tpranking">Tournament points</a></div></div>
-      <a href="#players" data-r="players">Players</a>
+      <div class="nav-dd"><a href="#players" data-r="players">Players</a><div class="nav-dd-menu"><a href="#players" data-r="players">Player rank</a><a href="#mvps" data-r="mvps">MVPs</a></div></div>
       <a href="#stats" data-r="stats">Stats</a>
       <a href="#gold" data-r="gold" class="gd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M14.8 9.6a3.4 3.4 0 1 0 .2 4.6V12h-2.3"></path></svg>Gold</a>
       <a href="#live" data-r="live" class="lv"><span class="pip"></span>Live</a>
@@ -9171,7 +9171,7 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
       applyVerifiedTeamEloToRank();
       Object.keys(T).forEach(function(code){if(isOmvTeam(code)){T[code].img='assets/omv_profile.webp';T[code].c='#ff344c';}});
       window.MSR_ROSTER_LOAD_STATE='ready';
-      if (/^(ranking|tpranking|team|players|player|freeagents|stats|event|events|matches|live|voidmatch|mslmatch)(\/|$)/.test(H)) route();
+      if (/^(ranking|tpranking|mvps|team|players|player|freeagents|stats|event|events|matches|live|voidmatch|mslmatch)(\/|$)/.test(H)) route();
       try{
         var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,bans,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
@@ -9404,7 +9404,7 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
     window.addEventListener('resize', placeControls);
     function updateDock() {
       var page = (location.hash.slice(1).split('/')[0] || 'news');
-      page=({player:'players',team:'ranking',tpranking:'ranking',match:'matches',event:'events',article:'news'})[page]||page;
+      page=({player:'players',mvps:'players',team:'ranking',tpranking:'ranking',match:'matches',event:'events',article:'news'})[page]||page;
       dock.querySelectorAll('a').forEach(function(a) { var on = a.dataset.r === page; a.classList.toggle('on', on); if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
     }
     updateDock(); window.addEventListener('hashchange', updateDock);
@@ -9475,11 +9475,8 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
       return PLAYERS.map(function (p) { var s = get(p); if (!s || s.maps < min || !p.team || !T[p.team]) return null; var rounds = Math.max(1, s.rounds); return { p: p, maps: s.maps, k: s.k, d: s.d, a: s.a, kd: s.k / Math.max(1, s.d), rating: window.msrCalc(s.k, s.d, s.a, rounds).rating }; })
         .filter(Boolean).sort(function (x, y) { return y.rating - x.rating; }).slice(0, n || 3);
     }
-    var _p = V.players;
-    V.players = function () {
-      var node = _p.apply(this, arguments);
-      try {
-        if (!node || !node.querySelector || node.querySelector('.msr-mvps') || !window.msrCalc) return node;
+    function mvpBox() {
+        if (!window.msrCalc) return null;
         var evs = [
           { n: 'VOID Tournament', done: true, min: 3, champ: 'KGTSS', get: function (p) { return p._vd || null; } },
           { n: 'MSL Major S2', done: false, min: 5, get: function (p) { if (!p.maps) return null; var v = p._vd || { maps: 0, k: 0, d: 0, a: 0, rounds: 0 }; return { maps: p.maps - v.maps, k: p.kills - v.k, d: p.deaths - v.d, a: (p.assists || 0) - v.a, rounds: (p.rounds || 0) - v.rounds }; } }
@@ -9500,9 +9497,22 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
           var champEl = cm ? h('a', { class: 'msr-mvp-c p1', style: 'margin-top:10px', href: playerHref(cm.p.nick, cm.p.team) }, h('span', { class: 'bd' }, T[ev.champ].n.toUpperCase() + ' MVP'), h('div', { class: 'nk' }, cm.p.nick), h('div', { class: 'tm' }, 'Most maps played \u00b7 best rating in the champion team'), h('div', { class: 'rt' }, cm.rating.toFixed(2)), h('div', { class: 'ss' }, cm.k + '/' + cm.d + '/' + cm.a + ' \u00b7 KD ' + cm.kd.toFixed(2) + ' \u00b7 ' + cm.maps + ' maps')) : null;
           box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n), h('span', null, (ev.done ? 'Finished' : 'Ongoing') + ' \u00b7 ' + allK + ' kills \u00b7 ' + Math.round(allM / 10) + ' maps \u00b7 min ' + ev.min + ' maps to qualify')), row, champEl));
         });
-        if (box.children.length > 1) { var hd = node.firstElementChild; if (hd) hd.insertAdjacentElement('afterend', box); else node.insertBefore(box, node.firstChild); }
+        return box.children.length > 1 ? box : null;
+    }
+    var _p = V.players;
+    V.players = function () {
+      var node = _p.apply(this, arguments);
+      try {
+        if (!node || !node.querySelector || node.querySelector('.msr-mvps')) return node;
+        var box = mvpBox();
+        if (box) { var hd = node.firstElementChild; if (hd) hd.insertAdjacentElement('afterend', box); else node.insertBefore(box, node.firstChild); }
       } catch (e) {}
       return node;
+    };
+    V.mvps = function () {
+      if (window.MSR_ROSTER_LOAD_STATE !== 'ready') return rosterLoadingView();
+      var box = mvpBox(); if (box && box.firstChild) box.removeChild(box.firstChild);
+      return h('div', null, pageHead('MVPs', 'Top players of each tournament. #1 is the MVP.'), box || h('div', { class: 'empty' }, 'No MVP data yet.'));
     };
   })();
 
