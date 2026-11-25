@@ -6757,13 +6757,26 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
      Cap: 500 for non-VIP teams, no cap for VIP-active teams. */
   window.MSR_TOURNAMENT_POINTS = window.MSR_TOURNAMENT_POINTS || {};
   /* Tournament tiers (set by the admin) and placement points (PROPOSED values, not final). award = placementPoints[place] * tierWeight */
-  window.MSR_TP_TIERS = window.MSR_TP_TIERS || { 'MSL Major S2': 'S', 'MSL Major': 'S', 'Anvex': 'S', 'MPS': 'S', 'SATT': 'A', 'SPS': 'S', 'MSL Season': 'A', 'MSL Rising Star': 'B' };
+  window.MSR_TP_TIERS = window.MSR_TP_TIERS || { 'MSL Major S2': 'S', 'MSL Major': 'S', 'Anvex': 'S', 'MPS': 'S', 'SATT': 'A', 'SPS': 'S', 'MSL Season': 'A', 'MSL Rising Star': 'B', 'VOID Tournament': 'B' };
   window.MSR_TP_TIER_WEIGHT = window.MSR_TP_TIER_WEIGHT || { S: 1, A: 0.6, B: 0.3 };
   window.MSR_TP_PLACEMENT = window.MSR_TP_PLACEMENT || { 1: 200, 2: 140, 3: 100, 4: 70, 5: 40, 6: 40, 7: 40, 8: 40, 9: 20, 10: 20, 11: 20, 12: 20, 13: 20, 14: 20, 15: 20, 16: 20, participated: 10 };
   window.msrTpAward = function (event, place) {
     var w = window.MSR_TP_TIER_WEIGHT[window.MSR_TP_TIERS[event]]; if (!w) return 0;
     var pp = window.MSR_TP_PLACEMENT; return Math.round((pp[place] != null ? pp[place] : pp.participated) * w);
   };
+  /* VOID Tournament (B tier, finished Nov 23): placement points. 3rd place shared by both semifinal losers (no 3rd-place match), admin Nov 25.
+     5-8 = quarterfinal losers, 9-16 = Swiss eliminated (6LC/SIXL was banned and removed, no points). */
+  (function () {
+    var P = window.MSR_TOURNAMENT_POINTS, place = {
+      'KGTSS': 1, 'DS_5E67C1B8721D736CA5B5A960': 2,
+      'DS_7C03F1F6DA5F993B4CC9BB28': 3, 'DS_4561C74A8EF7ED8EBA1EEC28': 3,
+      'DS_A0B0110FC187C08BE7637475': 5, 'DS_4559C7E779F302E917B1A414': 5, 'DS_D1764CAF48B74A2D0B7B3E59': 5, 'DS_BD02236437B5FF2BB5839658': 5,
+      'DS_A4CCD6C33286B304E839A0BC': 9, 'DS_5CDAAF806D7D39AC2C809ED3': 9, 'DS_A24136D1A99B5E5DFAE15E9F': 9, 'DS_BED22EFE5176D46A905806CD': 9,
+      'DS_779FBD131741477AF32F9268': 9, 'DS_A92955A6312CC42137C3C7EA': 9, 'DS_9FEDE81820B36BB7889B86BA': 9
+    };
+    if (P.__voidDone) return; Object.defineProperty(P, '__voidDone', { value: true, enumerable: false });
+    Object.keys(place).forEach(function (c) { P[c] = (P[c] || 0) + window.msrTpAward('VOID Tournament', place[c]); });
+  })();
   window.msrTP = function (code) {
     var raw = Number((window.MSR_TOURNAMENT_POINTS || {})[code] || 0), vip = !!(T[code] && Date.parse(T[code].vipExpiresAt) > Date.now());
     var pts = Math.max(0, vip ? raw : Math.min(500, raw));
