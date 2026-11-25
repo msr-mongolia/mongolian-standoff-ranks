@@ -5710,7 +5710,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     { nick: 'wickshi', id: '281722367', team: '', from: '2026-11-19', until: '9999-12-31', perm: true },
     { nick: 'melo', id: '208825379', team: '', from: '2026-11-19', until: '9999-12-31', perm: true },
     /* Discord #BLACKLIST Nov 20 (permanent, scam). Was on CioR White (removed from MSR); taken off free agents. Not the MNKT Blue Keinn (different game ID). */
-    { nick: 'Keinn', id: '283847513', team: 'CIORWHITE', from: '2026-11-20', until: '9999-12-31', perm: true }
+    { nick: 'Keinn', id: '283847513', team: 'CIORWHITE', from: '2026-11-20', until: '9999-12-31', perm: true },
+    /* Discord #BLACKLIST Nov 25 (permanent, cheating). Not on any site roster. */
+    { nick: 'Miracle_so2', id: '289867312', team: '', from: '2026-11-25', until: '9999-12-31', perm: true }
   ];
   window.msrPlayerBanFor = function (nick, teamCode) {
     var n = String(nick || '').toLowerCase(), tc = String(teamCode || '').toUpperCase(), idt = window.MSR_ID_TEAM || {}, now = new Date().toISOString().slice(0, 10);
