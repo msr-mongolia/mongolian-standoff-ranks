@@ -6063,7 +6063,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       h('a',{class:'back',href:'#matches',svg:ICON.back+'<span>Matches</span>'}),
       h('div',{class:'msr-mm-head',style:'--ca:'+mmCol(ka)+';--cb:'+mmCol(kb)},headTeam(ka),center,headTeam(kb)),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Information',h('span',{class:'msr-mm-pill'},'BO3')),
-        h('div',{class:'msr-mm-info'},/^S2-/.test(grp)?s2InfoText(grp.slice(3),ka,kb):'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
+        h('div',{class:'msr-mm-info'},/^S2-/.test(grp)?s2InfoText(grp.slice(3),ka,kb):/^PO-/.test(grp)?'MSL Major S2 · Playoff · '+({QF:'Quarterfinal',SF:'Semifinal',F:'Final'}[(/^PO-([A-Z]+)/.exec(grp)||[])[1]]||'Playoff')+(/\d+$/.test(grp)?' '+/\d+$/.exec(grp)[0]:''):/^S3-R/.test(grp)?'MSL Major S2 · Stage 3 · Swiss · Round '+grp.slice(4):'MSL Major S2 · Stage 1'+(grp?' · Group '+grp:''))),
       h('section',{class:'msr-mm-sec'},h('h2',null,'Maps',h('span',{class:'msr-mm-pill'},'BO3')),h('div',{class:'msr-mm-maps'},cards),
         known&&(known.bans||[]).length?h('div',{class:'msr-mm-bans'},h('b',null,'Bans'),(known.bans||[]).map(function(x){var bk=msrRelTeamKey(x.team);return h('span',{class:'msr-mm-ban'},(bk&&T[bk]?T[bk].tag||T[bk].n:x.team)+' \u00b7 ',h('s',null,x.map));})):null),
       lineup(ka),lineup(kb),
@@ -9404,6 +9404,9 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster": ["Luxxus", "MooN", 
   function msrMatchHref(m) {
     if (!m || !T[m.a] || !T[m.b]) return '#match/' + (m && m.id);
     var zg = /Zone ([A-H])/.exec(m.st || ''), grp = m.s2fix || zg ? 'S2-' + (zg ? zg[1] : '') : (m.group || '');
+    var po = /^Playoff \u00b7 (Quarterfinal|Semifinal|Final)(?: (\d+))?/.exec(m.st || ''), s3 = /^Stage 3 \u00b7 Swiss \u00b7 Round (\d+)/.exec(m.st || '');
+    if (po) grp = 'PO-' + ({ Quarterfinal: 'QF', Semifinal: 'SF', Final: 'F' }[po[1]]) + (po[2] || '');
+    else if (s3) grp = 'S3-R' + s3[1];
     return '#mslmatch/' + m.a + '/' + m.b + '/' + (m.date || '') + '/' + grp;
   }
   window.msrMatchHref = msrMatchHref;
