@@ -8511,7 +8511,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var am = String(a.source_message_id || ''), bm = String(b.source_message_id || '');
       return am.length - bm.length || am.localeCompare(bm) || String(a.id).localeCompare(String(b.id));
     }
-    rows=(Array.isArray(rows)?rows:[]).filter(function(r){return r.id!== 'ds_void_eknz_20261113' && ['ds_a090a268d75d482c82e94915','ds_5c43480f730342cb52277f22','ds_a789529aad4a6e81e56a0915'].indexOf(r.id)<0;});
+    rows=(Array.isArray(rows)?rows:[]).filter(function(r){return r.id!== 'ds_void_eknz_20261113' && ['ds_a090a268d75d482c82e94915','ds_5c43480f730342cb52277f22','ds_a789529aad4a6e81e56a0915','ds_4e839731b0f6161a89d9fe17'].indexOf(r.id)<0;}); // ds_4e83...: ZyroxEsport [Zx_WB] post Nov 25 05:05 UTC on HOLD (no Black/White, 4 in/4 out vs Zx_WB Black, takes Ice:D from Zx_WB White)
     var registrations = (Array.isArray(rows) ? rows : []).filter(function (row) {
       return row && /^[a-z0-9_]{3,40}$/i.test(row.id) && typeof row.name === 'string' && Array.isArray(row.roster) &&
         row.roster.length >= 5 && row.roster.length <= 12 && row.roster.every(function (nick) { return typeof nick === 'string' && nick && nick.length <= 40; }) &&
