@@ -9407,6 +9407,38 @@ MSR_ROSTER_UPDATES.ds_0e5b1c07e5cf9fafe336e9cb2 = {"roster": ["Luxxus", "MooN", 
     window.addEventListener('resize', function () { if (window.innerWidth > 760) setMenu(false); });
   })();
 
+  /* KnightSS (KGTSS) is the VOID Tournament champion: the VOID trophy sits next to the VIP badge on the team profile, tap to enlarge (admin, Nov 25). */
+  (function () {
+    var st = document.createElement('style'); st.id = 'msr-void-trophy-css';
+    st.textContent = '#app .msr-void-trophy{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-left:8px;padding:0;border:0;background:transparent;cursor:zoom-in;width:34px;height:34px;filter:drop-shadow(0 0 8px rgba(168,120,255,.75));transition:transform .15s}#app .msr-void-trophy:hover{transform:scale(1.15)}#app .msr-void-trophy img{width:100%;height:100%;object-fit:contain;display:block}.msr-void-trophy-dialog{border:0;background:transparent;padding:0;max-width:92vw;max-height:92vh;overflow:visible}.msr-void-trophy-dialog::backdrop{background:rgba(5,3,12,.82);backdrop-filter:blur(6px)}.msr-void-trophy-dialog img{display:block;max-width:min(88vw,520px);max-height:84vh;object-fit:contain;filter:drop-shadow(0 0 40px rgba(168,120,255,.55))}.msr-void-trophy-dialog .x{position:absolute;right:-6px;top:-6px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(20,16,32,.9);color:#fff;font-size:22px;line-height:1;cursor:pointer}.msr-void-trophy-dialog .cap{text-align:center;margin-top:8px;color:#d9ccff;font-weight:700;letter-spacing:.08em;font-size:13px}';
+    if (!document.getElementById('msr-void-trophy-css')) document.head.appendChild(st);
+    var _t = V.team;
+    V.team = function (arg) {
+      var node = _t.apply(this, arguments);
+      try {
+        var code = String(arg == null ? '' : arg).split('/')[0];
+        if (code === 'KGTSS' && node && node.querySelector) {
+          var vip = node.querySelector('.psub .tag');
+          var host = vip ? vip.parentNode : node.querySelector('.psub');
+          if (host && !host.querySelector('.msr-void-trophy')) {
+            var btn = h('button', { type: 'button', class: 'msr-void-trophy', title: 'VOID Tournament champion', 'aria-label': 'VOID Tournament champion trophy, tap to enlarge', onclick: function (e) {
+              e.preventDefault(); e.stopPropagation();
+              var d = document.createElement('dialog'); d.className = 'msr-void-trophy-dialog';
+              d.appendChild(h('button', { type: 'button', class: 'x', 'aria-label': 'Close', onclick: function () { d.close(); } }, '\u00d7'));
+              d.appendChild(h('img', { src: 'assets/void_trophy.png', alt: 'VOID Tournament champion trophy' }));
+              d.appendChild(h('div', { class: 'cap' }, 'VOID TOURNAMENT CHAMPION'));
+              d.addEventListener('click', function (ev) { if (ev.target === d) d.close(); });
+              d.addEventListener('close', function () { d.remove(); });
+              document.body.appendChild(d); d.showModal();
+            } }, h('img', { src: 'assets/void_trophy.png', alt: '', decoding: 'async' }));
+            if (vip) vip.insertAdjacentElement('afterend', btn); else host.appendChild(btn);
+          }
+        }
+      } catch (e) {}
+      return node;
+    };
+  })();
+
   route();
 
   /* ================= match dialog ================= */
