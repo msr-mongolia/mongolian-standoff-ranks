@@ -9469,13 +9469,13 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
   /* MVPs: per tournament top 3 players by MSR rating; #1 is the MVP (finished events) or Leader (ongoing). */
   (function () {
     var st = document.createElement('style'); st.id = 'msr-mvp-css';
-    st.textContent = '#app .msr-mvps{margin:0 0 26px}#app .msr-mvps h2{font-size:18px;margin:0 0 12px;letter-spacing:.04em}#app .msr-mvp-ev{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}#app .msr-mvp-hd{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between;margin-bottom:12px}#app .msr-mvp-hd b{font-size:15px}#app .msr-mvp-hd span{font-size:12px;color:var(--muted,#8b97ab)}#app .msr-mvp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}#app .msr-mvp-c{display:block;color:inherit;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:12px;position:relative;min-width:0}#app .msr-mvp-c.p1{border-color:#ffc83d;box-shadow:0 0 18px rgba(255,200,61,.25)}#app .msr-mvp-c .bd{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:99px;background:#ffc83d;color:#1a1300;margin-bottom:6px}#app .msr-mvp-c .bd.n{background:var(--line);color:inherit}#app .msr-mvp-c .nk{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-mvp-c .tm{font-size:12px;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-mvp-c .rt{font-size:22px;font-weight:800;margin-top:6px}#app .msr-mvp-c .ss{font-size:12px;opacity:.8;margin-top:2px}@media(max-width:640px){#app .msr-mvp-row{grid-template-columns:1fr}}';
+    st.textContent = '#app .msr-mvps{margin:0 0 26px}#app .msr-mvps h2{font-size:18px;margin:0 0 12px;letter-spacing:.04em}#app .msr-mvp-ev{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}#app .msr-mvp-hd{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between;margin-bottom:12px}#app .msr-mvp-hd b{font-size:15px}#app .msr-mvp-hd span{font-size:12px;color:var(--muted,#8b97ab)}#app .msr-mvp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}#app .msr-mvp-c{display:block;color:inherit;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:12px;position:relative;min-width:0}#app .msr-mvp-c.p1{border-color:#ffc83d;box-shadow:0 0 18px rgba(255,200,61,.25)}#app .msr-mvp-c .bd{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:99px;background:#ffc83d;color:#1a1300;margin-bottom:6px}#app .msr-mvp-c .bd.n{background:var(--line);color:inherit}#app .msr-mvp-c .nk{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-mvp-c .tm{font-size:12px;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#app .msr-mvp-c .rt{font-size:22px;font-weight:800;margin-top:6px}#app .msr-mvp-c .ss{font-size:12px;opacity:.8;margin-top:2px}#app .msr-mvp-scroll{overflow-x:auto}#app .msr-mvp-tbl{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}#app .msr-mvp-tbl th{text-align:left;font-size:11px;letter-spacing:.06em;opacity:.7;padding:6px 10px;border-bottom:1px solid var(--line)}#app .msr-mvp-tbl td{padding:8px 10px;border-bottom:1px solid var(--line)}#app .msr-mvp-tbl tr.p1 td{color:#ffc83d;font-weight:700}#app .msr-mvp-tbl a{color:inherit}@media(max-width:640px){#app .msr-mvp-row{grid-template-columns:1fr}}';
     if (!document.getElementById('msr-mvp-css')) document.head.appendChild(st);
     function top3(get, min, n) {
       return PLAYERS.map(function (p) { var s = get(p); if (!s || s.maps < min || !p.team || !T[p.team]) return null; var rounds = Math.max(1, s.rounds); return { p: p, maps: s.maps, k: s.k, d: s.d, a: s.a, kd: s.k / Math.max(1, s.d), rating: window.msrCalc(s.k, s.d, s.a, rounds).rating }; })
         .filter(Boolean).sort(function (x, y) { return y.rating - x.rating; }).slice(0, n || 3);
     }
-    function mvpBox() {
+    function mvpBox(full) {
         if (!window.msrCalc) return null;
         var evs = [
           { n: 'VOID Tournament', done: true, min: 3, champ: 'KGTSS', get: function (p) { return p._vd || null; } },
@@ -9483,6 +9483,13 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
         ];
         var box = h('section', { class: 'msr-mvps' }, h('h2', null, 'MVPs'));
         evs.forEach(function (ev) {
+          if (full && !ev.done) {
+            var L = top3(ev.get, ev.min, 20); if (!L.length) return;
+            var tb = h('table', { class: 'msr-mvp-tbl' }, h('thead', null, h('tr', null, ['#', 'Player', 'Team', 'Rating', 'K/D/A', 'KD', 'Maps'].map(function (x) { return h('th', null, x); }))),
+              h('tbody', null, L.map(function (x, i) { return h('tr', { class: i === 0 ? 'p1' : '' }, h('td', null, i === 0 ? 'LEADER' : String(i + 1)), h('td', null, h('a', { href: playerHref(x.p.nick, x.p.team) }, x.p.nick)), h('td', null, T[x.p.team].n), h('td', null, h('b', null, x.rating.toFixed(2))), h('td', null, x.k + '/' + x.d + '/' + x.a), h('td', null, x.kd.toFixed(2)), h('td', null, String(x.maps))); })));
+            box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n + ' \u00b7 Top 20'), h('span', null, 'Ongoing \u00b7 min ' + ev.min + ' maps to qualify')), h('div', { class: 'msr-mvp-scroll' }, tb)));
+            return;
+          }
           var t = top3(ev.get, ev.min); if (!t.length) return;
           var allK = 0, allM = 0; PLAYERS.forEach(function (p) { var s = ev.get(p); if (s && s.maps > 0) { allK += s.k; allM += s.maps; } });
           var row = h('div', { class: 'msr-mvp-row' });
@@ -9511,7 +9518,7 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
     };
     V.mvps = function () {
       if (window.MSR_ROSTER_LOAD_STATE !== 'ready') return rosterLoadingView();
-      var box = mvpBox(); if (box && box.firstChild) box.removeChild(box.firstChild);
+      var box = mvpBox(true); if (box && box.firstChild) box.removeChild(box.firstChild);
       return h('div', null, pageHead('MVPs', 'Top players of each tournament. #1 is the MVP.'), box || h('div', { class: 'empty' }, 'No MVP data yet.'));
     };
   })();
