@@ -5056,7 +5056,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     { date: '2026-11-06', time: '20:00', a: 'KngZz', b: 'Rvurz', bo: 3, ev: 'MSL Major S2', info: 'Group C · Day 3', stream: '' },
     { date: '2026-11-06', time: '22:00', a: 'MetaS', b: '8MNA', bo: 3, ev: 'MSL Major S2', info: 'Group E · Day 3', stream: '' },
     { date: '2026-11-10', time: '21:00', a: 'CioR', b: 'DL340', bo: 3, ev: 'MSL Major S2', info: 'Group D', stream: '' },
-    { date: '2026-11-24', time: '22:00', a: '2990 Purple', b: 'EknZ', bo: 3, ev: 'MSL Major S2', info: 'Playoff · Quarterfinal', stream: 'https://www.tiktok.com/@s1lva.gaming/live' }
+    { date: '2026-11-24', time: '22:00', a: '2990 Purple', b: 'EknZ', bo: 3, ev: 'MSL Major S2', info: 'Playoff · Quarterfinal', stream: 'https://www.tiktok.com/@s1lva.gaming/live' },
+    { date: '2026-11-26', time: '20:00', a: 'EKS', b: 'EknZ', bo: 3, ev: 'MSL Major S2', info: 'Playoff · Semifinal', stream: '' },
+    { date: '2026-11-26', time: '22:00', a: '0kz', b: '2990 RED', bo: 3, ev: 'MSL Major S2', info: 'Playoff · Semifinal', stream: '' }
   ];
   var msrNk = function (v) { return __msrNk(v || ''); };
   function msrLiveTeam(name) {
@@ -5080,7 +5082,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
   function msrLiveLedger(item) {
     var a = msrNk(item.a), b = msrNk(item.b), flip = false;
+    var MN = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'], dp = String(item.date || '').split('-'), want = dp.length === 3 ? MN[+dp[1] - 1] + ' ' + (+dp[2]) : '';
     var row = (window.MSR_SCREENSHOT_MATCHES || []).find(function (m) {
+      var dm = /([A-Z]{3})\w*\s+0?(\d+)/i.exec(m.date || ''); if (want && dm && (dm[1].toUpperCase() + ' ' + (+dm[2])) !== want) return false;
       if (msrNk(m.a) === a && msrNk(m.b) === b) { flip = false; return true; }
       if (msrNk(m.a) === b && msrNk(m.b) === a) { flip = true; return true; }
       return false;
@@ -5875,7 +5879,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
   // Veto times are always evening: a bare 8 / 9 / 10 (or 8:30) means 20:00 / 21:00 / 22:00.
   // Admin-confirmed time corrections for veto posts whose time is written ambiguously (pair of lower-case team names -> HH:MM).
-  var MSR_VETO_TIME_FIX={'0kz|6lc':'22:00','eks|kngzz':'21:00'}; // eks|kngzz: veto post Nov 21 "21:00sgt" (parser missed the time)
+  var MSR_VETO_TIME_FIX={'0kz|6lc':'22:00','eks|kngzz':'21:00','0kz|2990red':'22:00','eknz|eks':'20:00'}; // eks|kngzz: veto post Nov 21 "21:00sgt" (parser missed the time)
   function msrVetoFor(ka,kb){
     var r=msrRelUpcoming().find(function(r){var x=msrVetoCode(r.team_a),y=msrVetoCode(r.team_b);return (x===ka&&y===kb)||(x===kb&&y===ka);})||null;
     if(r){var n=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},fx=MSR_VETO_TIME_FIX[[n(r.team_a),n(r.team_b)].sort().join('|')];if(fx)r=Object.assign({},r,{time_label:fx});else{var tl=String(r.time_label||'').replace(/\s*\([^)]*\)/g,'').trim(),em=tl.match(/^(\d{1,2})(?::(\d{2}))?$/);if(em){var hh=+em[1];if(hh>=1&&hh<=11)hh+=12;r=Object.assign({},r,{time_label:hh+':'+(em[2]||'00')});}}}
@@ -7565,6 +7569,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var dr = window.MSR_S4_DRAW;
     if (ready && dr && dr.length === 4) { var sd = function (t) { var i = order.map(kk).indexOf(kk(t)); return i >= 0 ? i + 1 : null; }; qf = dr.map(function (p) { var o = mk(p[0], p[1], sd(p[0]), sd(p[1])); o.date = p[2] || null; o.time = p[3] || null; return o; }); }
     var sf = [mk(qf[0].winner, qf[1].winner), mk(qf[2].winner, qf[3].winner)];
+    sf[0].date = 1126; sf[0].time = '20:00'; // SF1 EKS vs EknZ (admin, Nov 26)
+    sf[1].date = 1126; sf[1].time = '22:00'; // SF2 0kz vs 2990 RED (admin, Nov 26)
     var fin = mk(sf[0].winner, sf[1].winner);
     return { ready: ready, qualified: q.map(function (r) { return r.tag; }), order: order, qf: qf, sf: sf, final: fin, champion: fin.winner };
   };
