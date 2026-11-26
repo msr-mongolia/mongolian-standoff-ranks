@@ -2800,7 +2800,7 @@ html body .msr-holo-wrap:not(:has(img[src*="p2990"]))::before,html body .msr-hol
       <a href="#results" data-r="results">Results</a>
       <a href="#events" data-r="events">Events</a>
       <div class="nav-dd"><a href="#ranking" data-r="ranking">Ranking</a><div class="nav-dd-menu"><a href="#ranking" data-r="ranking">MSR ranking</a><a href="#tpranking" data-r="tpranking">Tournament points</a></div></div>
-      <div class="nav-dd"><a href="#players" data-r="players">Players</a><div class="nav-dd-menu"><a href="#players" data-r="players">Player rank</a><a href="#mvps" data-r="mvps">MVPs</a></div></div>
+      <div class="nav-dd"><a href="#players" data-r="players">Players</a><div class="nav-dd-menu"><a href="#players" data-r="players">Player rank</a><a href="#mvps" data-r="mvps">MVPs &amp; EVPs</a></div></div>
       <a href="#stats" data-r="stats">Stats</a>
       <a href="#gold" data-r="gold" class="gd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M14.8 9.6a3.4 3.4 0 1 0 .2 4.6V12h-2.3"></path></svg>Gold</a>
       <a href="#live" data-r="live" class="lv"><span class="pip"></span>Live</a>
@@ -9503,7 +9503,7 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
           if (full && !ev.done) {
             var L = top3(ev.get, ev.min, lim || 20); if (!L.length) return;
             var tb = h('table', { class: 'msr-mvp-tbl' }, h('thead', null, h('tr', null, ['#', 'Player', 'Team', 'Rating', 'K/D/A', 'KD', 'Maps'].map(function (x) { return h('th', null, x); }))),
-              h('tbody', null, L.map(function (x, i) { return h('tr', { class: i === 0 ? 'p1' : '' }, h('td', null, i === 0 ? 'LEADER' : String(i + 1)), h('td', null, h('a', { href: playerHref(x.p.nick, x.p.team) }, x.p.nick)), h('td', null, T[x.p.team].n), h('td', null, h('b', null, x.rating.toFixed(2))), h('td', null, x.k + '/' + x.d + '/' + x.a), h('td', null, x.kd.toFixed(2)), h('td', null, String(x.maps))); })));
+              h('tbody', null, L.map(function (x, i) { return h('tr', { class: i === 0 ? 'p1' : '' }, h('td', null, i === 0 ? 'LEADER' : i < 3 ? (i + 1) + ' \u00b7 EVP' : String(i + 1)), h('td', null, h('a', { href: playerHref(x.p.nick, x.p.team) }, x.p.nick)), h('td', null, T[x.p.team].n), h('td', null, h('b', null, x.rating.toFixed(2))), h('td', null, x.k + '/' + x.d + '/' + x.a), h('td', null, x.kd.toFixed(2)), h('td', null, String(x.maps))); })));
             box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n + ' \u00b7 Top ' + (lim || 20)), lim ? h('a', { href: '#mvps', style: 'font-size:12px;color:var(--accent,#ff6a2b)' }, 'See top 20 \u2192') : h('span', null, 'Ongoing \u00b7 min ' + ev.min + ' maps to qualify')), h('div', { class: 'msr-mvp-scroll' }, tb)));
             return;
           }
@@ -9536,8 +9536,27 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
     V.mvps = function () {
       if (window.MSR_ROSTER_LOAD_STATE !== 'ready') return rosterLoadingView();
       var box = mvpBox(true); if (box && box.firstChild) box.removeChild(box.firstChild);
-      return h('div', null, pageHead('MVPs', 'Top players of each tournament. #1 is the MVP.'), box || h('div', { class: 'empty' }, 'No MVP data yet.'));
+      return h('div', null, pageHead('MVPs & EVPs', 'Top players of each tournament. #1 is the MVP, #2 and #3 are the EVPs.'), box || h('div', { class: 'empty' }, 'No MVP data yet.'));
     };
+  })();
+
+  /* Mobile menu: collapsible "Players" group (Players, MVPs & EVPs). */
+  (function () {
+    try {
+      var m = document.getElementById('mmenu'); if (!m || document.getElementById('msr-mm-players')) return;
+      var st = document.createElement('style');
+      st.textContent = '#mmenu .msr-mm-grp{display:block!important;border-bottom:1px solid #ffffff1c}#mmenu .msr-mm-hd{display:flex!important;align-items:center;gap:12px;width:100%;background:none;border:0;color:inherit;font:inherit;font-size:17px;font-weight:700;padding:15px 12px;cursor:pointer;text-align:left}#mmenu .msr-mm-hd svg{width:22px;height:22px;flex:none}#mmenu .msr-mm-hd .ch{margin-left:auto;transition:transform .2s}#mmenu .msr-mm-grp.closed .ch{transform:rotate(180deg)}#mmenu .msr-mm-grp.closed .msr-mm-sub{display:none!important}#mmenu .msr-mm-sub a{display:flex!important;align-items:center;gap:14px;padding:13px 12px 13px 24px!important;font-size:16px!important;font-weight:600!important;border:0!important}#mmenu .msr-mm-sub a svg{width:20px;height:20px;flex:none}';
+      document.head.appendChild(st);
+      var ic = function (p) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; };
+      var users = '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c3 .3 5 2.4 5 5.8"/>';
+      var g = document.createElement('div'); g.id = 'msr-mm-players'; g.className = 'msr-mm-grp';
+      g.innerHTML = '<button type="button" class="msr-mm-hd" aria-expanded="true">' + ic(users) + '<span>Players</span>' + ic('<path d="m6 15 6-6 6 6"/>').replace('<svg', '<svg class="ch"') + '</button>' +
+        '<div class="msr-mm-sub"><a href="#players" data-r="players">' + ic('<circle cx="10" cy="8" r="3.5"/><path d="M3 20c0-3.6 3.1-6 7-6"/><circle cx="17" cy="17" r="3"/><path d="m21 21-1.8-1.8"/>') + 'Players</a>' +
+        '<a href="#mvps" data-r="mvps">' + ic('<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>') + 'MVPs &amp; EVPs</a></div>';
+      g.querySelector('.msr-mm-hd').addEventListener('click', function () { var c = g.classList.toggle('closed'); this.setAttribute('aria-expanded', String(!c)); });
+      var ref = m.querySelector('a[href="#freeagents"]') || m.querySelector('#msr-language-switch');
+      m.insertBefore(g, ref);
+    } catch (e) {}
   })();
 
   route();
