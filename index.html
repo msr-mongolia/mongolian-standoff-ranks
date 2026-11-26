@@ -6984,7 +6984,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       host.appendChild(h('div', { class: 'box' }, h('div', { class: 'scrollx' }, h('table', { class: 't', style: 'min-width:640px' },
         h('thead', null, h('tr', null, h('th', null, 'Date'), h('th', null, 'Opponent'), h('th', null, 'Map'), h('th', { class: 'n' }, 'K–D'), h('th', { class: 'n' }, 'ADR'), h('th', { class: 'n' }, 'KAST'), h('th', { class: 'n' }, 'Rating'))),
         h('tbody', null, recent.slice(0, 25).map(function (r) {
-          return h('tr', { class: r.ledger ? '' : 'clk', onclick: r.ledger ? null : go(msrMatchHref(r.m)) }, h('td', null, h('b', null, r.date ? dlabel(r.date) : '\u2014'), h('span', { style: 'font-size:12px;color:var(--dim);margin-left:8px' }, r.ledger ? '' : r.ev)),
+          return h('tr', { class: r.ledger ? '' : 'clk', onclick: r.ledger ? null : go(msrMatchHref(r.m)) }, h('td', null, h('b', null, r.date ? dlabel(r.date) : '\u2014'), h('span', { style: 'font-size:12px;color:var(--dim);margin-left:8px' }, r.ledger ? '' : r.ev), (r.team && team && r.team !== team && T[r.team]) ? h('span', { style: 'display:block;font-size:11px;color:var(--dim);margin-top:2px' }, 'Played for ' + T[r.team].n) : null),
             h('td', null, h('div', { class: 'tcell' }, h('span', { class: 'wl ' + (r.win ? 'w' : 'l') }, r.win ? 'W' : 'L'), crest(r.opp), (T[r.opp] || {}).n || '')), h('td', null, r.map),
             h('td', { class: 'n' }, r.k + '–' + r.d), h('td', { class: 'n' }, r.adr), h('td', { class: 'n' }, r.kast + '%'), h('td', { class: 'n' }, rt(r.rating)));
         }))))));
