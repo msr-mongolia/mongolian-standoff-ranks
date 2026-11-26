@@ -6765,6 +6765,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }
 
   var MSR_REL_MATCHES=[];
+  window.MSR_MANUAL_VETOS=[{team_a:'EknZ',team_b:'EKS',time_label:'20:00',source_timestamp:'2026-11-26T10:03:00+00:00',
+    bans:[{team:'EknZ',map:'Breeze'},{team:'EKS',map:'Dune'},{team:'EknZ',map:'Prison'},{team:'EKS',map:'Sandstone'}],
+    picks:[{team:'EknZ',map:'Hanami'},{team:'EKS',map:'Rust'}],decider:'Province'}];
   function msrRelInfo(a,b,day){
     var rawNorm=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');};
     // Veto posts spell some teams differently from the registered tags.
@@ -9201,6 +9204,8 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
         var relResponse=await fetch(cfg.SUPABASE_URL+'/rest/v1/msr_discord_rel_matches?select=team_a,team_b,time_label,picks,decider,bans,source_timestamp&order=source_timestamp.desc&limit=100',{headers:{apikey:cfg.SUPABASE_ANON_KEY},signal:AbortSignal.timeout(10000)});
         if(relResponse.ok){var relRows=await relResponse.json();if(Array.isArray(relRows))MSR_REL_MATCHES=relRows.filter(function(row){return !/b2di|born\s*to\s*die/i.test(String(row.team_a||'')+' '+String(row.team_b||''));});}
       }catch(_relError){}
+      /* Admin-supplied vetoes (given in chat) until the Discord veto sync delivers the same post. A synced row for the same pair that is at least as new replaces it. */
+      try{(window.MSR_MANUAL_VETOS||[]).forEach(function(v){var k=function(x){return String(x||'').toLowerCase().replace(/[^a-z0-9]/g,'');},pr=[k(v.team_a),k(v.team_b)].sort().join('|');if(!MSR_REL_MATCHES.some(function(r){return [k(r.team_a),k(r.team_b)].sort().join('|')===pr&&String(r.source_timestamp)>=v.source_timestamp;}))MSR_REL_MATCHES.unshift(v);});}catch(_mv){}
       if (/^(team|stats|event|events|matches|live|mslmatch)(\/|$)/.test(H)) route();
 
     } catch (e) { console.warn('MSR teams sync error',e); if(window.MSR_ROSTER_LOAD_STATE!=='ready'){window.MSR_ROSTER_LOAD_STATE='error';if(/^(ranking|tpranking|players|player)(\/|$)/.test(H))route();} }
