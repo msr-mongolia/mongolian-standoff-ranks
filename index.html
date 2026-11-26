@@ -9496,15 +9496,17 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
     function mvpBox(full, lim) {
         if (!window.msrCalc) return null;
         var evs = [
+          { n: 'VOID Tournament', done: true, min: 3, get: function (p) { return p._vd || null; } },
           { n: 'MSL Major S2', done: false, min: 5, get: function (p) { if (!p.maps) return null; var v = p._vd || { maps: 0, k: 0, d: 0, a: 0, rounds: 0 }; return { maps: p.maps - v.maps, k: p.kills - v.k, d: p.deaths - v.d, a: (p.assists || 0) - v.a, rounds: (p.rounds || 0) - v.rounds }; } }
         ];
         var box = h('section', { class: 'msr-mvps' }, h('h2', null, 'MVPs'));
         evs.forEach(function (ev) {
-          if (full && !ev.done) {
+          if (lim && ev.done) return;
+          if (full && (!ev.done || !lim)) {
             var L = top3(ev.get, ev.min, lim || 20); if (!L.length) return;
             var tb = h('table', { class: 'msr-mvp-tbl' }, h('thead', null, h('tr', null, ['#', 'Player', 'Team', 'Rating', 'K/D/A', 'KD', 'Maps'].map(function (x) { return h('th', null, x); }))),
-              h('tbody', null, L.map(function (x, i) { return h('tr', { class: i === 0 ? 'p1' : '' }, h('td', null, i === 0 ? 'LEADER' : i < 3 ? (i + 1) + ' \u00b7 EVP' : String(i + 1)), h('td', null, h('a', { href: playerHref(x.p.nick, x.p.team) }, x.p.nick)), h('td', null, T[x.p.team].n), h('td', null, h('b', null, x.rating.toFixed(2))), h('td', null, x.k + '/' + x.d + '/' + x.a), h('td', null, x.kd.toFixed(2)), h('td', null, String(x.maps))); })));
-            box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n + ' \u00b7 Top ' + (lim || 20)), lim ? h('a', { href: '#mvps', style: 'font-size:12px;color:var(--accent,#ff6a2b)' }, 'See top 20 \u2192') : h('span', null, 'Ongoing \u00b7 min ' + ev.min + ' maps to qualify')), h('div', { class: 'msr-mvp-scroll' }, tb)));
+              h('tbody', null, L.map(function (x, i) { return h('tr', { class: i === 0 ? 'p1' : '' }, h('td', null, i === 0 ? (ev.done ? 'MVP' : 'LEADER') : i < 3 ? (i + 1) + ' \u00b7 EVP' : String(i + 1)), h('td', null, h('a', { href: playerHref(x.p.nick, x.p.team) }, x.p.nick)), h('td', null, T[x.p.team].n), h('td', null, h('b', null, x.rating.toFixed(2))), h('td', null, x.k + '/' + x.d + '/' + x.a), h('td', null, x.kd.toFixed(2)), h('td', null, String(x.maps))); })));
+            box.appendChild(h('div', { class: 'msr-mvp-ev' }, h('div', { class: 'msr-mvp-hd' }, h('b', null, ev.n + ' \u00b7 Top ' + (lim || 20)), lim ? h('a', { href: '#mvps', style: 'font-size:12px;color:var(--accent,#ff6a2b)' }, 'See top 20 \u2192') : h('span', null, (ev.done ? 'Finished' : 'Ongoing') + ' \u00b7 min ' + ev.min + ' maps to qualify')), h('div', { class: 'msr-mvp-scroll' }, tb)));
             return;
           }
           var t = top3(ev.get, ev.min); if (!t.length) return;
