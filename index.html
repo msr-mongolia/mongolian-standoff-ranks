@@ -9478,7 +9478,6 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
     function mvpBox(full) {
         if (!window.msrCalc) return null;
         var evs = [
-          { n: 'VOID Tournament', done: true, min: 3, champ: 'KGTSS', get: function (p) { return p._vd || null; } },
           { n: 'MSL Major S2', done: false, min: 5, get: function (p) { if (!p.maps) return null; var v = p._vd || { maps: 0, k: 0, d: 0, a: 0, rounds: 0 }; return { maps: p.maps - v.maps, k: p.kills - v.k, d: p.deaths - v.d, a: (p.assists || 0) - v.a, rounds: (p.rounds || 0) - v.rounds }; } }
         ];
         var box = h('section', { class: 'msr-mvps' }, h('h2', null, 'MVPs'));
