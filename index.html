@@ -4563,16 +4563,34 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         return h('div', { class: 'sw-m' + (r ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, r ? (r.auto ? 'W/O' : r.aw + ':' + r.bw) : (mt.date ? Math.floor(mt.date / 100) + '/' + mt.date % 100 + ' ' + (mt.time || '') : 'VS')), sb);
       }
       function col(title, rows, cls) { return h('div', { class: 'sw-col' }, h('div', { class: 'sw-body' }, h('div', { class: 'sw-g ' + (cls || 'c-green') }, h('div', { class: 'sw-gh' }, h('b', null, title)), rows))); }
+      function poSlot(tag, seed, won, lost, score) {
+        var c = tag && window.msrTagToCode ? window.msrTagToCode(tag) : null, t = c && T[c];
+        var o = { class: 'vd-po-player' + (!t ? ' tbd' : '') + (won ? ' won' : lost ? ' lost' : '') };
+        if (t) { o.href = teamHref(c); o.title = t.n; }
+        return h(t ? 'a' : 'div', o, t ? crest(c, 'sm') : null, t && seed ? h('span', { class: 'seed' }, '#' + seed) : null, h('span', { class: 'name' }, t ? t.n : 'TBD'), score !== null && score !== undefined ? h('span', { class: 'score' }, String(score)) : null);
+      }
+      function poGame(label, mt) {
+        var r = mt && mt.res, done = r && r.aw !== r.bw, aw = done && r.aw > r.bw, bw = done && r.bw > r.aw;
+        return h('div', { class: 'vd-po-game' },
+          h('div', { class: 'vd-po-game-label' }, h('span', null, label), h('span', null, done ? (r.auto ? 'AUTO WIN' : 'FINAL SCORE') : (mt && mt.date ? Math.floor(mt.date / 100) + '/' + mt.date % 100 + ' ' + (mt.time || '') : 'BO3 \u00b7 TBD'))),
+          poSlot(mt && mt.a, mt && mt.seedA, aw, bw, done && !r.auto ? r.aw : null), poSlot(mt && mt.b, mt && mt.seedB, bw, aw, done && !r.auto ? r.bw : null));
+      }
+      function poPair() { return h('div', { class: 'vd-po-pair' }, [].slice.call(arguments)); }
+      function poCol(name, note) { return h('div', { class: 'vd-po-column' }, h('div', { class: 'vd-po-colhead' }, h('span', null, name), h('small', null, note)), h('div', { class: 'vd-po-round' }, [].slice.call(arguments, 2))); }
       function paint() {
         var st; try { st = window.msrS4(); } catch (e) { return; }
         var qs = st.qualified.map(function (t) { return slot(t); }); while (qs.length < 8) qs.push(h('span', { class: 'sw-q' }, '?'));
         wrap.replaceChildren(
           h('div', { class: 'sw2-zh' }, h('b', null, 'Playoff'), h('span', null, '8 teams from Stage 3 \u00b7 single elimination \u00b7 Bo3 \u00b7 from Nov 24')),
-          h('div', { class: 'sw-wrap' }, h('div', { class: 'sw' },
-            col('Quarterfinals \u00b7 Nov 24\u201325', st.qf.map(row), 'c-blue'),
-            col('Semifinals \u00b7 TBA', st.sf.map(row), 'c-yellow'),
-            col('Final \u00b7 TBA', [row(st.final)], 'c-red'),
-            h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, 'Champion'), h('div', { class: 'sw-body' }, h('div', { class: 'sw-list c-list ok' }, h('h4', null, st.champion ? 'CHAMPION' : 'TBD'), h('div', { class: 'sl' }, [slot(st.champion)])))))),
+          h('section', { class: 'vd-po-card', 'aria-label': 'MSL Playoffs Single Elimination' },
+            h('div', { class: 'vd-po-title' }, h('h3', null, 'MSL \u00b7 PLAYOFFS'), h('span', { class: 'vd-po-badge' }, '\u25cf SINGLE ELIMINATION')),
+            h('p', { class: 'vd-po-sub' }, '8 teams \u00b7 Quarterfinals \u2192 Semifinals \u2192 Final \u00b7 BO3 \u00b7 One loss = elimination.'),
+            h('div', { class: 'vd-po-scroll', role: 'region', 'aria-label': 'Scrollable playoff bracket', tabindex: '0' },
+              h('div', { class: 'vd-po-bracket' },
+                poCol('QUARTERFINALS', '4 MATCHES \u00b7 NOV 24\u201325', poPair(poGame('QF 1', st.qf[0]), poGame('QF 2', st.qf[1])), poPair(poGame('QF 3', st.qf[2]), poGame('QF 4', st.qf[3]))),
+                poCol('SEMIFINALS', '2 MATCHES', poPair(poGame('SF 1', st.sf[0]), poGame('SF 2', st.sf[1]))),
+                poCol('GRAND FINAL', '1 MATCH', poGame('FINAL', st.final)),
+                poCol('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '\ud83c\udfc6'), poSlot(st.champion, null, null, null)))))),
           h('div', { class: 'sw-wrap' }, h('div', { class: 'sw-list c-list ok', style: 'max-width:520px' }, h('h4', null, 'Qualified from Stage 3 (' + st.qualified.length + '/8)'), h('div', { class: 'sl' }, qs))),
           h('p', { class: 'msr-zone-note' }, st.ready ? (window.MSR_S4_DRAW ? 'Quarterfinal pairs: official draw by the organiser (Nov 23). Seed numbers = Stage 3 record order.' : 'Seeding: Stage 3 record (3\u20130, 3\u20131, 3\u20132), ties by Stage 3 seed. Quarterfinals 1v8, 4v5, 2v7, 3v6.') : 'The bracket is drawn once all 8 teams have qualified from Stage 3 (Nov 21).'));
       }
