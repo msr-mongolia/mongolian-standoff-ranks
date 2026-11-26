@@ -7608,13 +7608,14 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     });
     // Stage 4 playoff matches with an announced date/time (MSR_S4_DRAW).
     var s4; try { s4 = window.msrS4(); } catch (e) { s4 = null; }
-    (s4 ? s4.qf : []).forEach(function (mt, i) {
-      if (!mt.date) return;
+    (s4 ? s4.qf.map(function (x, i) { return [x, 'Quarterfinal ' + (i + 1)]; }).concat(s4.sf.map(function (x, i) { return [x, 'Semifinal ' + (i + 1)]; })).concat([[s4.final, 'Final']]) : []).forEach(function (pr) {
+      var mt = pr[0], lab = pr[1];
+      if (!mt || !mt.date) return;
       var a = mt.a && window.msrTagToCode ? window.msrTagToCode(mt.a) : null, b = mt.b && window.msrTagToCode ? window.msrTagToCode(mt.b) : null;
       if (!a || !b) return;
       while (MBY[nid]) nid++;
       var d = mt.date, wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(YEAR, Math.floor(d / 100) - 1, d % 100).getDay()], r = mt.res;
-      var m = { id: nid, s3fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Playoff \u00b7 Quarterfinal ' + (i + 1) + ' \u00b7 Bo3', state: r ? 'done' : 'soon', day: d === TODAY ? 'Today' : ('0' + Math.floor(d / 100)).slice(-2) + '/' + ('0' + d % 100).slice(-2) + ' \u00b7 ' + wd, date: d, when: r ? 'FINAL' : (mt.time || 'TBA'), bo: 3, maps: [] };
+      var m = { id: nid, s3fix: true, a: a, b: b, ev: 'MSL Major S2', st: 'Playoff \u00b7 ' + lab + ' \u00b7 Bo3', state: r ? 'done' : 'soon', day: d === TODAY ? 'Today' : ('0' + Math.floor(d / 100)).slice(-2) + '/' + ('0' + d % 100).slice(-2) + ' \u00b7 ' + wd, date: d, when: r ? 'FINAL' : (mt.time || 'TBA'), bo: 3, maps: [] };
       if (r) { var ka = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }, le = (window.MSR_SCREENSHOT_MATCHES || []).filter(function (e) { return e.stage4 && ((ka(e.a) === ka(mt.a) && ka(e.b) === ka(mt.b)) || (ka(e.a) === ka(mt.b) && ka(e.b) === ka(mt.a))); })[0], same = le && ka(le.a) === ka(mt.a);
         if (le && (le.maps || []).length) m.maps = le.maps.map(function (x) { return [x.map, same ? x.aScore : x.bScore, same ? x.bScore : x.aScore, 'done', x.map]; });
         else { var wa = r.aw > r.bw; m.when = 'AUTO WIN'; m.autoWin = true; m.maps = [['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win'], ['Auto win', wa ? 1 : 0, wa ? 0 : 1, 'done', 'Auto win']]; } }
