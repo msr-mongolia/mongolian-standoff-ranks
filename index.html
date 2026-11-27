@@ -3524,6 +3524,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   };
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
   window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
+    { nick: 'Amarshi', from: '2990', to: 'DS_DF21A75C3BF321AE7FC0010D', toNick: 'Amarshi', date: 1127 }, // 2990 RED -> Omega ForceZ (same Game ID 136499554, confirmed roster Nov 27, newest post wins)
     { nick: 'Vyse', from: 'EVKZ', to: 'DS_12FA441844EEC25CFF987BF4', toNick: 'Vyse', date: 1127 }, // EVERLASTED -> TEAM ZUURAA (same Game ID 91615764, confirmed roster Nov 27, newest post wins)
     { nick: 'Ash', from: 'OMEN', to: 'DS_12FA441844EEC25CFF987BF4', toNick: 'Ash', date: 1127 }, // Omen Esports -> TEAM ZUURAA (same Game ID 103402717, confirmed roster Nov 27, newest post wins)
     { nick: 'Wish', from: '6vmp6', to: 'DS_318C2EBC826F7A5AC3CFAF9D', toNick: 'Wish', date: 1127 }, // VAMP EMPIRE -> X5IVEL (same Game ID 120043530, confirmed roster Nov 27, newest post wins)
@@ -9145,6 +9146,11 @@ MSR_ROSTER_UPDATES.ds_f1c9fdb9daa7bf021b336dee = {"roster": ["Absolute", "Sunpay
 MSR_ROSTER_UPDATES.ds_22f83076aa7a9955ce280140 = {"roster": ["Shriden", "ITACHI", "hunter", "Kane", "Danceandshot", "Hulan", "Last", "strax"], "ids": {"Shriden": "101992662", "ITACHI": "160074350", "hunter": "35630116", "Kane": "246475729", "Danceandshot": "281513980", "Hulan": "262801304", "Last": "156256780", "strax": "244788921"}};
 // Discord confirmed roster 2026-11-27 15:42 UTC: Revolution [5rv]: Nox (170165462) new. 1 change, 7/8.
 MSR_ROSTER_UPDATES.ds_revolution_5rv_1572281163 = {"roster": ["shastiR.", "Autoftz", "YouDie", "SMASH", "CartiB", "mafia", "Nox"], "ids": {"shastiR.": "104162229", "Autoftz": "271533522", "YouDie": "102507746", "SMASH": "248869027", "CartiB": "195850009", "mafia": "240755035", "Nox": "170165462"}};
+// Discord confirmed roster 2026-11-27 15:52 UTC: 2990 white re-post unchanged (7/7).
+// Discord confirmed roster 2026-11-27 16:30 UTC: Omega ForceZ [0kz]: Amarshi (136499554) in from 2990 RED (newest post wins); Sasori (70025020) out -> free agent. 1 change, 8/8.
+MSR_ROSTER_UPDATES.ds_df21a75c3bf321ae7fc0010d = {"roster": ["Flying", "Tsgto", "Rinny", "Fearshi", "Aggod", "Raigo", "Future", "Amarshi"], "ids": {"Flying": "86957098", "Tsgto": "260849747", "Rinny": "87020431", "Fearshi": "113615278", "Aggod": "265497724", "Raigo": "195904702", "Future": "144811608", "Amarshi": "136499554"}};
+// 2990 RED: Amarshi (136499554) -> Omega ForceZ (newest post Nov 27).
+MSR_ROSTER_UPDATES.ds_9c51ef940061fe6ea58d69fc = {"roster": ["Keni", "souuxyz", "Woojin", "SKIZOGOD", "excell.", "Acse", "OxiMx"], "ids": {"Keni": "73661447", "souuxyz": "250358072", "Woojin": "143150323", "SKIZOGOD": "244383589", "excell.": "89549903", "Acse": "207003927", "OxiMx": "112556182"}};
     registrations.forEach(function (row) {
       var u=MSR_ROSTER_UPDATES[row.id];if(!u)return;
       // Keep departures from the imported previous roster even on a fresh page load.
