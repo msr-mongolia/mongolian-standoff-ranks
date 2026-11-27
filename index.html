@@ -8235,6 +8235,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   // Group results (Bo3). Use the draw labels above: { g: 'A', a: 'X5L', b: '7ADD', as: 2, bs: 1 } (add auto: true for a forfeit).
   window.MSR_SPS_RESULTS = window.MSR_SPS_RESULTS || [];
   // Who rests in Round 1 (Nov 28) per group when it is not the default. Admin Nov 27: Okz and Eknz rest tomorrow, the teams that would have rested play.
+  window.MSR_SPS_LOGOS = window.MSR_SPS_LOGOS || { '100ra': 'assets/img/100ra-logo.jpg?v=1' }; // admin Nov 27
   window.MSR_SPS_FIRST_REST = window.MSR_SPS_FIRST_REST || { F: 'Okz', H: 'Eknz' };
   // Match days/times (draw labels). Veto posts give the time; the day comes from here (veto posts are often made the day before).
   window.MSR_SPS_SCHEDULE = window.MSR_SPS_SCHEDULE || [
@@ -8263,6 +8264,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     function team(sl, size) {
       if (!sl) return h('span', { class: 'sps-tm' }, h('span', { class: 'sps-ini' }, '?'), h('span', null, 'TBD'));
       if (sl.code) return h('a', { class: 'sps-tm', href: teamHref(sl.code), title: T[sl.code].n }, crest(sl.code, size || 'sm'), h('span', null, T[sl.code].n));
+      var lg = (window.MSR_SPS_LOGOS || {})[sl.label]; // logo for a team that is not registered on the site yet
+      if (lg) return h('span', { class: 'sps-tm', title: sl.label }, h('img', { class: 'sps-ini', src: lg, alt: '', style: 'object-fit:cover;padding:0' }), h('span', null, sl.label));
       return h('span', { class: 'sps-tm', title: sl.label }, h('span', { class: 'sps-ini' }, sl.label.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase()), h('span', null, sl.label));
     }
     function result(g, a, b) {
