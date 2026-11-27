@@ -5286,7 +5286,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       h('section',{style:'background:#22272e;border:1px solid #404955;border-radius:18px;padding:22px'},
         h('div',{style:'font-size:13px;color:#e7bf68;font-weight:800;letter-spacing:1px'},'MSR PREMIUM'),
         h('h2',{style:'margin:10px 0;font-size:26px'},'VIP CLAN'),
-        item('300 ELO хүртэл үнэгүй','Шинэ баг 50 ELO-оос эхэлнэ. 300 ELO хүртэл VIP шаардлагагүй. 300-аас дээш өсөхөд VIP Clan эрх шаардлагатай.'),
+        item('300 ELO хүртэл үнэгүй','Шинэ баг 50 ELO-оос эхэлнэ. Хожвол ELO нэмэгдэж, хожигдвол хожлын онооны тал орчим хасагдана, тиймээс тоглосоор байгаа баг бүр цаг хугацааны явцад 300 хүрнэ. 300 ELO хүртэл VIP шаардлагагүй. 300-аас дээш өсөхөд VIP Clan эрх шаардлагатай.'),
         item('Хязгааргүй ELO өсөлт','VIP идэвхтэй баг 300 ELO-оос дээш хязгааргүй өсөх боломжтой. VIP хугацаа дуусвал ELO царцана. ELO нь баталгаажсан тоглолтын үр дүнгээр өөрчлөгдөнө.'),
         item('Team Page хөгжүүлэлт','Багийн профайлын нэмэлт тохиргоо, танилцуулга болон илүү дэлгэрэнгүй мэдээлэл.'),
         item('Team Profile Banner','Багийн профайл дээр өөрийн banner зураг байрлуулах боломж.'),
@@ -5529,7 +5529,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       mm.maps = [[shuf(MAPS)[0], null, null, 'soon', 'Decider']]; soon.push(mm);
     }
     // 4) ranking (elo)
-    // MSR ELO v2: initial 50, free tier cap 300, match gain <=35 and loss <=40. VIP ELO requires verified entitlement from backend.
+    // MSR ELO v3 (Nov 27): initial 50, free tier cap 300, match gain <=35, loss = half the gain (<=18). VIP ELO requires verified entitlement from backend.
     // All completed maps and their round scores contribute to the result.
     function elo(until) {
       var r = {}; CODES.forEach(function (c) { r[c] = { e: 50, w: 0, l: 0, f: [] }; });
@@ -5551,12 +5551,12 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         var mapMargin = Math.abs(sa - sb) / completed;
         var roundMargin = Math.abs(roundsA - roundsB) / Math.max(1, roundsA + roundsB);
         // Match-based ELO: 2:0 / 2:1 map margin, total round margin,
-        // and opponent strength all affect the award. +35 / -40 are caps,
+        // and opponent strength all affect the award. +35 is the cap (loss = half the gain),
         // not fixed values for every win or loss.
         var dominance = Math.min(1, 0.55 * mapMargin + 0.45 * roundMargin);
         var upsetBonus = 1 - expected;
         var gain = Math.max(1, Math.min(35, Math.round(8 + 19 * dominance + 8 * upsetBonus)));
-        var loss = Math.max(1, Math.min(40, Math.round(gain * 40 / 35)));
+        var loss = Math.max(1, Math.round(gain / 2)); // admin rule Nov 27: a loss costs half of what the win gives
         winner.e = Math.min(300, winner.e + gain);
         loser.e = Math.max(0, loser.e - loss);
         winner.w++; loser.l++; winner.f.push('w'); loser.f.push('l');
@@ -5667,8 +5667,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
           'MSR VIP CLAN нь Mongolian Standoff Ranks системд бүртгэлтэй багуудад зориулсан нэмэлт эрх юм.',
           'ҮНЭ: Эхний сарын урамшуулал 5,000₮. Үндсэн үнэ 10,000₮ / 30 хоног. Эрх төлбөр баталгаажсанаас хойш 30 хоног хүчинтэй.',
           'ДАВУУ ТАЛ: Бүх баг 50 ELO-оос эхэлнэ. Энгийн баг 300 ELO хүртэл үнэгүй өснө. VIP CLAN эрхтэй баг 300-аас дээш ELO цуглуулах боломжтой. Багийн профайлд тусгай banner, өнгө, VIP тэмдэглэгээ ашиглах болон захиалгат гоёлын item хийлгэх боломжтой.',
-          'VIP ЭРХ ДУУССАН ҮЕД: Өмнө цуглуулсан ELO устахгүй. 300 ELO-оос дээш оноотой баг хожсон ч ELO нэмэгдэхгүй; харин хожигдвол нэг match-д 40 хүртэл ELO хасагдана. 300-аас доош буувал энгийн эрхээр 300 хүртэл өсөж болно. VIP-гүй хугацааны хожлын ELO-г дараа нь нөхөж олгохгүй.',
-          'ЖИШЭЭ: 500 ELO-той багийн VIP дууслаа. Хожвол 500 хэвээр. Дараа нь 25 ELO хасуулж хожигдвол 475 болно. Дахин хожсон ч 475 хэвээр. VIP сунгасны дараа 475-аас үргэлжлүүлэн өснө.',
+          'VIP ЭРХ ДУУССАН ҮЕД: Өмнө цуглуулсан ELO устахгүй. 300 ELO-оос дээш оноотой баг хожсон ч ELO нэмэгдэхгүй; харин хожигдвол ELO хасагдана (хожлын онооны тал орчим). 300-аас доош буувал энгийн эрхээр 300 хүртэл өсөж болно. VIP-гүй хугацааны хожлын ELO-г дараа нь нөхөж олгохгүй.',
+          'ЖИШЭЭ: 500 ELO-той багийн VIP дууслаа. Хожвол 500 хэвээр. Дараа нь 15 ELO хасуулж хожигдвол 485 болно. Дахин хожсон ч 485 хэвээр. VIP сунгасны дараа 485-аас үргэлжлүүлэн өснө.',
           'ТӨЛБӨРИЙН ЗАРЦУУЛАЛТ: VIP CLAN-ийн бүх орлогыг MSR сайтын хөгжүүлэлт, сервер, автоматжуулалт болон 6 сар тутмын шилдэг TOP 20 тоглогчийн шагналын санд зарцуулна. Шагналын хэмжээ, хуваарилалтыг урьдчилан зарлана.',
           'ХЭРХЭН АВАХ ВЭ: MSR-д бүртгэлтэй багийн төлөөлөгч админтай Discord-оор холбогдож хүсэлт гаргана. Төлбөр баталгаажсаны дараа VIP эрх идэвхжинэ. Төлбөр төлөөгүй бол VIP эрх идэвхжихгүй, гэхдээ баг энгийн эрхээр тэмцээнд оролцож болно.',
           'MSR АДМИНЫ DISCORD: https://discord.com/users/1128188613230874727 — VIP CLAN авах, төлбөр баталгаажуулах болон бусад асуудлаар энэ холбоосоор холбогдоно.',
@@ -9381,6 +9381,8 @@ MSR_ROSTER_UPDATES.ds_3c306378316be910c904ffd9 = {"roster": ["ApriLOnTop!", "kei
       var hasAuto=((au.a||0)+(au.b||0))>0;
       var da=fullAuto?(aw>bw?10:-13):Math.round((32*((aw>bw?1:0)-ex)+1.4*diff/count)*mult)+(hasAuto?(aw>bw?10:-13):0);
       var db=fullAuto?(bw>aw?10:-13):Math.round((32*((bw>aw?1:0)-(1-ex))-1.1*diff/count)*mult)+(hasAuto?(bw>aw?10:-13):0);
+      // Admin rule (Nov 27): a loss costs half as much as before, so teams that keep playing each other all climb to 300 over time (VIP needed above 300).
+      da=da<0?Math.round(da/2):da; db=db<0?Math.round(db/2):db;
       [[m.a,da,aw>bw,ra,pa],[m.b,db,bw>aw,rb,pb]].filter(function(x){return !(m.oneSided&&x[0]===m.b);}).forEach(function(x){
         var tag=x[0],before=x[3],after=Math.max(0,Math.min(vipTagActive(tag)?Infinity:Math.max(300,before),before+x[1])),prev=x[4]||{w:0,l:0};
         adjustments.push({tag:tag,points:after,change:after-before,w:prev.w+(x[2]?1:0),l:prev.l+(x[2]?0:1),d:msrAdjDay(m.date),opp:(tag===m.a?m.b:m.a),sc:(tag===m.a?aw+'-'+bw:bw+'-'+aw),won:!!x[2],md:m.date});
