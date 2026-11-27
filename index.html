@@ -8275,6 +8275,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       showGroup(cur);
       return h('div', null,
         h('a', { class: 'back', href: '#events', svg: ICON.back + '<span>All events</span>' }),
+        ev.banner ? h('div', { class: 'sps-page-banner', role: 'img', 'aria-label': 'SPS banner', style: 'background:url(' + ev.banner + ') center / cover no-repeat #050505;aspect-ratio:2171/465;width:100%;border-radius:14px;margin:6px 0 14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)' }) : null,
         pageHead('SPS · Standoff Pro Series', 'Group stage (round robin) → Single elimination playoff · 40 teams · ' + (ev.dt || 'TBA'), dc),
         h('div', { class: 'vd-facts' }, ev.tier ? h('span', { class: 'ap-tier t-' + ev.tier }, '★ ' + ev.tier + ' TIER') : null, h('span', { class: 'ap-chip' }, 'Prize pool ' + (ev.prize || 'TBA')), (ev.dist || []).map(function (x) { return h('span', { class: 'ap-chip' }, x); }), (ev.notes || []).map(function (x) { return h('span', { class: 'ap-chip' }, x); }), h('span', { class: 'ap-chip' }, '40 teams')),
         stageStrip, stage1, stage2);
