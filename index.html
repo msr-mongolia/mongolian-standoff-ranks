@@ -8790,6 +8790,19 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if(isP2990(clanCode)){var p29Prof=node.querySelector('.prof');if(p29Prof)p29Prof.classList.add('msr-p2990-back1');}
         if(isDxiiiTeam)applyClanVideoBack1(node,'assets/dxiii_back1.mp4');
         if(isOkzTeam(clanCode))applyClanVideoBack1(node,'assets/0kz_back1.mp4?v=1');
+        if(clanCode==='DS_433CD7FC8060E08212804DE5'){ // Valhallaz VIP+ golden sticker (admin Nov 28); same placement as Omninox
+          var vhProf=node.querySelector('.prof');
+          if(vhProf&&!vhProf.querySelector(':scope>.msr-team-gold-sticker')){
+            vhProf.classList.add('msr-omninox-profile');
+            var vhSrc='assets/valhallaz_gold_sticker.webp?v=1';
+            vhProf.appendChild(h('button',{type:'button',class:'msr-team-gold-sticker','aria-label':'Enlarge Valhallaz golden sticker',onclick:function(){
+              var d=document.createElement('dialog');d.className='msr-gold-sticker-dialog';
+              d.appendChild(h('button',{type:'button',class:'msr-gold-sticker-close',onclick:function(){d.close();}},'\u00d7'));
+              d.appendChild(h('span',{class:'msr-holo-wrap'},h('img',{src:vhSrc,alt:'Valhallaz golden sticker'})));
+              d.addEventListener('close',function(){d.remove();});document.body.appendChild(d);d.showModal();
+            }},h('img',{src:vhSrc,alt:'Valhallaz golden sticker'})));
+          }
+        }
         if(isOmninoxTeam(clanCode)){
           applyClanVideoBack1(node,'assets/omninox_back1.mp4?v=1');
           var oxProf=node.querySelector('.prof');
