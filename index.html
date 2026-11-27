@@ -7837,6 +7837,38 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         box.appendChild(panel);
         vpShown = true;
       })();
+      /* SPS group stage on the Matches page. Day/time: window.MSR_SPS_SCHEDULE (admin, e.g. { a: 'R9', b: '76Rs', date: 1128, time: '21:30' } with draw labels),
+         else the SPS veto post (time; day of the post in Ulaanbaatar time). Pairs with neither are not listed. */
+      (function () {
+        var G = window.MSR_SPS_GROUPS; if (YEAR !== 2026 || !G || APM.sel < 1127) return;
+        var k = function (v) { return String(v || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+        var rows = [];
+        Object.keys(G).forEach(function (g) {
+          var sl = (G[g] || []).map(function (x) { return { label: x[0], code: (x[1] || []).filter(function (c) { return T[c]; })[0] || null }; });
+          for (var i = 0; i < sl.length; i++) for (var j = i + 1; j < sl.length; j++) {
+            var A = sl[i], B = sl[j]; if (!A.code || !B.code) continue;
+            if (APM.fav && !isFav(A.code) && !isFav(B.code)) continue;
+            var sc = (window.MSR_SPS_SCHEDULE || []).find(function (x) { return (k(x.a) === k(A.label) && k(x.b) === k(B.label)) || (k(x.a) === k(B.label) && k(x.b) === k(A.label)); }) || null;
+            var vt = null; try { vt = msrVetoFor(A.code, B.code); if (vt && String(vt.source_timestamp) < '2026-11-27') vt = null; } catch (e) { vt = null; }
+            var day = sc && sc.date ? sc.date : 0;
+            if (!day && vt) { var d = new Date(new Date(vt.source_timestamp).getTime() + 8 * 3600e3); day = (d.getUTCMonth() + 1) * 100 + d.getUTCDate(); }
+            if (!day || day !== APM.sel) continue;
+            var r = (window.MSR_SPS_RESULTS || []).find(function (x) { return x.g === g && ((k(x.a) === k(A.label) && k(x.b) === k(B.label)) || (k(x.a) === k(B.label) && k(x.b) === k(A.label))) && x.as !== x.bs; }) || null;
+            var flip = r && k(r.a) !== k(A.label), tm = (sc && sc.time) || (vt && /^\d{1,2}:\d{2}$/.test(vt.time_label || '') ? vt.time_label : '');
+            rows.push({ team_a: T[A.code].n, team_b: T[B.code].n, _keys: [A.code, B.code], _bo: 'Bo3', time_label: tm, _g: g,
+              _res: r ? { a: flip ? r.bs : r.as, b: flip ? r.as : r.bs, auto: !!r.auto } : null, _href: '#event/sps' });
+          }
+        });
+        if (!rows.length) return;
+        rows.sort(function (x, y) { return (x.time_label ? 0 : 1) - (y.time_label ? 0 : 1) || String(x.time_label).localeCompare(String(y.time_label)) || x._g.localeCompare(y._g); });
+        var byG = {}; rows.forEach(function (r) { (byG[r._g] = byG[r._g] || []).push(r); });
+        var spOpen = APM.spOpen !== false, panel = h('section', { class: 'ap-card msr-rel-tournament msr-void-day' });
+        panel.appendChild(h('button', { type: 'button', class: 'ap-gh', 'aria-expanded': String(spOpen), onclick: function () { APM.spOpen = !spOpen; draw(); } },
+          evLogo('SPS'), h('b', null, 'SPS · Group stage'), h('span', { class: 'ct' }, rows.length + (rows.length === 1 ? ' match' : ' matches')), h('i', { class: 'chv', svg: APIC.chev })));
+        if (spOpen) panel.appendChild(h('div', { class: 'msr-rel-group-panel' }, Object.keys(byG).sort().map(function (g) { return [h('h2', { class: 'msr-rel-group-heading' }, 'Group ' + g), h('div', { class: 'msr-rel-match-list' }, byG[g].map(msrRelMatchCard))]; })));
+        box.appendChild(panel);
+        vpShown = true;
+      })();
       var list = ALLM.filter(function (m) { return (m.state !== 'done' || m.s3fix) && !m.s2fix && m.date === APM.sel && (!APM.fav || isFav(m.a) || isFav(m.b)); }).sort(function (a, b) { return String(a.when || '').localeCompare(String(b.when || '')) || a.id - b.id; });
       var groups = [], seen = {};
       list.forEach(function (m) { if (!seen[m.ev]) { seen[m.ev] = []; groups.push([m.ev, seen[m.ev]]); } seen[m.ev].push(m); });
@@ -8152,6 +8184,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   };
   // Group results (Bo3). Use the draw labels above: { g: 'A', a: 'X5L', b: '7ADD', as: 2, bs: 1 } (add auto: true for a forfeit).
   window.MSR_SPS_RESULTS = window.MSR_SPS_RESULTS || [];
+  // Match days/times (draw labels). Veto posts give the time; the day comes from here (veto posts are often made the day before).
+  window.MSR_SPS_SCHEDULE = window.MSR_SPS_SCHEDULE || [
+    { a: 'R9', b: '76Rs', date: 1128, time: '21:30' } // #sps-veto post Nov 27: "21:30 11sar28"
+  ];
   // Playoff results by bracket slot, e.g. { r16: [[2, 0], null, ...], qf: [], sf: [], final: [2, 1] }. Teams come from the group standings.
   window.MSR_SPS_PO = window.MSR_SPS_PO || { r16: [], qf: [], sf: [], final: null };
   (function () {
