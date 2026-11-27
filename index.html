@@ -2088,7 +2088,7 @@ background-color:#171a1e!important
 <style id="msr-omninox-vip">
 #app .prof.msr-omninox-profile{position:relative;padding-right:150px!important}
 #app .prof.msr-omninox-profile>.msr-team-gold-sticker{position:absolute!important;right:16px;top:50%;transform:translateY(-50%);width:112px;height:112px;z-index:5;border:0;background:transparent;cursor:zoom-in;filter:drop-shadow(0 0 13px rgba(238,178,54,.33))}
-#app .prof.msr-omninox-profile>.msr-team-gold-sticker img{width:100%;height:100%;object-fit:contain}
+#app .prof.msr-omninox-profile>.msr-team-gold-sticker img{width:100%;height:100%;object-fit:contain}#app .prof.msr-omninox-profile.msr-valhallaz-profile{padding-right:190px!important}#app .prof.msr-omninox-profile.msr-valhallaz-profile>.msr-team-gold-sticker{width:170px;height:170px;right:10px}@media(max-width:650px){#app .prof.msr-omninox-profile.msr-valhallaz-profile{padding-right:120px!important}#app .prof.msr-omninox-profile.msr-valhallaz-profile>.msr-team-gold-sticker{width:118px;height:118px;right:2px}}
 @media(max-width:650px){#app .prof.msr-omninox-profile{padding-right:88px!important}#app .prof.msr-omninox-profile>.msr-team-gold-sticker{right:5px;width:76px;height:76px}}
 </style>
 <style id="msr-team-gold-sticker">
@@ -8793,8 +8793,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if(clanCode==='DS_433CD7FC8060E08212804DE5'){ // Valhallaz VIP+ golden sticker (admin Nov 28); same placement as Omninox
           var vhProf=node.querySelector('.prof');
           if(vhProf&&!vhProf.querySelector(':scope>.msr-team-gold-sticker')){
-            vhProf.classList.add('msr-omninox-profile');
-            var vhSrc='assets/valhallaz_gold_sticker.webp?v=1';
+            vhProf.classList.add('msr-omninox-profile','msr-valhallaz-profile');
+            var vhSrc='assets/valhallaz_gold_sticker.webp?v=2';
             vhProf.appendChild(h('button',{type:'button',class:'msr-team-gold-sticker','aria-label':'Enlarge Valhallaz golden sticker',onclick:function(){
               var d=document.createElement('dialog');d.className='msr-gold-sticker-dialog';
               d.appendChild(h('button',{type:'button',class:'msr-gold-sticker-close',onclick:function(){d.close();}},'\u00d7'));
