@@ -3071,7 +3071,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   [['Anvex','S'],['MPS','S'],['SATT','A'],['SPS','S'],['MSL Season','A'],['MSL Rising Star','B']].forEach(function (x) {
     EVENTS.push({ n: x[0], st: 'soon', dt: 'Coming soon', loc: 'TBA', teams: 'TBA', prize: 'TBA', tier: x[1] });
   });
-  EVENTS.forEach(function (e) { if (e.n === 'SPS') { e.img = 'assets/sps_logo.jpg'; e.id = 'sps'; e.discord = 'https://discord.gg/fExHtF3xk'; e.teams = 40; e.prize = '1 000 000₮'; e.dist = ['🥇 500 000₮', '🥈 300 000₮', '🥉 200 000₮']; e.notes = ['🎟️ Entry fee 35 000₮']; } }); // Standoff Pro Series
+  EVENTS.forEach(function (e) { if (e.n === 'SPS') { e.img = 'assets/sps_logo.jpg'; e.id = 'sps'; e.discord = 'https://discord.gg/fExHtF3xk'; e.banner = 'assets/sps_card_banner.jpg?v=1'; e.teams = 40; e.prize = '1 000 000₮'; e.dist = ['🥇 500 000₮', '🥈 300 000₮', '🥉 200 000₮']; e.notes = ['🎟️ Entry fee 35 000₮']; } }); // Standoff Pro Series
   EVENTS[0].tier = 'S';
   EVENTS.forEach(function (e) { if (e.st === 'soon' && e.dt === 'Coming soon' && !e.id && e.n !== 'SPS') e.locked = true; }); // announced but not open yet
   EVENTS.splice(1, 0, { id: 'void', n: 'VOID Tournament', st: 'now', dt: 'Nov 13, 2026', loc: 'TBA', teams: 16, prize: '200 000₮', img: 'assets/void_tournament.jpg?v=2', discord: 'https://discord.gg/fH3w2wYYs',
@@ -7876,7 +7876,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var go = e.id && e.discord ? { onclick: function () { location.hash = '#event/' + e.id; }, style: 'cursor:pointer' } : {};
       if (feat && e.img) return h(tag, Object.assign({ class: 'ap-card ap-ev feat', href: href }, go),
         h('div', { class: 'ban', style: 'background-image:url(' + e.img + ')' }, status(e), h('div', { class: 'cap' }, h('b', null, e.n), h('span', null, e.dt + ' · ' + e.loc))), chips(e), dcBtn(e));
-      return h(tag, Object.assign({ class: 'ap-card ap-ev' + (e.locked ? ' locked' : ''), href: href }, go), h('div', { class: 'top' }, e.locked && !e.img ? h('span', { class: 'ap-evlg lg', svg: LOCK_SVG.replace(/width="14" height="14"/, 'width="22" height="22"') }) : evLogo(e.n, 'lg'), h('div', { class: 'tt' }, h('b', null, e.n), status(e)), dcBtn(e)), chips(e));
+      return h(tag, Object.assign({ class: 'ap-card ap-ev' + (e.locked ? ' locked' : ''), href: href }, go), e.banner ? h('div', { class: 'ap-evbanner', role: 'img', 'aria-label': e.n + ' banner', style: 'background:url(' + e.banner + ') center / cover no-repeat #050505;aspect-ratio:2171/465;width:100%;border-radius:12px;margin-bottom:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)' }) : null, h('div', { class: 'top' }, e.locked && !e.img ? h('span', { class: 'ap-evlg lg', svg: LOCK_SVG.replace(/width="14" height="14"/, 'width="22" height="22"') }) : evLogo(e.n, 'lg'), h('div', { class: 'tt' }, h('b', null, e.n), status(e)), dcBtn(e)), chips(e));
     }
     function weekTitle() {
       var d = new Date(), dow = (d.getDay() + 6) % 7, a = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dow), b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6);
