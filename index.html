@@ -5930,7 +5930,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var otrCode=Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));});
     var fixed={ 'onetruereign':otrCode,'clanonetruereign':otrCode, '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','sixlencepurple':'SIXP','sixlence':'SIXL','8mna':'MANAI','1nfyx':'INFYX','0men':'OMEN' };
     if(fixed[n]&&T[fixed[n]])return fixed[n];
-    var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk',purevampempire:'VAMP EMPIRE',pure:'VAMP EMPIRE',vampempire:'VAMP EMPIRE','6vmp6':'VAMP EMPIRE',qn:'Valhallaz',quietnight:'Valhallaz',valhalla:'Valhallaz','7z1':'Valhallaz'}; // Quiet Night [qn] renamed Valhallaz [7z1] (Nov 28): old posts still resolve; EXCL is not an alias (admin)
+    var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk',purevampempire:'VAMP EMPIRE',pure:'VAMP EMPIRE',vampempire:'VAMP EMPIRE','6vmp6':'VAMP EMPIRE'};
     var wanted=norm(aliases[n]||name),keys=Object.keys(T);
     return keys.find(function(k){return norm(T[k].n)===wanted;})||
       keys.find(function(k){return norm(String(T[k].n).replace(/\s*\([^)]*\)\s*$/,''))===wanted;})||
@@ -9229,7 +9229,7 @@ MSR_ROSTER_UPDATES.ds_500fec15c03baecad3137925 = {"roster": ["tsetsEe", "Keu", "
       }
       if (row.id === 'ds_458bacb8c3562ea7529ea5bb') row = Object.assign({}, row, { tag: 'WarKz' });
       if (row.id === 'ds_d6455b09e6560710b5a3666c' && !String(row.tag || '').trim()) row = Object.assign({}, row, { tag: 'R9' }); // Restine: tag from the Nov 25 confirmed post (CTG: R9)
-      if (row.id === 'ds_433cd7fc8060e08212804de5') row = Object.assign({}, row, { name: 'Valhallaz', tag: '7z1', /* admin Nov 28: Quiet Night [qn] renamed Valhallaz [7z1] */ logo_url: 'https://gqepygqtgosvpfirahgd.supabase.co/storage/v1/object/public/team-logos/ds_d4ebfb85e8a8dcfea9a7d05e.jpg' }); // Exclusive [EXCL] renamed Quiet Night [qn] (Discord Nov 26-27, same roster)
+      if (row.id === 'ds_433cd7fc8060e08212804de5') row = Object.assign({}, row, { name: 'Quiet Night', tag: 'qn', logo_url: 'https://gqepygqtgosvpfirahgd.supabase.co/storage/v1/object/public/team-logos/ds_d4ebfb85e8a8dcfea9a7d05e.jpg' }); // Exclusive [EXCL] renamed Quiet Night [qn] (Discord Nov 26-27, same roster)
       if (row.id === 'ds_4e839731b0f6161a89d9fe17') row = Object.assign({}, row, { name: 'ZyroxEsport' }); // drop flag emoji from the Nov 25 post
       if (row.id === 'ds_61b25460306dc8da991ce05e') row = Object.assign({}, row, { name: 'MNKTeam-(black)' }); // Nov 26 post 'MNKTeam : [ Black ]' parsed as 'MNKTeam :'
       // Staff-confirmed NAME CHANGE PFP: game ID 255941851 is Bad, not the old device-suffixed nickname.
