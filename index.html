@@ -5930,7 +5930,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var otrCode=Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));});
     var fixed={ 'onetruereign':otrCode,'clanonetruereign':otrCode, '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','sixlencepurple':'SIXP','sixlence':'SIXL','8mna':'MANAI','1nfyx':'INFYX','0men':'OMEN' };
     if(fixed[n]&&T[fixed[n]])return fixed[n];
-    var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk',purevampempire:'VAMP EMPIRE',pure:'VAMP EMPIRE',vampempire:'VAMP EMPIRE','6vmp6':'VAMP EMPIRE',qn:'Valhallaz',quietnight:'Valhallaz',excl:'Valhallaz',exclusive:'Valhallaz',valhalla:'Valhallaz','7z1':'Valhallaz'}; // Quiet Night [qn] / Exclusive renamed Valhallaz [7z1] (Nov 28): old posts still resolve
+    var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk',purevampempire:'VAMP EMPIRE',pure:'VAMP EMPIRE',vampempire:'VAMP EMPIRE','6vmp6':'VAMP EMPIRE',qn:'Valhallaz',quietnight:'Valhallaz',valhalla:'Valhallaz','7z1':'Valhallaz'}; // Quiet Night [qn] renamed Valhallaz [7z1] (Nov 28): old posts still resolve; EXCL is not an alias (admin)
     var wanted=norm(aliases[n]||name),keys=Object.keys(T);
     return keys.find(function(k){return norm(T[k].n)===wanted;})||
       keys.find(function(k){return norm(String(T[k].n).replace(/\s*\([^)]*\)\s*$/,''))===wanted;})||
