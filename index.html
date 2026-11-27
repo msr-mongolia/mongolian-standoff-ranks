@@ -8218,67 +8218,150 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       });
       return h('div', null,
         h('div', { class: 'sps-card' }, h('h3', null, 'GROUP ' + g + ' STANDINGS'), table,
-          h('p', { class: 'sps-note' }, 'Green: top 2 advance to the Playoff · Red: out · Bo3, a 2–0 win = 3 pts, 2–1 = 2 pts, 1–2 = 1 pt.')),
+          h('p', { class: 'sps-note' }, 'Green: top 2 advance to the Swiss stage · Red: out · Bo3, a 2–0 win = 3 pts, 2–1 = 2 pts, 1–2 = 1 pt.')),
         h('div', { class: 'sps-card' }, h('h3', null, 'GROUP ' + g + ' MATCHES · ' + st.played + '/' + st.total), list));
     }
-    function playoff() {
+    // ---- Stage 2: 16-team Swiss (top 2 of every group). 3 wins = Playoff, 3 losses = out. ----
+    // Results: window.MSR_SPS_SWISS = [{ a: 'X5L', b: '7ADD', as: 2, bs: 1 }] using the draw labels (auto: true for a forfeit).
+    // Optional fixed pairings per round from the organiser: window.MSR_SPS_SWISS_PAIRS = { 2: [['A1','C2'], ...] } (seed keys like A1 = group A winner).
+    window.MSR_SPS_SWISS = window.MSR_SPS_SWISS || [];
+    window.MSR_SPS_SWISS_PAIRS = window.MSR_SPS_SWISS_PAIRS || {};
+    var SW_R1 = [['A1', 'B2'], ['C1', 'D2'], ['E1', 'F2'], ['G1', 'H2'], ['B1', 'A2'], ['D1', 'C2'], ['F1', 'E2'], ['H1', 'G2']];
+    function swissSeeds() {
       var tbl = {}; GROUPS.forEach(function (g) { tbl[g] = standings(g); });
-      function seed(g, p) { var t = tbl[g]; return t.done ? t.rows[p - 1].sl : null; }
+      var seeds = [];
+      [1, 2].forEach(function (pos) { GROUPS.forEach(function (g) { var t = tbl[g]; seeds.push({ key: g + pos, sl: t.done ? t.rows[pos - 1].sl : null, seed: seeds.length + 1 }); }); });
+      return seeds;
+    }
+    function swResult(a, b) {
+      if (!a.sl || !b.sl) return null;
+      var r = (window.MSR_SPS_SWISS || []).filter(function (x) { return (key(x.a) === key(a.sl.label) && key(x.b) === key(b.sl.label)) || (key(x.a) === key(b.sl.label) && key(x.b) === key(a.sl.label)); })[0];
+      if (!r || r.as === r.bs) return null;
+      return key(r.a) === key(a.sl.label) ? { a: r.as, b: r.bs, auto: !!r.auto } : { a: r.bs, b: r.as, auto: !!r.auto };
+    }
+    function swiss() {
+      var seeds = swissSeeds(), byKey = {}; seeds.forEach(function (t) { t.w = 0; t.l = 0; t.met = {}; byKey[t.key] = t; });
+      var rounds = [], ready = seeds.every(function (t) { return t.sl; });
+      for (var r = 1; r <= 5; r++) {
+        var active = seeds.filter(function (t) { return t.w < 3 && t.l < 3; }), pairs = [];
+        var fixed = (window.MSR_SPS_SWISS_PAIRS || {})[r];
+        if (r === 1) pairs = SW_R1.map(function (p) { return [byKey[p[0]], byKey[p[1]]]; });
+        else if (fixed && fixed.length) pairs = fixed.map(function (p) { return [byKey[p[0]], byKey[p[1]]]; }).filter(function (p) { return p[0] && p[1]; });
+        else {
+          var pools = {};
+          active.forEach(function (t) { var k = t.w + '-' + t.l; (pools[k] = pools[k] || []).push(t); });
+          Object.keys(pools).sort(function (x, y) { return (+y[0] - +x[0]) || (+x[2] - +y[2]); }).forEach(function (k) {
+            var list = pools[k].slice().sort(function (x, y) { return x.seed - y.seed; });
+            // Highest seed meets the lowest seed it has not played yet.
+            while (list.length > 1) {
+              var top = list.shift(), j = list.length - 1;
+              while (j > 0 && top.met[list[j].key]) j--;
+              pairs.push([top, list.splice(j, 1)[0]]);
+            }
+          });
+        }
+        var games = pairs.map(function (p) { var res = ready ? swResult(p[0], p[1]) : null; return { a: p[0], b: p[1], rec: p[0].w + '-' + p[0].l, res: res }; });
+        rounds.push({ n: r, games: games });
+        var allDone = ready && games.length && games.every(function (g) { return g.res; });
+        if (!allDone) break;
+        games.forEach(function (g) { var aw = g.res.a > g.res.b; g.a.met[g.b.key] = g.b.met[g.a.key] = true; if (aw) { g.a.w++; g.b.l++; } else { g.b.w++; g.a.l++; } });
+        if (!seeds.some(function (t) { return t.w < 3 && t.l < 3; })) break;
+      }
+      return { seeds: seeds, rounds: rounds, ready: ready };
+    }
+    window.msrSpsSwiss = function () { return swiss(); }; // read-only helper (current Swiss state)
+    function slName(sl) { return sl ? (sl.code ? T[sl.code].n : sl.label) : 'TBD'; }
+    function swissPanel() {
+      var sw = swiss();
+      function side(t, won, lost, score) {
+        var sl = t && t.sl, o = { class: 'vd-po-player' + (!sl ? ' tbd' : '') + (won ? ' won' : lost ? ' lost' : '') };
+        if (sl && sl.code) { o.href = teamHref(sl.code); o.title = T[sl.code].n; }
+        return h(sl && sl.code ? 'a' : 'div', o, sl && sl.code ? crest(sl.code, 'sm') : null, h('span', { class: 'name' }, sl ? slName(sl) : t.key + ' · TBD'), score != null ? h('span', { class: 'score' }, String(score)) : null);
+      }
+      var cols = sw.rounds.map(function (rd) {
+        var byRec = {}; rd.games.forEach(function (g) { (byRec[g.rec] = byRec[g.rec] || []).push(g); });
+        return h('div', { class: 'vd-po-column' }, h('div', { class: 'vd-po-colhead' }, h('span', null, 'ROUND ' + rd.n), h('small', null, rd.games.length + ' MATCHES')),
+          h('div', { class: 'vd-po-round' }, Object.keys(byRec).map(function (rec) {
+            return [h('div', { class: 'sps-rd' }, rec + ' POOL'), byRec[rec].map(function (g) {
+              var d = g.res, aw = d && d.a > d.b, bw = d && d.b > d.a;
+              return h('div', { class: 'vd-po-game' }, h('div', { class: 'vd-po-game-label' }, h('span', null, g.a.key + ' v ' + g.b.key), h('span', null, d ? (d.auto ? 'W/O' : 'FINAL SCORE') : 'BO3 · TBD')), side(g.a, aw, bw, d && d.a), side(g.b, bw, aw, d && d.b));
+            })];
+          })));
+      });
+      var futures = 5 - sw.rounds.length;
+      for (var f = 0; f < futures; f++) cols.push(h('div', { class: 'vd-po-column' }, h('div', { class: 'vd-po-colhead' }, h('span', null, 'ROUND ' + (sw.rounds.length + f + 1)), h('small', null, 'TBD')), h('div', { class: 'vd-po-round' }, h('div', { class: 'sps-bye' }, 'Pairings appear when the previous round is finished.'))));
+      var q = sw.seeds.filter(function (t) { return t.w >= 3; }).sort(function (x, y) { return x.l - y.l || x.seed - y.seed; });
+      var out = sw.seeds.filter(function (t) { return t.l >= 3; }).sort(function (x, y) { return y.w - x.w || x.seed - y.seed; });
+      function list(title, arr, cls) { return h('div', { class: 'sps-card' }, h('h3', null, title), arr.length ? arr.map(function (t) { return h('div', { class: 'sps-m done', style: 'display:flex;justify-content:space-between' }, h('div', { class: cls, style: 'min-width:0' }, team(t.sl), h('i')), h('span', { class: 'sps-sc' }, t.w + '-' + t.l)); }) : h('p', { class: 'sps-note' }, 'No team yet.')); }
+      return h('div', null,
+        h('section', { class: 'vd-po-card', 'aria-label': 'SPS Swiss stage' },
+          h('div', { class: 'vd-po-title' }, h('h3', null, 'SPS · STAGE 2 · SWISS'), h('span', { class: 'vd-po-badge' }, '● 16 TEAMS')),
+          h('p', { class: 'vd-po-sub' }, 'Top 2 of every group · BO3 · 3 wins = Playoff, 3 losses = eliminated · up to 5 rounds. Each round pairs teams with the same record (higher seed vs lower seed, no rematches).'),
+          sw.ready ? null : h('p', { class: 'sps-note' }, 'Teams fill in once their group is finished. Round 1: A1–B2, C1–D2, E1–F2, G1–H2, B1–A2, D1–C2, F1–E2, H1–G2.'),
+          h('div', { class: 'vd-po-scroll', role: 'region', 'aria-label': 'Scrollable Swiss rounds', tabindex: '0' },
+            h('div', { class: 'vd-po-bracket', style: 'grid-template-columns:repeat(5,minmax(190px,1fr));min-width:1000px;align-items:start' }, cols))),
+        list('QUALIFIED · PLAYOFF (' + q.length + '/8)', q, 'w'), list('ELIMINATED (' + out.length + '/8)', out, 'l'));
+    }
+    // ---- Stage 3: 8-team single elimination (3-0 teams seeded first, then 3-1, then 3-2). ----
+    function playoff() {
+      var sw = swiss();
+      var q = sw.seeds.filter(function (t) { return t.w >= 3; }).sort(function (x, y) { return x.l - y.l || x.seed - y.seed; });
+      var full = q.length === 8;
+      function seedSl(i) { return full ? q[i].sl : { label: 'Seed ' + (i + 1) + ' · TBD', code: null }; }
       var po = window.MSR_SPS_PO || {};
       function game(label, a, b, sc) {
         var done = sc && sc[0] !== sc[1], aw = done && sc[0] > sc[1], bw = done && sc[1] > sc[0];
         function side(sl, won, lost, score) {
           var o = { class: 'vd-po-player' + (!sl ? ' tbd' : '') + (won ? ' won' : lost ? ' lost' : '') };
           if (sl && sl.code) { o.href = teamHref(sl.code); o.title = T[sl.code].n; }
-          return h(sl && sl.code ? 'a' : 'div', o, sl && sl.code ? crest(sl.code, 'sm') : null, h('span', { class: 'name' }, sl ? (sl.code ? T[sl.code].n : sl.label) : 'TBD'), done ? h('span', { class: 'score' }, String(score)) : null);
+          return h(sl && sl.code ? 'a' : 'div', o, sl && sl.code ? crest(sl.code, 'sm') : null, h('span', { class: 'name' }, slName(sl)), done ? h('span', { class: 'score' }, String(score)) : null);
         }
         return { el: h('div', { class: 'vd-po-game' }, h('div', { class: 'vd-po-game-label' }, h('span', null, label), h('span', null, done ? 'FINAL SCORE' : 'BO3 · TBD')), side(a, aw, bw, sc && sc[0]), side(b, bw, aw, sc && sc[1])), win: done ? (aw ? a : b) : null };
       }
-      function seedLabel(g, p) { return { label: g + p + ' · TBD', code: null }; }
-      var r16 = R16.map(function (x, i) { return game('R16 · ' + x[0] + x[1] + ' v ' + x[2] + x[3], seed(x[0], x[1]) || seedLabel(x[0], x[1]), seed(x[2], x[3]) || seedLabel(x[2], x[3]), (po.r16 || [])[i]); });
-      var qf = [0, 1, 2, 3].map(function (i) { return game('QF ' + (i + 1), r16[i * 2].win, r16[i * 2 + 1].win, (po.qf || [])[i]); });
+      var QF = [[0, 7], [3, 4], [1, 6], [2, 5]];
+      var qf = QF.map(function (p, i) { return game('QF ' + (i + 1) + ' · #' + (p[0] + 1) + ' v #' + (p[1] + 1), seedSl(p[0]), seedSl(p[1]), (po.qf || [])[i]); });
       var sf = [0, 1].map(function (i) { return game('SF ' + (i + 1), qf[i * 2].win, qf[i * 2 + 1].win, (po.sf || [])[i]); });
       var fin = game('FINAL', sf[0].win, sf[1].win, po.final);
       function col(name, note, games) { return h('div', { class: 'vd-po-column' }, h('div', { class: 'vd-po-colhead' }, h('span', null, name), h('small', null, note)), h('div', { class: 'vd-po-round' }, games)); }
       function pairs(list) { var out = []; for (var i = 0; i < list.length; i += 2) out.push(h('div', { class: 'vd-po-pair' }, list[i].el, list[i + 1].el)); return out; }
       var champ = fin.win;
       return h('section', { class: 'vd-po-card', 'aria-label': 'SPS Playoff' },
-        h('div', { class: 'vd-po-title' }, h('h3', null, 'SPS · PLAYOFF'), h('span', { class: 'vd-po-badge' }, '● SINGLE ELIMINATION')),
-        h('p', { class: 'vd-po-sub' }, '16 teams (top 2 of every group) · Round of 16 → Quarterfinals → Semifinals → Final · BO3 · One loss = elimination.'),
+        h('div', { class: 'vd-po-title' }, h('h3', null, 'SPS · STAGE 3 · PLAYOFF'), h('span', { class: 'vd-po-badge' }, '● SINGLE ELIMINATION')),
+        h('p', { class: 'vd-po-sub' }, '8 teams from the Swiss stage · Quarterfinals → Semifinals → Final · BO3 · One loss = elimination.'),
         h('div', { class: 'vd-po-scroll', role: 'region', 'aria-label': 'Scrollable playoff bracket', tabindex: '0' },
-          h('div', { class: 'vd-po-bracket', style: 'grid-template-columns:repeat(5,minmax(172px,1fr));min-width:1010px' },
-            col('ROUND OF 16', '8 MATCHES', pairs(r16)),
+          h('div', { class: 'vd-po-bracket', style: 'grid-template-columns:repeat(4,minmax(180px,1fr));min-width:800px' },
             col('QUARTERFINALS', '4 MATCHES', pairs(qf)),
             col('SEMIFINALS', '2 MATCHES', pairs(sf)),
             col('GRAND FINAL', '1 MATCH', fin.el),
-            col('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '🏆'), h('div', { class: 'vd-po-player' + (champ ? ' won' : ' tbd') }, champ && champ.code ? crest(champ.code, 'sm') : null, h('span', { class: 'name' }, champ ? (champ.code ? T[champ.code].n : champ.label) : 'TBD')))))),
-        h('div', { class: 'vd-po-note' }, 'ⓘ Round of 16: each group winner meets the runner-up of the neighbouring group (A1–B2, B1–A2, C1–D2 …). A slot fills once its group has finished.'));
+            col('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '🏆'), h('div', { class: 'vd-po-player' + (champ ? ' won' : ' tbd') }, champ && champ.code ? crest(champ.code, 'sm') : null, h('span', { class: 'name' }, slName(champ))))))),
+        h('div', { class: 'vd-po-note' }, 'ⓘ Seeds: 3-0 teams first, then 3-1, then 3-2 (ties by Swiss seed). QF: #1–#8, #4–#5, #2–#7, #3–#6.'));
     }
     V.event = function (arg) {
       if (arg !== 'sps') return baseEvent.apply(this, arguments);
       var ev = EVENTS.filter(function (e) { return e.id === 'sps'; })[0] || {};
       var dc = ev.discord ? h('a', { class: 'ap-dc', href: ev.discord, target: '_blank', rel: 'noopener noreferrer' }, 'Discord') : null;
       var stageStrip = h('div', { class: 'msr-stage-tabs', role: 'tablist', 'aria-label': 'SPS stages' },
-        [['1', 'Group stage'], ['2', 'Playoff']].map(function (x) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': x[0], 'aria-selected': String(x[0] === '1') }, x[1]); }));
+        [['1', 'Group stage'], ['2', 'Swiss'], ['3', 'Playoff']].map(function (x) { return h('button', { type: 'button', class: 'msr-stage-tab', role: 'tab', 'data-stage': x[0], 'aria-selected': String(x[0] === '1') }, x[1]); }));
       var cur = 'A', body = h('div');
       var tabs = h('div', { class: 'sps-tabs', role: 'tablist', 'aria-label': 'SPS groups' }, GROUPS.map(function (g) { return h('button', { type: 'button', role: 'tab', 'data-g': g, 'aria-selected': String(g === cur) }, g); }));
       var stage1 = h('section', null, h('div', { class: 'vd-sec' }, h('h3', null, 'Group stage · Round robin'), h('span', null, '40 teams · 8 groups of 5 · Bo3 · top 2 advance')), tabs, body);
-      var stage2 = h('section', { style: 'display:none' }, playoff());
+      var stage2 = h('section', { style: 'display:none' }), stage3 = h('section', { style: 'display:none' });
       function showGroup(g) { cur = g; [].slice.call(tabs.children).forEach(function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-g') === g)); }); body.replaceChildren(groupPanel(g)); }
       tabs.addEventListener('click', function (e) { var b = e.target.closest('button[data-g]'); if (b) showGroup(b.getAttribute('data-g')); });
       stageStrip.addEventListener('click', function (e) {
         var b = e.target.closest('.msr-stage-tab'); if (!b) return; var n = b.getAttribute('data-stage');
         [].slice.call(stageStrip.children).forEach(function (t) { t.setAttribute('aria-selected', String(t === b)); });
-        stage1.style.display = n === '1' ? '' : 'none'; stage2.style.display = n === '2' ? '' : 'none';
-        if (n === '2') stage2.replaceChildren(playoff());
+        stage1.style.display = n === '1' ? '' : 'none'; stage2.style.display = n === '2' ? '' : 'none'; stage3.style.display = n === '3' ? '' : 'none';
+        if (n === '2') stage2.replaceChildren(swissPanel());
+        if (n === '3') stage3.replaceChildren(playoff());
       });
       showGroup(cur);
       return h('div', null,
         h('a', { class: 'back', href: '#events', svg: ICON.back + '<span>All events</span>' }),
         ev.banner ? h('div', { class: 'sps-page-banner', role: 'img', 'aria-label': 'SPS banner', style: 'background:url(' + ev.banner + ') center / cover no-repeat #050505;aspect-ratio:2171/465;width:100%;border-radius:14px;margin:6px 0 14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)' }) : null,
-        pageHead('SPS · Standoff Pro Series', 'Group stage (round robin) → Single elimination playoff · 40 teams · ' + (ev.dt || 'TBA'), dc),
+        pageHead('SPS · Standoff Pro Series', 'Group stage (round robin) → Swiss (16) → Playoff (8) · 40 teams · ' + (ev.dt || 'TBA'), dc),
         h('div', { class: 'vd-facts' }, ev.tier ? h('span', { class: 'ap-tier t-' + ev.tier }, '★ ' + ev.tier + ' TIER') : null, h('span', { class: 'ap-chip' }, 'Prize pool ' + (ev.prize || 'TBA')), (ev.dist || []).map(function (x) { return h('span', { class: 'ap-chip' }, x); }), (ev.notes || []).map(function (x) { return h('span', { class: 'ap-chip' }, x); }), h('span', { class: 'ap-chip' }, '40 teams')),
-        stageStrip, stage1, stage2);
+        stageStrip, stage1, stage2, stage3);
     };
   })();
 
