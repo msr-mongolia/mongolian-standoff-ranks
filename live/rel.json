@@ -1,4 +1,4 @@
-[{"team_a":"R9","team_b":"76rs","time_label":null,"picks":[{"map": "Sandstone", "team": "76rs"}, {"map": "Province", "team": "R9"}],"decider":"Rust","bans":[],"source_timestamp":"2026-11-27T06:47:10.731+00:00"}, 
+[{"team_a":"R9","team_b":"76rs","time_label":null,"picks":[{"map": "Sandstone", "team": "76rs"}, {"map": "Province", "team": "R9"}],"decider":"Rust","bans":[],"source_timestamp":"2026-11-27T11:58:27.209+00:00"}, 
  {"team_a":"0kz","team_b":"2990 red","time_label":null,"picks":[{"map": "Rust", "team": "> 0kz"}, {"map": "Province", "team": "> 2990 red"}],"decider":"Hanami","bans":[],"source_timestamp":"2026-11-26T09:44:10.235+00:00"}, 
  {"team_a":"Vamp Empire","team_b":"2990 Red","time_label":null,"picks":[{"map": "Province", "team": "6vmp6"}, {"map": "Rust", "team": "2990 red"}],"decider":"Dune","bans":[],"source_timestamp":"2026-11-25T05:04:00.361+00:00"}, 
  {"team_a":"**0kz","team_b":"evkz**","time_label":null,"picks":[{"map": "Breeze", "team": "> evkz"}, {"map": "Dune", "team": "> 0kz"}],"decider":"Province","bans":[],"source_timestamp":"2026-11-23T17:40:08.887+00:00"}, 
