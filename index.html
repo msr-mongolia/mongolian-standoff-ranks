@@ -4634,9 +4634,9 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if (t) { o.href = teamHref(c); o.title = t.n; }
         return h(t ? 'a' : 'div', o, t ? crest(c, 'sm') : null, t && seed ? h('span', { class: 'seed' }, '#' + seed) : null, h('span', { class: 'name' }, t ? t.n : 'TBD'), score !== null && score !== undefined ? h('span', { class: 'score' }, String(score)) : null);
       }
-      function poGame(label, mt) {
+      function poGame(label, mt, cls) {
         var r = mt && mt.res, done = r && r.aw !== r.bw, aw = done && r.aw > r.bw, bw = done && r.bw > r.aw;
-        return h('div', { class: 'vd-po-game' },
+        return h('div', { class: 'vd-po-game' + (cls ? ' ' + cls : '') },
           h('div', { class: 'vd-po-game-label' }, h('span', null, label), h('span', null, done ? (r.auto ? 'AUTO WIN' : 'FINAL SCORE') : (mt && mt.date ? Math.floor(mt.date / 100) + '/' + mt.date % 100 + ' ' + (mt.time || '') : 'BO3 \u00b7 TBD'))),
           poSlot(mt && mt.a, mt && mt.seedA, aw, bw, done && !r.auto ? r.aw : null), poSlot(mt && mt.b, mt && mt.seedB, bw, aw, done && !r.auto ? r.bw : null));
       }
@@ -4654,8 +4654,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
               h('div', { class: 'vd-po-bracket' },
                 poCol('QUARTERFINALS', '4 MATCHES \u00b7 NOV 24\u201325', poPair(poGame('QF 1', st.qf[0]), poGame('QF 2', st.qf[1])), poPair(poGame('QF 3', st.qf[2]), poGame('QF 4', st.qf[3]))),
                 poCol('SEMIFINALS', '2 MATCHES', poPair(poGame('SF 1', st.sf[0]), poGame('SF 2', st.sf[1]))),
-                poCol('GRAND FINAL', '1 MATCH', poGame('FINAL', st.final)),
-                poCol('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '\ud83c\udfc6'), poSlot(st.champion, null, null, null)))))),
+                poCol('GRAND FINAL', '+ 3RD PLACE', poGame('FINAL', st.final), poGame('3RD PLACE', st.third, 'vd-po-third')),
+                poCol('CHAMPION', 'WINNER', h('div', { class: 'vd-po-champion' }, h('span', { class: 'icon' }, '\ud83c\udfc6'), poSlot(st.champion, null, null, null)), h('div', { class: 'vd-po-champion vd-po-bronze' }, h('span', { class: 'icon' }, '\ud83e\udd49'), poSlot(st.bronze, null, null, null)))))),
           h('div', { class: 'sw-wrap' }, h('div', { class: 'sw-list c-list ok', style: 'max-width:520px' }, h('h4', null, 'Qualified from Stage 3 (' + st.qualified.length + '/8)'), h('div', { class: 'sl' }, qs))),
           h('p', { class: 'msr-zone-note' }, st.ready ? (window.MSR_S4_DRAW ? 'Quarterfinal pairs: official draw by the organiser (Nov 23). Seed numbers = Stage 3 record order.' : 'Seeding: Stage 3 record (3\u20130, 3\u20131, 3\u20132), ties by Stage 3 seed. Quarterfinals 1v8, 4v5, 2v7, 3v6.') : 'The bracket is drawn once all 8 teams have qualified from Stage 3 (Nov 21).'));
       }
@@ -7668,7 +7668,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     sf[0].date = 1126; sf[0].time = '20:00'; // SF1 EKS vs EknZ (admin, Nov 26)
     sf[1].date = 1126; sf[1].time = '22:00'; // SF2 0kz vs 2990 RED (admin, Nov 26)
     var fin = mk(sf[0].winner, sf[1].winner);
-    return { ready: ready, qualified: q.map(function (r) { return r.tag; }), order: order, qf: qf, sf: sf, final: fin, champion: fin.winner };
+    // 3rd place match: the two semifinal losers (EKS vs 2990 RED, Nov 27).
+    var los = function (m) { return m.winner ? (kk(m.winner) === kk(m.a) ? m.b : m.a) : null; };
+    var third = mk(los(sf[0]), los(sf[1])); third.date = 1127;
+    return { ready: ready, qualified: q.map(function (r) { return r.tag; }), order: order, qf: qf, sf: sf, final: fin, champion: fin.winner, third: third, bronze: third.winner };
   };
   function ensureS3Matches() {
     for (var q = ALLM.length - 1; q >= 0; q--) if (ALLM[q].s3fix) { delete MBY[ALLM[q].id]; ALLM.splice(q, 1); }
@@ -7704,7 +7707,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     });
     // Stage 4 playoff matches with an announced date/time (MSR_S4_DRAW).
     var s4; try { s4 = window.msrS4(); } catch (e) { s4 = null; }
-    (s4 ? s4.qf.map(function (x, i) { return [x, 'Quarterfinal ' + (i + 1)]; }).concat(s4.sf.map(function (x, i) { return [x, 'Semifinal ' + (i + 1)]; })).concat([[s4.final, 'Final']]) : []).forEach(function (pr) {
+    (s4 ? s4.qf.map(function (x, i) { return [x, 'Quarterfinal ' + (i + 1)]; }).concat(s4.sf.map(function (x, i) { return [x, 'Semifinal ' + (i + 1)]; })).concat([[s4.final, 'Final'], [s4.third, '3rd place']]) : []).forEach(function (pr) {
       var mt = pr[0], lab = pr[1];
       if (!mt || !mt.date) return;
       var a = mt.a && window.msrTagToCode ? window.msrTagToCode(mt.a) : null, b = mt.b && window.msrTagToCode ? window.msrTagToCode(mt.b) : null;
@@ -8024,6 +8027,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         .vd-po-column:not(:last-child) .vd-po-pair:after{content:'';position:absolute;top:25%;bottom:25%;right:-19px;border-right:1px solid rgba(111,163,151,.35)}
         .vd-po-column:not(:last-child) .vd-po-pair:before{content:'';position:absolute;right:-38px;top:50%;width:19px;border-top:1px solid rgba(111,163,151,.35)}
         .vd-po-champion{width:100%;padding:16px 12px;border:1px solid rgba(255,207,100,.45);border-radius:13px;background:linear-gradient(140deg,rgba(236,176,56,.12),rgba(236,176,56,.02));text-align:center}
+        .vd-po-round{position:relative}.vd-po-column .vd-po-game.vd-po-third{position:absolute;left:0;right:0;bottom:0;border-style:dashed;border-color:rgba(205,127,50,.45)}.vd-po-column .vd-po-game.vd-po-third:after{display:none}
+        .vd-po-champion.vd-po-bronze{position:absolute;left:0;right:0;bottom:0;width:auto;padding:10px 12px;border-color:rgba(205,127,50,.5);background:linear-gradient(140deg,rgba(205,127,50,.14),rgba(205,127,50,.02))}.vd-po-bronze .icon{font-size:18px;margin:0 0 4px}
         .vd-po-champion .icon{font-size:24px;display:block;margin:0 0 7px}.vd-po-champion .vd-po-player{justify-content:center;border:0}.vd-po-champion .vd-po-player .name{flex:0 1 auto}
         .vd-po-note{display:flex;gap:8px;align-items:flex-start;margin-top:10px;padding:10px 12px;border:1px dashed rgba(255,255,255,.15);border-radius:10px;color:#aebbb8;font-size:11px;line-height:1.55}
         @media(max-width:760px){.vd-po-card{padding:14px;border-radius:14px}.vd-po-qualified{grid-template-columns:repeat(2,minmax(0,1fr))}.vd-po-sub{font-size:11px}.vd-po-bracket{min-width:750px;grid-template-columns:repeat(4,minmax(155px,1fr));gap:34px}.vd-po-round{height:485px}.vd-po-note{font-size:10.5px}}
