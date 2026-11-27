@@ -6774,7 +6774,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
 
   function openLunarisGoldSticker(){openTeamGoldSticker('TLNRS');}
   function isXvrnDivine(code){var team=T[code]||{};return /^xvrn$/i.test(String(team.tag||'').trim()) || /^xiverion\s+divine$/i.test(String(team.n||'').trim());}
-  function isVampTeamCode(code){var t=(T[code]||{});return /^6vmp6$/i.test(String(t.tag||''))||/vamp\s*empire/i.test(String(t.n||''))||code==='DS_B8BA2EC7E90713C104377816';}
+  function isVampTeamCode(code){var t=(T[code]||{});if(code==='DS_FF990EBDA1BF42F4152EB59B'||/legacy/i.test(String(t.n||'')))return false; /* Vamp Empire Legacy: no VIP (admin Nov 27) - plain team, no VAMP EMPIRE sticker/back1/blood */ return /^6vmp6$/i.test(String(t.tag||''))||/vamp\s*empire/i.test(String(t.n||''))||code==='DS_B8BA2EC7E90713C104377816';}
   function isP2990(code){return code==='P2990'||code==='DS_1BFB44F322EE2EE387B01DA7'||/^2990\s+purple$/i.test(String((T[code]||{}).n||'').trim());}
   function isKgtss(code){var t=(T[code]||{});return String(t.tag||'').toUpperCase()==='KGTSS'||/^knightss$/i.test(String(t.n||'').trim());}
   // Team Discord servers shown on the team page (VIP). theme: 'black' = black-dominant button.
@@ -8548,7 +8548,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         if(accentRGB)accent=brightSignatureColor(parseInt(accentRGB[1],16),parseInt(accentRGB[2],16),parseInt(accentRGB[3],16));
         if(/^xiverion divine$/i.test(clan.n||'')) accent='#F47AB9';
         if(clanCode==='DS_D1764CAF48B74A2D0B7B3E59') accent='#C9D1DC';
-        var isVampTeam=(/^6vmp6$/i.test(String(clan.tag||''))||/vamp\s*empire/i.test(clan.n||'')||clanCode==='DS_B8BA2EC7E90713C104377816'); if(isVampTeam) accent='#d0021b';
+        var isVampTeam=clanCode!=='DS_FF990EBDA1BF42F4152EB59B'&&!/legacy/i.test(String(clan.n||''))&&(/^6vmp6$/i.test(String(clan.tag||''))||/vamp\s*empire/i.test(clan.n||'')||clanCode==='DS_B8BA2EC7E90713C104377816'); if(isVampTeam) accent='#d0021b';
         var isDxiiiTeam=clanCode==='DS_5E67C1B8721D736CA5B5A960'||/^DXIII$/i.test(String(clan.tag||''))||/^(?:dxiii|dxvil13)$/i.test(String(clan.n||'').trim());
         if(isDxiiiTeam) accent='#ff3547'; // DXIII BACK1: neon red to match its samurai banner.
         if(isOmninoxTeam(clanCode)) accent='#9AA1AA'; // Omninox VIP: neutral silver-gray instead of neon green.
@@ -10149,7 +10149,7 @@ function verifiedTeamProfiles(){
  }
  const sharedTag=/2990/.test(title)?(title.includes('purple')?'2990 Purple':title.includes('white')?'2990 White':'2990'):null;
  // Rvurz White shares the 'Rvurz' tag with reveurs inc but is a separate new team (Nov 27): no ledger history of its own yet.
- const code0=/rvurzwhite/.test(title)?'':title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
+ const code0=/rvurzwhite|vampempirelegacy/.test(title)?'':title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  const hashCode=(/^#team\/([^/?]+)/.exec(location.hash)||[])[1];
  // VOID-only teams have no MSL ledger tag: fall back to the team code in the URL so their VOID maps still fill the lineup.
  const code=code0||(hashCode&&window.msrVoidAll().some(r=>[r.a,r.b].some(c=>String(c).toUpperCase()===decodeURIComponent(hashCode).toUpperCase()))?decodeURIComponent(hashCode):'');
@@ -10463,7 +10463,7 @@ function updateFinishedClanMedia(side){
  // Clans whose BACK1 is a looping video (stored as base64 mp4 JSON) get it behind their Results row too.
  const videoAssets={kgtss:'assets/kgtss_back1_video.json?v=smooth-loop-1','2990white':'assets/2990_white_back1_video.json','2990red':'assets/2990_red_back1.mp4?v=2',omv:'assets/omv_back1_video.json?v=1',rvurz:'assets/rvurz_back1_video.json?v=1',vampempire:'assets/vamp_back1_video.json?v=2','6vmp6':'assets/vamp_back1_video.json?v=2',sixlence:'assets/sixl_back1_video.json?v=1',sixlencepurple:'assets/sixp_back1_video.json',sixp:'assets/sixp_back1_video.json',dxiii:'assets/dxiii_back1.mp4',dxvil13:'assets/dxiii_back1.mp4',xiveriondivine:'assets/ScreenRecording_11-04-2026%2015-07-06_1%20%283%29.mov'};
  videoAssets.rvurzwhite='assets/rvurz_white_back1.mp4?v=1'; // Rvurz White shares the Rvurz tag with reveurs inc: match it by name first
- const videoUrl=(normKey(clan?.name)==='rvurzwhite'?videoAssets.rvurzwhite:null)||videoAssets[normKey(clan?.tag||side.dataset.team)]||videoAssets[normKey(clan?.name)];
+ const videoUrl=/legacy/i.test(String(clan?.name||''))?null:(normKey(clan?.name)==='rvurzwhite'?videoAssets.rvurzwhite:null)||videoAssets[normKey(clan?.tag||side.dataset.team)]||videoAssets[normKey(clan?.name)];
  if(videoUrl&&summarySide&&!summarySide.querySelector('.msr-results-back1-video')){
   window.__msrResVid=window.__msrResVid||{};
   const loaded=window.__msrResVid[videoUrl]||(window.__msrResVid[videoUrl]=(/\.json(\?|$)/.test(videoUrl)?fetch(videoUrl).then(r=>{if(!r.ok)throw Error('unavailable');return r.json();}).then(a=>URL.createObjectURL(new Blob([Uint8Array.from(atob(a.base64),c=>c.charCodeAt(0))],{type:'video/mp4'}))):Promise.resolve(videoUrl)).catch(()=>{window.__msrResVid[videoUrl]=null;return null;}));
