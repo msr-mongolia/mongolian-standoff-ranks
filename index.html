@@ -8272,35 +8272,43 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     window.msrSpsSwiss = function () { return swiss(); }; // read-only helper (current Swiss state)
     function slName(sl) { return sl ? (sl.code ? T[sl.code].n : sl.label) : 'TBD'; }
     function swissPanel() {
-      var sw = swiss();
-      function side(t, won, lost, score) {
-        var sl = t && t.sl, o = { class: 'vd-po-player' + (!sl ? ' tbd' : '') + (won ? ' won' : lost ? ' lost' : '') };
-        if (sl && sl.code) { o.href = teamHref(sl.code); o.title = T[sl.code].n; }
-        return h(sl && sl.code ? 'a' : 'div', o, sl && sl.code ? crest(sl.code, 'sm') : null, h('span', { class: 'name' }, sl ? slName(sl) : t.key + ' · TBD'), score != null ? h('span', { class: 'score' }, String(score)) : null);
+      // Same board as MSL Major S2 Stage 3: rounds as columns, one box per record group, qualified / eliminated lists.
+      var sw = swiss(), byRec = {};
+      sw.rounds.forEach(function (rd) { rd.games.forEach(function (g) { (byRec[g.rec] = byRec[g.rec] || []).push(g); }); });
+      var EXPECT = { '0-0': 8, '1-0': 4, '0-1': 4, '2-0': 2, '1-1': 4, '0-2': 2, '2-1': 3, '1-2': 3, '2-2': 3 };
+      function slot(t) {
+        var sl = t && t.sl;
+        if (sl && sl.code && T[sl.code]) return h('a', { class: 'sw-t', href: teamHref(sl.code), title: T[sl.code].n, 'aria-label': T[sl.code].n }, crest(sl.code, 'md'));
+        if (sl) return h('span', { class: 'sw-q', title: sl.label, style: 'font-size:9px;width:auto;min-width:28px;padding:0 3px' }, sl.label.slice(0, 5));
+        return h('span', { class: 'sw-q', title: t && t.key ? t.key : '' }, t && t.key ? t.key : '?');
       }
-      var cols = sw.rounds.map(function (rd) {
-        var byRec = {}; rd.games.forEach(function (g) { (byRec[g.rec] = byRec[g.rec] || []).push(g); });
-        return h('div', { class: 'vd-po-column' }, h('div', { class: 'vd-po-colhead' }, h('span', null, 'ROUND ' + rd.n), h('small', null, rd.games.length + ' MATCHES')),
-          h('div', { class: 'vd-po-round' }, Object.keys(byRec).map(function (rec) {
-            return [h('div', { class: 'sps-rd' }, rec + ' POOL'), byRec[rec].map(function (g) {
-              var d = g.res, aw = d && d.a > d.b, bw = d && d.b > d.a;
-              return h('div', { class: 'vd-po-game' }, h('div', { class: 'vd-po-game-label' }, h('span', null, g.a.key + ' v ' + g.b.key), h('span', null, d ? (d.auto ? 'W/O' : 'FINAL SCORE') : 'BO3 · TBD')), side(g.a, aw, bw, d && d.a), side(g.b, bw, aw, d && d.b));
-            })];
-          })));
-      });
-      var futures = 5 - sw.rounds.length;
-      for (var f = 0; f < futures; f++) cols.push(h('div', { class: 'vd-po-column' }, h('div', { class: 'vd-po-colhead' }, h('span', null, 'ROUND ' + (sw.rounds.length + f + 1)), h('small', null, 'TBD')), h('div', { class: 'vd-po-round' }, h('div', { class: 'sps-bye' }, 'Pairings appear when the previous round is finished.'))));
-      var q = sw.seeds.filter(function (t) { return t.w >= 3; }).sort(function (x, y) { return x.l - y.l || x.seed - y.seed; });
-      var out = sw.seeds.filter(function (t) { return t.l >= 3; }).sort(function (x, y) { return y.w - x.w || x.seed - y.seed; });
-      function list(title, arr, cls) { return h('div', { class: 'sps-card' }, h('h3', null, title), arr.length ? arr.map(function (t) { return h('div', { class: 'sps-m done', style: 'display:flex;justify-content:space-between' }, h('div', { class: cls, style: 'min-width:0' }, team(t.sl), h('i')), h('span', { class: 'sps-sc' }, t.w + '-' + t.l)); }) : h('p', { class: 'sps-note' }, 'No team yet.')); }
-      return h('div', null,
-        h('section', { class: 'vd-po-card', 'aria-label': 'SPS Swiss stage' },
-          h('div', { class: 'vd-po-title' }, h('h3', null, 'SPS · STAGE 2 · SWISS'), h('span', { class: 'vd-po-badge' }, '● 16 TEAMS')),
-          h('p', { class: 'vd-po-sub' }, 'Top 2 of every group · BO3 · 3 wins = Playoff, 3 losses = eliminated · up to 5 rounds. Each round pairs teams with the same record (higher seed vs lower seed, no rematches).'),
-          sw.ready ? null : h('p', { class: 'sps-note' }, 'Teams fill in once their group is finished. Round 1: A1–B2, C1–D2, E1–F2, G1–H2, B1–A2, D1–C2, F1–E2, H1–G2.'),
-          h('div', { class: 'vd-po-scroll', role: 'region', 'aria-label': 'Scrollable Swiss rounds', tabindex: '0' },
-            h('div', { class: 'vd-po-bracket', style: 'grid-template-columns:repeat(5,minmax(190px,1fr));min-width:1000px;align-items:start' }, cols))),
-        list('QUALIFIED · PLAYOFF (' + q.length + '/8)', q, 'w'), list('ELIMINATED (' + out.length + '/8)', out, 'l'));
+      function row(g) {
+        var r = g.res, sa = slot(g.a), sb = slot(g.b);
+        if (r) { var wE = r.a > r.b ? sa : sb, lE = r.a > r.b ? sb : sa; lE.classList.add('sw-lose', r.auto ? 'msr-lg-auto' : 'msr-lg-loss'); wE.classList.add('sw-win', 'msr-lg-win'); }
+        return h('div', { class: 'sw-m' + (r ? ' done' : '') }, sa, h('span', { class: 'sw-vs' }, r ? (r.auto ? 'W/O' : r.a + ':' + r.b) : 'VS'), sb);
+      }
+      function grp(rec) {
+        var games = byRec[rec] || [], rows = games.map(row);
+        for (var i = rows.length; i < EXPECT[rec]; i++) rows.push(h('div', { class: 'sw-m' }, h('span', { class: 'sw-q' }, '?'), h('span', { class: 'sw-vs', 'aria-hidden': 'true' }, 'VS'), h('span', { class: 'sw-q' }, '?')));
+        var w0 = +rec[0], l0 = +rec[2], cc = !w0 && !l0 ? 'blue' : (w0 >= 1 && !l0) ? 'green' : l0 >= 2 ? 'red' : 'yellow';
+        return h('div', { class: 'sw-g c-' + cc }, h('div', { class: 'sw-gh' }, h('b', null, rec.replace('-', '/'))), rows);
+      }
+      function list(title, w, l, n, ok) {
+        var items = sw.seeds.filter(function (t) { return t.w === w && t.l === l; }).map(slot);
+        while (items.length < n) items.push(h('span', { class: 'sw-q' }, '?'));
+        return h('div', { class: 'sw-list c-list ' + (ok ? 'ok' : 'no') }, h('h4', null, title), h('div', { class: 'sl' }, items));
+      }
+      function col(title) { return h('div', { class: 'sw-col' }, h('div', { class: 'sw-ch' }, title), h('div', { class: 'sw-body' }, [].slice.call(arguments, 1))); }
+      return h('div', { class: 'sw2-wrap s3b' },
+        h('div', { class: 'sw2-zh' }, h('b', null, 'Stage 2 · Swiss'), h('span', null, '16 teams (top 2 of every group) · Bo3 · 3 wins = Playoff · 3 losses = eliminated')),
+        h('div', { class: 'sw-wrap' }, h('div', { class: 'sw' },
+          col('Round 1', grp('0-0')),
+          col('Round 2', grp('1-0'), grp('0-1')),
+          col('Round 3', grp('2-0'), grp('1-1'), grp('0-2')),
+          col('Round 4', list('3/0 · QUALIFIED', 3, 0, 2, true), grp('2-1'), grp('1-2'), list('0/3 · ELIMINATED', 0, 3, 2, false)),
+          col('Round 5', list('3/1 · QUALIFIED', 3, 1, 3, true), grp('2-2'), list('1/3 · ELIMINATED', 1, 3, 3, false)),
+          col('Result', list('3/2 · QUALIFIED', 3, 2, 3, true), list('2/3 · ELIMINATED', 2, 3, 3, false)))),
+        h('p', { class: 'msr-zone-note' }, sw.ready ? 'Next rounds are paired inside each record group (highest seed vs lowest seed, no rematches) once the previous round is finished.' : 'Teams fill in once their group is finished. Round 1: A1–B2, C1–D2, E1–F2, G1–H2, B1–A2, D1–C2, F1–E2, H1–G2.'));
     }
     // ---- Stage 3: 8-team single elimination (3-0 teams seeded first, then 3-1, then 3-2). ----
     function playoff() {
