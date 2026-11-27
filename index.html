@@ -3884,7 +3884,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   }));
 
   /* ================= small builders ================= */
-  function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; var lazy = t.img && window.msrLazyCrest && /\/team-logos\//.test(t.img); var el = h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img && !lazy ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); if (lazy) { el.setAttribute('data-lbg', t.img); el.setAttribute('data-lc', t.c); window.msrLazyCrest(el); } return el; }
+  function crest(code, size) { var t = T[code] || { c: '#3B4658', i: '—' }; var lazy = t.img && window.msrLazyCrest && /\/team-logos\//.test(t.img) && !(window.MSR_LOGO_OK && window.MSR_LOGO_OK[t.img]); var el = h('span', { class: 'crest' + (size ? ' ' + size : ''), style: 'background:' + t.c + (t.img && !lazy ? ' url(' + t.img + ') center/cover no-repeat' : ''), 'aria-hidden': 'true' }, t.img ? '' : t.i); if (lazy) { el.setAttribute('data-lbg', t.img); el.setAttribute('data-lc', t.c); window.msrLazyCrest(el); } return el; }
   function series(m) { var a = 0, b = 0; m.maps.forEach(function (x) { if (x[3] === 'done') { if (x[1] > x[2]) a++; else b++; } }); return [a, b]; }
   function pageHead(title, desc, right) { return h('div', { class: 'ph' }, h('div', null, h('h1', null, title), desc ? h('p', null, desc) : null), right || null); }
   function flag() { return h('span', { class: 'flag', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')); }
@@ -9284,7 +9284,7 @@ MSR_ROSTER_UPDATES.ds_3c306378316be910c904ffd9 = {"roster": ["ApriLOnTop!", "kei
       T[code].vipExpiresAt = row.vip_expires_at || null;
       var rankingRow = RANK.find(function (r) { return r[0] === code; });
       if (rankingRow && Number.isFinite(row.points) && row.points >= 0) rankingRow[1] = row.points;
-      if (!(T[code].img && /^assets\//.test(String(T[code].img))) && typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/(?:ros\/)?[a-z0-9_.-]+$/i.test(row.logo_url)) T[code].img = (function(u){return String(u).replace('/team-logos/ds_','/team-logos/thumb/ds_');})(row.logo_url) + (row.source_timestamp ? '?v=' + encodeURIComponent(row.source_timestamp) : '');
+      if (!(T[code].img && /^assets\//.test(String(T[code].img))) && typeof row.logo_url === 'string' && /^https:\/\/gqepygqtgosvpfirahgd\.supabase\.co\/storage\/v1\/object\/public\/team-logos\/(?:ros\/)?[a-z0-9_.-]+$/i.test(row.logo_url)) T[code].img = (window.msrLocalLogo && window.msrLocalLogo(row.id)) || (function(u){return String(u).replace('/team-logos/ds_','/team-logos/thumb/ds_');})(row.logo_url) + (row.source_timestamp ? '?v=' + encodeURIComponent(row.source_timestamp) : '');
       if(row.id==='ds_cc59eccdc299850d94095877')T[code].img='assets/acca_profile.jpg';if(row.id==='ds_645f40c8157d67c9e95312fa')T[code].img='assets/img/rvurz-white.jpg?v=1';if(row.id==='ds_d9c14cf463458e6d605cbbcd')T[code].img='assets/img/zartexy-logo.jpg?v=1';if(row.id==='ds_318c2ebc826f7a5ac3cfaf9d')T[code].img='assets/img/x5l-logo.jpg?v=1';if(row.id==='ds_47546cb9c5d6818be10f3e88')T[code].img='assets/img/ascendd-logo.jpg?v=1';if(row.id==='ds_358780b66f569ece0f4e38f2')T[code].img='assets/img/jxy-logo.jpg?v=1';
       if(row.id==='ds_a4ccd6c33286b304e839a0bc')T[code].img='assets/impact-logo.jpg';
       if(row.id==='ds_9c51ef940061fe6ea58d69fc')T[code].img='assets/2990-red-logo.jpg'; // new 2990 Red logo (Nov 15)
@@ -9550,6 +9550,8 @@ MSR_ROSTER_UPDATES.ds_3c306378316be910c904ffd9 = {"roster": ["ApriLOnTop!", "kei
   }
   applyVerifiedTeamEloToRank();
   /* Team logos live in Supabase storage; when they cannot be loaded show a coloured tag badge instead of an empty grey square. */
+  /* Same-origin 192px WebP copies of the team logos (built by .github/workflows/logo-thumbs.yml): fast, cached, no Supabase egress. */
+  window.msrLocalLogo = function (id) { id = String(id || '').toLowerCase(); var v = (window.MSR_LOGO_THUMBS || {})[id]; return v ? 'assets/logos/' + id + '.webp?v=' + v : null; };
   function msrLogoBadge(fileId) {
     var tag = String((window.MSR_LOGO_TAGS || {})[fileId] || '?').replace(/[<>&"']/g, '').trim().slice(0, 5).toUpperCase() || '?';
     var hue = 0; for (var i = 0; i < fileId.length; i++) hue = (hue * 31 + fileId.charCodeAt(i)) % 360;
@@ -9572,7 +9574,7 @@ MSR_ROSTER_UPDATES.ds_3c306378316be910c904ffd9 = {"roster": ["ApriLOnTop!", "kei
       el.dataset.msrLoaded = '1'; el.dataset.msrCrest = '1';
       var m = /\/team-logos\/(?:thumb\/)?([^\/.?]+)\./i.exec(url), c = el.getAttribute('data-lc') || '#3B4658';
       var probe = new Image();
-      probe.onload = function () { el.style.background = c + ' url("' + url + '") center/cover no-repeat'; };
+      probe.onload = function () { (window.MSR_LOGO_OK = window.MSR_LOGO_OK || {})[url] = 1; el.style.background = c + ' url("' + url + '") center/cover no-repeat'; };
       probe.onerror = function () { if (m) el.style.background = '#1A1A1A url("' + msrLogoBadge(m[1]) + '") center/cover no-repeat'; };
       probe.src = url;
     }
@@ -10056,6 +10058,7 @@ MSR_ROSTER_UPDATES.ds_3c306378316be910c904ffd9 = {"roster": ["ApriLOnTop!", "kei
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="msr-config.js"></script>
+<script src="assets/logos/index.js"></script>
 
 <script src="msr-language.js?v=rule1118c"></script>
 <script>
@@ -10562,7 +10565,7 @@ function syncMsrResultCrests(){
    const clan=msrClanMedia.find(t=>normKey(t.name)===key)||
      msrClanMedia.find(t=>normKey(t.tag)===key)||
      msrClanMedia.find(t=>Object.entries(aliases).some(([tag,name])=>name===key&&normKey(t.tag)===tag));
-   const url=msrLocalClanLogos[key]||(clan?.logo_url?clan.logo_url.replace('/team-logos/ds_','/team-logos/thumb/ds_')+(clan.source_timestamp&&clan.logo_url.indexOf('?')<0?'?v='+encodeURIComponent(clan.source_timestamp):''):clan?.logo_url);
+   const url=msrLocalClanLogos[key]||(clan&&window.msrLocalLogo(clan.id))||(clan?.logo_url?clan.logo_url.replace('/team-logos/ds_','/team-logos/thumb/ds_')+(clan.source_timestamp&&clan.logo_url.indexOf('?')<0?'?v='+encodeURIComponent(clan.source_timestamp):''):clan?.logo_url);
    const crest=side.querySelector('.crest');
    if(!crest||!url||!(/^(https:\/\/|assets\/)/i.test(url)))return;
    crest.style.backgroundImage='url("'+url.replace(/["\\]/g,'')+'")';
@@ -10640,7 +10643,7 @@ function updateFinishedClanMedia(side){
  const img=side.querySelector('.msr-finished-logo');
  if(img){
   const localLogo=msrLocalClanLogos[key]||msrLocalClanLogos[normKey(clan?.id)]||keys.map(k=>msrLocalClanLogos[k]).find(Boolean);
-  let url=localLogo||(clan?.logo_url?clan.logo_url.replace('/team-logos/ds_','/team-logos/thumb/ds_'):clan?.logo_url);
+  let url=localLogo||(clan&&window.msrLocalLogo(clan.id))||(clan?.logo_url?clan.logo_url.replace('/team-logos/ds_','/team-logos/thumb/ds_'):clan?.logo_url);
   if(url&&clan&&clan.source_timestamp&&url.indexOf('?')<0)url+='?v='+encodeURIComponent(clan.source_timestamp);
   if(!url){
    const matching=msrQAMemo('#app img').find(el=>
