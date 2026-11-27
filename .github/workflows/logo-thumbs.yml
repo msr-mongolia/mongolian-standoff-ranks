@@ -1,8 +1,8 @@
 name: logo-thumbs
 # Team logos live in Supabase storage (some are 1-2 MB PNGs) and loaded slowly / flickered on the site.
 # Every 30 minutes: download each team's current logo (msr_discord_teams.logo_url), make a small 192px WebP
-# in assets/logos/<id>.webp and list them in assets/logos/index.js (window.MSR_LOGO_THUMBS). The site serves
-# those same-origin copies first. Commits to main only when something changed, then redeploys Pages.
+# in assets/logos/<id>.webp and list them in assets/logos/index.js (window.MSR_LOGO_THUMBS).
+# Output goes to the separate branch `logo-thumbs` only (like ss-fetch); copying it into main is a normal reviewed commit.
 on:
   schedule:
     - cron: '7,37 * * * *'
@@ -12,7 +12,6 @@ on:
     paths: ['.github/workflows/logo-thumbs.yml']
 permissions:
   contents: write
-  actions: write
 concurrency: logo-thumbs
 jobs:
   thumbs:
@@ -65,13 +64,11 @@ jobs:
           open('assets/logos/index.js', 'w').write('window.MSR_LOGO_THUMBS=' + json.dumps(new, sort_keys=True, separators=(',', ':')) + ';\n')
           print(len(new), 'thumbs')
           PY
-      - name: Commit and redeploy
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Commit to logo-thumbs branch
         run: |
-          git add -A assets/logos
-          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          mkdir -p /tmp/out && cp -r assets/logos /tmp/out/
+          cd /tmp/out
+          git init -q && git checkout -q -b logo-thumbs
           git config user.name msr-bot && git config user.email msr-bot@users.noreply.github.com
-          git commit -qm "Logo thumbnails: refresh assets/logos (192px WebP)"
-          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 5; done
-          gh workflow run pages.yml --ref main || true
+          git add -A && git commit -qm "logo thumbnails $(date -u +%FT%TZ)"
+          git push -fq "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:logo-thumbs
