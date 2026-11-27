@@ -9240,7 +9240,7 @@ MSR_ROSTER_UPDATES.ds_34794a02bac83461450702bc = {"roster": ["Ringsy", "Quantum"
     var pendingRosterPenalties=['8MNA','DRDRX'],rosterPenaltiesApplied=false;
     // Same rule for later confirmed rosters: {tag, day (MMDD of the roster post)}. ELO drops to 0 after the team's
     // earlier matches and is rebuilt from its first match after that day. Rain tzy: 5 new Game IDs in the Nov 20 post.
-    var dateRosterResets=[{tag:'RA1IN',day:1120}];
+    var dateRosterResets=[{tag:'RA1IN',day:1120},{tag:'EKS',day:1126}]; // EKS: 6 players (Savent, J u T t, Label, Vice, Economica, ice.exe) left for Quiet Night [qn] -> ELO 0 after the Nov 26 MSL semifinal (admin, Nov 27); earlier matches, ELO history and player stats kept.
     function applyDateRosterResets(m){
       dateRosterResets.forEach(function(rr){
         if(rr.done||(m&&!((m.a===rr.tag||m.b===rr.tag)&&msrAdjDay(m.date)>rr.day)))return;
