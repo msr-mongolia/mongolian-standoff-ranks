@@ -3499,6 +3499,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   };
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
   window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
+    { nick: 'dot', from: 'SCLAT', to: 'DS_96589BA3B4B1A9105B27FCE2', toNick: 'Headlock', date: 1127 }, // Scarlet -> 5 cheetah (same Game ID 216710028, confirmed roster Nov 27, newest post wins)
     { nick: 'Genius 帝', from: '7ADD', to: 'DS_61B25460306DC8DA991CE05E', toNick: 'Genius', date: 1126 }, // Ascendd -> MNKTeam-(black) (same Game ID 237136488, confirmed roster Nov 26, newest post wins)
     { nick: 'Coldshi', from: '6LC', to: 'DS_61B25460306DC8DA991CE05E', toNick: 'coldshi', date: 1126 }, // Six Lence (removed from MSR) -> free agent -> MNKTeam-(black) (same Game ID 261838109, confirmed roster Nov 26)
     { nick: 'Yeji', from: 'KngZz', to: 'DS_D6455B09E6560710B5A3666C', toNick: 'Yeji', date: 1125 }, // KingZz -> Restine (same Game ID 29609259, confirmed roster Nov 25, newest post wins)
@@ -8693,6 +8694,8 @@ MSR_ROSTER_UPDATES.ds_637035ff96cd88cca260d39b = {"roster": ["MIRROR", "Kronos",
 MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "Beny?", "SarNar", "kasuee", "seiran", "Silky", "Mitee"], "ids": {"Tengri": "146420052", "Yeji": "29609259", "Beny?": "108909522", "SarNar": "137551663", "kasuee": "17297284", "seiran": "184236218", "Silky": "92289964", "Mitee": "82095999"}};
 // Discord confirmed roster 2026-11-26 14:55 UTC (auto import): new team MNKTeam [Black] [MNKT] (separate from MNKT Blue/Purple/Red). Newest roster post wins by Game ID: Genius (237136488, = Ascendd 'Genius 帝') and Merciless (276179806, from Welcome To 9k227); coldshi (261838109) off free agents; West, zest, Nameo, Dory, Formless new. 8/8.
 MSR_ROSTER_UPDATES.ds_61b25460306dc8da991ce05e = {"roster": ["West", "Genius", "zest", "Nameo", "Dory", "Formless", "Merciless", "coldshi"], "ids": {"West": "187450418", "Genius": "237136488", "zest": "219413569", "Nameo": "122170061", "Dory": "156930720", "Formless": "242242431", "Merciless": "276179806", "coldshi": "261838109"}};
+// Discord confirmed roster 2026-11-27 02:56 UTC (auto import): new team 5 cheetah [ceeta]. Newest roster post wins by Game ID: Headlock (216710028, = Scarlet 'dot'); Dray (captain, also listed as sub), viper, wentt, wrath, 617, Five, Kane new. 8/8.
+MSR_ROSTER_UPDATES.ds_96589ba3b4b1a9105b27fce2 = {"roster": ["Dray", "viper", "Headlock", "wentt", "wrath", "617", "Five", "Kane"], "ids": {"Dray": "261588226", "viper": "180326608", "Headlock": "216710028", "wentt": "231132536", "wrath": "229629807", "617": "113088984", "Five": "265062606", "Kane": "190333661"}};
     registrations.forEach(function (row) {
       var u=MSR_ROSTER_UPDATES[row.id];if(!u)return;
       // Keep departures from the imported previous roster even on a fresh page load.
