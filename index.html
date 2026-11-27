@@ -8234,6 +8234,8 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
   };
   // Group results (Bo3). Use the draw labels above: { g: 'A', a: 'X5L', b: '7ADD', as: 2, bs: 1 } (add auto: true for a forfeit).
   window.MSR_SPS_RESULTS = window.MSR_SPS_RESULTS || [];
+  // Who rests in Round 1 (Nov 28) per group when it is not the default. Admin Nov 27: Okz and Eknz rest tomorrow, the teams that would have rested play.
+  window.MSR_SPS_FIRST_REST = window.MSR_SPS_FIRST_REST || { F: 'Okz', H: 'Eknz' };
   // Match days/times (draw labels). Veto posts give the time; the day comes from here (veto posts are often made the day before).
   window.MSR_SPS_SCHEDULE = window.MSR_SPS_SCHEDULE || [
     { a: 'R9', b: '76Rs', date: 1128, time: '21:30' } // #sps-veto post Nov 27: "21:30 11sar28"
@@ -8313,7 +8315,10 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
         h('tbody', null, st.rows.map(function (r, k) {
           return h('tr', { class: st.played ? (k < 2 ? 'q' : 'o') : '' }, h('td', null, String(k + 1)), h('td', null, team(r.sl)), h('td', null, String(r.mp)), h('td', null, String(r.w)), h('td', null, String(r.l)), h('td', null, r.mw + ':' + r.ml), h('td', null, h('b', null, String(r.pts))));
         })));
-      var list = rounds(s.length).map(function (rd, n) {
+      // Admin (Nov 27): a named team rests in Round 1 (Nov 28) instead; that round is moved to the front and the others keep their order.
+      var rr = rounds(s.length), firstBye = (window.MSR_SPS_FIRST_REST || {})[g];
+      if (firstBye) { var bi = -1; rr.forEach(function (rd, k) { if (rd.bye !== null && key(s[rd.bye].label) === key(firstBye)) bi = k; }); if (bi > 0) rr.unshift(rr.splice(bi, 1)[0]); }
+      var list = rr.map(function (rd, n) {
         return [h('div', { class: 'sps-rd' }, 'ROUND ' + (n + 1)),
           rd.pairs.map(function (p) {
             var a = s[p[0]], b = s[p[1]], r = result(g, a.label, b.label), done = r && r.a !== r.b;
