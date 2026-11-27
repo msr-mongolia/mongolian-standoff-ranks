@@ -6184,6 +6184,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var day = sc && sc.date ? sc.date : 0;
     if (!day && vt) { var d = new Date(new Date(vt.source_timestamp).getTime() + 8 * 3600e3); day = (d.getUTCMonth() + 1) * 100 + d.getUTCDate(); }
     var maps = vt ? (vt.picks || []).map(function (p) { return p.map; }).concat(vt.decider ? [vt.decider] : []) : [];
+    if (day && day < 1128) day = 1128; // all SPS matches start Nov 28 (admin)
     return { g: gp.g, date: day || 0, time: (sc && sc.time) || (vt && /^\d{1,2}:\d{2}$/.test(vt.time_label || '') ? vt.time_label : ''), maps: maps, bo: 'Bo3' };
   };
   V.spsmatch = function (arg) {
@@ -7908,6 +7909,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
             var vt = null; try { vt = msrVetoFor(A.code, B.code); if (vt && String(vt.source_timestamp) < '2026-11-27') vt = null; } catch (e) { vt = null; }
             var day = sc && sc.date ? sc.date : 0;
             if (!day && vt) { var d = new Date(new Date(vt.source_timestamp).getTime() + 8 * 3600e3); day = (d.getUTCMonth() + 1) * 100 + d.getUTCDate(); }
+            if (day && day < 1128) day = 1128; // admin Nov 28: all SPS matches start Nov 28 (veto posts made Nov 27 are for Nov 28)
             if (!day || day !== APM.sel) continue;
             var r = (window.MSR_SPS_RESULTS || []).find(function (x) { return x.g === g && ((k(x.a) === k(A.label) && k(x.b) === k(B.label)) || (k(x.a) === k(B.label) && k(x.b) === k(A.label))) && x.as !== x.bs; }) || null;
             var flip = r && k(r.a) !== k(A.label), tm = (sc && sc.time) || (vt && /^\d{1,2}:\d{2}$/.test(vt.time_label || '') ? vt.time_label : '');
