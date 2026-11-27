@@ -5930,7 +5930,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     var otrCode=Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));});
     var fixed={ 'onetruereign':otrCode,'clanonetruereign':otrCode, '0tr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), 'otr':Object.keys(T).find(function(c){return /one true reign/i.test(String(T[c].n||''));}), '6lcpurple':'SIXP','sixlencepurple':'SIXP','sixlence':'SIXL','8mna':'MANAI','1nfyx':'INFYX','0men':'OMEN' };
     if(fixed[n]&&T[fixed[n]])return fixed[n];
-    var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk',purevampempire:'VAMP EMPIRE',pure:'VAMP EMPIRE',vampempire:'VAMP EMPIRE','6vmp6':'VAMP EMPIRE'};
+    var aliases={evkz:'EVERLASTED',reskk:'Asterisk',asterisk:'Asterisk',purevampempire:'VAMP EMPIRE',pure:'VAMP EMPIRE',vampempire:'VAMP EMPIRE','6vmp6':'VAMP EMPIRE',valhallaz:'Valhallaz','7z1':'Valhallaz',qn:'Valhallaz',quietnight:'Valhallaz'}; // veto/result posts made under the old name Quiet Night [qn] still count for Valhallaz
     var wanted=norm(aliases[n]||name),keys=Object.keys(T);
     return keys.find(function(k){return norm(T[k].n)===wanted;})||
       keys.find(function(k){return norm(String(T[k].n).replace(/\s*\([^)]*\)\s*$/,''))===wanted;})||
@@ -8237,7 +8237,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     B: [['Mnkt Purple', ['DS_779FBD131741477AF32F9268']], ['2990 white', ['W2990', 'DS_5EE6F3BEECF59DC3C6196F49']], ['ceetaa', ['DS_96589BA3B4B1A9105B27FCE2']], ['drdrx', ['DS_752D2420BEA0465EC064967F']], ['6MVP6 legacy', ['DS_FF990EBDA1BF42F4152EB59B']]],
     C: [['Cl10', ['DS_CA8378A9370706FED23DE128']], ['Z4RTH', ['DS_D9C14CF463458E6D605CBBCD']], ['73X', ['DS_2FFDE4947EC7D3B5EA243C8E']], ['8mna', ['MANAI', 'DS_5EDC00F2FC3922BC3269121E']], ['Mnkt black', ['DS_61B25460306DC8DA991CE05E']]],
     D: [['2990 Red', ['DS_9C51EF940061FE6EA58D69FC']], ['CKNGZ', ['DS_8EFC62B43B84507D0E559C7D']], ['FocuS', ['DS_C51FAA148557A08CBF790156']], ['Zx_Wb', ['DS_4E839731B0F6161A89D9FE17']], ['Tsoi7', ['DS_500FEC15C03BAECAD3137925']]],
-    E: [['9k227', ['DS_3C306378316BE910C904FFD9']], ['2990 Purple', ['P2990', 'DS_1BFB44F322EE2EE387B01DA7']], ['Jxy', ['DS_358780B66F569ECE0F4E38F2']], ['Qn', ['DS_433CD7FC8060E08212804DE5']], ['incce', ['DS_22F83076AA7A9955CE280140']]],
+    E: [['9k227', ['DS_3C306378316BE910C904FFD9']], ['2990 Purple', ['P2990', 'DS_1BFB44F322EE2EE387B01DA7']], ['Jxy', ['DS_358780B66F569ECE0F4E38F2']], ['Valhallaz', ['DS_433CD7FC8060E08212804DE5']], ['incce', ['DS_22F83076AA7A9955CE280140']]],
     F: [['100ra', ['DS_12FA441844EEC25CFF987BF4']], ['CV0', ['DS_D33B57E3138875E9FCE0A017']], ['0xu', ['DS_F1C9FDB9DAA7BF021B336DEE']], ['Okz', ['OMGZ', 'DS_DF21A75C3BF321AE7FC0010D']], ['SNT', ['SNT', 'DS_FF8F620CF6B1915C0E475801']]],
     G: [['Rvurz black', ['DS_D1764CAF48B74A2D0B7B3E59']], ['Nmdrs', ['DS_CD3641F18D306E725A580C82']], ['Team legend', ['DS_45CE87E719BF421295A5516B']], ['E1ror', ['DS_637035FF96CD88CCA260D39B']], ['5RV', ['DS_REVOLUTION_5RV_1572281163']]],
     H: [['DXIII', ['DS_5E67C1B8721D736CA5B5A960']], ['76Rs', ['DS_0E5B1C07E5CF9FAFE336E9CB2']], ['Eknz', ['DS_286B21B874899423C6F7C160']], ['kgtss', ['KGTSS', 'DS_EA356C7E1F9C8EED3AEF8C8B']], ['R9', ['DS_D6455B09E6560710B5A3666C']]]
@@ -9229,7 +9229,7 @@ MSR_ROSTER_UPDATES.ds_500fec15c03baecad3137925 = {"roster": ["tsetsEe", "Keu", "
       }
       if (row.id === 'ds_458bacb8c3562ea7529ea5bb') row = Object.assign({}, row, { tag: 'WarKz' });
       if (row.id === 'ds_d6455b09e6560710b5a3666c' && !String(row.tag || '').trim()) row = Object.assign({}, row, { tag: 'R9' }); // Restine: tag from the Nov 25 confirmed post (CTG: R9)
-      if (row.id === 'ds_433cd7fc8060e08212804de5') row = Object.assign({}, row, { name: 'Quiet Night', tag: 'qn', logo_url: 'https://gqepygqtgosvpfirahgd.supabase.co/storage/v1/object/public/team-logos/ds_d4ebfb85e8a8dcfea9a7d05e.jpg' }); // Exclusive [EXCL] renamed Quiet Night [qn] (Discord Nov 26-27, same roster)
+      if (row.id === 'ds_433cd7fc8060e08212804de5') row = Object.assign({}, row, { name: 'Valhallaz', tag: '7z1', /* admin Nov 28: VALHALLAZ [7z1] (same 7 players) plays SPS instead of Quiet Night [qn]; qn registrations removed */ logo_url: 'https://gqepygqtgosvpfirahgd.supabase.co/storage/v1/object/public/team-logos/ds_d4ebfb85e8a8dcfea9a7d05e.jpg' }); // Exclusive [EXCL] renamed Quiet Night [qn] (Discord Nov 26-27, same roster)
       if (row.id === 'ds_4e839731b0f6161a89d9fe17') row = Object.assign({}, row, { name: 'ZyroxEsport' }); // drop flag emoji from the Nov 25 post
       if (row.id === 'ds_61b25460306dc8da991ce05e') row = Object.assign({}, row, { name: 'MNKTeam-(black)' }); // Nov 26 post 'MNKTeam : [ Black ]' parsed as 'MNKTeam :'
       // Staff-confirmed NAME CHANGE PFP: game ID 255941851 is Bad, not the old device-suffixed nickname.
