@@ -3499,6 +3499,13 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
   };
   // Player transfers (old ledger team label -> new team code). The old team's matches stay in its history; the player's stats follow him.
   window.MSR_PLAYER_TRANSFERS = window.MSR_PLAYER_TRANSFERS || [
+    { nick: 'GG.', from: 'SCLAT', to: 'DS_645F40C8157D67C9E95312FA', toNick: 'Ares', date: 1127 }, // Scarlet -> Rvurz White (same Game ID 251331901, roster Nov 27, newest post wins)
+    { nick: 'N1X', from: 'SCLAT', to: 'DS_645F40C8157D67C9E95312FA', toNick: 'N1X', date: 1127 }, // Scarlet -> Rvurz White (same Game ID 203289370, roster Nov 27, newest post wins)
+    { nick: '!Misutaaa.', from: 'SCLAT', to: 'DS_645F40C8157D67C9E95312FA', toNick: '!Misutaaa.', date: 1127 }, // Scarlet -> Rvurz White (same Game ID 210348887, roster Nov 27, newest post wins)
+    { nick: 'Rose', from: 'SCLAT', to: 'DS_645F40C8157D67C9E95312FA', toNick: 'Rose', date: 1127 }, // Scarlet -> Rvurz White (same Game ID 262789475, roster Nov 27, newest post wins)
+    { nick: 'S', from: 'Rvurz', to: 'DS_645F40C8157D67C9E95312FA', toNick: '_S_', date: 1127 }, // reveurs inc -> Rvurz White (same Game ID 255036317, roster Nov 27, newest post wins)
+    { nick: 'Temka', from: 'Rvurz', to: 'DS_645F40C8157D67C9E95312FA', toNick: 'Temka', date: 1127 }, // reveurs inc -> Rvurz White (same Game ID 106191346, roster Nov 27, newest post wins)
+    { nick: 'Fi', from: 'Zx_WB Black', to: 'DS_645F40C8157D67C9E95312FA', toNick: 'Fl', date: 1127 }, // Zx_WB Black -> Rvurz White (same Game ID 140802592, roster Nov 27, newest post wins)
     { nick: 'dot', from: 'SCLAT', to: 'DS_96589BA3B4B1A9105B27FCE2', toNick: 'Headlock', date: 1127 }, // Scarlet -> 5 cheetah (same Game ID 216710028, confirmed roster Nov 27, newest post wins)
     { nick: 'Genius 帝', from: '7ADD', to: 'DS_61B25460306DC8DA991CE05E', toNick: 'Genius', date: 1126 }, // Ascendd -> MNKTeam-(black) (same Game ID 237136488, confirmed roster Nov 26, newest post wins)
     { nick: 'Coldshi', from: '6LC', to: 'DS_61B25460306DC8DA991CE05E', toNick: 'coldshi', date: 1126 }, // Six Lence (removed from MSR) -> free agent -> MNKTeam-(black) (same Game ID 261838109, confirmed roster Nov 26)
@@ -8101,7 +8108,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
      Groups come from the organiser's draw (Nov 27). Each slot: [label from the draw, candidate team codes]; a slot links to the team only when a code is loaded.
      Labels with no code yet (X5L, Rvurz white/black, Zx_Wb, Jxy, Qn, 100ra, Nmdrs) show as plain names until the team is identified. */
   window.MSR_SPS_GROUPS = window.MSR_SPS_GROUPS || {
-    A: [['X5L', []], ['7ADD', ['DS_47546CB9C5D6818BE10F3E88']], ['aNOT', ['DS_34794A02BAC83461450702BC', 'ANLVL']], ['Rvurz white', []], ['Z4PTH', ['DS_B9D09F2201AB5655D5810ED3']]],
+    A: [['X5L', []], ['7ADD', ['DS_47546CB9C5D6818BE10F3E88']], ['aNOT', ['DS_34794A02BAC83461450702BC', 'ANLVL']], ['Rvurz white', ['DS_645F40C8157D67C9E95312FA']], ['Z4PTH', ['DS_B9D09F2201AB5655D5810ED3']]],
     B: [['Mnkt Purple', ['DS_779FBD131741477AF32F9268']], ['2990 white', ['W2990', 'DS_5EE6F3BEECF59DC3C6196F49']], ['ceetaa', ['DS_96589BA3B4B1A9105B27FCE2']], ['drdrx', ['DS_752D2420BEA0465EC064967F']], ['6MVP6 legacy', ['DS_FF990EBDA1BF42F4152EB59B']]],
     C: [['Cl10', ['DS_CA8378A9370706FED23DE128']], ['Z4RTH', ['DS_D9C14CF463458E6D605CBBCD']], ['73X', ['DS_2FFDE4947EC7D3B5EA243C8E']], ['8mna', ['MANAI', 'DS_5EDC00F2FC3922BC3269121E']], ['Mnkt black', ['DS_61B25460306DC8DA991CE05E']]],
     D: [['2990 Red', ['DS_9C51EF940061FE6EA58D69FC']], ['CKNGZ', ['DS_8EFC62B43B84507D0E559C7D']], ['FocuS', ['DS_C51FAA148557A08CBF790156']], ['Zx_Wb', []], ['Tsoi7', ['DS_500FEC15C03BAECAD3137925']]],
@@ -8849,6 +8856,8 @@ MSR_ROSTER_UPDATES.ds_d6455b09e6560710b5a3666c = {"roster": ["Tengri", "Yeji", "
 MSR_ROSTER_UPDATES.ds_61b25460306dc8da991ce05e = {"roster": ["West", "Genius", "zest", "Nameo", "Dory", "Formless", "Merciless", "coldshi"], "ids": {"West": "187450418", "Genius": "237136488", "zest": "219413569", "Nameo": "122170061", "Dory": "156930720", "Formless": "242242431", "Merciless": "276179806", "coldshi": "261838109"}};
 // Discord confirmed roster 2026-11-27 02:56 UTC (auto import): new team 5 cheetah [ceeta]. Newest roster post wins by Game ID: Headlock (216710028, = Scarlet 'dot'); Dray (captain, also listed as sub), viper, wentt, wrath, 617, Five, Kane new. 8/8.
 MSR_ROSTER_UPDATES.ds_96589ba3b4b1a9105b27fce2 = {"roster": ["Dray", "viper", "Headlock", "wentt", "wrath", "617", "Five", "Kane"], "ids": {"Dray": "261588226", "viper": "180326608", "Headlock": "216710028", "wentt": "231132536", "wrath": "229629807", "617": "113088984", "Five": "265062606", "Kane": "190333661"}};
+// Roster sent in chat by the MSR admin 2026-11-27 12:35 (UB): new team Rvurz White [Rvurz] (separate from reveurs inc). Newest post wins by Game ID: Ares (= Scarlet GG.), N1X, !Misutaaa., Rose from Scarlet; _S_ (= S) and Temka from reveurs inc; Fl (= Fi) from Zx_WB Black; IL new. 8/8.
+MSR_ROSTER_UPDATES.ds_645f40c8157d67c9e95312fa = {"roster": ["Ares", "N1X", "_S_", "Temka", "IL", "!Misutaaa.", "Rose", "Fl"], "ids": {"Ares": "251331901", "N1X": "203289370", "_S_": "255036317", "Temka": "106191346", "IL": "241030689", "!Misutaaa.": "210348887", "Rose": "262789475", "Fl": "140802592"}};
     registrations.forEach(function (row) {
       var u=MSR_ROSTER_UPDATES[row.id];if(!u)return;
       // Keep departures from the imported previous roster even on a fresh page load.
@@ -10084,7 +10093,8 @@ function verifiedTeamProfiles(){
  if(/^2990/.test(title)){
  }
  const sharedTag=/2990/.test(title)?(title.includes('purple')?'2990 Purple':title.includes('white')?'2990 White':'2990'):null;
- const code0=title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
+ // Rvurz White shares the 'Rvurz' tag with reveurs inc but is a separate new team (Nov 27): no ledger history of its own yet.
+ const code0=/rvurzwhite/.test(title)?'':title.includes('ciorwhite')?'CioR White':title==='sixlence'?'6LC':(title.includes('sixlence')&&title.includes('purple'))?'SIXP':resolveMsrTeam(sharedTag||profileTeam?.tag||known.find(t=>title===norm(t)||title.includes(norm(t)))||Object.entries(teamAliases).find(([alias])=>title.includes(alias))?.[1]||'');
  const hashCode=(/^#team\/([^/?]+)/.exec(location.hash)||[])[1];
  // VOID-only teams have no MSL ledger tag: fall back to the team code in the URL so their VOID maps still fill the lineup.
  const code=code0||(hashCode&&window.msrVoidAll().some(r=>[r.a,r.b].some(c=>String(c).toUpperCase()===decodeURIComponent(hashCode).toUpperCase()))?decodeURIComponent(hashCode):'');
