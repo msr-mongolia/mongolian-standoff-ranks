@@ -1,0 +1,77 @@
+name: logo-thumbs
+# Team logos live in Supabase storage (some are 1-2 MB PNGs) and loaded slowly / flickered on the site.
+# Every 30 minutes: download each team's current logo (msr_discord_teams.logo_url), make a small 192px WebP
+# in assets/logos/<id>.webp and list them in assets/logos/index.js (window.MSR_LOGO_THUMBS). The site serves
+# those same-origin copies first. Commits to main only when something changed, then redeploys Pages.
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/logo-thumbs.yml']
+permissions:
+  contents: write
+  actions: write
+concurrency: logo-thumbs
+jobs:
+  thumbs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Build thumbnails
+        run: |
+          pip install -q pillow
+          python3 - <<'PY'
+          import json, os, re, io, hashlib, urllib.request
+          from PIL import Image
+          cfg = open('msr-config.js').read()
+          url = re.search(r"SUPABASE_URL:\s*'([^']+)'", cfg).group(1)
+          key = re.search(r"SUPABASE_ANON_KEY:\s*'([^']+)'", cfg).group(1)
+          req = urllib.request.Request(url + '/rest/v1/msr_discord_teams?select=id,logo_url,source_timestamp&limit=1000',
+                                       headers={'apikey': key, 'Authorization': 'Bearer ' + key})
+          rows = json.load(urllib.request.urlopen(req, timeout=30))
+          os.makedirs('assets/logos', exist_ok=True)
+          idx_path = 'assets/logos/index.json'
+          old = json.load(open(idx_path)) if os.path.exists(idx_path) else {}
+          new = {}
+          allowed = re.compile(r'^https://gqepygqtgosvpfirahgd\.supabase\.co/storage/v1/object/public/team-logos/(?:ros/)?[A-Za-z0-9_.-]+$')
+          for r in rows:
+              rid = str(r.get('id') or '').lower(); src = r.get('logo_url') or ''
+              if not re.fullmatch(r'[a-z0-9_]{3,60}', rid) or not allowed.match(src):
+                  continue
+              ver = hashlib.sha1((src + '|' + str(r.get('source_timestamp') or '')).encode()).hexdigest()[:8]
+              out = 'assets/logos/%s.webp' % rid
+              if old.get(rid) == ver and os.path.exists(out):
+                  new[rid] = ver; continue
+              try:
+                  data = urllib.request.urlopen(src, timeout=30).read()
+                  im = Image.open(io.BytesIO(data)); im.load()
+                  im = im.convert('RGBA')
+                  w, h = im.size; s = min(w, h)
+                  im = im.crop(((w - s) // 2, (h - s) // 2, (w - s) // 2 + s, (h - s) // 2 + s)).resize((192, 192), Image.LANCZOS)
+                  im.save(out, 'WEBP', quality=82, method=6)
+                  new[rid] = ver
+                  print('thumb', rid, len(data), '->', os.path.getsize(out))
+              except Exception as e:
+                  print('skip', rid, e)
+                  if rid in old and os.path.exists(out): new[rid] = old[rid]
+          for f in os.listdir('assets/logos'):
+              if f.endswith('.webp') and f[:-5] not in new:
+                  os.remove(os.path.join('assets/logos', f))
+          json.dump(new, open(idx_path, 'w'), sort_keys=True, indent=0)
+          open('assets/logos/index.js', 'w').write('window.MSR_LOGO_THUMBS=' + json.dumps(new, sort_keys=True, separators=(',', ':')) + ';\n')
+          print(len(new), 'thumbs')
+          PY
+      - name: Commit and redeploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add -A assets/logos
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git config user.name msr-bot && git config user.email msr-bot@users.noreply.github.com
+          git commit -qm "Logo thumbnails: refresh assets/logos (192px WebP)"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 5; done
+          gh workflow run pages.yml --ref main || true
