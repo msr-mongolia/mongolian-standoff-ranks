@@ -3506,6 +3506,12 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     { nick: 'S', from: 'Rvurz', to: 'DS_645F40C8157D67C9E95312FA', toNick: '_S_', date: 1127 }, // reveurs inc -> Rvurz White (same Game ID 255036317, roster Nov 27, newest post wins)
     { nick: 'Temka', from: 'Rvurz', to: 'DS_645F40C8157D67C9E95312FA', toNick: 'Temka', date: 1127 }, // reveurs inc -> Rvurz White (same Game ID 106191346, roster Nov 27, newest post wins)
     { nick: 'Fi', from: 'Zx_WB Black', to: 'DS_645F40C8157D67C9E95312FA', toNick: 'Fl', date: 1127 }, // Zx_WB Black -> Rvurz White (same Game ID 140802592, roster Nov 27, newest post wins)
+    { nick: 's1lent', from: 'Zx_WB Black', to: 'DS_4E839731B0F6161A89D9FE17', toNick: 's1lent', date: 1127 }, // Zx_WB Black -> ZyroxEsport (same Game ID 255463314, admin-approved Nov 27, newest post wins)
+    { nick: 'V1rtex.666', from: 'Zx_WB Black', to: 'DS_4E839731B0F6161A89D9FE17', toNick: 'V1rtex666', date: 1127 }, // Zx_WB Black -> ZyroxEsport (same Game ID 221249980, admin-approved Nov 27, newest post wins)
+    { nick: 'L1NEPEEK', from: 'Zx_WB Black', to: 'DS_4E839731B0F6161A89D9FE17', toNick: 'L1NEPEEK', date: 1127 }, // Zx_WB Black -> ZyroxEsport (same Game ID 171311768, admin-approved Nov 27, newest post wins)
+    { nick: 'Kevingodpeeek', from: 'Zx_WB Black', to: 'DS_4E839731B0F6161A89D9FE17', toNick: 'sexystop | 神屎', date: 1127 }, // Zx_WB Black -> ZyroxEsport (same Game ID 257856571, admin-approved Nov 27, newest post wins)
+    { nick: 'ice D', from: 'Zx_WB White', to: 'DS_4E839731B0F6161A89D9FE17', toNick: 'Ice:D', date: 1127 }, // Zx_WB White -> ZyroxEsport (same Game ID 100224444, admin-approved Nov 27, newest post wins)
+    { nick: 'Kura_bish', from: 'MSDTP', to: 'DS_4E839731B0F6161A89D9FE17', toNick: 'Kura_bish', date: 1127 }, // MSDTP -> ZyroxEsport (same Game ID 211197664, admin-approved Nov 27, newest post wins)
     { nick: 'dot', from: 'SCLAT', to: 'DS_96589BA3B4B1A9105B27FCE2', toNick: 'Headlock', date: 1127 }, // Scarlet -> 5 cheetah (same Game ID 216710028, confirmed roster Nov 27, newest post wins)
     { nick: 'Genius 帝', from: '7ADD', to: 'DS_61B25460306DC8DA991CE05E', toNick: 'Genius', date: 1126 }, // Ascendd -> MNKTeam-(black) (same Game ID 237136488, confirmed roster Nov 26, newest post wins)
     { nick: 'Coldshi', from: '6LC', to: 'DS_61B25460306DC8DA991CE05E', toNick: 'coldshi', date: 1126 }, // Six Lence (removed from MSR) -> free agent -> MNKTeam-(black) (same Game ID 261838109, confirmed roster Nov 26)
@@ -8106,12 +8112,12 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
 
   /* SPS (Standoff Pro Series) page: 8 groups (A-H) of 5, round robin Bo3 like MSL Stage 1, top 2 of each group -> 16-team single elimination playoff.
      Groups come from the organiser's draw (Nov 27). Each slot: [label from the draw, candidate team codes]; a slot links to the team only when a code is loaded.
-     Labels with no code yet (X5L, Rvurz white/black, Zx_Wb, Jxy, Qn, 100ra, Nmdrs) show as plain names until the team is identified. */
+     Labels with no code yet (X5L, Rvurz white/black, Jxy, Qn, 100ra, Nmdrs) show as plain names until the team is identified. */
   window.MSR_SPS_GROUPS = window.MSR_SPS_GROUPS || {
     A: [['X5L', []], ['7ADD', ['DS_47546CB9C5D6818BE10F3E88']], ['aNOT', ['DS_34794A02BAC83461450702BC', 'ANLVL']], ['Rvurz white', ['DS_645F40C8157D67C9E95312FA']], ['Z4PTH', ['DS_B9D09F2201AB5655D5810ED3']]],
     B: [['Mnkt Purple', ['DS_779FBD131741477AF32F9268']], ['2990 white', ['W2990', 'DS_5EE6F3BEECF59DC3C6196F49']], ['ceetaa', ['DS_96589BA3B4B1A9105B27FCE2']], ['drdrx', ['DS_752D2420BEA0465EC064967F']], ['6MVP6 legacy', ['DS_FF990EBDA1BF42F4152EB59B']]],
     C: [['Cl10', ['DS_CA8378A9370706FED23DE128']], ['Z4RTH', ['DS_D9C14CF463458E6D605CBBCD']], ['73X', ['DS_2FFDE4947EC7D3B5EA243C8E']], ['8mna', ['MANAI', 'DS_5EDC00F2FC3922BC3269121E']], ['Mnkt black', ['DS_61B25460306DC8DA991CE05E']]],
-    D: [['2990 Red', ['DS_9C51EF940061FE6EA58D69FC']], ['CKNGZ', ['DS_8EFC62B43B84507D0E559C7D']], ['FocuS', ['DS_C51FAA148557A08CBF790156']], ['Zx_Wb', []], ['Tsoi7', ['DS_500FEC15C03BAECAD3137925']]],
+    D: [['2990 Red', ['DS_9C51EF940061FE6EA58D69FC']], ['CKNGZ', ['DS_8EFC62B43B84507D0E559C7D']], ['FocuS', ['DS_C51FAA148557A08CBF790156']], ['Zx_Wb', ['DS_4E839731B0F6161A89D9FE17']], ['Tsoi7', ['DS_500FEC15C03BAECAD3137925']]],
     E: [['9k227', ['DS_3C306378316BE910C904FFD9']], ['2990 Purple', ['P2990', 'DS_1BFB44F322EE2EE387B01DA7']], ['Jxy', []], ['Qn', []], ['incce', ['DS_22F83076AA7A9955CE280140']]],
     F: [['100ra', []], ['CV0', ['DS_D33B57E3138875E9FCE0A017']], ['0xu', ['DS_F1C9FDB9DAA7BF021B336DEE']], ['Okz', ['OMGZ', 'DS_DF21A75C3BF321AE7FC0010D']], ['SNT', ['SNT', 'DS_FF8F620CF6B1915C0E475801']]],
     G: [['Rvurz black', ['DS_D1764CAF48B74A2D0B7B3E59']], ['Nmdrs', []], ['Team legend', ['DS_45CE87E719BF421295A5516B']], ['E1ror', ['DS_637035FF96CD88CCA260D39B']], ['5RV', ['DS_REVOLUTION_5RV_1572281163']]],
@@ -8724,7 +8730,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var am = String(a.source_message_id || ''), bm = String(b.source_message_id || '');
       return am.length - bm.length || am.localeCompare(bm) || String(a.id).localeCompare(String(b.id));
     }
-    rows=(Array.isArray(rows)?rows:[]).filter(function(r){return r.id!== 'ds_void_eknz_20261113' && ['ds_a090a268d75d482c82e94915','ds_5c43480f730342cb52277f22','ds_a789529aad4a6e81e56a0915','ds_4e839731b0f6161a89d9fe17'].indexOf(r.id)<0;}); // ds_4e83...: ZyroxEsport [Zx_WB] post Nov 25 05:05 UTC on HOLD (no Black/White, 4 in/4 out vs Zx_WB Black, takes Ice:D from Zx_WB White)
+    rows=(Array.isArray(rows)?rows:[]).filter(function(r){return r.id!== 'ds_void_eknz_20261113' && ['ds_a090a268d75d482c82e94915','ds_5c43480f730342cb52277f22','ds_a789529aad4a6e81e56a0915'].indexOf(r.id)<0;}); // ds_4e83... ZyroxEsport [Zx_WB] (Nov 25 post, was HOLD) approved by admin Nov 27 as SPS Group D 'Zx_Wb' -> applied below.
     var registrations = (Array.isArray(rows) ? rows : []).filter(function (row) {
       return row && /^[a-z0-9_]{3,40}$/i.test(row.id) && typeof row.name === 'string' && Array.isArray(row.roster) &&
         row.roster.length >= 5 && row.roster.length <= 12 && row.roster.every(function (nick) { return typeof nick === 'string' && nick && nick.length <= 40; }) &&
@@ -8860,6 +8866,8 @@ MSR_ROSTER_UPDATES.ds_61b25460306dc8da991ce05e = {"roster": ["West", "Genius", "
 MSR_ROSTER_UPDATES.ds_96589ba3b4b1a9105b27fce2 = {"roster": ["Dray", "viper", "Headlock", "wentt", "wrath", "617", "Five", "Kane"], "ids": {"Dray": "261588226", "viper": "180326608", "Headlock": "216710028", "wentt": "231132536", "wrath": "229629807", "617": "113088984", "Five": "265062606", "Kane": "190333661"}};
 // Roster sent in chat by the MSR admin 2026-11-27 12:35 (UB): new team Rvurz White [Rvurz] (separate from reveurs inc). Newest post wins by Game ID: Ares (= Scarlet GG.), N1X, !Misutaaa., Rose from Scarlet; _S_ (= S) and Temka from reveurs inc; Fl (= Fi) from Zx_WB Black; IL new. 8/8.
 MSR_ROSTER_UPDATES.ds_645f40c8157d67c9e95312fa = {"roster": ["Ares", "N1X", "_S_", "Temka", "IL", "!Misutaaa.", "Rose", "Fl"], "ids": {"Ares": "251331901", "N1X": "203289370", "_S_": "255036317", "Temka": "106191346", "IL": "241030689", "!Misutaaa.": "210348887", "Rose": "262789475", "Fl": "140802592"}};
+// Admin (Nov 27): ZyroxEsport [Zx_WB] Nov 25 confirmed roster approved (separate team from Zx_WB Black/White; SPS Group D 'Zx_Wb'). Newest post wins by Game ID: s1lent, V1rtex666, L1NEPEEK, sexystop (= Kevingodpeeek) from Zx_WB Black; Ice:D (= ice D) from Zx_WB White; Kura_bish from CHINGIS WARRIORS; Redx, MURDER666 new. 8/8.
+MSR_ROSTER_UPDATES.ds_4e839731b0f6161a89d9fe17 = {"roster": ["s1lent", "V1rtex666", "Ice:D", "Redx", "Kura_bish", "sexystop | 神屎", "MURDER666", "L1NEPEEK"], "ids": {"s1lent": "255463314", "V1rtex666": "221249980", "Ice:D": "100224444", "Redx": "2888883533", "Kura_bish": "211197664", "sexystop | 神屎": "257856571", "MURDER666": "276318479", "L1NEPEEK": "171311768"}};
     registrations.forEach(function (row) {
       var u=MSR_ROSTER_UPDATES[row.id];if(!u)return;
       // Keep departures from the imported previous roster even on a fresh page load.
@@ -8933,6 +8941,7 @@ MSR_ROSTER_UPDATES.ds_645f40c8157d67c9e95312fa = {"roster": ["Ares", "N1X", "_S_
       }
       if (row.id === 'ds_458bacb8c3562ea7529ea5bb') row = Object.assign({}, row, { tag: 'WarKz' });
       if (row.id === 'ds_d6455b09e6560710b5a3666c' && !String(row.tag || '').trim()) row = Object.assign({}, row, { tag: 'R9' }); // Restine: tag from the Nov 25 confirmed post (CTG: R9)
+      if (row.id === 'ds_4e839731b0f6161a89d9fe17') row = Object.assign({}, row, { name: 'ZyroxEsport' }); // drop flag emoji from the Nov 25 post
       if (row.id === 'ds_61b25460306dc8da991ce05e') row = Object.assign({}, row, { name: 'MNKTeam-(black)' }); // Nov 26 post 'MNKTeam : [ Black ]' parsed as 'MNKTeam :'
       // Staff-confirmed NAME CHANGE PFP: game ID 255941851 is Bad, not the old device-suffixed nickname.
       if (row.id === 'ds_752d2420bea0465ec064967f' || String(row.tag||'').toUpperCase()==='DRDRX') {
