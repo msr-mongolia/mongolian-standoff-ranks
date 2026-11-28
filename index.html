@@ -2996,7 +2996,7 @@ window.msrTickMemo = function (fn) { var c = null; return function () { if (!c) 
     OMGZ: { vipStartedAt: '2026-11-16T00:00:00+08:00', vipExpiresAt: '2026-12-16T00:00:00+08:00', n: 'Omega ForceZ', i: 'OF', tag: '0kz', c: '#1A1A1A', city: 'Ulaanbaatar', img: 'assets/img/46ee8b7ff3e3.jpg' },
     KNGZZ: { n: 'KingZz', i: 'KZ', tag: 'KngZz', c: '#2B2B31', city: 'Ulaanbaatar', img: 'assets/img/fb1d23556338.jpg' },
     SIXP: { n: 'Six Lence Purple', i: '6P', tag: '6LC', c: '#5B21B6', city: 'Ulaanbaatar', img: 'assets/img/839729bc6bd4.jpg' },
-    ANLVL: { n: 'Another Level', i: 'AL', tag: '-aN0T', c: '#2563EB', city: 'Ulaanbaatar', img: 'assets/img/another-level-logo.jpg?v=1' },
+    ANLVL: { n: 'Peaceda', i: 'PC', tag: 'PCDx', c: '#22C55E', city: 'Ulaanbaatar', img: 'assets/img/peaceda-logo.jpg?v=1' }, // was Another Level [-aN0T]; admin Nov 28: renamed Peaceda [PCDx] (same team, stats/ELO kept)
     COR: { n: 'Civilization of Ruin', i: 'CR', tag: 'CioR', c: '#9AA4B2', city: 'Ulaanbaatar', img: 'assets/cior-dragon.jpg' },
     MANAI: { n: 'Manai', i: 'MN', tag: '8MNA', c: '#000000', city: 'Ulaanbaatar', img: 'assets/img/3e1fbf30dab7.jpg' },
     ELKNG: { n: 'Elite Kings', i: 'EK', tag: 'EKS', c: '#E5E7EB', city: 'Pakistan', country: 'Pakistan', img: 'assets/img/cf0648c8b07c.jpg' },
@@ -3777,7 +3777,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
     })();
     // Screenshot-only players retain verified K/D/A without being silently registered in a clan roster.
     var normTeam=function(v){return normVerified(v);};
-    var teamAliases={tlnrs:['tlnrs','teamlunaris'],dxiii:['dxiii','dxvil13'],reskk:['reskk','asteriskreskk'],okz:['0kz','omegaforcez'],woart:['woart','wonderart'],anot:['anot','nameanotherlevel'],fourzi:['4zi','toexistwithpurpose']};
+    var teamAliases={tlnrs:['tlnrs','teamlunaris'],dxiii:['dxiii','dxvil13'],reskk:['reskk','asteriskreskk'],okz:['0kz','omegaforcez'],woart:['woart','wonderart'],anot:['anot','nameanotherlevel','pcdx','peaceda'],fourzi:['4zi','toexistwithpurpose']};
     confirmed.forEach(function(x){
       var tag=normTeam(x[0]);
       var aliases=teamAliases[tag]||[tag];
@@ -9000,7 +9000,7 @@ var tag=normVerified(t.tag||'');var name=normVerified(t.n||'');var team=tag==='4
       var am = String(a.source_message_id || ''), bm = String(b.source_message_id || '');
       return am.length - bm.length || am.localeCompare(bm) || String(a.id).localeCompare(String(b.id));
     }
-    rows=(Array.isArray(rows)?rows:[]).filter(function(r){return r.id!== 'ds_void_eknz_20261113' && ['ds_a090a268d75d482c82e94915','ds_5c43480f730342cb52277f22','ds_a789529aad4a6e81e56a0915','ds_d4ebfb85e8a8dcfea9a7d05e','ds_9778ed5d6b725ebfe4430f27'].indexOf(r.id)<0;}); // ds_9778...: 'Peaceda' [PCDx] Nov 28 = same players as -aNOT -> HOLD (admin). // ds_d4eb...: 'Quiet Night' Nov 26/27 posts = Exclusive [EXCL] renamed to Quiet Night [qn] (same 7 Game IDs) -> shown on the Exclusive row. // ds_4e83... ZyroxEsport [Zx_WB] (Nov 25 post, was HOLD) approved by admin Nov 27 as SPS Group D 'Zx_Wb' -> applied below.
+    rows=(Array.isArray(rows)?rows:[]).filter(function(r){return r.id!== 'ds_void_eknz_20261113' && ['ds_a090a268d75d482c82e94915','ds_5c43480f730342cb52277f22','ds_a789529aad4a6e81e56a0915','ds_d4ebfb85e8a8dcfea9a7d05e','ds_9778ed5d6b725ebfe4430f27'].indexOf(r.id)<0;}); // ds_9778...: 'Peaceda' [PCDx] Nov 28 = Name Another Level renamed (admin) -> shown on the ANLVL row. // ds_d4eb...: 'Quiet Night' Nov 26/27 posts = Exclusive [EXCL] renamed to Quiet Night [qn] (same 7 Game IDs) -> shown on the Exclusive row. // ds_4e83... ZyroxEsport [Zx_WB] (Nov 25 post, was HOLD) approved by admin Nov 27 as SPS Group D 'Zx_Wb' -> applied below.
     var registrations = (Array.isArray(rows) ? rows : []).filter(function (row) {
       return row && /^[a-z0-9_]{3,40}$/i.test(row.id) && typeof row.name === 'string' && Array.isArray(row.roster) &&
         row.roster.length >= 5 && row.roster.length <= 12 && row.roster.every(function (nick) { return typeof nick === 'string' && nick && nick.length <= 40; }) &&
@@ -9206,7 +9206,7 @@ MSR_ROSTER_UPDATES.ds_7b0c2d46f865045635cbfc29 = {"roster": ["tuvshuupixelll", "
 // Discord confirmed roster 2026-11-28 12:37 UTC: 2990 RED [2990]: souuxyz (250358072) out -> free agent. 1 change, 7/8.
 MSR_ROSTER_UPDATES.ds_9c51ef940061fe6ea58d69fc = {"roster": ["Keni", "Woojin", "SKIZOGOD", "excell.", "Acse", "OxiMx", "Justice"], "ids": {"Keni": "73661447", "Woojin": "143150323", "SKIZOGOD": "244383589", "excell.": "89549903", "Acse": "207003927", "OxiMx": "112556182", "Justice": "98668590"}};
 // Discord confirmed roster 2026-11-28 13:00 UTC: Name Another Level [-aNOT]: Ake (202921802) new; KaicenXR. (283584807) out -> free agent; Keinn 283847513 left out (permanent ban). 2 changes, 7/8.
-// Discord confirmed roster 2026-11-28 13:25 UTC: 'Peaceda' [PCDx] (bot row ds_9778ed5d6b725ebfe4430f27) = same 8 players as -aNOT under a new name/tag -> HOLD (rename or new team? whole roster move mid-SPS; admin to confirm). Bot row hidden until then.
+// Discord confirmed roster 2026-11-28 13:25 UTC: 'Peaceda' [PCDx] (bot row ds_9778ed5d6b725ebfe4430f27) = Name Another Level renamed (admin Nov 28: same team, new name/tag/logo). Shown on the ANLVL row (stats/ELO kept); bot duplicate row stays hidden. Keinn still banned.
 MSR_ROSTER_UPDATES.ds_34794a02bac83461450702bc = {"roster": ["Ringsy", "Quantum", "123", "Lucian", "Ake", "Kizu", "Kina"], "ids": {"Ringsy": "147504063", "Quantum": "153528032", "123": "169029693", "Lucian": "189134501", "Ake": "202921802", "Kizu": "100877492", "Kina": "127727058"}};
     registrations.forEach(function (row) {
       var u=MSR_ROSTER_UPDATES[row.id];if(!u)return;
@@ -9311,6 +9311,7 @@ MSR_ROSTER_UPDATES.ds_34794a02bac83461450702bc = {"roster": ["Ringsy", "Quantum"
       // Name Another Level (aNOT) and the static Another Level are one team.
       if (row.id === 'ds_34794a02bac83461450702bc') {
         code = 'ANLVL';
+        row.name = 'Peaceda'; row.tag = 'PCDx'; row.logo_url = 'assets/img/peaceda-logo.jpg?v=1'; // admin Nov 28: Name Another Level [-aNOT] renamed Peaceda [PCDx]
         // Keep only the newest submitted roster; former members become free agents.
       }
       code = code || row.id.toUpperCase();
@@ -9488,7 +9489,7 @@ MSR_ROSTER_UPDATES.ds_34794a02bac83461450702bc = {"roster": ["Ringsy", "Quantum"
       'SCLAT':'Scarlet','ACCA':'AccaciN','UCLT':'Ulseratif Colitis',
       'OMV':'Omnis Over','OTR':'Clan-One True Reign',
       'NNRDS':'NeonRiderSS','Humn7':'HUMAN4Z',
-      '2990':'2990 RED','2990 White':'2990 White','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Another Level','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
+      '2990':'2990 RED','2990 White':'2990 White','EknZ':'EliteKingZz','MSDTP':'CHINGIS WARRIORS','EVKZ':'EVERLASTED','4zi':'To exist with purpose','WarKz':'WarriorKingzz','KngZz':'KingZz','Mpct':'imp4ct','UxrN':'Unioquiste Esports','Rvurz':'reveurs inc','XvrN':'Xiverion DIVINE','R4GE7':'Silent R4GE','SNT':'Starfire Nirvana Team','MetaS':'METAS','OMEN':'Omen Esports','EKS':'ELITE KINGS','-aN0T':'Peaceda','PCDx':'Peaceda','6vmp6':'VAMP EMPIRE','WOART':'wonderArt','2990 Purple':'2990 Purple','ETXEN':'ETXEN MgL','7ADD':'Ascendd','CioR White':'CioR White','IMTLL':'Immortal Dynasy'
     ,'EliteKingZz DIVA':'EliteKingZz DIVA','4zA':'Four zest assault','MNKT Red':'MNKTeam-(red)','Syroz':'United elites','Cel2x':'Celestex','MNKT Blue':'MNKTeam-(blue)','MNKT Purple':'MNKTeam-(purple)','RA1IN':'Rain tzy','Zx_WB White':'Zx_WB White','Zx_WB Black':'Zx_WB Black'};
     // VIP teams may grow past 300. Non-VIP teams stop gaining at 300 but are never pulled down to it.
     function vipTagActive(tag){
@@ -9504,7 +9505,7 @@ MSR_ROSTER_UPDATES.ds_34794a02bac83461450702bc = {"roster": ["Ringsy", "Quantum"
       if(!code&&tag==='XvrN'&&T.XVRN)code='XVRN';
       if(!code&&tag==='2990 White'&&T.W2990)code='W2990';
       if(!code&&tag==='EKS'&&T.ELKNG)code='ELKNG';
-      if(!code&&tag==='-aN0T'&&T.ANLVL)code='ANLVL';
+      if(!code&&(tag==='-aN0T'||tag==='PCDx'||tag==='aNOT')&&T.ANLVL)code='ANLVL';
       if(!code&&tag==='6LC'&&T.SIXL)code='SIXL';
       if(!code&&tag){ // SPS draw labels (MSR_SPS_GROUPS) -> team code, so SPS result cards get logos/links
         var G=window.MSR_SPS_GROUPS||{},nk=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},want=nk(tag);
@@ -10449,7 +10450,7 @@ function verifiedTeamProfiles(){
  const title=norm(profile.querySelector('h1')?.textContent||'');
  // EliteKingZz DIVA shares the clan tag EknZ with EliteKingZz but is a different roster with no verified matches yet: never give it the EknZ ledger.
  if(title.includes('diva'))return;
- const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct','everlasted':'EVKZ','chingiswarriors':'MSDTP','omnisover':'OMV','clanonetruereign':'OTR','ascendd':'7ADD','etxenmgl':'ETXEN'};
+ const teamAliases={'1nfy':'1NFYx','infyx':'1NFYx','manai':'8MNA','sixlencepurple':'SIXP','6lcpurple':'SIXP','teamlunaris':'TLnrs','lunaris':'TLnrs','warriorkingzz':'WarKz','toexistwithpurpose':'4zi','kingzz':'KngZz','impact':'mpct','everlasted':'EVKZ','chingiswarriors':'MSDTP','omnisover':'OMV','clanonetruereign':'OTR','ascendd':'7ADD','etxenmgl':'ETXEN','peaceda':'-aN0T'}; // Peaceda [PCDx] = renamed Another Level (admin Nov 28)
  const known=[...new Set(screenshotMatches.flatMap(m=>[m.a,m.b]).concat(['WarKz','4zi','KngZz','mpct']))];
  const profileTeam=msrClanMedia.find(t=>[t.name,t.tag].some(v=>norm(v)===title));
  // 2990 white / RED / Purple share the DB tag "2990": pick the ledger tag by clan name.
@@ -10713,7 +10714,7 @@ function updateFinishedClanMedia(side){
   dl340:['dl340','diffirentlevel'],
   rvurz:['rvurz','reveursinc'],
   mpct:['mpct','imp4ct'],
-  uxrn:['uxrn','unioquisteesports'],xvrn:['xvrn','xiverion','xiveriondivine'],omen:['omen','omenesports'],eks:['eks','eliteking','elitekings'],an0t:['an0t','anot','nameanotherlevel'],snt:['snt','starfirenirvanateam'],metas:['metas'],drdrx:['drdrx'],r4ge7:['r4ge7','silentr4ge'],
+  uxrn:['uxrn','unioquisteesports'],xvrn:['xvrn','xiverion','xiveriondivine'],omen:['omen','omenesports'],eks:['eks','eliteking','elitekings'],an0t:['an0t','anot','nameanotherlevel','pcdx','peaceda'],pcdx:['pcdx','peaceda','an0t','anot'],snt:['snt','starfirenirvanateam'],metas:['metas'],drdrx:['drdrx'],r4ge7:['r4ge7','silentr4ge'],
   kngzz:['kngzz','kingzz'],
   warkz:['warkz','warriorkingzz'],
   '4zi':['4zi','toexistwithpurpose']
