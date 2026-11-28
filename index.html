@@ -9506,6 +9506,10 @@ MSR_ROSTER_UPDATES.ds_34794a02bac83461450702bc = {"roster": ["Ringsy", "Quantum"
       if(!code&&tag==='EKS'&&T.ELKNG)code='ELKNG';
       if(!code&&tag==='-aN0T'&&T.ANLVL)code='ANLVL';
       if(!code&&tag==='6LC'&&T.SIXL)code='SIXL';
+      if(!code&&tag){ // SPS draw labels (MSR_SPS_GROUPS) -> team code, so SPS result cards get logos/links
+        var G=window.MSR_SPS_GROUPS||{},nk=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');},want=nk(tag);
+        Object.keys(G).some(function(g){return (G[g]||[]).some(function(x){if(nk(x[0])!==want)return false;var c=(x[1]||[]).find(function(k){return T[k];})||(x[1]||[]).map(function(k){return String(k).toLowerCase();}).find(function(k){return T[k];});if(c)code=c;return !!c;});});
+      }
       return code||null;
     };
     // Result cards: fill missing team logos from the loaded team data (stays correct after Discord data arrives).
